@@ -1,0 +1,89 @@
+package fpoly.datn.ecommerce_website.infrastructure.security;
+
+import fpoly.datn.ecommerce_website.entity.Users;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Constants;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Role;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Component;
+
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.UUID;
+
+@Component
+public class JwtTokenProvider {
+
+    public String generateTokenUser(Users userFind) {
+        Date now = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
+        calendar.add(Calendar.SECOND, Constants.JWTEXPIRATIONINMS);
+        Date expiryDate = calendar.getTime();
+
+        String token = Jwts.builder()
+                .setSubject(userFind.getEmail())
+                .claim("role", String.valueOf(userFind.getRole()))
+                .claim("name", userFind.getFullName())
+                .claim("address", userFind.getAddress())
+                .claim("idUser", userFind.getUserId())
+                .claim("gender", userFind.getGender())
+                .claim("phoneNumber", userFind.getPhoneNumber())
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(SignatureAlgorithm.HS512, Constants.JWTSECRET)
+                .compact();
+
+        return token;
+    }
+
+    public Authentication getAuthentication(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(Constants.JWTSECRET)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        String email = claims.getSubject();
+        String role = claims.get("role", String.class);
+        String fullName = claims.get("name", String.class);
+        String idUser = claims.get("idUser", String.class);
+        String address = claims.get("address", String.class);
+        String phoneNumber = claims.get("phoneNumber", String.class);
+        Boolean gender = claims.get("gender", Boolean.class);
+
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
+        Users principal = new Users();
+        principal.setUserId(String.valueOf(UUID.fromString(idUser)));
+        principal.setPhoneNumber(phoneNumber);
+        principal.setGender(gender);
+        principal.setAddress(address);
+        principal.setEmail(email);
+        principal.setFullName(fullName);
+        principal.setRole(Role.valueOf(authority.getAuthority()));
+        return new UsernamePasswordAuthenticationToken(principal, token, Collections.singletonList(authority));
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jws<Claims> claims = Jwts.parserBuilder()
+                    .setSigningKey(Constants.JWTSECRET)
+                    .build()
+                    .parseClaimsJws(token);
+            Date expirationDate = claims.getBody().getExpiration();
+            if (expirationDate.before(new Date())) {
+                return false;
+            }
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+}
