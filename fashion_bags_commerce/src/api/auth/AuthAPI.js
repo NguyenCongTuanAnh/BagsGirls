@@ -10,6 +10,11 @@ const AuthAPI = {
       },
     });
   },
+  getUserToken() {
+    const url = '/api/authentication/getUserToken';
+
+    return axiosClient.get(url);
+  },
 };
 
 export default AuthAPI;
