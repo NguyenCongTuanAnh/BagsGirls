@@ -23,15 +23,16 @@ function LoginForm(props) {
     try {
       console.log(userLogin);
       const response = await AuthAPI.login(userLogin);
-      const LoginUser = response.data.data.users;
       console.log(response.data.data.token);
       console.log(response.data.data.users.userId);
       localStorage.setItem('token', response.data.data.token);
       localStorage.setItem('userId', response.data.data.users.userId);
-      window.location.href = 'http://localhost:3000/product-add';
-      notification.error({
+      const userToken = await AuthAPI.getUserToken();
+      localStorage.setItem('usersTokenString', JSON.stringify(userToken.data));
+
+      notification.success({
         message: 'Đăng nhập thành công!!!',
-        description: `Welcome back to ${LoginUser.fullName}`,
+        description: `Welcome back to ${response.data.data.users.userId.fullName}`,
         duration: 2,
       });
     } catch (error) {
@@ -40,6 +41,9 @@ function LoginForm(props) {
         description: 'Lỗi',
         duration: 2,
       });
+      // localStorage.removeItem('usersTokenString');
+      // localStorage.removeItem('userId');
+      // localStorage.removeItem('token');
     }
   };
   const onFinishFailed = (errorInfo) => {

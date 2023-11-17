@@ -6,7 +6,6 @@ import HeaderContent from '~/component/GlobalStyles/layouts/DefaultLayout/Header
 import Sidebar from '~/component/GlobalStyles/layouts/DefaultLayout/SideBar';
 import ProductAddForm from './ProductAddForm/ProductAddForm';
 import './index.css';
-import { useLocation } from 'react-router-dom';
 function ProductAdd() {
   return (
     <Fragment>
