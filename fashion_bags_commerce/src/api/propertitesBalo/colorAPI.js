@@ -11,8 +11,8 @@ const colorAPI = {
     });
   },
   getAll() {
-    const url = '/color/';
-    return axiosClient.get(url, {});
+    const url = 'api/color/';
+    return axiosClient.get(url);
   },
   get(id) {
     const url = `/color?id=${id}`;

@@ -11,7 +11,7 @@ const brandAPI = {
     });
   },
   getAll() {
-    const url = '/brand/';
+    const url = 'api/brand/';
     return axiosClient.get(url, {});
   },
   get(id) {

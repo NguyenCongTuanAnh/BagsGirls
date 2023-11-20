@@ -81,12 +81,6 @@ function BaloDetailsPreview(props) {
       sorter: (a, b) => a.compartmentName.localeCompare(b.compartmentName),
     },
     {
-      title: 'Image Url',
-      dataIndex: 'imageUrl',
-      width: 300,
-      sorter: (a, b) => a.imageUrl.localeCompare(b.imageUrl),
-    },
-    {
       title: 'Producer Balo',
       dataIndex: 'producerName',
       width: 100,

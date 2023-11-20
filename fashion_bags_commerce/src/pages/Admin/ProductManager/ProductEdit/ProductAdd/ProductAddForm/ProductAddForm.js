@@ -320,6 +320,50 @@ function ProductAddForm() {
         style={{}}
       >
         <div className={styles.form}>
+          <Row>
+            <Col span={8}>
+              <Form.Item
+                label="Balo Name"
+                name="productName"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng điền Tên Balo!',
+                  },
+                ]}
+              >
+                <Input disabled={isFirst} />
+              </Form.Item>
+              <Form.Item
+                label="Balo Status"
+                name="productDetailStatus"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng chọn trạng thái Balo!',
+                  },
+                ]}
+              >
+                <Select
+                  disabled={isFirst}
+                  style={{
+                    width: 200,
+                  }}
+                  options={[
+                    {
+                      value: '1',
+                      label: 'Hoạt Động',
+                    },
+                    {
+                      value: '0',
+                      label: 'Không Hoạt Động',
+                    },
+                  ]}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+
           <hr></hr>
           <Row>
             <Col span={8}>
