@@ -17,6 +17,8 @@ public interface IUserService {
 
     Users findById(String id);
 
+    Users findByEmail(String email);
+
     Users save(Users users);
 
     Users update(Users customer);

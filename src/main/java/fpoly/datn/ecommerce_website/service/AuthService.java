@@ -11,4 +11,5 @@ public interface AuthService {
     JwtResponse loginBasic(@Valid LoginRequest request);
 
 
+    Boolean validateToken(String jwtToken);
 }

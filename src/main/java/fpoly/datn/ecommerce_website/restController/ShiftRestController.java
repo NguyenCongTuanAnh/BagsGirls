@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
-@RequestMapping("/api/manage")
+@RequestMapping("/api")
 @RestController
 public class ShiftRestController {
 

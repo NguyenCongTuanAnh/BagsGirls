@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @RestController
 
 
-@RequestMapping("/api/manage/user")
+@RequestMapping("/api")
 
 public class UserRestController {
 
@@ -37,7 +37,7 @@ public class UserRestController {
     List<Users> list = new ArrayList<>();
 
 
-    @GetMapping("/")
+    @GetMapping("/user")
     public List<Users> getAll() {
         this.userInfoService.findAll();
         list = iUserInfoRepository.findAll();
@@ -45,7 +45,7 @@ public class UserRestController {
     }
 
     //Phan trang
-    @RequestMapping(value = "/phanTrang", method = RequestMethod.GET)
+    @RequestMapping(value = "/user/phanTrang", method = RequestMethod.GET)
     public ResponseEntity<?> phanTrang(@RequestParam(name = "page", defaultValue = "0") int pageNum,
                                        @RequestParam(name = "size", defaultValue = "10") int pageSize){
         return ResponseEntity.ok(userInfoService.findAllPhanTrang(pageNum, pageSize));
@@ -53,7 +53,7 @@ public class UserRestController {
 
 
     //getone
-    @RequestMapping("")
+    @RequestMapping("/user")
     public ResponseEntity<UserDTO> getOne(@RequestParam("id") String id) {
         Users userInfo = iUserInfoRepository.findById(id).get();
         if(userInfo == null){
@@ -65,7 +65,7 @@ public class UserRestController {
     }
 
     //add
-    @RequestMapping(value = "", method = RequestMethod.POST)
+    @RequestMapping(value = "/user", method = RequestMethod.POST)
     public ResponseEntity<Users> add(@RequestBody UserDTO userInfoDTO) {
         Users x = modelMapper.map(userInfoDTO, Users.class);
         return new ResponseEntity<>(this.userInfoService.save(x), HttpStatus.OK);
@@ -83,7 +83,7 @@ public class UserRestController {
 //    }
     
     
-    @RequestMapping(value = "/search", method = RequestMethod.GET)
+    @RequestMapping(value = "/user/search", method = RequestMethod.GET)
     public ResponseEntity<?> findCustomerByKeyword(@RequestParam String keyword) {
         return new ResponseEntity<>(
                 this.userInfoService.findCustomerByKeyword(keyword) .stream()

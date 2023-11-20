@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/manage")
+@RequestMapping("/api")
 public class ProductDetailRestController {
 
     @Autowired

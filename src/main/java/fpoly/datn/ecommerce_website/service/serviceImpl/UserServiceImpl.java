@@ -7,7 +7,6 @@ import fpoly.datn.ecommerce_website.infrastructure.constant.Message;
 import fpoly.datn.ecommerce_website.infrastructure.exception.rest.RestApiException;
 import fpoly.datn.ecommerce_website.model.request.CreateUserRequest;
 import fpoly.datn.ecommerce_website.model.request.FindUserRequest;
-import fpoly.datn.ecommerce_website.model.response.UserResponse;
 import fpoly.datn.ecommerce_website.repository.IUserRepository;
 import fpoly.datn.ecommerce_website.service.IUserService;
 import fpoly.datn.ecommerce_website.util.ConvertStringToDate;
@@ -48,6 +47,10 @@ public class UserServiceImpl implements IUserService {
     @Override
     public Users findById(String id) {
         return this.userInfoRepository.findById(id).get();
+    }
+    @Override
+    public Users findByEmail(String email) {
+        return this.userInfoRepository.findByEmail(email);
     }
 
     @Override
