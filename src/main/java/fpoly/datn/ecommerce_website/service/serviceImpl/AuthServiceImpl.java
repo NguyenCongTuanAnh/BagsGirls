@@ -46,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
     public JwtResponse loginBasic(@RequestBody LoginRequest loginRequest) {
 
         Users userFind = userRepository.findByEmail(loginRequest.getEmail());
+        System.out.println(loginRequest + "jncjasc");
         if (userFind == null) {
             throw new RestApiException(Message.EMAIL_OR_PASSWORD_INCORRECT);
         }
@@ -59,5 +60,9 @@ public class AuthServiceImpl implements AuthService {
         return jwtResponse;
     }
 
+    @Override
+    public Boolean validateToken(String jwtToken) {
+        return this.jwtTokenProvider.validateToken(jwtToken);
 
+    }
 }

@@ -18,7 +18,7 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/manage")
+@RequestMapping("/api")
 public class TypeRestController {
 
     @Autowired

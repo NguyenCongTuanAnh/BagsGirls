@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-@RequestMapping("/api/manage")
+@RequestMapping("/api")
 @RestController
 public class MaterialRestController {
 
