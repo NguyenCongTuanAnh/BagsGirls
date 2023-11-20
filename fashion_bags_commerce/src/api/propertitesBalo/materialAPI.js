@@ -11,7 +11,7 @@ const materialAPI = {
     });
   },
   getAll() {
-    const url = '/material/';
+    const url = 'api/material/';
     return axiosClient.get(url);
   },
   get(id) {

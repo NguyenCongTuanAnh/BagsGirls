@@ -11,7 +11,7 @@ const sizeAPI = {
     });
   },
   getAll() {
-    const url = '/size/';
+    const url = 'api/size/';
     return axiosClient.get(url, {});
   },
   get(id) {

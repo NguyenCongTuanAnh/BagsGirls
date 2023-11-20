@@ -1,4 +1,5 @@
 import axiosClient from '../axiosClient';
+import axiosClientNotAuth from '../axiosClientNotAuth';
 
 const AuthAPI = {
   login(data) {
@@ -14,6 +15,11 @@ const AuthAPI = {
     const url = '/api/authentication/getUserToken';
 
     return axiosClient.get(url);
+  },
+  validateToken(token) {
+    const url = '/api/authentication/validateToken?token=' + token;
+
+    return axiosClientNotAuth.get(url);
   },
 };
 

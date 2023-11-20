@@ -2,18 +2,17 @@ import axiosClient from '../axiosClient';
 
 const buckleTypeAPI = {
   getAll() {
-    const url = '/buckletype/';
+    const url = 'api/buckletype/';
     return axiosClient.get(url);
   },
   getAllPhanTrang(pageNum, pageSize) {
     const url = `/buckletype/pagination?id=${pageNum}`;
-    return axiosClient.get(url,
-      {
-        params: {
-          page: pageNum - 1,
-          size: pageSize,
-        },
-      });
+    return axiosClient.get(url, {
+      params: {
+        page: pageNum - 1,
+        size: pageSize,
+      },
+    });
   },
   get(id) {
     const url = `/buckletype?id=${id}`;

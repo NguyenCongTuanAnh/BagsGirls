@@ -2,18 +2,17 @@ import axiosClient from '../axiosClient';
 
 const producerAPI = {
   getAll() {
-    const url = '/producer/';
+    const url = 'api/producer/';
     return axiosClient.get(url);
   },
   getAllPhanTrang(pageNum, pageSize) {
     const url = `/producer/pagination?id=${pageNum}`;
-    return axiosClient.get(url,
-      {
-        params: {
-          page: pageNum - 1,
-          size: pageSize,
-        },
-      });
+    return axiosClient.get(url, {
+      params: {
+        page: pageNum - 1,
+        size: pageSize,
+      },
+    });
   },
   get(id) {
     const url = `/producer?id=${id}`;

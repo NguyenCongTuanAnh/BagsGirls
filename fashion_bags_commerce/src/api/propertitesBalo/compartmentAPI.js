@@ -2,18 +2,17 @@ import axiosClient from '../axiosClient';
 
 const compartmentAPI = {
   getAll() {
-    const url = '/compartment/';
+    const url = 'api/compartment/';
     return axiosClient.get(url);
   },
   getAllPhanTrang(pageNum, pageSize) {
     const url = `/compartment/pagination?id=${pageNum}`;
-    return axiosClient.get(url,
-      {
-        params: {
-          page: pageNum - 1,
-          size: pageSize,
-        },
-      });
+    return axiosClient.get(url, {
+      params: {
+        page: pageNum - 1,
+        size: pageSize,
+      },
+    });
   },
   get(id) {
     const url = `/compartment?id=${id}`;
