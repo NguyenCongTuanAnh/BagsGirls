@@ -4,9 +4,18 @@ import styles from './tableCart.module.scss';
 import vndFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import { DeleteFilled, DeleteOutlined, DoubleRightOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { Tab } from 'bootstrap';
 
 function CartItem() {
   const [cartItems, setCartItems] = useState([]);
+  const [totalQuantity, setTotalQuantity] = useState(0);
+
+  useEffect(() => {
+    const total = cartItems.reduce((totalQty, item) => {
+      return totalQty + item.quantity;
+    }, 0);
+    setTotalQuantity(total);
+  }, [cartItems]);
 
   useEffect(() => {
     const storedCart = localStorage.getItem('temporaryCart');
@@ -159,27 +168,77 @@ function CartItem() {
   };
   return (
     <div className="container-fluid" style={{ padding: '0 5% 0 5%' }}>
-      <b>
-        {' '}
-        <Link to={'/shop'} className={styles.continue_cart}>
-          Tiếp tục mua sắm <DoubleRightOutlined />
-        </Link>
-      </b>
-      <Table
-        bordered
-        style={{ textAlign: 'center' }}
-        className={styles.table_cart_item}
-        dataSource={cartItems}
-        columns={columns}
-        rowKey="productName"
-        footer={() => (
-          <div>
-            <h3>
-              Tổng tiền: <span style={{ color: 'red' }}> {vndFormaterFunc(calculateTotal())}</span>
-            </h3>
+      <div>
+        <b>
+          {' '}
+          <Link to={'/shop'} className={styles.continue_cart}>
+            Tiếp tục mua sắm <DoubleRightOutlined />
+          </Link>
+        </b>
+        <Table
+          bordered
+          style={{ textAlign: 'center' }}
+          className={styles.table_cart_item}
+          dataSource={cartItems}
+          columns={columns}
+          rowKey="productName"
+          footer={() => (
+            <div>
+              <h3>
+                Tổng tiền: <span style={{ color: 'red' }}> {vndFormaterFunc(calculateTotal())}</span>
+              </h3>
+            </div>
+          )}
+        />
+      </div>
+      {/* tien hanh thanh toan */}
+      <div className={styles.finalCart}>
+        <br></br>
+        <div className={styles.content_product_pc}>
+          <div className={styles.group_content_product}>
+            <div className={styles.body}>
+              <div className={styles.body_ct}>
+                <ul className="list-oppr">
+                  <li className={styles.productDetailItem}>
+                    <span className={styles.label}>Số lượng: </span>
+                    <span className={styles.labelName}>
+                      <span style={{ color: 'red', fontSize: '30px' }}>{totalQuantity} </span>Sản phẩm
+                    </span>
+                  </li>
+                  <hr></hr>
+                  <li className={styles.productDetailItem}>
+                    <span className={styles.label}>Giá trị hàng hóa: </span>
+                    <span className={styles.labelName}>{vndFormaterFunc(calculateTotal())}</span>
+                  </li>
+                  <hr></hr>
+                  <li className={styles.productDetailItem}>
+                    <span className={styles.label}>Phí vận chuyển: </span>
+                    <span className={styles.labelName}>chưa có</span>
+                  </li>
+                  <hr></hr>
+                  <li className={styles.productDetailItem}>
+                    <span className={styles.label}>Giảm tiền: </span>
+                    <span className={styles.labelName}>chưa có</span>
+                  </li>{' '}
+                  <hr></hr>
+                  <li className={styles.productDetailItem}>
+                    <span className={styles.label}>Thành tiền: </span>
+                    <span className={styles.labelName} style={{ color: 'red', fontWeight: 'bold', fontSize: '30px' }}>
+                      {vndFormaterFunc(calculateTotal())}
+                    </span>
+                  </li>{' '}
+                </ul>
+              </div>
+            </div>
           </div>
-        )}
-      />
+        </div>
+
+        <Link to={'/cart/checkout'}>
+          <br></br>
+          <button className={styles.buttonThanhToan}>Tiến hành thanh toán</button>
+        </Link>
+      </div>
+      <br></br>
     </div>
   );
 }

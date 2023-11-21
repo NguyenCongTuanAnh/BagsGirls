@@ -98,3 +98,59 @@
 .attr {
   list-style: none;
 }
+
+.body {
+  padding: 15px 20px;
+}
+.body_ct {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font-weight: normal;
+  vertical-align: baseline;
+  text-align: left;
+  background: transparent;
+}
+li {
+  border-color: black !important;
+}
+.group_content_product {
+  border: 1px solid rgb(230, 226, 226);
+  width: 700px;
+  border-radius: 32px;
+}
+
+.body_ct ul li {
+  list-style: none;
+}
+.finalCart {
+  padding-left: 55%;
+}
+.productDetailItem {
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+}
+
+.label {
+  flex: 3; /* Make the label take as much space as possible */
+  margin-right: 10px; /* Add some margin between the label and the brand name */
+}
+
+.labelName {
+  flex: 2; /* Make the brand name take twice as much space as the label */
+}
+.buttonThanhToan {
+  background-color: black;
+  color: white;
+  font-size: 25px;
+  padding: 10px 20px;
+  border-radius: 32px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.buttonThanhToan:hover {
+  background-color: white;
+
+  color: black;
+}

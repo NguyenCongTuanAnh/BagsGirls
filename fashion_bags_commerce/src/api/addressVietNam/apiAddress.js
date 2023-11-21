@@ -12,6 +12,7 @@ const AddressVietnam = () => {
   const [selectedWard, setSelectedWard] = useState('');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [address, setAddress] = useState('');
 
   useEffect(() => {
     axios
@@ -71,6 +72,7 @@ const AddressVietnam = () => {
   return (
     <div className="form-container">
       <form onSubmit={handleSubmit}>
+        <h2>Thông tin người nhận hàng</h2>
         <input
           type="text"
           value={fullName}
@@ -115,6 +117,13 @@ const AddressVietnam = () => {
             </option>
           ))}
         </select>
+        <input
+          type="text"
+          value={address}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+          placeholder="Điền rõ thông tin số nhà, tên đường, xã, huyện, tỉnh"
+          required
+        />
         <button type="submit">Giao đến địa chỉ này</button>
       </form>
     </div>

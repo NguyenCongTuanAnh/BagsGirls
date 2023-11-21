@@ -54,6 +54,7 @@ function ShopDetailView() {
         }
         localStorage.setItem('temporaryCart', JSON.stringify(updatedTemporaryCart));
         setTemporaryCart(updatedTemporaryCart);
+        alert('Đã thêm sản phẩm vào giỏ hàng thành công!');
         // }
       } else {
         // Hiển thị thông báo cho người dùng rằng số lượng không đủ trong kho
@@ -292,7 +293,7 @@ function ShopDetailView() {
 
               <br></br>
 
-              <Link to="/cart">
+              <Link to="">
                 {/* Thêm sản phẩm vào giỏ hàng và chuyển hướng đến trang /cart */}
                 <div className={styles.button_buy_now} onClick={() => addToTemporaryCart(product)}>
                   <ShoppingCartOutlined />

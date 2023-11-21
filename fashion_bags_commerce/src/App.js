@@ -37,20 +37,14 @@ import StaffAuth from './api/auth/guard/StaffAuth';
 import ShopView from './pages/Home/Shop/ShopView';
 import { Content } from 'antd/es/layout/layout';
 import CartView from './pages/Home/Cart/cart';
+import Checkout from './pages/Home/Cart/Checkout/Checkout';
 
 const dynamicRoutes = [
-  { path: '/admin', component: <Admin />, title: 'Trang chủ', requiredRoles: ['ROLE_ADMIN', 'ROLE_STAFF'] },
   { path: '/product-viewer', component: <ProductViewer />, title: 'Trang sản Phẩm' },
   { path: '/', component: <Home />, title: 'Home' },
   { path: '/unauthor', component: <UnAuthorPage />, title: 'Unauthor' },
   { path: '/product-add', component: <ProductAdd />, title: 'Trang thêm sản phẩm', requiredRoles: ['ROLE_ADMIN'] },
-  { path: '/shift-view', component: <ShiftViewer />, title: 'Trang giao ca', requiredRoles: ['ROLE_ADMIN'] },
-  { path: '/color-view', component: <ColorView />, title: 'Trang màu sắc', requiredRoles: ['ROLE_ADMIN'] },
-  { path: '/brand-view', component: <BrandView />, title: 'Trang thương hiệu', requiredRoles: ['ROLE_ADMIN'] },
-  { path: '/size-view', component: <SizeView />, title: 'Trang kích cỡ', requiredRoles: ['ROLE_ADMIN'] },
   { path: '/type-view', component: <TypeView />, title: 'Trang kiểu sản phẩm', requiredRoles: ['ROLE_ADMIN'] },
-  { path: '/buckle-type-view', component: <BuckleTypeView />, title: 'Trang kiểu khóa', requiredRoles: ['ROLE_ADMIN'] },
-  { path: '/material-view', component: <MaterialView />, title: 'Trang chất liệu', requiredRoles: ['ROLE_ADMIN'] },
   {
     path: '/compartment-view',
     component: <CompartmentView />,
@@ -67,16 +61,12 @@ const dynamicRoutes = [
     title: 'Trang bán hàng',
     requiredRoles: ['ROLE_ADMIN', 'ROLE_STAFF'],
   },
-  { path: '/cart', component: <CartView />, title: 'Trang giỏ hàng' },
   {
     path: '/bill-view',
     component: <HoaDonView />,
     title: 'Trang hóa đơn',
     requiredRoles: ['ROLE_ADMIN', 'ROLE_STAFF'],
   },
-  { path: '/shop', component: <Shop />, title: 'Trang cửa hàng' },
-  { path: `/shop/detail/:productId`, component: <ShopDetail />, title: 'Trang chi tiết sản phẩm' },
-  { path: '/login', component: <Login />, title: 'Trang đăng nhập' },
 ];
 
 const getTokenAndUserInfo = () => {
@@ -98,6 +88,7 @@ function App() {
           <Route path="/shop" element={<Shop />} />
           <Route path="/shop/detail/:productId" element={<ShopDetail />} />
           <Route path="/cart" element={<CartView />} />
+          <Route path="/cart/checkout" element={<Checkout />} />
           <Route path="/unauthorized" element={<UnAuthorPage />} />
           <Route
             path="/shift-view"
