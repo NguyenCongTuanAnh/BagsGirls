@@ -6,7 +6,7 @@ const buckleTypeAPI = {
     return axiosClient.get(url);
   },
   getAllPhanTrang(pageNum, pageSize) {
-    const url = `/buckletype/pagination?id=${pageNum}`;
+    const url = `api/buckletype/pagination?id=${pageNum}`;
     return axiosClient.get(url, {
       params: {
         page: pageNum - 1,
@@ -15,11 +15,11 @@ const buckleTypeAPI = {
     });
   },
   get(id) {
-    const url = `/buckletype?id=${id}`;
+    const url = `api/buckletype?id=${id}`;
     return axiosClient.get(url);
   },
   add(data) {
-    const url = `/buckletype`;
+    const url = `api/buckletype`;
     return axiosClient.post(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ const buckleTypeAPI = {
     });
   },
   update(id, data) {
-    const url = `/buckletype?id=${id}`;
+    const url = `api/buckletype?id=${id}`;
     return axiosClient.put(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ const buckleTypeAPI = {
     });
   },
   updateStatus(id, status) {
-    const url = `/buckletype/update-status?id=${id}&status=${status}`;
+    const url = `api/buckletype/update-status?id=${id}&status=${status}`;
     return axiosClient.put(url, null, {
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const buckleTypeAPI = {
     });
   },
   delete(id) {
-    const url = `/buckletype?id=${id}`;
+    const url = `api/buckletype?id=${id}`;
     return axiosClient.delete(url);
   },
 };

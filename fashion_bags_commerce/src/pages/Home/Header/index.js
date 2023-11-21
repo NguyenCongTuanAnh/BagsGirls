@@ -3,21 +3,15 @@ import { Fragment } from 'react';
 import styles from './index.module.scss';
 import { Carousel } from 'antd';
 import { Link } from 'react-router-dom';
-import NoticeHeader from './NoticeHeader';
-import MainHeader from './MainHeader';
-import NavMenu from './NavMenu';
+import NoticeHeader from './NoticeHeader/index';
+import MainHeader from './MainHeader/index';
+import NavMenu from './NavMenu/index';
 function Header() {
   return (
     <Fragment>
       <NoticeHeader />
-      <div className="container-fluid">
-        <div style={{ backgroundColor: 'white' }}>
-          <div className={styles.fixed_header}>
-            <MainHeader />
-            <NavMenu />
-          </div>
-        </div>
-      </div>
+      <MainHeader />
+      <NavMenu />
     </Fragment>
   );
 }

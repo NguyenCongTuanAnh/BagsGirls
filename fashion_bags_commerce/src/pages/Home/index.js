@@ -1,35 +1,31 @@
 import { Layout } from 'antd';
 import Content from './Content';
-import Footer from './Footer';
-import Header from './Header';
+import Footer from './Footer/index';
+import Header from './Header/index';
 
 import './index.scss';
-import LoginForm from '../Login/FormLogin/FormLogin/LoginForm';
-import { Link } from 'react-router-dom';
+import { Fragment, useEffect } from 'react';
 
-const { Header: HeaderLayout, Footer: FooterLayout, Content: ContentLayout } = Layout;
 function Home() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
-    <div className="container-fluid" >
-      <Layout>
-        <Header></Header>{' '}
-        <div className="duongDan">
-          <ul className="ul">
-            <span>
-              <Link to={'/'}>
-                <li className="li">Trang chủ</li>
-              </Link>
-            </span>
-          </ul>
+    <Fragment>
+      <body title="BagGirls">
+        <div className="fullpage">
+          <div className="header001">
+            <Header />
+          </div>
+          <div className="page_content">
+            <Content />
+          </div>
+          <div className="footer_client">
+            <Footer />
+          </div>
         </div>
-        <ContentLayout className="content">
-          <Content />
-        </ContentLayout>
-        <FooterLayout>
-          <Footer></Footer>
-        </FooterLayout>
-      </Layout>
-    </div>
+      </body>
+    </Fragment>
   );
 }
 

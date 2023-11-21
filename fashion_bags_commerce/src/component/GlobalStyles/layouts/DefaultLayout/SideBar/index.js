@@ -12,7 +12,7 @@ import {
   HomeOutlined,
 } from '@ant-design/icons';
 import { Menu } from 'antd';
-import Avartar from '~/component/GlobalStyles/layouts/DefaultLayout/SideBar/Avartar';
+import Avartar from '~/component/GlobalStyles/layouts/DefaultLayout/SideBar/Avartar/index';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -46,10 +46,12 @@ const items = [
     getItem('Submenu', 'sub3', <AppstoreOutlined />, [getItem('Option 7', '7'), getItem('Option 8', '8')]),
   ]),
   getItem('Quản lý Hóa Đơn', 'sub4', <PaperClipOutlined />, [
-    getItem(<Link style={{ textDecoration: 'none' }} to={'/bill-view'}>
-      Hóa đơn hôm nay
-    </Link>,
-      '6',),
+    getItem(
+      <Link style={{ textDecoration: 'none' }} to={'/bill-view'}>
+        Hóa đơn hôm nay
+      </Link>,
+      '6',
+    ),
     getItem('Chỉnh sửa Hóa Đơn', '7'),
     getItem('Xuất Hóa Đơn', '8'),
     getItem('Option 12', '9'),

@@ -1,31 +1,28 @@
 import { Badge, Carousel } from 'antd';
 import { Link } from 'react-router-dom';
 
-import styles from '../MainHeader/index.scss';
+import styles from '../MainHeader/index.module.scss';
 import { SearchOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 
 function MainHeader() {
   return (
     <div className="container-fluid" style={{ height: '100px' }}>
-      <div className="mainHeader">
-        <div className="content">
-          <div className="toolLeft">
-            <div className="logo">
-              <img className="image" alt="img" src="https://i.imgur.com/OfgyXFE.png"></img>
-            </div>
-          </div>
-          <div className="search">
-            <div className="searchForm">
-              <form className="form">
-                <SearchOutlined className="icon" />
-                <input className="searchInput" placeholder="Đây là ô tìm kiếm"></input>
+      <div className={styles.mainHeader}>
+        <img className={styles.image} alt="img" src="https://i.imgur.com/e1Tfbn5.png"></img>
+        <div className={styles.content}>
+          <div className={styles.toolLeft}></div>
+          <div className={styles.search}>
+            <div className={styles.searchForm}>
+              <form className={styles.form}>
+                <SearchOutlined className={styles.icon} />
+                <input className={styles.searchInput} placeholder="Tìm kiếm sản phẩm"></input>
               </form>
             </div>
           </div>
-          <div className="toolRight">
-            <div className="profile">
-              <div className="login">
-                <ul className="horizontalLogin">
+          <div className={styles.toolRight}>
+            <div className={styles.profile}>
+              <div className={styles.login}>
+                <ul className={styles.horizontalLogin}>
                   <li>
                     <Link to={'/login'}>ĐĂNG NHẬP</Link>
                   </li>
@@ -36,10 +33,10 @@ function MainHeader() {
                 </ul>
               </div>
             </div>
-            <div className="cart">
+            <div className={styles.cart}>
               <Link to={'/cart'}>
-                <Badge className="cartBadge" count="1">
-                  <ShoppingCartOutlined href="/cart" className="cartIcon" />
+                <Badge className={styles.cartBadge} count="2">
+                  <ShoppingCartOutlined href="/cart" className={styles.cartIcon} />
                 </Badge>
               </Link>
             </div>

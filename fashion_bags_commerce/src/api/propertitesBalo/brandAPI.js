@@ -2,7 +2,7 @@ import axiosClient from '../axiosClient';
 
 const brandAPI = {
   getAllPagination(pageNum, pageSize) {
-    const url = '/brand/pagination';
+    const url = 'api/brand/pagination';
     return axiosClient.get(url, {
       params: {
         page: pageNum - 1,
@@ -15,11 +15,11 @@ const brandAPI = {
     return axiosClient.get(url, {});
   },
   get(id) {
-    const url = `/brand?id=${id}`;
+    const url = `api/brand?id=${id}`;
     return axiosClient.get(url);
   },
   add(data) {
-    const url = `/brand`;
+    const url = `api/brand`;
     return axiosClient.post(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ const brandAPI = {
     });
   },
   update(id, data) {
-    const url = `/brand?id=${id}`;
+    const url = `api/brand?id=${id}`;
     return axiosClient.put(url, data, {
       headers: {
         'Content-Type': 'application/json',

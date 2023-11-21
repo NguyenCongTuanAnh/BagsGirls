@@ -22,7 +22,6 @@ import StaffView from './pages/Admin/Staff/StaffView';
 import SalesCounter from './pages/Admin/SalesManager/SalesCounter';
 import CustomerView from './pages/Admin/Customer/CustomerView';
 import HoaDonView from './pages/Admin/QuanLyHoaDon/HienThiHoaDon/indexHoaDonView';
-import CartView from './pages/Home/Cart';
 import Shop from './pages/Home/Shop/shop';
 import ShopDetail from './pages/Home/ShopDetail/shopDetail';
 import GuestGuard from './api/auth/guard/GuestGuard';
@@ -35,6 +34,9 @@ import NotFoundPage from './pages/ExceptionPage/UnAuthorPage/NotFoundPage';
 import { Switch } from 'antd';
 import AdminAuth from './api/auth/guard/AdminAuth';
 import StaffAuth from './api/auth/guard/StaffAuth';
+import ShopView from './pages/Home/Shop/ShopView';
+import { Content } from 'antd/es/layout/layout';
+import CartView from './pages/Home/Cart/cart';
 
 const dynamicRoutes = [
   { path: '/admin', component: <Admin />, title: 'Trang chủ', requiredRoles: ['ROLE_ADMIN', 'ROLE_STAFF'] },
@@ -73,7 +75,7 @@ const dynamicRoutes = [
     requiredRoles: ['ROLE_ADMIN', 'ROLE_STAFF'],
   },
   { path: '/shop', component: <Shop />, title: 'Trang cửa hàng' },
-  { path: '/shop/detail', component: <ShopDetail />, title: 'Trang chi tiết sản phẩm', requiredRoles: ['ROLE_ADMIN'] },
+  { path: `/shop/detail/:productId`, component: <ShopDetail />, title: 'Trang chi tiết sản phẩm' },
   { path: '/login', component: <Login />, title: 'Trang đăng nhập' },
 ];
 
@@ -93,7 +95,58 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Home />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/shop/detail/:productId" element={<ShopDetail />} />
+          <Route path="/cart" element={<CartView />} />
           <Route path="/unauthorized" element={<UnAuthorPage />} />
+          <Route
+            path="/shift-view"
+            element={
+              <AdminAuth>
+                <ShiftViewer />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <AdminAuth>
+                <Admin />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/color-view"
+            element={
+              <AdminAuth>
+                <ColorView />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/material-view"
+            element={
+              <AdminAuth>
+                <MaterialView />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/brand-view"
+            element={
+              <AdminAuth>
+                <BrandView />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/size-view"
+            element={
+              <AdminAuth>
+                <SizeView />
+              </AdminAuth>
+            }
+          />
           <Route
             path="/product-add"
             element={
