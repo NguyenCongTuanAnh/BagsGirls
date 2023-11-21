@@ -2,6 +2,7 @@ package fpoly.datn.ecommerce_website.service.serviceImpl;
 
 import fpoly.datn.ecommerce_website.dto.FullProductDTO;
 import fpoly.datn.ecommerce_website.dto.ImageDTO;
+import fpoly.datn.ecommerce_website.dto.ImageDTO1;
 import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
 import fpoly.datn.ecommerce_website.dto.ProductDetailDTO1;
 import fpoly.datn.ecommerce_website.entity.Images;
@@ -40,7 +41,7 @@ public class FullProductServiceImpl {
 
             // Ánh xạ thông tin từ Images và ProductDetails nếu có
             if (product.getImages() != null && !product.getImages().isEmpty()) {
-                fullProductDTO.setImg(modelMapper.map(product.getImages().get(0), ImageDTO.class));
+                fullProductDTO.setImg(modelMapper.map(product.getImages().get(0), ImageDTO1.class));
             }
             if (product.getProductDetails() != null && !product.getProductDetails().isEmpty()) {
                 fullProductDTO.setProductDetail(modelMapper.map(product.getProductDetails().get(0), ProductDetailDTO1.class));
@@ -59,7 +60,7 @@ public class FullProductServiceImpl {
             FullProductDTO fullProductDTO = modelMapper.map(product, FullProductDTO.class);
 
             if (product.getImages() != null && !product.getImages().isEmpty()) {
-                fullProductDTO.setImg(modelMapper.map(product.getImages().get(0), ImageDTO.class));
+                fullProductDTO.setImg(modelMapper.map(product.getImages().get(0), ImageDTO1.class));
             }
 
             if (product.getProductDetails() != null && !product.getProductDetails().isEmpty()) {
@@ -69,7 +70,7 @@ public class FullProductServiceImpl {
                 // Assuming setProductDetails is a method in FullProductDTO to set a list of ProductDetailDTO objects
                 fullProductDTO.setImgs(
                         product.getImages().stream()
-                                .map(detail -> modelMapper.map(detail, ImageDTO.class))
+                                .map(detail -> modelMapper.map(detail, ImageDTO1.class))
                                 .collect(Collectors.toList())
                 );
             }
@@ -95,7 +96,7 @@ public class FullProductServiceImpl {
             FullProductDTO fullProductDTO = modelMapper.map(product, FullProductDTO.class);
 
             if (product.getImages() != null && !product.getImages().isEmpty()) {
-                fullProductDTO.setImg(modelMapper.map(product.getImages().get(0), ImageDTO.class));
+                fullProductDTO.setImg(modelMapper.map(product.getImages().get(0), ImageDTO1.class));
             }
 
             if (product.getProductDetails() != null && !product.getProductDetails().isEmpty()) {

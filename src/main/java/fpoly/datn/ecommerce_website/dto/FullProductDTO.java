@@ -18,11 +18,11 @@ public class FullProductDTO {
 
     private String brandName;
 
-    private ImageDTO img;
+    private ImageDTO1 img;
 
     private ProductDetailDTO1 productDetail;
 
-    private List<ImageDTO> imgs;
+    private List<ImageDTO1> imgs;
 
     private List<ProductDetailDTO1> productDetails;
 }
