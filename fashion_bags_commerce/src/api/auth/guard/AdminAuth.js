@@ -12,6 +12,9 @@ const AdminAuth = ({ children }) => {
   const [accessChecked, setAccessChecked] = useState(false);
   const token = getToken();
   const userInfo = JSON.parse(localStorage.getItem('usersTokenString'));
+  console.log('====================================');
+  console.log(userInfo);
+  console.log('====================================');
   const navigate = useNavigate();
   useEffect(() => {
     const ischecked = async () => {
@@ -21,7 +24,7 @@ const AdminAuth = ({ children }) => {
       if (userInfo === null) {
         navigate('/login');
       } else {
-        if (userInfo.role !== 'ROLE_ADMIN') {
+        if (userInfo.users.role !== 'ROLE_ADMIN') {
           navigate('/unauthorized');
         }
       }

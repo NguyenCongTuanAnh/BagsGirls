@@ -91,7 +91,6 @@ function App() {
           <Route path="/cart/checkout" element={<Checkout />} />
           <Route path="/unauthorized" element={<UnAuthorPage />} />
           <Route
-            path="/admin"
             path="/shift-view"
             element={
               <AdminAuth>
@@ -102,9 +101,9 @@ function App() {
           <Route
             path="/admin"
             element={
-              <AdminAuth>
+              <StaffAuth>
                 <Admin />
-              </AdminAuth>
+              </StaffAuth>
             }
           />
           <Route

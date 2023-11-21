@@ -16,7 +16,7 @@ const StaffAuth = ({ children }) => {
       if (userInfo === null) {
         navigate('/login');
       } else {
-        if (userInfo.role !== 'ROLE_STAFF' && userInfo.role !== 'ROLE_ADMIN') {
+        if (userInfo.users.role !== 'ROLE_STAFF' && userInfo.users.role !== 'ROLE_ADMIN') {
           navigate('/unauthorized');
         }
       }

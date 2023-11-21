@@ -76,6 +76,7 @@ const SalesCounterForm = () => {
 
   function Content(props) {
     const [customer, setCustomer] = useState(null);
+    const [customerId, setCustomerId] = useState(null);
     const [inputValue, setInputValue] = useState('abc');
     const [inputUserInfo, setInputUserInfo] = useState('');
     const [options, setOptions] = useState([]);
@@ -156,8 +157,9 @@ const SalesCounterForm = () => {
     const handleSelectInfo = (value, option) => {
       setVisible(true);
       const item = infoList.find((item) => item.customerId === value);
-
+      console.log(item);
       setCustomer(item);
+      setCustomerId(item.customerId);
       setInputUserInfo(option.children);
       form.setFieldsValue({
         fullName: item.users.fullName,
@@ -289,10 +291,12 @@ const SalesCounterForm = () => {
     };
     const handleTonggleSelectChange = (value) => {
       if (value === 0) {
-        setVisible(true); // Cập nhật trạng thái dựa trên giá trị của select
+        setVisible(true);
       }
       if (value === 1) {
-        setVisible(false); // Cập nhật trạng thái dựa trên giá trị của select
+        setCustomer(null);
+        setCustomerId(null);
+        setVisible(false);
       }
     };
     const calculateTotalPrice = (items) => {
@@ -319,9 +323,10 @@ const SalesCounterForm = () => {
         let addBill = {
           staff: {
             staffId: staff.staffId,
+            // staffId: '41E50355-60CB-4212-9503-889F1122D4A7',
           },
           customer: {
-            customerId: customer.customerId,
+            customerId: customerId,
           },
           voucher: null,
           billCode: values.billCode,
@@ -343,8 +348,11 @@ const SalesCounterForm = () => {
           billStatus: 1,
         };
 
+        if (customer === null) {
+          addBill.customer = null;
+        }
+        console.log(addBill);
         const addedBill = await handleAddBills(addBill);
-        console.log(addedBill);
         await Promise.all(
           selectedItems.map(async (o) => {
             let billDetail = {
@@ -361,7 +369,12 @@ const SalesCounterForm = () => {
             console.log(billDetails);
           }),
         );
+        notification.success({
+          message: 'Thành Công',
+          description: `Đã hoàn thành đơn hàng`,
+        });
       }
+
       setBillInfo(values);
     };
     async function handleAddBills(bill) {
@@ -507,6 +520,7 @@ const SalesCounterForm = () => {
                       <Form.Item
                         label="Nhân Viên"
                         name="staffName"
+                        initialValue={staff.users.fullName}
                         className={styles.item}
                         rules={[
                           {
@@ -515,12 +529,7 @@ const SalesCounterForm = () => {
                           },
                         ]}
                       >
-                        <Input
-                          readOnly
-                          onChange={(value) => {
-                            setStaffId(value);
-                          }}
-                        />
+                        <Input readOnly />
                       </Form.Item>
                     </Col>
                   </Row>
@@ -564,7 +573,7 @@ const SalesCounterForm = () => {
                         </Col>
                         <Col span={12}>
                           <Form.Item
-                            label="Loại Khách Hàng"
+                            label="Kiểu Thanh Toán"
                             className={styles.item}
                             name="paymentMethod"
                             rules={[

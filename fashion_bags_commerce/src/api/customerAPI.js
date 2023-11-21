@@ -63,7 +63,7 @@ const customerAPI = {
     return axiosClient.delete(url);
   },
   findByKeywork(keyword) {
-    const url = `/customer/search?keyword=${keyword}`;
+    const url = `api/customer/searchByKeyword?keyword=${keyword}`;
     return axiosClient.get(url, { keyword });
   },
 };

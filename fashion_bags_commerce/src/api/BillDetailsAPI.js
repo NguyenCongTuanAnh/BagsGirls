@@ -15,7 +15,7 @@ const billDetailsAPI = {
     return axiosClient.get(url);
   },
   add(data) {
-    const url = `/bill-details`;
+    const url = `api/bill-details`;
     return axiosClient.post(url, data, {
       headers: {
         'Content-Type': 'application/json',
