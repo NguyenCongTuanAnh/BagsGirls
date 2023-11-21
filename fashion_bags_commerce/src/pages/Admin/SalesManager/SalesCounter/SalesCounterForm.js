@@ -88,6 +88,7 @@ const SalesCounterForm = () => {
     const [totalPayment, setTotalPayment] = useState(0);
     const [totalAmount, setTotalAmount] = useState(0);
     const [staffId, setStaffId] = useState('');
+    const [staff, setStaff] = useState(JSON.parse(localStorage.getItem('usersTokenString')));
     const [billInfo, setBillInfo] = useState({});
     const [form] = Form.useForm();
     const searchInputRef = useRef(null);
@@ -317,7 +318,7 @@ const SalesCounterForm = () => {
       } else {
         let addBill = {
           staff: {
-            staffId: values.staffId,
+            staffId: staff.staffId,
           },
           customer: {
             customerId: customer.customerId,
@@ -378,6 +379,11 @@ const SalesCounterForm = () => {
         // currentInput.setSelectionRange(0, currentInput.value.length);
       }
     };
+    const getStaffInfo = () => {
+      const staff = JSON.parse(localStorage.getItem('usersTokenString'));
+      setStaffId(staff.userId);
+      return staff;
+    };
     return (
       <div className={styles.content}>
         {contextHolder}
@@ -386,7 +392,7 @@ const SalesCounterForm = () => {
         </div>
         <div>
           <Row>
-            <Col span={10} style={{ border: '1px solid' }} className={styles.form}>
+            <Col span={10} className={styles.form}>
               <div>
                 <h5>Thông tin khách hàng</h5>
               </div>
@@ -475,7 +481,7 @@ const SalesCounterForm = () => {
                   form={form}
                   onFinish={onHandleAddBill}
                   initialValues={{
-                    staffId: '3896092B-1782-4973-92A8-0DDE36F3A2D7',
+                    staffName: staff.fullName,
                     paymentMethod: 1,
                     billNote: '',
                   }}
@@ -500,7 +506,7 @@ const SalesCounterForm = () => {
                     <Col span={12}>
                       <Form.Item
                         label="Nhân Viên"
-                        name="staffId"
+                        name="staffName"
                         className={styles.item}
                         rules={[
                           {
@@ -655,7 +661,7 @@ const SalesCounterForm = () => {
                 </Form>
               </div>
             </Col>
-            <Col span={14} style={{ border: '1px solid', minHeight: '1000px' }} className={styles.form}>
+            <Col span={14} style={{ borderLeft: '1px solid', minHeight: '1000px' }} className={styles.form}>
               <div>
                 <h5>Giỏ Hàng</h5>
               </div>

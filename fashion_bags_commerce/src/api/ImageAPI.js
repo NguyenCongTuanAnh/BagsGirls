@@ -11,7 +11,7 @@ const imageAPI = {
     });
   },
   upload(data) {
-    const url = `/image`;
+    const url = `api/image`;
     return axiosClient.post(url, data, {
       headers: {
         'Content-Type': 'application/json',

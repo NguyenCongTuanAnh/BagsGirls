@@ -186,7 +186,9 @@ function FormProductViewDetails(props) {
 
   return (
     <Fragment>
-      <Button type="" icon={<InfoOutlined />} className="btn btn-secondary" onClick={showDrawer}></Button>
+      <Button style={{ borderColor: 'green', color: 'green' }} icon={<InfoOutlined />} onClick={showDrawer}>
+        Thông Tin
+      </Button>
       <Drawer
         title={'View Details'}
         placement="top"

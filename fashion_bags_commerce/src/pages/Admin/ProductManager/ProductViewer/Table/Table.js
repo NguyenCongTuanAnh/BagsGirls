@@ -5,7 +5,6 @@ import FormProductViewDetails from '../../ProductViewDetails/FormViewer/FormProd
 import baloAPI from '~/api/productsAPI';
 
 import styles from './index.module.scss';
-import FormBaloEditTonggle from '../../ProductEdit/FormCreate/FormBaloEditTonggle';
 import { DeleteOutlined, ReloadOutlined } from '@ant-design/icons';
 
 function TableContent() {
@@ -57,7 +56,7 @@ function TableContent() {
             return 'Không xác định';
         }
       },
-      sorter: (a, b) => a.baloStatusString.localeCompare(b.baloStatusString),
+      sorter: (a, b) => a.productStatus - b.productStatus,
     },
     {
       title: 'Action',
@@ -78,7 +77,9 @@ function TableContent() {
             }}
             onCancel={onCancel}
           >
-            <Button type="primary" danger icon={<DeleteOutlined />}></Button>
+            <Button type="default" danger icon={<DeleteOutlined />}>
+              Xóa
+            </Button>
           </Popconfirm>
         </Space>
       ),
@@ -148,8 +149,9 @@ function TableContent() {
         padding: '10px',
       }}
     >
-      <FormBaloEditTonggle reload={reload} />
-      <Button icon={<ReloadOutlined />} onClick={reload} loading={loading}></Button>
+      <Button icon={<ReloadOutlined />} onClick={reload} loading={loading}>
+        Làm mới
+      </Button>
 
       {/* <Table
         className="table table-striped"
