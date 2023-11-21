@@ -6,7 +6,7 @@ const producerAPI = {
     return axiosClient.get(url);
   },
   getAllPhanTrang(pageNum, pageSize) {
-    const url = `/producer/pagination?id=${pageNum}`;
+    const url = `api/producer/pagination?id=${pageNum}`;
     return axiosClient.get(url, {
       params: {
         page: pageNum - 1,
@@ -15,11 +15,11 @@ const producerAPI = {
     });
   },
   get(id) {
-    const url = `/producer?id=${id}`;
+    const url = `api/producer?id=${id}`;
     return axiosClient.get(url);
   },
   add(data) {
-    const url = `/producer`;
+    const url = `api/producer`;
     return axiosClient.post(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ const producerAPI = {
     });
   },
   update(id, data) {
-    const url = `/producer?id=${id}`;
+    const url = `api/producer?id=${id}`;
     return axiosClient.put(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ const producerAPI = {
     });
   },
   updateStatus(id, status) {
-    const url = `/producer/update-status?id=${id}&status=${status}`;
+    const url = `api/producer/update-status?id=${id}&status=${status}`;
     return axiosClient.put(url, null, {
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const producerAPI = {
     });
   },
   delete(id) {
-    const url = `/producer?id=${id}`;
+    const url = `api/producer?id=${id}`;
     return axiosClient.delete(url);
   },
 };
