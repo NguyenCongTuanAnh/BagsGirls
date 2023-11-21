@@ -1,6 +1,7 @@
 package fpoly.datn.ecommerce_website.repository;
 
 import fpoly.datn.ecommerce_website.entity.Customers;
+import fpoly.datn.ecommerce_website.entity.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,4 +34,13 @@ import java.util.List;
 //    List<Customers> findByKeyword(String keyword);
 @Query("SELECT c FROM Customers c join Users u on c.users.userId = u.userId ")
 List<Customers> findByKeyword(String keyword);
+    @Query("SELECT c FROM Customers c join Users u on c.users.userId = u.userId " +
+            "where u.fullName LIKE %:keyword% " +
+            "OR u.phoneNumber LIKE %:keyword% " +
+            "OR u.email LIKE %:keyword% ")
+    List<Customers> findCustomerByKeyword(@Param("keyword") String keyword);
+
+    @Query("SELECT c, u FROM Customers c join Users u on c.users.userId = u.userId " +
+            "where u.email = :email ")
+    Customers findByEmail(@Param("email") String email);
 }

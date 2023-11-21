@@ -1,5 +1,6 @@
 package fpoly.datn.ecommerce_website.repository;
 
+import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Staffs;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,4 +21,7 @@ public interface IStaffRepository extends JpaRepository<Staffs, String> {
             "or i.phoneNumber like %:keyword%"
     )
     Page<Staffs> findallSearch(@Param("keyword") String keyword, Pageable pageable);
+    @Query("SELECT s, u FROM Staffs s join Users u on s.users.userId = u.userId " +
+            "where u.email = :email ")
+    Staffs findByEmail(@Param("email") String email);
 }
