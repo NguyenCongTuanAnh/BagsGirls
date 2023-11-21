@@ -46,22 +46,31 @@ const items = [
     getItem('Submenu', 'sub3', <AppstoreOutlined />, [getItem('Option 7', '7'), getItem('Option 8', '8')]),
   ]),
   getItem('Quản lý Hóa Đơn', 'sub4', <PaperClipOutlined />, [
-    getItem(<Link style={{ textDecoration: 'none' }} to={'/bill-view'}>
-      Hóa đơn hôm nay
-    </Link>,
-      '6',),
+    getItem(
+      <Link style={{ textDecoration: 'none' }} to={'/bill-view'}>
+        Hóa đơn hôm nay
+      </Link>,
+      '6',
+    ),
     getItem('Chỉnh sửa Hóa Đơn', '7'),
     getItem('Xuất Hóa Đơn', '8'),
     getItem('Option 12', '9'),
   ]),
 
-  getItem(
-    <Link style={{ textDecoration: 'none' }} to={'/product-viewer'}>
-      Quản lý Sản Phẩm
-    </Link>,
-    'sub5',
-    <CalendarOutlined />,
-  ),
+  getItem('Quản lý Sản Phẩm', 'sub1199', <CalendarOutlined />, [
+    getItem(
+      <Link style={{ textDecoration: 'none' }} to={'/product-add'}>
+        Thêm Sản Phẩm
+      </Link>,
+      '12',
+    ),
+    getItem(
+      <Link style={{ textDecoration: 'none' }} to={'/product-viewer'}>
+        Danh Sách Sản Phẩm
+      </Link>,
+      '13',
+    ),
+  ]),
   getItem('Danh mục sản phẩm', 'sub11', <AppstoreOutlined />, [
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/color-view'}>
@@ -185,6 +194,7 @@ function Sidebar(props) {
         style={{
           width: '260px',
           height: 'auto',
+          // color: 'white',
         }}
         items={items}
       ></Menu>

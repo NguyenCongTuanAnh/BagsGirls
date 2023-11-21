@@ -95,11 +95,11 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/unauthorized" element={<UnAuthorPage />} />
           <Route
-            path="/product-add"
+            path="/admin"
             element={
-              <AdminAuth>
-                <ProductAdd />
-              </AdminAuth>
+              <StaffAuth>
+                <Admin />
+              </StaffAuth>
             }
           />
           <Route
@@ -108,6 +108,22 @@ function App() {
               <StaffAuth>
                 <SalesCounter />
               </StaffAuth>
+            }
+          />
+          <Route
+            path="/product-viewer"
+            element={
+              <AdminAuth>
+                <ProductViewer />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/product-add"
+            element={
+              <AdminAuth>
+                <ProductAdd />
+              </AdminAuth>
             }
           />
         </Routes>

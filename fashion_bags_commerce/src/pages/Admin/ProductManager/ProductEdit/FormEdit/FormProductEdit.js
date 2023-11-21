@@ -14,7 +14,9 @@ function FormProductEdit(props) {
   };
   return (
     <Fragment>
-      <Button className="btn btn-warning" onClick={showDrawer} icon={<EditOutlined />}></Button>
+      <Button style={{ borderColor: 'blue', color: 'blue' }} onClick={showDrawer} icon={<EditOutlined />}>
+        Sửa
+      </Button>
       <Drawer
         title={'Edit - ' + props.balo.baloCode}
         width={360}

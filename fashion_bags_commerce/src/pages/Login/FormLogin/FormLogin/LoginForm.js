@@ -1,7 +1,7 @@
 import { FacebookOutlined, GooglePlusOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import styles from '../../indexLogin.module.scss';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useNavigate } from 'react-router-dom';
 import { Button, Form, notification } from 'antd';
 import Checkbox from 'antd/es/checkbox/Checkbox';
 import Input from 'antd/es/input/Input';
@@ -10,7 +10,7 @@ import AuthAPI from '~/api/auth/AuthAPI';
 function LoginForm(props) {
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
-
+  const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(email);
@@ -35,15 +35,16 @@ function LoginForm(props) {
         description: `Welcome back to ${response.data.data.users.userId.fullName}`,
         duration: 2,
       });
+      navigate('/admin');
     } catch (error) {
       notification.error({
         message: 'Lỗi',
         description: 'Lỗi',
         duration: 2,
       });
-      // localStorage.removeItem('usersTokenString');
-      // localStorage.removeItem('userId');
-      // localStorage.removeItem('token');
+      localStorage.removeItem('usersTokenString');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('token');
     }
   };
   const onFinishFailed = (errorInfo) => {
