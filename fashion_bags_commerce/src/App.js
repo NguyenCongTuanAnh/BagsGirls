@@ -141,9 +141,9 @@ function App() {
           <Route
             path="/product-add"
             element={
-              <StaffAuth>
-                <Admin />
-              </StaffAuth>
+              <AdminAuth>
+                <ProductAdd />
+              </AdminAuth>
             }
           />
           <Route
