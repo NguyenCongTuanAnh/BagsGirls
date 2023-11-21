@@ -12,7 +12,7 @@ import {
   HomeOutlined,
 } from '@ant-design/icons';
 import { Menu } from 'antd';
-import Avartar from '~/component/GlobalStyles/layouts/DefaultLayout/SideBar/Avartar';
+import Avartar from '~/component/GlobalStyles/layouts/DefaultLayout/SideBar/Avartar/index';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 

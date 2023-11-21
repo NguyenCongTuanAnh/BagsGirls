@@ -1,7 +1,7 @@
-import Sidebar from '~/component/GlobalStyles/layouts/DefaultLayout/SideBar';
+import Sidebar from '~/component/GlobalStyles/layouts/DefaultLayout/SideBar/index';
 import { Layout } from 'antd';
-import HeaderContent from '~/component/GlobalStyles/layouts/DefaultLayout/Header';
-import TableContent from '../BuckleTypeView/TableBuckleType/TableBuckleType';
+import HeaderContent from '~/component/GlobalStyles/layouts/DefaultLayout/Header/index';
+import TableContent from './TableBuckleType/TableBuckleType';
 
 const { Header, Footer, Sider, Content } = Layout;
 

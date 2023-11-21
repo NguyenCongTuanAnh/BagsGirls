@@ -16,7 +16,7 @@ const GuestGuard = ({ children }) => {
     console.log(decodedToken);
     const currentTime = Date.now();
     if (decodedToken.exp * 1000 > currentTime) {
-      navigate("/home");
+      navigate("/");
     }
   }, []);
 

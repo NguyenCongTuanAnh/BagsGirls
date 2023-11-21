@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState } from 'react';
-import styles from './index.scss';
+import styles from './index.module.scss';
 import { AppstoreOutlined, HomeOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import SubMenu from 'antd/es/menu/SubMenu';
@@ -33,37 +33,42 @@ function NavMenu() {
   };
   return (
     <Fragment>
-      <div className="navContent">
-        <div className="centeredMenu">
+      <div className={styles.navContent}>
+        <div className={styles.centeredMenu}>
           <Menu
-            className="menu"
+            className={styles.menu}
+            // style={{ backgroundColor: ' rgb(99, 240, 240)' }}
             mode="horizontal"
             selectedKeys={selectedKeys}
             onClick={({ key }) => handleMenuClick(key)}
           >
-            <Link key={1} className="submenu" to={'/'}>
-              <SubMenu key={'subMenu${1}'} title="TRANG CHỦ">
+            <Link key={1} className={styles.submenu} to={'/'}>
+              <SubMenu  title="TRANG CHỦ">
                 {/* <Menu.Item key="1.1">NEW ARRIVAL</Menu.Item>
                 <Menu.Item key="1.2">COLLECTION</Menu.Item> */}
               </SubMenu>
             </Link>
-            <Link className="submenu" to={'/shop'}>
-              <SubMenu key="subMenu2" title="CỬA HÀNG"></SubMenu>
-            </Link>
-
-            <Link className="submenu" to={'/shop/detail'}>
-              <SubMenu key="subMenu3" title="GIỚI THIỆU">
+            <Link className={styles.submenu} to={'/'}>
+              <SubMenu  title="GIỚI THIỆU">
                 {/* <Menu.Item key="3.1">#GIRLS</Menu.Item>
                 <Menu.Item key="3.2">#BOYS</Menu.Item> */}
               </SubMenu>
             </Link>
-
-            <Link className="submenu" to={'/shop'}>
-              <SubMenu key="subMenu4" title="LIÊN HỆ"></SubMenu>
+            <Link className={styles.submenu} to={'/shop'}>
+              <SubMenu  title="SẢN PHẨM">
+                 <Menu.Item key="3.1">GIRLS</Menu.Item>
+                <Menu.Item key="3.2">BOYS</Menu.Item>
+              </SubMenu>
             </Link>
 
-            <Link className="submenu" to={'/cart'}>
-              <SubMenu key="subMenu5" title="GIỎ HÀNG"></SubMenu>
+            
+
+            <Link className={styles.submenu} to={'/'}>
+              <SubMenu  title="BLOG"></SubMenu>
+            </Link>
+
+            <Link className={styles.submenu} to={'/'}>
+              <SubMenu  title="LIÊN HỆ"></SubMenu>
             </Link>
           </Menu>
         </div>

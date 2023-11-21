@@ -22,7 +22,6 @@ import StaffView from './pages/Admin/Staff/StaffView';
 import SalesCounter from './pages/Admin/SalesManager/SalesCounter';
 import CustomerView from './pages/Admin/Customer/CustomerView';
 import HoaDonView from './pages/Admin/QuanLyHoaDon/HienThiHoaDon/indexHoaDonView';
-import CartView from './pages/Home/Cart';
 import Shop from './pages/Home/Shop/shop';
 import ShopDetail from './pages/Home/ShopDetail/shopDetail';
 import GuestGuard from './api/auth/guard/GuestGuard';
@@ -35,20 +34,17 @@ import NotFoundPage from './pages/ExceptionPage/UnAuthorPage/NotFoundPage';
 import { Switch } from 'antd';
 import AdminAuth from './api/auth/guard/AdminAuth';
 import StaffAuth from './api/auth/guard/StaffAuth';
+import ShopView from './pages/Home/Shop/ShopView';
+import { Content } from 'antd/es/layout/layout';
+import CartView from './pages/Home/Cart/cart';
+import Checkout from './pages/Home/Cart/Checkout/Checkout';
 
 const dynamicRoutes = [
-  { path: '/admin', component: <Admin />, title: 'Trang chủ', requiredRoles: ['ROLE_ADMIN', 'ROLE_STAFF'] },
   { path: '/product-viewer', component: <ProductViewer />, title: 'Trang sản Phẩm' },
   { path: '/', component: <Home />, title: 'Home' },
   { path: '/unauthor', component: <UnAuthorPage />, title: 'Unauthor' },
   { path: '/product-add', component: <ProductAdd />, title: 'Trang thêm sản phẩm', requiredRoles: ['ROLE_ADMIN'] },
-  { path: '/shift-view', component: <ShiftViewer />, title: 'Trang giao ca', requiredRoles: ['ROLE_ADMIN'] },
-  { path: '/color-view', component: <ColorView />, title: 'Trang màu sắc', requiredRoles: ['ROLE_ADMIN'] },
-  { path: '/brand-view', component: <BrandView />, title: 'Trang thương hiệu', requiredRoles: ['ROLE_ADMIN'] },
-  { path: '/size-view', component: <SizeView />, title: 'Trang kích cỡ', requiredRoles: ['ROLE_ADMIN'] },
   { path: '/type-view', component: <TypeView />, title: 'Trang kiểu sản phẩm', requiredRoles: ['ROLE_ADMIN'] },
-  { path: '/buckle-type-view', component: <BuckleTypeView />, title: 'Trang kiểu khóa', requiredRoles: ['ROLE_ADMIN'] },
-  { path: '/material-view', component: <MaterialView />, title: 'Trang chất liệu', requiredRoles: ['ROLE_ADMIN'] },
   {
     path: '/compartment-view',
     component: <CompartmentView />,
@@ -65,16 +61,12 @@ const dynamicRoutes = [
     title: 'Trang bán hàng',
     requiredRoles: ['ROLE_ADMIN', 'ROLE_STAFF'],
   },
-  { path: '/cart', component: <CartView />, title: 'Trang giỏ hàng' },
   {
     path: '/bill-view',
     component: <HoaDonView />,
     title: 'Trang hóa đơn',
     requiredRoles: ['ROLE_ADMIN', 'ROLE_STAFF'],
   },
-  { path: '/shop', component: <Shop />, title: 'Trang cửa hàng' },
-  { path: '/shop/detail', component: <ShopDetail />, title: 'Trang chi tiết sản phẩm', requiredRoles: ['ROLE_ADMIN'] },
-  { path: '/login', component: <Login />, title: 'Trang đăng nhập' },
 ];
 
 const getTokenAndUserInfo = () => {
@@ -93,9 +85,62 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Home />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/shop/detail/:productId" element={<ShopDetail />} />
+          <Route path="/cart" element={<CartView />} />
+          <Route path="/cart/checkout" element={<Checkout />} />
           <Route path="/unauthorized" element={<UnAuthorPage />} />
           <Route
             path="/admin"
+            path="/shift-view"
+            element={
+              <AdminAuth>
+                <ShiftViewer />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <AdminAuth>
+                <Admin />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/color-view"
+            element={
+              <AdminAuth>
+                <ColorView />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/material-view"
+            element={
+              <AdminAuth>
+                <MaterialView />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/brand-view"
+            element={
+              <AdminAuth>
+                <BrandView />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/size-view"
+            element={
+              <AdminAuth>
+                <SizeView />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/product-add"
             element={
               <StaffAuth>
                 <Admin />

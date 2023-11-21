@@ -2,7 +2,7 @@ import axiosClient from '../axiosClient';
 
 const sizeAPI = {
   getAllPaginantion(pageNum, pageSize) {
-    const url = '/size/pagination';
+    const url = 'api/size/pagination';
     return axiosClient.get(url, {
       params: {
         page: pageNum - 1,
@@ -15,11 +15,11 @@ const sizeAPI = {
     return axiosClient.get(url, {});
   },
   get(id) {
-    const url = `/size?id=${id}`;
+    const url = `api/size?id=${id}`;
     return axiosClient.get(url);
   },
   add(data) {
-    const url = `/size`;
+    const url = `api/size`;
     return axiosClient.post(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -27,11 +27,11 @@ const sizeAPI = {
     });
   },
   update(id, data) {
-    const url = `/size?id=${id}`;
+    const url = `api/size?id=${id}`;
     return axiosClient.put(url, data);
   },
   updateStatus(id, status) {
-    const url = `/size/update-status?id=${id}&status=${status}`;
+    const url = `api/size/update-status?id=${id}&status=${status}`;
     return axiosClient.put(url, null, {
       headers: {
         'Content-Type': 'application/json',

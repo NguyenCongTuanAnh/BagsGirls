@@ -1,8 +1,7 @@
-import Sidebar from '~/component/GlobalStyles/layouts/DefaultLayout/SideBar';
+import Sidebar from '~/component/GlobalStyles/layouts/DefaultLayout/SideBar/index';
 import { Layout } from 'antd';
-import HeaderContent from '~/component/GlobalStyles/layouts/DefaultLayout/Header';
-import TableContent from '../CompartmentView/TableCompartment/TableCompartment';
-import FormCreateCompartment from '../CompartmentEdit/FormCreateCompartment/FormCreateCompartment';
+import HeaderContent from '~/component/GlobalStyles/layouts/DefaultLayout/Header/index';
+import TableContent from './TableCompartment/TableCompartment';
 
 const { Header, Footer, Sider, Content } = Layout;
 

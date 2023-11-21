@@ -2,7 +2,7 @@ import axiosClient from '../axiosClient';
 
 const colorAPI = {
   getAllPagination(pageNum, pageSize) {
-    const url = '/color/pagination';
+    const url = 'api/color/pagination';
     return axiosClient.get(url, {
       params: {
         page: pageNum - 1,
@@ -15,11 +15,11 @@ const colorAPI = {
     return axiosClient.get(url);
   },
   get(id) {
-    const url = `/color?id=${id}`;
+    const url = `api/color?id=${id}`;
     return axiosClient.get(url);
   },
   add(data) {
-    const url = `/color`;
+    const url = `api/color`;
     return axiosClient.post(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ const colorAPI = {
     });
   },
   update(id, data) {
-    const url = `/color?id=${id}`;
+    const url = `api/color?id=${id}`;
     return axiosClient.put(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ const colorAPI = {
     });
   },
   updateStatus(id, status) {
-    const url = `/color/update-status?id=${id}&status=${status}`;
+    const url = `api/color/update-status?id=${id}&status=${status}`;
     return axiosClient.put(url, null, {
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const colorAPI = {
     });
   },
   delete(id) {
-    const url = `/color?id=${id}`;
+    const url = `api/color?id=${id}`;
     return axiosClient.delete(url);
   },
 };
