@@ -6,7 +6,7 @@ import ShopView from './ShopView/index';
 import styles from './index.module.scss';
 import { Link } from 'react-router-dom';
 import { Fragment, useEffect } from 'react';
-import AddressVietnam from '~/api/addressVietNam/apiAddress';
+import AddressVietnam from '~/pages/Home/Cart/Checkout/AddressCustomer/AddressCustomer';
 import CartItem from '../Cart/CartItem/cartItem';
 
 function Shop() {

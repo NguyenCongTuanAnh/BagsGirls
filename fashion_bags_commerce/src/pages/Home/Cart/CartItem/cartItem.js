@@ -169,12 +169,9 @@ function CartItem() {
   return (
     <div className="container-fluid" style={{ padding: '0 5% 0 5%' }}>
       <div>
-        <b>
-          {' '}
           <Link to={'/shop'} className={styles.continue_cart}>
             Tiếp tục mua sắm <DoubleRightOutlined />
           </Link>
-        </b>
         <Table
           bordered
           style={{ textAlign: 'center' }}
