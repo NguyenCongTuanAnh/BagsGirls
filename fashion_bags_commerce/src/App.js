@@ -170,6 +170,38 @@ function App() {
               </AdminAuth>
             }
           />
+          <Route
+            path="/compartment-view"
+            element={
+              <AdminAuth>
+                <CompartmentView />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/type-view"
+            element={
+              <AdminAuth>
+                <TypeView />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/producer-view"
+            element={
+              <AdminAuth>
+                <ProducerView />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/buckle-type-view"
+            element={
+              <AdminAuth>
+                <BuckleTypeView />
+              </AdminAuth>
+            }
+          />
         </Routes>
       </Router>
     </Fragment>

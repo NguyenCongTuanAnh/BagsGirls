@@ -57,12 +57,12 @@
   text-transform: uppercase;
   font-weight: bold;
   display: inline-block;
-
+  border-radius: 32px;
   color: #000000;
   text-decoration: none;
 }
 .continue_cart:hover {
-  background-color: rgb(238, 85, 85);
+  background-color: red;
   color: white;
 }
 .table_cart_item {

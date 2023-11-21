@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './styles.scss';
+import { Link } from 'react-router-dom';
 
 const AddressVietnam = () => {
   const host = 'https://provinces.open-api.vn/api/';
@@ -72,15 +73,22 @@ const AddressVietnam = () => {
   return (
     <div className="form-container">
       <form onSubmit={handleSubmit}>
-        <h2>Thông tin người nhận hàng</h2>
-        <input
+        <h1>Thông tin người nhận hàng</h1>
+        <p>
+          Bạn đã có tài khoản?{' '}
+          <span>
+            <Link to={'/login'}>Đăng nhập</Link>
+          </span>
+        </p>
+        <br></br>
+       <input className="inputLabel"
           type="text"
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
           placeholder="Họ và tên"
           required
         />
-        <input
+       <input className="inputLabel"
           type="tel"
           value={phoneNumber}
           onChange={(e) => setPhoneNumber(e.target.value)}
@@ -117,10 +125,10 @@ const AddressVietnam = () => {
             </option>
           ))}
         </select>
-        <input
+       <input className="inputLabel"
           type="text"
           value={address}
-          onChange={(e) => setPhoneNumber(e.target.value)}
+          onChange={(e) => setAddress(e.target.value)}
           placeholder="Điền rõ thông tin số nhà, tên đường, xã, huyện, tỉnh"
           required
         />

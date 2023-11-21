@@ -6,7 +6,7 @@ const typeAPI = {
     return axiosClient.get(url, { params });
   },
   getAllPhanTrang(pageNum, pageSize) {
-    const url = `/type/pagination?id=${pageNum}`;
+    const url = `api/type/pagination`;
     return axiosClient.get(url, {
       params: {
         page: pageNum - 1,
@@ -15,11 +15,11 @@ const typeAPI = {
     });
   },
   get(id) {
-    const url = `/type?id=${id}`;
+    const url = `api/type?id=${id}`;
     return axiosClient.get(url);
   },
   add(data) {
-    const url = `/type`;
+    const url = `api/type`;
     return axiosClient.post(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ const typeAPI = {
     });
   },
   update(id, data) {
-    const url = `/type?id=${id}`;
+    const url = `api/type?id=${id}`;
     return axiosClient.put(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ const typeAPI = {
     });
   },
   updateStatus(id, status) {
-    const url = `/type/update-status?id=${id}&status=${status}`;
+    const url = `api/type/update-status?id=${id}&status=${status}`;
     return axiosClient.put(url, null, {
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const typeAPI = {
     });
   },
   delete(id) {
-    const url = `/type?id=${id}`;
+    const url = `api/type?id=${id}`;
     return axiosClient.delete(url);
   },
 };

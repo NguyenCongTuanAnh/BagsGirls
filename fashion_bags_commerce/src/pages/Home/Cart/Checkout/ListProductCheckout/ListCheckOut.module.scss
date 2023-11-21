@@ -1,0 +1,31 @@
+.list_product {
+  border: gray 1px solid;
+  width: 500px;
+  border-radius: 32px;
+  .item {
+    display: flex;
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      .image {
+        width: 230px;
+        height: 230px;
+        margin: 20px;
+      }
+    }
+    .info {
+      margin: 20px;
+      .productTitle {
+        margin: 0 0 10px 0;
+      }
+      .number {
+        margin: 10px 0 0 0;
+      }
+      .price_sale {
+        margin: 10px 0 10px 0;
+      }
+    }
+  }
+}
