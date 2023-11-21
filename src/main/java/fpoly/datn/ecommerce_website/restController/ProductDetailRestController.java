@@ -83,7 +83,7 @@ public class ProductDetailRestController {
     }
 
 
-    @RequestMapping(value = "/product-detail/search", method = RequestMethod.GET)
+    @RequestMapping(value = "/product-details/search", method = RequestMethod.GET)
     public ResponseEntity<?> findByKeyword(@RequestParam String keyword) {
         return new ResponseEntity<>(
                 this.productDetailService.findByKeyword(keyword).stream()

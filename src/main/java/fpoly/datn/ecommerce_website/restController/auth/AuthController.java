@@ -7,6 +7,7 @@ import fpoly.datn.ecommerce_website.infrastructure.constant.Message;
 import fpoly.datn.ecommerce_website.infrastructure.exception.rest.InvalidTokenException;
 import fpoly.datn.ecommerce_website.model.request.CreateUserRequest;
 import fpoly.datn.ecommerce_website.model.request.LoginRequest;
+import fpoly.datn.ecommerce_website.repository.IStaffRepository;
 import fpoly.datn.ecommerce_website.service.AuthService;
 import fpoly.datn.ecommerce_website.service.IUserService;
 import fpoly.datn.ecommerce_website.service.UserService;
@@ -36,12 +37,13 @@ public class AuthController {
 
     @Autowired
     private IUserService userService;
+    @Autowired
+    private IStaffRepository iStaffRepository;
 
     @GetMapping("/getUserToken")
-    public ResponseEntity<Users> getUserToken(HttpServletRequest request) {
+    public ResponseEntity<?> getUserToken(HttpServletRequest request) {
         String authorizationHeader = request.getHeader("Authorization");
-        System.out.println(authorizationHeader);
-        System.out.println("authorizationHeader");
+
         String token = null;
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7);
@@ -50,7 +52,7 @@ public class AuthController {
                     .parseClaimsJws(token)
                     .getBody()
                     .getSubject();
-            return ResponseEntity.ok(this.userService.findByEmail(email));
+            return ResponseEntity.ok(this.iStaffRepository.findByEmail(email));
         }
         return ResponseEntity.notFound().build();
     }

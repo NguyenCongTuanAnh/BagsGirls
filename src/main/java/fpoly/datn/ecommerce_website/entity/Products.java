@@ -7,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,8 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.util.List;
 
 @Setter
 @Getter
@@ -46,9 +43,4 @@ public class Products {
     @JoinColumn(name = "brand_id")
     private Brands brand;
 
-    @OneToMany(mappedBy = "products")
-    private List<Images> images;
-
-    @OneToMany(mappedBy = "product")
-    private List<ProductDetails> productDetails;
 }

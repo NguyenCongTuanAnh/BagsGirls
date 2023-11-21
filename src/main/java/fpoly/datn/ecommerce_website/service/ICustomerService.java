@@ -19,4 +19,6 @@ public interface ICustomerService {
     String delete(String id);
 
     List<CustomerDTO> findByKeyword(String keyword);
+
+    List<CustomerDTO> findCustomerByKeyword(String keyword);
 }

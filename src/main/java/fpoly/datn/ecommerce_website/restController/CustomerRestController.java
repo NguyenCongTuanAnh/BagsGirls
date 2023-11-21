@@ -3,6 +3,7 @@ package fpoly.datn.ecommerce_website.restController;
 import fpoly.datn.ecommerce_website.dto.CustomerDTO;
 import fpoly.datn.ecommerce_website.dto.CustomerDTO1;
 import fpoly.datn.ecommerce_website.entity.Customers;
+import fpoly.datn.ecommerce_website.repository.ICustomerRepository;
 import fpoly.datn.ecommerce_website.service.serviceImpl.CustomerServiceImpl;
 import fpoly.datn.ecommerce_website.service.serviceImpl.UserServiceImpl;
 import jakarta.validation.Valid;
@@ -26,6 +27,8 @@ public class CustomerRestController {
 
     @Autowired
     private CustomerServiceImpl customerService;
+    @Autowired
+    private ICustomerRepository customerRepository;
     @Autowired
     private UserServiceImpl userInfoService;
     @Autowired
@@ -94,5 +97,19 @@ public class CustomerRestController {
         Page<Customers> customerSearchPage = customerService.findAllSearch(keyword, pageNum, pageSize);
         return new ResponseEntity<>
                 (customerSearchPage, HttpStatus.OK);
+    }
+    @RequestMapping(value = "/customer/searchByKeyword", method = RequestMethod.GET)
+    public ResponseEntity<?> findCustomerByKeyword(
+            @RequestParam(name = "keyword") String keyword
+    ) {
+        return new ResponseEntity<>
+                (this.customerService.findCustomerByKeyword(keyword), HttpStatus.OK);
+    }
+    @RequestMapping(value = "/customer/findByEmail", method = RequestMethod.GET)
+    public ResponseEntity<?> findCustomerByEmail(
+            @RequestParam(name = "email") String email
+    ) {
+        return new ResponseEntity<>
+                (this.customerRepository.findByEmail(email), HttpStatus.OK);
     }
 }

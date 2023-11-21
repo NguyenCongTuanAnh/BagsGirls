@@ -4,7 +4,6 @@ import fpoly.datn.ecommerce_website.dto.CustomerDTO;
 import fpoly.datn.ecommerce_website.dto.CustomerDTO1;
 import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Users;
-import fpoly.datn.ecommerce_website.infrastructure.constant.Role;
 import fpoly.datn.ecommerce_website.repository.ICustomerRepository;
 import fpoly.datn.ecommerce_website.repository.IUserRepository;
 import fpoly.datn.ecommerce_website.service.ICustomerService;
@@ -119,5 +118,16 @@ public class CustomerServiceImpl implements ICustomerService {
                 .map(c -> modelMapper.map(c, CustomerDTO.class))
                 .toList();
     }
+    @Override
+    public List<CustomerDTO> findCustomerByKeyword(String keyword) {
+        List<Customers> customers = this.customerRepository.findCustomerByKeyword(keyword);
+        return customers.stream()
+                .map(c -> modelMapper.map(c, CustomerDTO.class))
+                .toList();
+    }
+    public Customers findByEmail(String mail) {
+        Customers customers = this.customerRepository.findByEmail(mail);
 
+        return customers;
+    }
 }

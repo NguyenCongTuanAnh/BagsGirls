@@ -1,5 +1,7 @@
 package fpoly.datn.ecommerce_website.infrastructure.security;
 
+import fpoly.datn.ecommerce_website.entity.Customers;
+import fpoly.datn.ecommerce_website.entity.Staffs;
 import fpoly.datn.ecommerce_website.entity.Users;
 import fpoly.datn.ecommerce_website.infrastructure.constant.Constants;
 import fpoly.datn.ecommerce_website.infrastructure.constant.Role;
@@ -29,7 +31,7 @@ public class JwtTokenProvider {
     @Value("${secret}")
     private String SECRET;
 
-    public String generateTokenUser(Users userFind) {
+    public String generateTokenUser(Staffs staffs) {
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
@@ -37,13 +39,13 @@ public class JwtTokenProvider {
         Date expiryDate = calendar.getTime();
 
         String token = Jwts.builder()
-                .setSubject(userFind.getEmail())
-                .claim("role", String.valueOf(userFind.getRole()))
-                .claim("name", userFind.getFullName())
-                .claim("address", userFind.getAddress())
-                .claim("idUser", userFind.getUserId())
-                .claim("gender", userFind.getGender())
-                .claim("phoneNumber", userFind.getPhoneNumber())
+                .setSubject(staffs.getUsers().getEmail())
+                .claim("role", String.valueOf(staffs.getUsers().getRole()))
+                .claim("name", staffs.getUsers().getFullName())
+                .claim("address", staffs.getUsers().getAddress())
+                .claim("idUser", staffs.getUsers().getUserId())
+                .claim("gender", staffs.getUsers().getGender())
+                .claim("phoneNumber", staffs.getUsers().getPhoneNumber())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, Constants.JWTSECRET)
