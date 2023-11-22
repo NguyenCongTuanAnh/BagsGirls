@@ -15,7 +15,6 @@ function ShopDetailView() {
   const [product, setProduct] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
-  const [selectedSize, setSelectedSize] = useState(null);
   const [dataDetail, setDataDetail] = useState(null);
   const [temporaryCart, setTemporaryCart] = useState([]);
 
@@ -32,14 +31,14 @@ function ShopDetailView() {
           image: product.img.imgUrl,
           productName: product.productName,
           productCode: product.productCode,
-          colorName: dataDetail.colorName,
-          materialName: dataDetail.materialName,
+          colorName: selectedColor, // Use the selectedColor state
+          materialName: selectedMaterial, // Use the selectedMaterial state
           brandName: product.brandName,
           quantity: quantity,
           retailPrice: dataDetail.retailPrice,
           amount: dataDetail.amount
         };
-
+      
         // Thêm sản phẩm vào giỏ hàng tạm thời
         const storedCart = localStorage.getItem('temporaryCart');
         let updatedTemporaryCart = storedCart ? JSON.parse(storedCart) : [];
@@ -47,7 +46,9 @@ function ShopDetailView() {
 
         // if (storedCart) {
         const existingProductIndex = updatedTemporaryCart.findIndex(
-          (item) => item.productName === productToAdd.productName && item.colorName === productToAdd.colorName, // Thêm các điều kiện cần thiết để xác định sản phẩm (có thể sửa lại tùy theo cấu trúc dữ liệu của bạn)
+          (item) =>  item.productName === productToAdd.productName &&
+          item.colorName === productToAdd.colorName &&
+          item.materialName === productToAdd.materialName , // Thêm các điều kiện cần thiết để xác định sản phẩm (có thể sửa lại tùy theo cấu trúc dữ liệu của bạn)
         );
 
         if (existingProductIndex !== -1) {
@@ -194,24 +195,6 @@ function ShopDetailView() {
     ));
   };
   
-
-  // const renderSize = () => {
-  //   if (!product || !product.productDetails) {
-  //     return null;
-  //   }
-
-  //   return product.productDetails.map((variant, index) => (
-  //     <div key={index} className={styles.variant}>
-  //       <Checkbox
-  //         checked={selectedSize === variant.sizeName}
-  //         onChange={() => handleSizeChange(variant.sizeName)}
-  //         style={{ border: 'green 1px solid', padding: '10px', margin: '0 10px' }}
-  //       >
-  //         {variant.sizeName}
-  //       </Checkbox>
-  //     </div>
-  //   ));
-  // };
 
   if (!product) {
     // You can render a loading state or an error message here
@@ -372,4 +355,10 @@ function ShopDetailView() {
 }
 
 export default ShopDetailView;
+
+
+
+
+  
+ 
 

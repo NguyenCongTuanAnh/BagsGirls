@@ -89,6 +89,8 @@ public class FullProductServiceImpl {
         return null; // Trả về null nếu không tìm thấy sản phẩm
     }
 
+
+
     public FullProductDTO findByProductDetailById(String id) {
         Products product = productRepository.findById(id).orElse(null);
 
