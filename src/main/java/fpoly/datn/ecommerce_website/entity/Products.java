@@ -46,10 +46,4 @@ public class Products {
     @JoinColumn(name = "brand_id")
     private Brands brand;
 
-    @OneToMany(mappedBy = "products")
-    private List<Images> images;
-
-    @OneToMany(mappedBy = "product")
-    private List<ProductDetails> productDetails;
-
 }

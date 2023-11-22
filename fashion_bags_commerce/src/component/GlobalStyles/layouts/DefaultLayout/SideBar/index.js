@@ -57,18 +57,18 @@ const items = [
     getItem('Option 12', '9'),
   ]),
 
-  getItem('Quản lý Sản Phẩm', 'sub1199', <CalendarOutlined />, [
+  getItem('Quản lý Sản Phẩm', 'sub999', <CalendarOutlined />, [
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/product-add'}>
         Thêm Sản Phẩm
       </Link>,
-      '12',
+      '10',
     ),
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/product-viewer'}>
         Danh Sách Sản Phẩm
       </Link>,
-      '13',
+      '11',
     ),
   ]),
   getItem('Danh mục sản phẩm', 'sub11', <AppstoreOutlined />, [
@@ -165,7 +165,7 @@ const items = [
     getItem('Option 12', '41'),
   ]),
 ];
-const rootSubmenuKeys = ['sub1', 'sub2', 'sub4', 'sub5', 'sub6', 'sub7', 'sub8', 'sub9', 'sub10', 'sub11'];
+const rootSubmenuKeys = ['sub1', 'sub2', 'sub4', 'sub5', 'sub6', 'sub7', 'sub8', 'sub9', 'sub10', 'sub11','sub999'];
 function Sidebar(props) {
   const { key, keyIndex, openKey } = props;
   const [openKeys, setOpenKeys] = useState([props.openKey]);
