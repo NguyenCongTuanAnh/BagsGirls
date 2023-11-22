@@ -135,6 +135,10 @@ function ProductAddForm() {
     setOpen(false);
   };
   const handleAddBaloDetails = (values) => {
+    console.log('====================================');
+    console.log('values');
+    console.log(values);
+    console.log('====================================');
     const genCodeAuto = generateCustomCode('baloCode', 9);
 
     let addBalo = { ...values, productCode: genCodeAuto };
@@ -169,7 +173,9 @@ function ProductAddForm() {
       producerName: producerSelectedName,
       buckleTypeName: buckleTypeSelectedName,
     };
-
+    console.log('====================================');
+    console.log(tempBalo);
+    console.log('====================================');
     setBaloListPreview([...baloListPreview, tempBalo]);
 
     notification.success({
@@ -336,7 +342,7 @@ function ProductAddForm() {
               </Form.Item>
               <Form.Item
                 label="Balo Status"
-                name="productDetailStatus"
+                name="productStatus"
                 rules={[
                   {
                     required: true,
@@ -351,11 +357,11 @@ function ProductAddForm() {
                   }}
                   options={[
                     {
-                      value: '1',
+                      value: 1,
                       label: 'Hoạt Động',
                     },
                     {
-                      value: '0',
+                      value: 0,
                       label: 'Không Hoạt Động',
                     },
                   ]}
@@ -706,20 +712,7 @@ function ProductAddForm() {
           }}
         >
           <Row>
-            <Col span={4}>
-              <Popconfirm
-                title="Xác Nhận"
-                description="Bạn Có chắc chắn muốn Thêm?"
-                okText="Đồng ý"
-                cancelText="Không"
-                onConfirm={handleAddBaloDetails}
-                onCancel={onCancel}
-              >
-                <Button type="primary" onClick={''}>
-                  Lưu Ngay
-                </Button>
-              </Popconfirm>
-            </Col>
+            <Col span={4}></Col>
             <Col span={4}>
               <Popconfirm
                 title="Xác Nhận"

@@ -3,6 +3,7 @@ package fpoly.datn.ecommerce_website.restController;
 import fpoly.datn.ecommerce_website.dto.ProductDTO;
 import fpoly.datn.ecommerce_website.dto.Product_BrandDTO;
 import fpoly.datn.ecommerce_website.entity.Products;
+import fpoly.datn.ecommerce_website.repository.IProductRepository;
 import fpoly.datn.ecommerce_website.service.IProductService;
 import fpoly.datn.ecommerce_website.service.serviceImpl.BrandServiceImpl;
 import fpoly.datn.ecommerce_website.service.serviceImpl.ProductServiceImpl;
@@ -29,6 +30,9 @@ public class ProductRestController {
     @Autowired
     private BrandServiceImpl brandService;
 
+    @Autowired
+    private IProductRepository productRepository;
+
     public ProductRestController(ProductServiceImpl productService) {
         this.productService = productService;
     }
@@ -46,6 +50,14 @@ public class ProductRestController {
         Page<ProductDTO> productPage = productService.findAllPagination(pageNum, pageSize);
         return new ResponseEntity<>
                 (productPage, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/product1/", method = RequestMethod.GET)
+    public ResponseEntity<?> getAll1(
+    ) {
+
+        return new ResponseEntity<>
+                (productRepository.findAll(), HttpStatus.OK);
     }
 
 

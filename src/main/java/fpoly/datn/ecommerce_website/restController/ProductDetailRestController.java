@@ -37,7 +37,7 @@ public class ProductDetailRestController {
                 , HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/product-details", method = RequestMethod.GET)
+    @RequestMapping(value = "/product-details/", method = RequestMethod.GET)
     public ResponseEntity<?> findAll() {
 
         return new ResponseEntity<>(
@@ -48,10 +48,10 @@ public class ProductDetailRestController {
 
     //add
     @RequestMapping(value = "/product-details", method = RequestMethod.POST)
-    public ResponseEntity<?> save(@Valid @RequestBody Product_ProductDetailDTO productProductDetailDTO) {
-        System.out.println(productProductDetailDTO);
+    public ResponseEntity<?> save(@Valid @RequestBody ProductDetailDTO productDetailDTO) {
+        System.out.println(productDetailDTO);
         return new ResponseEntity<>(
-                productDetailService.save(productProductDetailDTO)
+                productDetailService.save(productDetailDTO)
                 , HttpStatus.OK);
     }
 
@@ -83,14 +83,14 @@ public class ProductDetailRestController {
 //    }
 //
 //
-//    @RequestMapping(value = "/product-details/search", method = RequestMethod.GET)
-//    public ResponseEntity<?> findByKeyword(@RequestParam String keyword) {
-//        return new ResponseEntity<>(
-//                this.productDetailService.findByKeyword(keyword).stream()
-//                        .map(productDetail -> modelMapper.map(productDetail, ProductDetailDTO.class))
-//                        .collect(Collectors.toList())
-//                , HttpStatus.OK);
-//    }
+    @RequestMapping(value = "/product-details/search", method = RequestMethod.GET)
+    public ResponseEntity<?> findByKeyword(@RequestParam String keyword) {
+        return new ResponseEntity<>(
+                this.productDetailService.findByKeyword(keyword).stream()
+                        .map(productDetail -> modelMapper.map(productDetail, ProductDetailDTO.class))
+                        .collect(Collectors.toList())
+                , HttpStatus.OK);
+    }
 //
 //
 //    @RequestMapping(value = "/product-detail/amount", method = RequestMethod.GET)

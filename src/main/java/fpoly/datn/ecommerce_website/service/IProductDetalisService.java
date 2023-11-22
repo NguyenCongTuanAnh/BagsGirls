@@ -1,18 +1,19 @@
 package fpoly.datn.ecommerce_website.service;
 
+import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
 import fpoly.datn.ecommerce_website.dto.Product_ProductDetailDTO;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
 
 import java.util.List;
 
 public interface IProductDetalisService {
-    List<ProductDetails> findAll();
+    List<ProductDetailDTO> findAll();
 
     List<ProductDetails> findAllByProductId(String baloID);
 
     ProductDetails findById(String id);
 
-    Product_ProductDetailDTO save(Product_ProductDetailDTO entity);
+    ProductDetailDTO save(ProductDetailDTO entity);
 
     ProductDetails update(ProductDetails entity);
 
