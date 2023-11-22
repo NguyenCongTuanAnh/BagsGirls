@@ -51,57 +51,57 @@ public class ProductDetailRestController {
     public ResponseEntity<?> save(@Valid @RequestBody Product_ProductDetailDTO productProductDetailDTO) {
         System.out.println(productProductDetailDTO);
         return new ResponseEntity<>(
-                productDetailService.save(modelMapper.map(productProductDetailDTO, ProductDetails.class))
+                productDetailService.save(productProductDetailDTO)
                 , HttpStatus.OK);
     }
 
-    //update
-    @RequestMapping(value = "/product-details", method = RequestMethod.PUT)
-    public ResponseEntity<?> update(@Valid @RequestBody Product_ProductDetailDTO balo_baloDetailDTO) {
-        return new ResponseEntity<>(
-                productDetailService.save(modelMapper.map(balo_baloDetailDTO, ProductDetails.class))
-                , HttpStatus.OK);
-    }
-
-    //delete
-    @RequestMapping(value = "/product-detail", method = RequestMethod.DELETE)
-    public ResponseEntity<?> delete(@RequestParam String id) {
-        productDetailService.delete(id);
-        return new ResponseEntity<>("Delete successfully!", HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "product-detail/{productId}", method = RequestMethod.GET)
-    public ResponseEntity<?> getAllbyproduct(@PathVariable String productId) {
-        return new ResponseEntity<>(
-                this.productDetailService.findAllByProductId(productId)
-                        .stream()
-                        .map(productDetail -> modelMapper.map(productDetail, ProductDetailDTO.class))
-                        .collect(Collectors.toList())
-                , HttpStatus.OK
-        );
-
-    }
-
-
-    @RequestMapping(value = "/product-details/search", method = RequestMethod.GET)
-    public ResponseEntity<?> findByKeyword(@RequestParam String keyword) {
-        return new ResponseEntity<>(
-                this.productDetailService.findByKeyword(keyword).stream()
-                        .map(productDetail -> modelMapper.map(productDetail, ProductDetailDTO.class))
-                        .collect(Collectors.toList())
-                , HttpStatus.OK);
-    }
-
-
-    @RequestMapping(value = "/product-detail/amount", method = RequestMethod.GET)
-    public ResponseEntity<?> updateAmount(
-            @RequestParam @NotNull String productDetailId,
-            @RequestParam @NotNull Integer amount) {
-        ProductDetails productDetails = this.productDetailService.findById(productDetailId);
-        productDetails.setProductDetailAmount(amount);
-
-        return new ResponseEntity<>(
-                modelMapper.map(this.productDetailService.save(productDetails), ProductDetailDTO.class)
-                , HttpStatus.OK);
-    }
+//    //update
+//    @RequestMapping(value = "/product-details", method = RequestMethod.PUT)
+//    public ResponseEntity<?> update(@Valid @RequestBody Product_ProductDetailDTO balo_baloDetailDTO) {
+//        return new ResponseEntity<>(
+//                productDetailService.save(modelMapper.map(balo_baloDetailDTO, ProductDetails.class))
+//                , HttpStatus.OK);
+//    }
+//
+//    //delete
+//    @RequestMapping(value = "/product-detail", method = RequestMethod.DELETE)
+//    public ResponseEntity<?> delete(@RequestParam String id) {
+//        productDetailService.delete(id);
+//        return new ResponseEntity<>("Delete successfully!", HttpStatus.OK);
+//    }
+//
+//    @RequestMapping(value = "product-detail/{productId}", method = RequestMethod.GET)
+//    public ResponseEntity<?> getAllbyproduct(@PathVariable String productId) {
+//        return new ResponseEntity<>(
+//                this.productDetailService.findAllByProductId(productId)
+//                        .stream()
+//                        .map(productDetail -> modelMapper.map(productDetail, ProductDetailDTO.class))
+//                        .collect(Collectors.toList())
+//                , HttpStatus.OK
+//        );
+//
+//    }
+//
+//
+//    @RequestMapping(value = "/product-details/search", method = RequestMethod.GET)
+//    public ResponseEntity<?> findByKeyword(@RequestParam String keyword) {
+//        return new ResponseEntity<>(
+//                this.productDetailService.findByKeyword(keyword).stream()
+//                        .map(productDetail -> modelMapper.map(productDetail, ProductDetailDTO.class))
+//                        .collect(Collectors.toList())
+//                , HttpStatus.OK);
+//    }
+//
+//
+//    @RequestMapping(value = "/product-detail/amount", method = RequestMethod.GET)
+//    public ResponseEntity<?> updateAmount(
+//            @RequestParam @NotNull String productDetailId,
+//            @RequestParam @NotNull Integer amount) {
+//        ProductDetails productDetails = this.productDetailService.findById(productDetailId);
+//        productDetails.setProductDetailAmount(amount);
+//
+//        return new ResponseEntity<>(
+//                modelMapper.map(this.productDetailService.save(productDetails), ProductDetailDTO.class)
+//                , HttpStatus.OK);
+//    }
 }

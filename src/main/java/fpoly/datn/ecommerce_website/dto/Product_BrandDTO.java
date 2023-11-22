@@ -25,4 +25,5 @@ public class Product_BrandDTO {
     private String productStatus;
 
     private Brands brand;
+
 }

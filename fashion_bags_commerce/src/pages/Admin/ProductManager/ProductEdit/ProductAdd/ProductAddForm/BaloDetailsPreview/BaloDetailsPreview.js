@@ -91,7 +91,7 @@ function BaloDetailsPreview(props) {
       title: 'Describe',
       dataIndex: 'productDetailDescribe',
       width: 500,
-      sorter: (a, b) => a.baloDetailDescribe.localeCompare(b.baloDetailDescribe),
+      sorter: (a, b) => a.productDetailDescribe.localeCompare(b.productDetailDescribe),
     },
     {
       title: 'Status',
@@ -171,32 +171,32 @@ function BaloDetailsPreview(props) {
 
       let baloDetails = baloList.map(
         ({
-          brandID,
-          buckleTypeID,
-          colorID,
-          compartmentID,
-          materialID,
-          producerID,
-          sizeID,
-          typeID,
-          imageUrl,
+          brandId,
+          buckleTypeId,
+          colorId,
+          compartmentId,
+          materialId,
+          producerId,
+          sizeId,
+          typeId,
+
           importPrice,
           retailPrice,
-          baloDetailDescribe,
+          productDetailDescribe,
           baloDetailAmount,
         }) => ({
-          brandID,
-          buckleTypeID,
-          colorID,
-          compartmentID,
-          materialID,
-          producerID,
-          sizeID,
-          typeID,
-          imageUrl,
+          brandId,
+          buckleTypeId,
+          colorId,
+          compartmentId,
+          materialId,
+          producerId,
+          sizeId,
+          typeId,
+
           importPrice,
           retailPrice,
-          baloDetailDescribe,
+          productDetailDescribe,
           baloDetailAmount,
         }),
       );
@@ -227,9 +227,9 @@ function BaloDetailsPreview(props) {
         });
 
         baloDetails.forEach((element) => {
-          element = { ...element, baloId: id };
-
-          // const response2 = baloDetailsAPI.add(element);
+          element = { ...element, productId: id };
+          console.log(element);
+          const response2 = baloDetailsAPI.add(element);
         });
 
         notification.success({

@@ -45,4 +45,6 @@ public class Images {
     @JoinColumn(name = "product_id")
     private Products products;
 
+
+
 }

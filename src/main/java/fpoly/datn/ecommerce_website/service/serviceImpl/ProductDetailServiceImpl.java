@@ -1,8 +1,11 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
+import fpoly.datn.ecommerce_website.dto.ImageDTO;
+import fpoly.datn.ecommerce_website.dto.Product_ProductDetailDTO;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
 import fpoly.datn.ecommerce_website.repository.IProductDetailRepository;
 import fpoly.datn.ecommerce_website.service.IProductDetalisService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,8 @@ public class ProductDetailServiceImpl implements IProductDetalisService {
     @Autowired
     private IProductDetailRepository iProductDetailRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public List<ProductDetails> findAll() {
@@ -35,8 +40,9 @@ public class ProductDetailServiceImpl implements IProductDetalisService {
 
 
     @Override
-    public ProductDetails save(ProductDetails entity) {
-        return iProductDetailRepository.save(entity);
+    public Product_ProductDetailDTO save(Product_ProductDetailDTO entity) {
+        ProductDetails productDetails = this.iProductDetailRepository.save(modelMapper.map(entity, ProductDetails.class));
+        return modelMapper.map(productDetails, Product_ProductDetailDTO.class);
     }
 
 
