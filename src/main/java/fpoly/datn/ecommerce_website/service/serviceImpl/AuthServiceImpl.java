@@ -51,19 +51,17 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JwtResponse loginBasic(@RequestBody LoginRequest loginRequest) {
 
-       Staffs staffs = this.iStaffRepository.findByEmail(loginRequest.getEmail());
-        System.out.println("ạbncjidnbjcnbd");
-        System.out.println(staffs);
-        if (staffs == null) {
+       Users users = this.userRepository.findByEmail(loginRequest.getEmail());
+        if (users == null) {
             throw new RestApiException(Message.EMAIL_OR_PASSWORD_INCORRECT);
         }
-        if (!passwordEncoder.matches(loginRequest.getPassword(), staffs.getUsers().getPassword())) {
+        if (!passwordEncoder.matches(loginRequest.getPassword(), users.getPassword())) {
             throw new RestApiException(Message.EMAIL_OR_PASSWORD_INCORRECT);
         }
-        String jwtToken = jwtTokenProvider.generateTokenUser(staffs);
+        String jwtToken = jwtTokenProvider.generateTokenUser(users);
         JwtResponse jwtResponse = new JwtResponse();
         jwtResponse.setToken(jwtToken);
-        jwtResponse.setStaffs(staffs);
+        jwtResponse.setUsers(users);
         return jwtResponse;
     }
 

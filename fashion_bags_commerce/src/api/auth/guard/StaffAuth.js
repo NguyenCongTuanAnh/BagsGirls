@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 const StaffAuth = ({ children }) => {
   const [accessChecked, setAccessChecked] = useState(false);
   const token = getToken();
-  const userInfo = JSON.parse(localStorage.getItem('usersTokenString'));
+  const userInfo = JSON.parse(localStorage.getItem('staffTokenString'));
   const navigate = useNavigate();
 
   useEffect(() => {

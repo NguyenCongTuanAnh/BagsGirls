@@ -63,6 +63,14 @@ public class CustomerRestController {
         );
 
     }
+    @RequestMapping(value = "/customer/findByUserId", method = RequestMethod.GET)
+    public ResponseEntity<?> findByUserId(@RequestParam("userId") String userId) {
+        return new ResponseEntity<>(
+              this.customerRepository.findByUsersId(userId)
+                , HttpStatus.OK
+        );
+
+    }
 
     @RequestMapping(value = "/customer", method = RequestMethod.POST)
     public ResponseEntity<?> add(@RequestBody CustomerDTO1 customerDTO) {

@@ -66,6 +66,10 @@ const customerAPI = {
     const url = `api/customer/searchByKeyword?keyword=${keyword}`;
     return axiosClient.get(url, { keyword });
   },
+  findByUserId(userId) {
+    const url = `api/customer/findByUserId?userId=${userId}`;
+    return axiosClient.get(url);
+  },
 };
 
 export default customerAPI;

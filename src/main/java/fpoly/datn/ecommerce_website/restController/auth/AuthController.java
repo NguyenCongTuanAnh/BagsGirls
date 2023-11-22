@@ -1,13 +1,18 @@
 package fpoly.datn.ecommerce_website.restController.auth;
 
+import fpoly.datn.ecommerce_website.entity.Customers;
+import fpoly.datn.ecommerce_website.entity.Staffs;
 import fpoly.datn.ecommerce_website.entity.Users;
 import fpoly.datn.ecommerce_website.entity.base.ResponseObject;
 import fpoly.datn.ecommerce_website.infrastructure.constant.Constants;
 import fpoly.datn.ecommerce_website.infrastructure.constant.Message;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Role;
 import fpoly.datn.ecommerce_website.infrastructure.exception.rest.InvalidTokenException;
 import fpoly.datn.ecommerce_website.model.request.CreateUserRequest;
 import fpoly.datn.ecommerce_website.model.request.LoginRequest;
+import fpoly.datn.ecommerce_website.repository.ICustomerRepository;
 import fpoly.datn.ecommerce_website.repository.IStaffRepository;
+import fpoly.datn.ecommerce_website.repository.IUserRepository;
 import fpoly.datn.ecommerce_website.service.AuthService;
 import fpoly.datn.ecommerce_website.service.IUserService;
 import fpoly.datn.ecommerce_website.service.UserService;
@@ -38,7 +43,12 @@ public class AuthController {
     @Autowired
     private IUserService userService;
     @Autowired
-    private IStaffRepository iStaffRepository;
+    private IUserRepository userRepository;
+    @Autowired
+    private IStaffRepository staffRepository;
+    @Autowired
+    private ICustomerRepository customerRepository;
+
 
     @GetMapping("/getUserToken")
     public ResponseEntity<?> getUserToken(HttpServletRequest request) {
@@ -52,7 +62,15 @@ public class AuthController {
                     .parseClaimsJws(token)
                     .getBody()
                     .getSubject();
-            return ResponseEntity.ok(this.iStaffRepository.findByEmail(email));
+            System.out.println("email: " + email);
+            Users users = this.userRepository.findByEmail(email);
+            if (users.getRole() == Role.ROLE_CUSTOMER) {
+                Customers customers = this.customerRepository.findByEmail(email);
+                return ResponseEntity.ok(customers);
+            }else{
+                Staffs staffs = this.staffRepository.findByEmail(email);
+                return ResponseEntity.ok(staffs);
+            }
         }
         return ResponseEntity.notFound().build();
     }
