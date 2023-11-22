@@ -11,7 +11,7 @@ const validateToken = async (token) => {
 const AdminAuth = ({ children }) => {
   const [accessChecked, setAccessChecked] = useState(false);
   const token = getToken();
-  const userInfo = JSON.parse(localStorage.getItem('usersTokenString'));
+  const userInfo = JSON.parse(localStorage.getItem('staffTokenString'));
   console.log('====================================');
   console.log(userInfo);
   console.log('====================================');

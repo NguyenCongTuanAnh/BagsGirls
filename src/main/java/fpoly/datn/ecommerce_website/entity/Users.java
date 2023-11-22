@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.sql.Date;
+
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
@@ -34,6 +36,8 @@ public class Users {
     private String account;
     @Column(name = "full_name")
     private String fullName;
+    @Column(name = "birthday")
+    private Date birthDay;
     @Column(name = "password")
     private String password;
     @Column(name = "email")

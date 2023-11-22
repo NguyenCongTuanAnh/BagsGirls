@@ -4,6 +4,7 @@ import fpoly.datn.ecommerce_website.dto.StaffDTO;
 import fpoly.datn.ecommerce_website.dto.StaffDTO1;
 import fpoly.datn.ecommerce_website.entity.Staffs;
 import fpoly.datn.ecommerce_website.entity.Users;
+import fpoly.datn.ecommerce_website.repository.IStaffRepository;
 import fpoly.datn.ecommerce_website.repository.IUserRepository;
 import fpoly.datn.ecommerce_website.service.serviceImpl.CustomerServiceImpl;
 import fpoly.datn.ecommerce_website.service.serviceImpl.StaffServiceImpl;
@@ -30,8 +31,8 @@ public class StaffRestController {
     private CustomerServiceImpl customerService;
     @Autowired
     private StaffServiceImpl staffService;
-
-
+    @Autowired
+    private IStaffRepository staffRepository;
     @Autowired
     private IUserRepository userInfoRepository;
     @Autowired
@@ -60,21 +61,21 @@ public class StaffRestController {
     public ResponseEntity<StaffDTO> getOne(@RequestParam("id") String id) {
         Staffs staff = staffService.findById(id);
         if (staff == null) {
-            // Handle the case when no staff member is found with the given ID, for example,
-            // return a not found response.
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        // Map the Staff entity to StaffDTO
         StaffDTO staffDTO = modelMapper.map(staff, StaffDTO.class);
-
-        // Retrieve additional information from the UserInfo entity and populate it in
-        // StaffDTO
         Users userInfo = staff.getUsers();
-
         return new ResponseEntity<>(staffDTO, HttpStatus.OK);
     }
+    @RequestMapping(value = "/staff/findByUserId", method = RequestMethod.GET)
+    public ResponseEntity<?> findByUserId(@RequestParam("userId") String userId) {
+        return new ResponseEntity<>(
+                this.staffRepository.findByUsersId(userId)
+                , HttpStatus.OK
+        );
 
+    }
     @RequestMapping(value = "/staff", method = RequestMethod.POST)
     public ResponseEntity<Staffs> add(@RequestBody StaffDTO1 staffDTO) {
         return new ResponseEntity<>(this.staffService.save(staffDTO), HttpStatus.OK);

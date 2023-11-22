@@ -43,4 +43,8 @@ List<Customers> findByKeyword(String keyword);
     @Query("SELECT c, u FROM Customers c join Users u on c.users.userId = u.userId " +
             "where u.email = :email ")
     Customers findByEmail(@Param("email") String email);
+
+    @Query("SELECT c, u FROM Customers c join Users u on c.users.userId = u.userId " +
+            "where u.userId = :userId ")
+    Customers findByUsersId(@Param("userId") String userId);
 }

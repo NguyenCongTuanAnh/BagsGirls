@@ -7,6 +7,8 @@ import Checkbox from 'antd/es/checkbox/Checkbox';
 import Input from 'antd/es/input/Input';
 import axios from 'axios';
 import AuthAPI from '~/api/auth/AuthAPI';
+import customerAPI from '~/api/customerAPI';
+import staffAPI from '~/api/staffAPI';
 function LoginForm(props) {
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
@@ -23,24 +25,41 @@ function LoginForm(props) {
     try {
       console.log(userLogin);
       const response = await AuthAPI.login(userLogin);
-      console.log(response.data.data.token);
-      console.log(response.data.data.staffs.staffId);
-      localStorage.setItem('token', response.data.data.token);
-      localStorage.setItem('staffId', response.data.data.staffs.staffId);
-      const userToken = await AuthAPI.getUserToken();
-      localStorage.setItem('usersTokenString', JSON.stringify(userToken.data));
+      console.log(response.data.data.users.role);
 
-      notification.success({
-        message: 'Đăng nhập thành công!!!',
-        description: `Welcome back to ${response.data.data.staffs.users.fullName}`,
-        duration: 2,
-      });
-      navigate('/admin');
+      if (response.data.data.users.role === 'ROLE_CUSTOMER') {
+        const customer = await customerAPI.findByUserId(response.data.data.users.userId);
+
+        localStorage.setItem('token', response.data.data.token);
+        localStorage.setItem('customerId', customer.data.customerId);
+        const userToken = await AuthAPI.getUserToken();
+        localStorage.setItem('customerTokenString', JSON.stringify(userToken.data));
+        notification.success({
+          message: 'Đăng nhập thành công!!!',
+          description: `Welcome back to ${response.data.data.users.fullName}`,
+          duration: 2,
+        });
+        navigate('/');
+      }
+      if (response.data.data.users.role === 'ROLE_STAFF' || response.data.data.users.role === 'ROLE_ADMIN') {
+        const staff = await staffAPI.findByUserId(response.data.data.users.userId);
+
+        localStorage.setItem('token', response.data.data.token);
+        localStorage.setItem('staffId', staff.data.staffId);
+        const userToken = await AuthAPI.getUserToken();
+        localStorage.setItem('staffTokenString', JSON.stringify(userToken.data));
+        notification.success({
+          message: 'Đăng nhập thành công!!!',
+          description: `Welcome back to ${response.data.data.users.fullName}`,
+          duration: 2,
+        });
+        navigate('/admin');
+      }
     } catch (error) {
       console.log(error);
       notification.error({
         message: 'Lỗi',
-        description: 'Lỗi',
+        description: 'Thông tin đăng nhập không chính xác',
         duration: 2,
       });
       localStorage.removeItem('usersTokenString');

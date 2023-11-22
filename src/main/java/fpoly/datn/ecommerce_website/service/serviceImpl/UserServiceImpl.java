@@ -1,12 +1,17 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
 
+import fpoly.datn.ecommerce_website.entity.Customers;
+import fpoly.datn.ecommerce_website.entity.Staffs;
 import fpoly.datn.ecommerce_website.entity.Users;
 import fpoly.datn.ecommerce_website.entity.base.PageableObject;
 import fpoly.datn.ecommerce_website.infrastructure.constant.Message;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Role;
 import fpoly.datn.ecommerce_website.infrastructure.exception.rest.RestApiException;
 import fpoly.datn.ecommerce_website.model.request.CreateUserRequest;
 import fpoly.datn.ecommerce_website.model.request.FindUserRequest;
+import fpoly.datn.ecommerce_website.repository.ICustomerRepository;
+import fpoly.datn.ecommerce_website.repository.IStaffRepository;
 import fpoly.datn.ecommerce_website.repository.IUserRepository;
 import fpoly.datn.ecommerce_website.service.IUserService;
 import fpoly.datn.ecommerce_website.util.ConvertStringToDate;
@@ -29,6 +34,10 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private IUserRepository userInfoRepository;
+    @Autowired
+    private ICustomerRepository customerRepository;
+    @Autowired
+    private IStaffRepository staffRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -102,8 +111,24 @@ public class UserServiceImpl implements IUserService {
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setPhoneNumber(request.getPhoneNumber());
         newUser.setRole(request.getRole());
-        System.out.println(newUser);
-        return userInfoRepository.save(newUser);
+        Users users = userInfoRepository.save(newUser);
+        if (users.getRole() == Role.ROLE_CUSTOMER){
+            System.out.println("TH1");
+            Customers addCustomer = Customers.builder()
+                    .customerStatus(1)
+                    .customerPoint(0)
+                    .users(users)
+                    .build();
+            Customers customers = this.customerRepository.save(addCustomer);
+        }else {
+            System.out.println("TH2");
+            Staffs addStaff = Staffs.builder()
+                    .staffStatus(1)
+                    .users(users)
+                    .build();
+            Staffs staff = this.staffRepository.save(addStaff);
+        }
+        return users;
     }
     @Override
     public PageableObject<Users> findUser(final FindUserRequest request) {
