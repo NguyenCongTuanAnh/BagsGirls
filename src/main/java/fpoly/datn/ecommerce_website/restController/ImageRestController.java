@@ -23,7 +23,7 @@ public class ImageRestController {
     private IImagesService imageService;
 
     //GetAll
-    @RequestMapping(value = "/image", method = RequestMethod.GET)
+    @RequestMapping(value = "/image/", method = RequestMethod.GET)
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(imageService.findAll());
     }

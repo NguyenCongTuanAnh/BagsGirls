@@ -1,5 +1,6 @@
 package fpoly.datn.ecommerce_website.dto;
 
+import fpoly.datn.ecommerce_website.entity.Products;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,7 +11,6 @@ import lombok.ToString;
 public class Product_ProductDetailDTO {
 
 
-    private String productId;
     private String colorId;
     private String typeId;
     private String materialId;
@@ -19,14 +19,15 @@ public class Product_ProductDetailDTO {
     private String compartmentId;
     private String buckleTypeId;
     private String producerId;
+    private Products products;
 
     private Float importPrice;
 
     private Float retailPrice;
 
-    private Integer productDetailAmount;
+    private Integer amount;
 
-    private String productDetailDescribe;
+    private String describe;
 
     private Integer productDetailStatus;
 

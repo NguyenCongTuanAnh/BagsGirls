@@ -28,7 +28,8 @@ function BaloDetailsPreview(props) {
 
   const [baloList, setBaloList] = useState(props.baloList);
   const [baloListPreview, setBaloListPreview] = useState(props.baloListPreview);
-
+  console.log(props.baloList);
+  console.log('balolist');
   const columns = [
     {
       title: 'Balo Code',
@@ -91,7 +92,7 @@ function BaloDetailsPreview(props) {
       title: 'Describe',
       dataIndex: 'productDetailDescribe',
       width: 500,
-      sorter: (a, b) => a.baloDetailDescribe.localeCompare(b.baloDetailDescribe),
+      sorter: (a, b) => a.productDetailDescribe.localeCompare(b.productDetailDescribe),
     },
     {
       title: 'Status',
@@ -162,46 +163,67 @@ function BaloDetailsPreview(props) {
   const save = async () => {
     if (baloList.length !== 0) {
       const tempBalo = baloList[0];
+      console.log('====================================');
+      console.log('tempBalo');
+      console.log(tempBalo);
+      console.log('====================================');
       const baloAdd = {
         productCode: tempBalo.productCode,
         productName: tempBalo.productName,
-        brandId: tempBalo.brandId,
-        baloStatus: tempBalo.baloStatus,
+        brand: { brandId: tempBalo.brandId },
+        productStatus: tempBalo.productStatus,
       };
 
       let baloDetails = baloList.map(
         ({
-          brandID,
-          buckleTypeID,
-          colorID,
-          compartmentID,
-          materialID,
-          producerID,
-          sizeID,
-          typeID,
-          imageUrl,
+          buckleTypeId,
+          colorId,
+          compartmentId,
+          materialId,
+          producerId,
+          sizeId,
+          typeId,
+          productDetailStatus,
           importPrice,
           retailPrice,
-          baloDetailDescribe,
+          productDetailDescribe,
           baloDetailAmount,
         }) => ({
-          brandID,
-          buckleTypeID,
-          colorID,
-          compartmentID,
-          materialID,
-          producerID,
-          sizeID,
-          typeID,
-          imageUrl,
-          importPrice,
-          retailPrice,
-          baloDetailDescribe,
-          baloDetailAmount,
+          buckleType: {
+            buckleTypeId: buckleTypeId,
+          },
+          color: {
+            colorId: colorId,
+          },
+          compartment: {
+            compartmentId: compartmentId,
+          },
+          material: {
+            materialId: materialId,
+          },
+          producer: {
+            producerId: producerId,
+          },
+          size: {
+            sizeId: sizeId,
+          },
+          type: {
+            typeId: typeId,
+          },
+
+          importPrice: importPrice,
+          retailPrice: retailPrice,
+          productDetailDescribe: productDetailDescribe,
+          productDetailAmount: baloDetailAmount,
+          productDetailStatus: productDetailStatus,
         }),
       );
 
       try {
+        console.log('====================================');
+        console.log('baloAdd');
+        console.log(baloAdd);
+        console.log('====================================');
         const response = await baloAPI.add(baloAdd);
 
         const id = response.data.productId;
@@ -227,9 +249,15 @@ function BaloDetailsPreview(props) {
         });
 
         baloDetails.forEach((element) => {
-          element = { ...element, baloId: id };
-
-          // const response2 = baloDetailsAPI.add(element);
+          element = {
+            ...element,
+            product: {
+              productId: id,
+            },
+          };
+          console.log('đây là detail');
+          console.log(element);
+          const response2 = baloDetailsAPI.add(element);
         });
 
         notification.success({
@@ -273,17 +301,6 @@ function BaloDetailsPreview(props) {
           }}
         >
           <div className={styles.handleButton}>
-            <Button
-              onClick={async () => {
-                try {
-                  const result = await props.handleSendUpload();
-                } catch (error) {
-                  console.log(error);
-                }
-              }}
-            >
-              Test
-            </Button>
             <div>
               <Button type="primary" onClick={start} loading={loading}>
                 Reload

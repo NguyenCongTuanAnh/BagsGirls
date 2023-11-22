@@ -1,5 +1,7 @@
 package fpoly.datn.ecommerce_website.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -14,6 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.codehaus.jackson.annotate.JsonIgnore;
 
 @Entity
 @Table(name = "images")
@@ -43,6 +46,9 @@ public class Images {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @JsonBackReference
     private Products products;
+
+
 
 }

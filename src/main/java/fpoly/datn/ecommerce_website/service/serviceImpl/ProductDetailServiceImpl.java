@@ -1,13 +1,17 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
+import fpoly.datn.ecommerce_website.dto.ImageDTO;
+import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
 import fpoly.datn.ecommerce_website.repository.IProductDetailRepository;
 import fpoly.datn.ecommerce_website.service.IProductDetalisService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductDetailServiceImpl implements IProductDetalisService {
@@ -15,10 +19,15 @@ public class ProductDetailServiceImpl implements IProductDetalisService {
     @Autowired
     private IProductDetailRepository iProductDetailRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
 
     @Override
-    public List<ProductDetails> findAll() {
-        return iProductDetailRepository.findAll();
+    public List<ProductDetailDTO> findAll() {
+        return this.iProductDetailRepository.findAll().stream()
+                .map(productDetails -> modelMapper.map(productDetails, ProductDetailDTO.class))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -35,8 +44,9 @@ public class ProductDetailServiceImpl implements IProductDetalisService {
 
 
     @Override
-    public ProductDetails save(ProductDetails entity) {
-        return iProductDetailRepository.save(entity);
+    public ProductDetailDTO save(ProductDetailDTO entity) {
+        ProductDetails productDetails = iProductDetailRepository.save(modelMapper.map(entity, ProductDetails.class));
+        return modelMapper.map(productDetails, ProductDetailDTO.class);
     }
 
 
