@@ -15,9 +15,12 @@ function ShopDetailView() {
   const [product, setProduct] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
   const [dataDetail, setDataDetail] = useState(null);
-
   const [temporaryCart, setTemporaryCart] = useState([]);
+
+  const [materialOptions, setMaterialOptions] = useState([]);
+
   const addToTemporaryCart = async (product) => {
     console.log(product);
     try {
@@ -34,6 +37,7 @@ function ShopDetailView() {
           brandName: product.brandName,
           quantity: quantity,
           retailPrice: dataDetail.retailPrice,
+          amount: dataDetail.amount
         };
 
         // Thêm sản phẩm vào giỏ hàng tạm thời
@@ -112,49 +116,102 @@ function ShopDetailView() {
 
   console.log('>>> data detail', dataDetail);
 
-  const handleColorChange = async (color) => {
-    setSelectedColor(color);
+  useEffect(() => {
+    // Assuming productDetails contains color and material information
+    if (product && product.productDetails) {
+      const uniqueColors = [...new Set(product.productDetails.map((detail) => detail.colorName))];
+      // Set initial material options for the first color in the product details
+      setMaterialOptions(getMaterialOptionsForColor(uniqueColors[0]));
+    }
+  }, [product]);
+
+  const getMaterialOptionsForColor = (color) => {
+    if (product && product.productDetails) {
+      return product.productDetails.filter((detail) => detail.colorName === color).map((detail) => detail.materialName);
+    }
+    return [];
   };
 
-  const handleMaterialChange = (material) => {
-    setSelectedMaterial(material);
+
+  const handleColorChange = (color) => {
+    setSelectedColor(color);
+    setMaterialOptions(getMaterialOptionsForColor(color));
+    setSelectedMaterial(null); // Reset selected material when changing color
+  
+    // Update dataDetail to reflect the details of the selected color
+    const selectedColorDetail = product.productDetails.find((detail) => detail.colorName === color);
+    setDataDetail(selectedColorDetail);
   };
+
 
   const renderColor = () => {
     if (!product || !product.productDetails) {
       return null;
     }
-
-    return product.productDetails.map((variant, index) => (
+  
+    // Extract unique color names from product details
+    const uniqueColors = [...new Set(product.productDetails.map((variant) => variant.colorName))];
+  
+    return uniqueColors.map((color, index) => (
       <div key={index} className={styles.colorVariant}>
         <Checkbox
-          checked={selectedColor === variant.colorName ? variant.colorName : ''}
-          onChange={() => {
-            setDataDetail(product?.productDetails[index]);
-            handleColorChange(variant.colorName);
-          }}
+          checked={selectedColor === color}
+          onChange={() => handleColorChange(color)}
+          style={{ border: 'green 1px solid', padding: '10px', margin: '0 10px' }}
+
         >
-          {variant.colorName}
+          {color}
         </Checkbox>
       </div>
     ));
   };
+
+  const handleMaterialChange = (material) => {
+    setSelectedMaterial(material);
+  
+    // Update dataDetail to reflect the details of the selected material and color
+    const selectedMaterialDetail = product.productDetails.find(
+      (detail) => detail.colorName === selectedColor && detail.materialName === material
+    );
+    setDataDetail(selectedMaterialDetail);
+  };
+  
   const renderMaterial = () => {
-    if (!product || !product.productDetails) {
+    if (!materialOptions.length) {
       return null;
     }
-
-    return product.productDetails.map((variant, index) => (
-      <div key={index} className={styles.materialrVariant}>
+  
+    return materialOptions.map((material, index) => (
+      <div key={index} className={styles.variant}>
         <Checkbox
-          checked={selectedMaterial === variant.materialName}
-          onChange={() => handleMaterialChange(variant.materialName)}
+          checked={selectedMaterial === material}
+          onChange={() => handleMaterialChange(material)}
+          style={{ border: 'green 1px solid', padding: '10px', margin: '0 10px' }}
         >
-          {variant.materialName}
+          {material}
         </Checkbox>
       </div>
     ));
   };
+  
+
+  // const renderSize = () => {
+  //   if (!product || !product.productDetails) {
+  //     return null;
+  //   }
+
+  //   return product.productDetails.map((variant, index) => (
+  //     <div key={index} className={styles.variant}>
+  //       <Checkbox
+  //         checked={selectedSize === variant.sizeName}
+  //         onChange={() => handleSizeChange(variant.sizeName)}
+  //         style={{ border: 'green 1px solid', padding: '10px', margin: '0 10px' }}
+  //       >
+  //         {variant.sizeName}
+  //       </Checkbox>
+  //     </div>
+  //   ));
+  // };
 
   if (!product) {
     // You can render a loading state or an error message here
@@ -263,14 +320,15 @@ function ShopDetailView() {
                 <h4 className={styles.price}>{VNDFormaterFunc(dataDetail.retailPrice)}</h4>
               </span>
               <div className={styles.group_color}>
-                <h3 style={{ fontStyle: 'italic', fontSize: '16pt', float: 'left', padding: '5px 15px 0 0' }}>
-                  Màu sắc:{' '}
-                </h3>{' '}
-                <div className={styles.materialrVariant}>{renderColor()}</div>
+                <p style={{ fontSize: '14pt', float: 'left', padding: '5px 15px 0 0' }}>Màu sắc: </p>{' '}
+                <div className={styles.variant}>{renderColor()}</div>
+                <br></br>
+                <p style={{ fontSize: '14pt', float: 'left', padding: '5px 60px 0 0' }}>Size: </p>{' '}
+                <div className={styles.variant}>{renderMaterial()}</div>
               </div>
               <div className={styles.amount}>
                 <h3 style={{ fontStyle: 'italic', fontSize: '16pt' }}>
-                  Số lượng: <span style={{ color: 'red' }}>{dataDetail.amount}</span> sản phẩm
+                  Có sẵn: <span style={{ color: 'red' }}>{dataDetail.amount}</span> sản phẩm
                 </h3>
 
                 <div className={' title_attr'}>
@@ -314,3 +372,4 @@ function ShopDetailView() {
 }
 
 export default ShopDetailView;
+
