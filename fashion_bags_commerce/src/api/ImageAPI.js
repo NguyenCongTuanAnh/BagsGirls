@@ -2,7 +2,7 @@ import axiosClient from './axiosClient';
 
 const imageAPI = {
   getAll(pageNum, pageSize) {
-    const url = '/image/pagination';
+    const url = 'api/image/pagination';
     return axiosClient.get(url, {
       params: {
         page: pageNum - 1,

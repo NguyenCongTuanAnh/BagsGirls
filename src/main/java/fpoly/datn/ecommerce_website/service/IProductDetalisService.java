@@ -1,7 +1,6 @@
 package fpoly.datn.ecommerce_website.service;
 
 import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
-import fpoly.datn.ecommerce_website.dto.Product_ProductDetailDTO;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
 
 import java.util.List;

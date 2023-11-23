@@ -1,11 +1,8 @@
 package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
-import fpoly.datn.ecommerce_website.dto.Product_ProductDetailDTO;
-import fpoly.datn.ecommerce_website.entity.ProductDetails;
 import fpoly.datn.ecommerce_website.service.serviceImpl.ProductDetailServiceImpl;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -83,6 +80,7 @@ public class ProductDetailRestController {
     }
 //
 //
+
     @RequestMapping(value = "/product-details/search", method = RequestMethod.GET)
     public ResponseEntity<?> findByKeyword(@RequestParam String keyword) {
         return new ResponseEntity<>(

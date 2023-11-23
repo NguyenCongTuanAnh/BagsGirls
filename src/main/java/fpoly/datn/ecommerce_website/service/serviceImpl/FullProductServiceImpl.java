@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,12 +41,12 @@ public class FullProductServiceImpl {
             FullProductDTO fullProductDTO = modelMapper.map(product, FullProductDTO.class);
 
             // Ánh xạ thông tin từ Images và ProductDetails nếu có
-//            if (product.getImages() != null && !product.getImages().isEmpty()) {
-//                fullProductDTO.setImg(modelMapper.map(product.getImages().get(0), ImageDTO1.class));
-//            }
-//            if (product.getProductDetails() != null && !product.getProductDetails().isEmpty()) {
-//                fullProductDTO.setProductDetail(modelMapper.map(product.getProductDetails().get(0), ProductDetailDTO1.class));
-//            }
+            if (product.getImages() != null && !product.getImages().isEmpty()) {
+                fullProductDTO.setImg(modelMapper.map(product.getImages().get(0), ImageDTO1.class));
+            }
+            if (product.getProductDetails() != null && !product.getProductDetails().isEmpty()) {
+                fullProductDTO.setProductDetail(modelMapper.map(product.getProductDetails().get(0), ProductDetailDTO1.class));
+            }
 
             if (product.getProductDetails() != null && !product.getProductDetails().isEmpty()) {
                 // Assuming setProductDetails is a method in FullProductDTO to set a list of ProductDetailDTO objects
@@ -129,6 +130,9 @@ public class FullProductServiceImpl {
         return null; // Trả về null nếu không tìm thấy sản phẩm
     }
 
-
+    // search sproduct theo name, price, material,color
+    public List<Products> searchProducts(String keyword) {
+        return productRepository.searchProductsByKeywordOrBrandOrMaterial(keyword);
+    }
 
 }

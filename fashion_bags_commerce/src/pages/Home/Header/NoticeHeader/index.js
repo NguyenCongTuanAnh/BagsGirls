@@ -6,7 +6,7 @@ import styles from './index.module.scss';
 function NoticeHeader() {
   return (
     <div className={styles.carouselHeader}>
-      <Carousel className="carouselContent" dots={false} draggable={true} autoplaySpeed={1500} autoplay={true}>
+      <Carousel className="carouselContent" dots={false} draggable={true} autoplaySpeed={2000} autoplay={true}>
         <div>
           <b>
             <p>

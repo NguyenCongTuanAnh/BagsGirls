@@ -24,7 +24,6 @@ function CartView() {
   }, []);
 
   return (
-    <Fragment>
       <body>
         <div className="fullpage">
           <div className="header001">
@@ -54,7 +53,6 @@ function CartView() {
           </div>
         </div>
       </body>
-    </Fragment>
   );
 }
 

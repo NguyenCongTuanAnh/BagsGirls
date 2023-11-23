@@ -52,14 +52,6 @@ public class ProductRestController {
                 (productPage, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/product1/", method = RequestMethod.GET)
-    public ResponseEntity<?> getAll1(
-    ) {
-
-        return new ResponseEntity<>
-                (productRepository.findAll(), HttpStatus.OK);
-    }
-
 
     @RequestMapping(value = "/product/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getOne(@PathVariable("id") String id) {

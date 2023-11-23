@@ -4,10 +4,10 @@
   font-family: ttcommons-light;
   // background-color: rgb(99, 240, 240);
 
-  background-color: rgb(15, 16, 16);
+  background-color: yellow;
 
   text-align: center;
-  color: white;
+  color: black;
   user-select: none;
   :hover {
     cursor: grab;
@@ -23,6 +23,6 @@
     text-decoration: none;
   }
   p {
-    color: white;
+    color: black;
   }
 }

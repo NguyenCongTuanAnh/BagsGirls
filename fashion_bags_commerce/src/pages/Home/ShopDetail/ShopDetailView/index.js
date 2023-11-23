@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './shopDetail.module.scss';
-import { Checkbox, Image, Input, Select } from 'antd';
+import { Checkbox, Image, Input, Select, notification } from 'antd';
 import fullProductAPI from '~/api/client/fullProductAPI';
 import { Link, useParams } from 'react-router-dom';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
@@ -8,6 +8,8 @@ import axios from 'axios';
 import { data } from 'jquery';
 import Icon from '@ant-design/icons/lib/components/Icon';
 import { CarOutlined, MinusOutlined, PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import BeatLoader from 'react-spinners/ClipLoader';
+import { faL, fas } from '@fortawesome/free-solid-svg-icons';
 
 function ShopDetailView() {
   const [quantity, setQuantity] = useState(1);
@@ -16,8 +18,18 @@ function ShopDetailView() {
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [dataDetail, setDataDetail] = useState(null);
-
   const [temporaryCart, setTemporaryCart] = useState([]);
+
+  const [materialOptions, setMaterialOptions] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    setLoading(false);
+    setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+  }, []);
+
   const addToTemporaryCart = async (product) => {
     console.log(product);
     try {
@@ -29,11 +41,12 @@ function ShopDetailView() {
           image: product.img.imgUrl,
           productName: product.productName,
           productCode: product.productCode,
-          colorName: dataDetail.colorName,
-          materialName: dataDetail.materialName,
+          colorName: selectedColor, // Use the selectedColor state
+          materialName: selectedMaterial, // Use the selectedMaterial state
           brandName: product.brandName,
           quantity: quantity,
           retailPrice: dataDetail.retailPrice,
+          amount: dataDetail.amount,
         };
 
         // Thêm sản phẩm vào giỏ hàng tạm thời
@@ -43,7 +56,10 @@ function ShopDetailView() {
 
         // if (storedCart) {
         const existingProductIndex = updatedTemporaryCart.findIndex(
-          (item) => item.productName === productToAdd.productName && item.colorName === productToAdd.colorName, // Thêm các điều kiện cần thiết để xác định sản phẩm (có thể sửa lại tùy theo cấu trúc dữ liệu của bạn)
+          (item) =>
+            item.productName === productToAdd.productName &&
+            item.colorName === productToAdd.colorName &&
+            item.materialName === productToAdd.materialName, // Thêm các điều kiện cần thiết để xác định sản phẩm (có thể sửa lại tùy theo cấu trúc dữ liệu của bạn)
         );
 
         if (existingProductIndex !== -1) {
@@ -54,11 +70,19 @@ function ShopDetailView() {
         }
         localStorage.setItem('temporaryCart', JSON.stringify(updatedTemporaryCart));
         setTemporaryCart(updatedTemporaryCart);
-        alert('Đã thêm sản phẩm vào giỏ hàng thành công!');
+        notification.success({
+          message: 'Thành công',
+          description: 'Bạn đã thêm sản phẩm vào giỏ hàng',
+          duration: 2,
+        });
         // }
       } else {
         // Hiển thị thông báo cho người dùng rằng số lượng không đủ trong kho
-        alert('Số lượng không đủ trong kho!');
+        notification.error({
+          message: 'Thất bại',
+          description: 'Số lượng sản phẩm trong kho không đủ',
+          duration: 2,
+        });
       }
     } catch (error) {
       console.error('Error adding product to cart:', error);
@@ -101,8 +125,10 @@ function ShopDetailView() {
         const data = response.data;
         setProduct(data);
         setDataDetail(data?.productDetails[0]);
+        setLoading(true);
         console.log('>>>> data', data);
       } catch (error) {
+        setLoading(true);
         console.error('Error fetching product details:', error);
       }
     };
@@ -112,12 +138,28 @@ function ShopDetailView() {
 
   console.log('>>> data detail', dataDetail);
 
-  const handleColorChange = async (color) => {
-    setSelectedColor(color);
+  useEffect(() => {
+    // Assuming productDetails contains color and material information
+    if (product && product.productDetails) {
+      const uniqueColors = [...new Set(product.productDetails.map((detail) => detail.colorName))];
+      // Set initial material options for the first color in the product details
+      setMaterialOptions(getMaterialOptionsForColor(uniqueColors[0]));
+    }
+  }, [product]);
+
+  const getMaterialOptionsForColor = (color) => {
+    if (product && product.productDetails) {
+      return product.productDetails.filter((detail) => detail.colorName === color).map((detail) => detail.materialName);
+    }
+    return [];
   };
 
-  const handleMaterialChange = (material) => {
-    setSelectedMaterial(material);
+  const handleColorChange = (color) => {
+    setSelectedColor(color);
+    setSelectedMaterial(null);
+    setMaterialOptions(getMaterialOptionsForColor(color));
+    const selectedColorDetail = product.productDetails.find((detail) => detail.colorName === color);
+    setDataDetail(selectedColorDetail);
   };
 
   const renderColor = () => {
@@ -125,32 +167,44 @@ function ShopDetailView() {
       return null;
     }
 
-    return product.productDetails.map((variant, index) => (
+    const uniqueColors = [...new Set(product.productDetails.map((variant) => variant.colorName))];
+
+    return uniqueColors.map((color, index) => (
       <div key={index} className={styles.colorVariant}>
         <Checkbox
-          checked={selectedColor === variant.colorName ? variant.colorName : ''}
-          onChange={() => {
-            setDataDetail(product?.productDetails[index]);
-            handleColorChange(variant.colorName);
-          }}
+          checked={selectedColor === color}
+          onChange={() => handleColorChange(color)}
+          style={{ border: 'green 1px solid', padding: '10px', margin: '0 10px' }}
         >
-          {variant.colorName}
+          {color}
         </Checkbox>
       </div>
     ));
   };
+
+  const handleMaterialChange = (material) => {
+    setSelectedMaterial(material);
+
+    // Update dataDetail to reflect the details of the selected material and color
+    const selectedMaterialDetail = product.productDetails.find(
+      (detail) => detail.colorName === selectedColor && detail.materialName === material,
+    );
+    setDataDetail(selectedMaterialDetail);
+  };
+
   const renderMaterial = () => {
-    if (!product || !product.productDetails) {
+    if (!selectedColor || !materialOptions.length) {
       return null;
     }
 
-    return product.productDetails.map((variant, index) => (
-      <div key={index} className={styles.materialrVariant}>
+    return materialOptions.map((material, index) => (
+      <div key={index} className={styles.variant}>
         <Checkbox
-          checked={selectedMaterial === variant.materialName}
-          onChange={() => handleMaterialChange(variant.materialName)}
+          checked={selectedMaterial === material}
+          onChange={() => handleMaterialChange(material)}
+          style={{ border: 'green 1px solid', padding: '10px', margin: '0 10px' }}
         >
-          {variant.materialName}
+          {material}
         </Checkbox>
       </div>
     ));
@@ -158,7 +212,13 @@ function ShopDetailView() {
 
   if (!product) {
     // You can render a loading state or an error message here
-    return <div style={{ textAlign: 'left', fontSize: '20px' }}>Loading...</div>;
+
+    return (
+      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <BeatLoader color="#d64336" loading={true} size={50} />
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   return (
@@ -263,14 +323,19 @@ function ShopDetailView() {
                 <h4 className={styles.price}>{VNDFormaterFunc(dataDetail.retailPrice)}</h4>
               </span>
               <div className={styles.group_color}>
-                <h3 style={{ fontStyle: 'italic', fontSize: '16pt', float: 'left', padding: '5px 15px 0 0' }}>
-                  Màu sắc:{' '}
-                </h3>{' '}
-                <div className={styles.materialrVariant}>{renderColor()}</div>
+                <div className={styles.variant}>
+                  <p style={{ fontSize: '14pt', float: 'left', padding: '5px 15px 0 0' }}>Màu sắc: </p>
+                  {renderColor()}
+                </div>
+                <br></br>
+                <div className={styles.variant}>
+                  <p style={{ fontSize: '14pt', float: 'left', padding: '5px 15px 0 0' }}>Chất liệu: </p>
+                  {renderMaterial()}
+                </div>
               </div>
               <div className={styles.amount}>
                 <h3 style={{ fontStyle: 'italic', fontSize: '16pt' }}>
-                  Số lượng: <span style={{ color: 'red' }}>{dataDetail.amount}</span> sản phẩm
+                  Có sẵn: <span style={{ color: 'red' }}>{dataDetail.amount}</span> sản phẩm
                 </h3>
 
                 <div className={' title_attr'}>

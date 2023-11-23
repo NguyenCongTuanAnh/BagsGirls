@@ -35,7 +35,10 @@ function CartItem() {
     const updatedCart = cartItems.filter((item) => item !== record);
     setCartItems(updatedCart);
     localStorage.setItem('temporaryCart', JSON.stringify(updatedCart));
-    window.location.reload();
+
+    if (updatedCart.length === 0) {
+      window.location.reload();
+    }
   };
 
   const columns = [
@@ -116,8 +119,8 @@ function CartItem() {
       title: 'Xóa',
       dataIndex: 'operation',
       render: (text, record) => (
-        <Button type="link" danger onClick={() => handleRemoveItem(record)}>
-          <DeleteFilled />
+        <Button type="dashed" danger onClick={() => handleRemoveItem(record)} icon={<DeleteOutlined/>}>
+           Xóa
         </Button>
       ),
       key: 'operation',
@@ -169,9 +172,9 @@ function CartItem() {
   return (
     <div className="container-fluid" style={{ padding: '0 5% 0 5%' }}>
       <div>
-          <Link to={'/shop'} className={styles.continue_cart}>
-            Tiếp tục mua sắm <DoubleRightOutlined />
-          </Link>
+        <Link to={'/shop'} className={styles.continue_cart}>
+          Tiếp tục mua sắm <DoubleRightOutlined />
+        </Link>
         <Table
           bordered
           style={{ textAlign: 'center' }}
