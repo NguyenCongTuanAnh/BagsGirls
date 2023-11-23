@@ -65,8 +65,8 @@ public class ProductDetailRestController {
 //
 //    //delete
     @RequestMapping(value = "/product-detail", method = RequestMethod.DELETE)
-    public ResponseEntity<?> delete(@RequestParam String id) {
-        productDetailService.delete(id);
+    public ResponseEntity<?> delete(@RequestParam String productDetailId) {
+        productDetailService.delete(productDetailId);
         return new ResponseEntity<>("Delete successfully!", HttpStatus.OK);
     }
 //

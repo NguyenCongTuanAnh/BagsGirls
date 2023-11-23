@@ -25,8 +25,8 @@ const productDetailsAPI = {
     const url = `api/product-details?id=${data.id}`;
     return axiosClient.put(url, data);
   },
-  delete(id) {
-    const url = `api/product-details?id=${id}`;
+  delete(productDetailId) {
+    const url = `api/product-details?productDetailId=${productDetailId}`;
     return axiosClient.delete(url);
   },
   findByKeywork(keyword) {

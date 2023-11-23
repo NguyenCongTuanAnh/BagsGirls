@@ -7,6 +7,7 @@ import ProductDetailsEdit from './ProductDetailsEdit/ProductDetailsEdit';
 import baloDetailsAPI from '~/api/productDetailsAPI';
 import brandAPI from '~/api/propertitesBalo/brandAPI';
 import productAPI from '~/api/productsAPI';
+import productDetailsAPI from '~/api/productDetailsAPI';
 const { Option } = Select;
 function FormProductEdit(props) {
   const [form] = Form.useForm();
@@ -203,13 +204,24 @@ function FormProductEdit(props) {
     selectedRowKeys,
     onChange: (selectedKeys) => {
       setSelectedRowKeys(selectedKeys);
-      console.log('====================================');
-      console.log(selectedKeys);
-      console.log('====================================');
     },
   };
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
     setSelectedRowKeys([]);
+    if (selectedRowKeys.length === 0) {
+      notification.info({
+        message: 'Lỗi',
+        description: 'Vui lòng Chọn Sản phẩm chi tiết cần xóa!!!!',
+        duration: 2,
+      });
+    } else {
+      var isDone = true;
+      selectedRowKeys.forEach((e, index) => {
+        const response = productDetailsAPI.delete(e);
+        //  if(response.)
+      });
+      isDone = true;
+    }
   };
   return (
     <Fragment>

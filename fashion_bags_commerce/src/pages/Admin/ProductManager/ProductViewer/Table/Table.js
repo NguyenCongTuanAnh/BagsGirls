@@ -108,11 +108,9 @@ function TableContent() {
   const getAllBalo = async (pageNum, pageSize) => {
     try {
       const response = await baloAPI.getAll(pageNum, pageSize);
+      console.log('hhhh');
+      console.log(response);
       const data = response.data.content;
-      console.log('====================================');
-      console.log('log');
-      console.log(data);
-      console.log('====================================');
       setTotalItem(response.data.totalElements);
       setProductList(data);
       setTimeout(() => {}, 500);
