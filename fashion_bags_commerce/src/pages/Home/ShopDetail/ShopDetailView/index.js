@@ -8,6 +8,8 @@ import axios from 'axios';
 import { data } from 'jquery';
 import Icon from '@ant-design/icons/lib/components/Icon';
 import { CarOutlined, MinusOutlined, PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import BeatLoader from 'react-spinners/ClipLoader';
+import { faL, fas } from '@fortawesome/free-solid-svg-icons';
 
 function ShopDetailView() {
   const [quantity, setQuantity] = useState(1);
@@ -19,6 +21,14 @@ function ShopDetailView() {
   const [temporaryCart, setTemporaryCart] = useState([]);
 
   const [materialOptions, setMaterialOptions] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    setLoading(false);
+    setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+  }, []);
 
   const addToTemporaryCart = async (product) => {
     console.log(product);
@@ -36,9 +46,9 @@ function ShopDetailView() {
           brandName: product.brandName,
           quantity: quantity,
           retailPrice: dataDetail.retailPrice,
-          amount: dataDetail.amount
+          amount: dataDetail.amount,
         };
-      
+
         // Thêm sản phẩm vào giỏ hàng tạm thời
         const storedCart = localStorage.getItem('temporaryCart');
         let updatedTemporaryCart = storedCart ? JSON.parse(storedCart) : [];
@@ -46,9 +56,10 @@ function ShopDetailView() {
 
         // if (storedCart) {
         const existingProductIndex = updatedTemporaryCart.findIndex(
-          (item) =>  item.productName === productToAdd.productName &&
-          item.colorName === productToAdd.colorName &&
-          item.materialName === productToAdd.materialName , // Thêm các điều kiện cần thiết để xác định sản phẩm (có thể sửa lại tùy theo cấu trúc dữ liệu của bạn)
+          (item) =>
+            item.productName === productToAdd.productName &&
+            item.colorName === productToAdd.colorName &&
+            item.materialName === productToAdd.materialName, // Thêm các điều kiện cần thiết để xác định sản phẩm (có thể sửa lại tùy theo cấu trúc dữ liệu của bạn)
         );
 
         if (existingProductIndex !== -1) {
@@ -106,8 +117,10 @@ function ShopDetailView() {
         const data = response.data;
         setProduct(data);
         setDataDetail(data?.productDetails[0]);
+        setLoading(true)
         console.log('>>>> data', data);
       } catch (error) {
+        setLoading(true)
         console.error('Error fetching product details:', error);
       }
     };
@@ -133,33 +146,30 @@ function ShopDetailView() {
     return [];
   };
 
-
   const handleColorChange = (color) => {
     setSelectedColor(color);
     setMaterialOptions(getMaterialOptionsForColor(color));
     setSelectedMaterial(null); // Reset selected material when changing color
-  
+
     // Update dataDetail to reflect the details of the selected color
     const selectedColorDetail = product.productDetails.find((detail) => detail.colorName === color);
     setDataDetail(selectedColorDetail);
   };
 
-
   const renderColor = () => {
     if (!product || !product.productDetails) {
       return null;
     }
-  
+
     // Extract unique color names from product details
     const uniqueColors = [...new Set(product.productDetails.map((variant) => variant.colorName))];
-  
+
     return uniqueColors.map((color, index) => (
       <div key={index} className={styles.colorVariant}>
         <Checkbox
           checked={selectedColor === color}
           onChange={() => handleColorChange(color)}
           style={{ border: 'green 1px solid', padding: '10px', margin: '0 10px' }}
-
         >
           {color}
         </Checkbox>
@@ -169,19 +179,19 @@ function ShopDetailView() {
 
   const handleMaterialChange = (material) => {
     setSelectedMaterial(material);
-  
+
     // Update dataDetail to reflect the details of the selected material and color
     const selectedMaterialDetail = product.productDetails.find(
-      (detail) => detail.colorName === selectedColor && detail.materialName === material
+      (detail) => detail.colorName === selectedColor && detail.materialName === material,
     );
     setDataDetail(selectedMaterialDetail);
   };
-  
+
   const renderMaterial = () => {
     if (!materialOptions.length) {
       return null;
     }
-  
+
     return materialOptions.map((material, index) => (
       <div key={index} className={styles.variant}>
         <Checkbox
@@ -194,11 +204,16 @@ function ShopDetailView() {
       </div>
     ));
   };
-  
 
   if (!product) {
     // You can render a loading state or an error message here
-    return <div style={{ textAlign: 'left', fontSize: '20px' }}>Loading...</div>;
+   
+    return (
+      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+        <BeatLoader color="#d64336" loading={true} size={50} />
+        <p>Loading...</p>
+      </div>
+    );
   }
 
   return (
@@ -355,10 +370,3 @@ function ShopDetailView() {
 }
 
 export default ShopDetailView;
-
-
-
-
-  
- 
-

@@ -25,4 +25,6 @@ public class FullProductDTO {
     private List<ImageDTO1> imgs;
 
     private List<ProductDetailDTO1> productDetails;
+
+
 }

@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -129,6 +130,9 @@ public class FullProductServiceImpl {
         return null; // Trả về null nếu không tìm thấy sản phẩm
     }
 
-
+    // search sproduct theo name, price, material,color
+    public List<Products> searchProducts(String keyword, BigDecimal price) {
+        return productRepository.searchProductsByKeywordOrPriceOrBrandOrMaterial(keyword, price);
+    }
 
 }
