@@ -176,6 +176,7 @@ const SalesCounterForm = () => {
       try {
         const response = await baloDetailsAPI.findByKeywork(value);
         const data = response.data;
+        console.log(data);
         setOptions(data);
       } catch (error) {
         console.error('Đã xảy ra lỗi: ', error);
@@ -704,7 +705,11 @@ const SalesCounterForm = () => {
 
                   <Table
                     rowKey={(record) =>
-                      record && record.retailPrice && record.color.colorName && record.product.productName
+                      record &&
+                      record.retailPrice &&
+                      record.color.colorName &&
+                      record.product.productName &&
+                      record.productDetailId
                     }
                     dataSource={selectedItems}
                     columns={columns}

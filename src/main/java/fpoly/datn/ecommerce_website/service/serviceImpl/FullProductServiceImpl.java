@@ -46,6 +46,25 @@ public class FullProductServiceImpl {
             if (product.getProductDetails() != null && !product.getProductDetails().isEmpty()) {
                 fullProductDTO.setProductDetail(modelMapper.map(product.getProductDetails().get(0), ProductDetailDTO1.class));
             }
+
+            if (product.getProductDetails() != null && !product.getProductDetails().isEmpty()) {
+                // Assuming setProductDetails is a method in FullProductDTO to set a list of ProductDetailDTO objects
+                fullProductDTO.setImgs(
+                        product.getImages().stream()
+                                .map(detail -> modelMapper.map(detail, ImageDTO1.class))
+                                .collect(Collectors.toList())
+                );
+            }
+
+            if (product.getProductDetails() != null && !product.getProductDetails().isEmpty()) {
+                // Assuming setProductDetails is a method in FullProductDTO to set a list of ProductDetailDTO objects
+                fullProductDTO.setProductDetails(
+                        product.getProductDetails().stream()
+                                .map(detail -> modelMapper.map(detail, ProductDetailDTO1.class))
+                                .collect(Collectors.toList())
+                );
+            }
+
             return fullProductDTO;
         }).collect(Collectors.toList());
     }

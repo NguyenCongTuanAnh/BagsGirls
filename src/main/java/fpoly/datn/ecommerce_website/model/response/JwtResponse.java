@@ -17,5 +17,5 @@ public class JwtResponse {
 //    private UUID idUser;
 
     private String token;
-    private Staffs staffs;
+    private Users users;
 }

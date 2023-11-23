@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -77,14 +80,15 @@ public class ProductDetailRestController {
 //    }
 //
 //
-//    @RequestMapping(value = "/product-details/search", method = RequestMethod.GET)
-//    public ResponseEntity<?> findByKeyword(@RequestParam String keyword) {
-//        return new ResponseEntity<>(
-//                this.productDetailService.findByKeyword(keyword).stream()
-//                        .map(productDetail -> modelMapper.map(productDetail, ProductDetailDTO.class))
-//                        .collect(Collectors.toList())
-//                , HttpStatus.OK);
-//    }
+
+    @RequestMapping(value = "/product-details/search", method = RequestMethod.GET)
+    public ResponseEntity<?> findByKeyword(@RequestParam String keyword) {
+        return new ResponseEntity<>(
+                this.productDetailService.findByKeyword(keyword).stream()
+                        .map(productDetail -> modelMapper.map(productDetail, ProductDetailDTO.class))
+                        .collect(Collectors.toList())
+                , HttpStatus.OK);
+    }
 //
 //
 //    @RequestMapping(value = "/product-detail/amount", method = RequestMethod.GET)

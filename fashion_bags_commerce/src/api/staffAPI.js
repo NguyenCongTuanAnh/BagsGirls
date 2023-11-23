@@ -62,6 +62,10 @@ const staffAPI = {
     const url = `/staff?id=${id}`;
     return axiosClient.delete(url);
   },
+  findByUserId(userId) {
+    const url = `api/staff/findByUserId?userId=${userId}`;
+    return axiosClient.get(url);
+  },
 };
 
 export default staffAPI;

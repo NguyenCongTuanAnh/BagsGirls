@@ -31,7 +31,7 @@ public class JwtTokenProvider {
     @Value("${secret}")
     private String SECRET;
 
-    public String generateTokenUser(Staffs staffs) {
+    public String generateTokenUser(Users users) {
         Date now = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(now);
@@ -39,13 +39,13 @@ public class JwtTokenProvider {
         Date expiryDate = calendar.getTime();
 
         String token = Jwts.builder()
-                .setSubject(staffs.getUsers().getEmail())
-                .claim("role", String.valueOf(staffs.getUsers().getRole()))
-                .claim("name", staffs.getUsers().getFullName())
-                .claim("address", staffs.getUsers().getAddress())
-                .claim("idUser", staffs.getUsers().getUserId())
-                .claim("gender", staffs.getUsers().getGender())
-                .claim("phoneNumber", staffs.getUsers().getPhoneNumber())
+                .setSubject(users.getEmail())
+                .claim("role", String.valueOf(users.getRole()))
+                .claim("name", users.getFullName())
+                .claim("address", users.getAddress())
+                .claim("idUser", users.getUserId())
+                .claim("gender", users.getGender())
+                .claim("phoneNumber", users.getPhoneNumber())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, Constants.JWTSECRET)
