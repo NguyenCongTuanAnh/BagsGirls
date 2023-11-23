@@ -1,14 +1,10 @@
-import './FormProductViewDetails.css';
-
 import React, { Fragment, useEffect, useState } from 'react';
 import { InfoOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Col, Drawer, Form, Input, Row, Select, Space, Table } from 'antd';
 import baloDetailsAPI from '~/api/productDetailsAPI';
-import FormProductEdit from '../../ProductEdit/FormEdit/FormProductEdit';
 const { Option } = Select;
-function FormProductViewDetails(props) {
-  console.log('productCode');
-  console.log(props);
+function ProductDetailsEdit(props) {
+  const [form] = Form.useForm();
   const productCode = props.productCode;
   const [open, setOpen] = useState(false);
   const showDrawer = () => {
@@ -32,8 +28,7 @@ function FormProductViewDetails(props) {
     try {
       const response = await baloDetailsAPI.getAllByProductId(productCode);
       const data = response.data;
-      console.log(data);
-      console.log('Đây là productCode:', props);
+
       setBaloList(data);
       setTimeout(() => {
         setLoading(false);
@@ -53,28 +48,14 @@ function FormProductViewDetails(props) {
       title: 'STT',
       dataIndex: 'index',
       key: 'index',
-      width: 50,
+      width: 70,
       fixed: 'left',
       render: (text, record, index) => <span>{(pagination.current - 1) * pagination.pageSize + index + 1}</span>,
     },
     {
-      title: 'Balo Code',
-      dataIndex: ['product', 'productCode'],
-      width: 100,
-      fixed: 'left',
-      sorter: (a, b) => a.product.productCode.localeCompare(b.product.ButtonproductCode),
-    },
-    {
-      title: 'Balo Name',
-      dataIndex: ['product', 'productName'],
-      width: 300,
-      fixed: 'left',
-      sorter: (a, b) => a.product.productName.localeCompare(b.product.productName),
-    },
-    {
       title: 'Balo Color',
       dataIndex: ['color', 'colorName'],
-      width: 100,
+      width: 200,
       sorter: (a, b) => a.color.colorName.localeCompare(b.color.colorName),
     },
     {
@@ -86,37 +67,31 @@ function FormProductViewDetails(props) {
     {
       title: 'Material Balo',
       dataIndex: ['material', 'materialName'],
-      width: 100,
+      width: 200,
       sorter: (a, b) => a.material.materialName.localeCompare(b.material.materialName),
     },
     {
       title: 'Size Balo',
       dataIndex: ['size', 'sizeName'],
-      width: 100,
+      width: 200,
       sorter: (a, b) => a.size.sizeName.localeCompare(b.size.sizeName),
     },
     {
       title: 'Brand Balo',
       dataIndex: ['product', 'brand', 'brandName'],
-      width: 100,
+      width: 200,
       sorter: (a, b) => a.product.brand.brandName.localeCompare(b.product.brandbrandName),
     },
     {
       title: 'Compartment Balo',
       dataIndex: ['compartment', 'compartmentName'],
-      width: 100,
+      width: 200,
       sorter: (a, b) => a.compartment.compartmentName.localeCompare(b.compartment.compartmentName),
-    },
-    {
-      title: 'Image Url',
-      dataIndex: 'imageUrl',
-      width: 300,
-      sorter: (a, b) => a.imageUrl.localeCompare(b.imageUrl),
     },
     {
       title: 'Producer Balo',
       dataIndex: ['producer', 'producerName'],
-      width: 100,
+      width: 200,
       sorter: (a, b) => a.producer.producerName.localeCompare(b.producer.producerName),
     },
 
@@ -129,7 +104,7 @@ function FormProductViewDetails(props) {
     {
       title: 'Status',
       dataIndex: 'productDetailStatus',
-      width: 100,
+      width: 200,
       sorter: (a, b) => a.productDetailStatus - b.productDetailStatus,
       render: (productDetailStatus) => {
         switch (productDetailStatus) {
@@ -172,7 +147,7 @@ function FormProductViewDetails(props) {
       fixed: 'right',
       render: (_, record) => (
         <Space size="middle">
-          <FormProductEdit product={record} />
+          <Button></Button>
         </Space>
       ),
     },
@@ -188,48 +163,34 @@ function FormProductViewDetails(props) {
 
   return (
     <Fragment>
-      <Button style={{ borderColor: 'green', color: 'green' }} icon={<InfoOutlined />} onClick={showDrawer}>
-        Thông Tin
-      </Button>
-      <Drawer
-        title={'View Details'}
-        placement="top"
-        height={900} // max=900
-        onClose={onClose}
-        open={open}
-        bodyStyle={{
-          paddingBottom: 80,
-        }}
-      >
-        <div>
-          <div
+      <div>
+        <div
+          style={{
+            marginBottom: 16,
+          }}
+        >
+          <Button type="primary" onClick={start} loading={loading}>
+            Reload
+          </Button>
+          <span
             style={{
-              marginBottom: 16,
+              marginLeft: 8,
             }}
-          >
-            <Button type="primary" onClick={start} loading={loading}>
-              Reload
-            </Button>
-            <span
-              style={{
-                marginLeft: 8,
-              }}
-            ></span>
-          </div>
-          <Table
-            rowKey={(record) => record.productDetailId}
-            loading={loading}
-            columns={columns}
-            dataSource={baloList}
-            pagination={pagination}
-            scroll={{
-              x: 1500,
-              y: 500,
-            }}
-          />
+          ></span>
         </div>
-      </Drawer>
+        <Table
+          rowKey={(record) => record.productDetailId}
+          loading={loading}
+          columns={columns}
+          dataSource={baloList}
+          pagination={pagination}
+          scroll={{
+            x: 1500,
+            y: 500,
+          }}
+        />
+      </div>
     </Fragment>
   );
 }
-export default FormProductViewDetails;
+export default ProductDetailsEdit;

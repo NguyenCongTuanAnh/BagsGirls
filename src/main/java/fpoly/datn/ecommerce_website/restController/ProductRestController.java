@@ -43,7 +43,7 @@ public class ProductRestController {
             @RequestParam(name = "page", required = false) Integer pageNum,
             @RequestParam(name = "size", required = false) Integer pageSize
     ) {
-        if (pageNum == null && pageSize == null) {
+        if (pageNum == null || pageSize == null) {
             return new ResponseEntity<>
                     (this.productService.findAll(), HttpStatus.OK);
         }

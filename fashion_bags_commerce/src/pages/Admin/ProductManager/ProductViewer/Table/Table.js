@@ -8,7 +8,7 @@ import styles from './index.module.scss';
 import { DeleteOutlined, ReloadOutlined } from '@ant-design/icons';
 
 function TableContent() {
-  const [baloList, setBaloList] = useState([]);
+  const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pagesSize, setPagesSize] = useState(15);
@@ -31,7 +31,7 @@ function TableContent() {
     {
       title: 'Code',
       dataIndex: 'productCode',
-      width: 100,
+      width: 200,
       sorter: (a, b) => a.productCode.localeCompare(b.productCode),
     },
     {
@@ -39,6 +39,12 @@ function TableContent() {
       dataIndex: 'productName',
       width: 300,
       sorter: (a, b) => a.productName.localeCompare(b.productName),
+    },
+    {
+      title: 'Balo Brands',
+      dataIndex: ['brands', 'brandName'],
+      width: 200,
+      // sorter: (a, b) => a.productName.localeCompare(b.productName),
     },
     {
       title: 'Status',
@@ -65,14 +71,14 @@ function TableContent() {
       render: (_, record) => (
         <Space size="middle">
           <FormProductViewDetails productCode={record.productCode} />
-          <FormProductEdit balo={record} />
+          <FormProductEdit product={record} brandId={record.brand.brandId} />
           <Popconfirm
             title="Xác Nhận"
             description="Bạn Có chắc chắn muốn xóa?"
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
-              handleDeleteBalo(record.id, -1);
+              handleDeleteBalo(record.productId, -1);
               reload();
             }}
             onCancel={onCancel}
@@ -103,8 +109,12 @@ function TableContent() {
     try {
       const response = await baloAPI.getAll(pageNum, pageSize);
       const data = response.data.content;
+      console.log('====================================');
+      console.log('log');
+      console.log(data);
+      console.log('====================================');
       setTotalItem(response.data.totalElements);
-      setBaloList(data);
+      setProductList(data);
       setTimeout(() => {}, 500);
     } catch (error) {
       console.error('Đã xảy ra lỗi: ', error);
@@ -161,7 +171,7 @@ function TableContent() {
         }}
         rowKey={(record) => record.productCode}
         columns={columns}
-        dataSource={baloList}
+        dataSource={productList}
         onChange={handleTableChange}
         pagination={false}
       />
@@ -180,9 +190,9 @@ function TableContent() {
           x: 1000,
           y: 670,
         }}
-        rowKey={(record) => record.id}
+        rowKey={(record) => record.productId}
         columns={columns}
-        dataSource={baloList}
+        dataSource={productList}
         onChange={handleTableChange}
         pagination={false}
       />
