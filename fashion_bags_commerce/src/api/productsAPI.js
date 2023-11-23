@@ -23,7 +23,7 @@ const productAPI = {
     });
   },
   update(data) {
-    const url = `api/product?id=${data.id}`;
+    const url = `api/product`;
     return axiosClient.put(url, data);
   },
   updateStatus(productID, status) {

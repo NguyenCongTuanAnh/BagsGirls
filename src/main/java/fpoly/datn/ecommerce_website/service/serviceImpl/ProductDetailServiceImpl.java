@@ -31,8 +31,8 @@ public class ProductDetailServiceImpl implements IProductDetalisService {
     }
 
     @Override
-    public List<ProductDetails> findAllByProductId(String baloID) {
-        return this.iProductDetailRepository.findAllByProductId(baloID);
+    public List<ProductDetails> findAllByProductId(String productCode) {
+        return this.iProductDetailRepository.findAllByProductId(productCode);
     }
 
 

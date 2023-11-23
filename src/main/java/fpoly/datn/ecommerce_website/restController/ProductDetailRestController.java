@@ -61,23 +61,23 @@ public class ProductDetailRestController {
 //    }
 //
 //    //delete
-//    @RequestMapping(value = "/product-detail", method = RequestMethod.DELETE)
-//    public ResponseEntity<?> delete(@RequestParam String id) {
-//        productDetailService.delete(id);
-//        return new ResponseEntity<>("Delete successfully!", HttpStatus.OK);
-//    }
+    @RequestMapping(value = "/product-detail", method = RequestMethod.DELETE)
+    public ResponseEntity<?> delete(@RequestParam String id) {
+        productDetailService.delete(id);
+        return new ResponseEntity<>("Delete successfully!", HttpStatus.OK);
+    }
 //
-//    @RequestMapping(value = "product-detail/{productId}", method = RequestMethod.GET)
-//    public ResponseEntity<?> getAllbyproduct(@PathVariable String productId) {
-//        return new ResponseEntity<>(
-//                this.productDetailService.findAllByProductId(productId)
-//                        .stream()
-//                        .map(productDetail -> modelMapper.map(productDetail, ProductDetailDTO.class))
-//                        .collect(Collectors.toList())
-//                , HttpStatus.OK
-//        );
-//
-//    }
+    @RequestMapping(value = "product-detail/{productCode}", method = RequestMethod.GET)
+    public ResponseEntity<?> getAllbyproduct(@PathVariable String productCode) {
+        return new ResponseEntity<>(
+                this.productDetailService.findAllByProductId(productCode)
+                        .stream()
+                        .map(productDetail -> modelMapper.map(productDetail, ProductDetailDTO.class))
+                        .collect(Collectors.toList())
+                , HttpStatus.OK
+        );
+
+    }
 //
 //
 
