@@ -14,12 +14,11 @@ const fullProductAPI = {
     return axiosClient.get(url);
   },
 
-  searchByKeyword(keyword, price) {
+  searchByKeyword(keyword) {
     const url = 'api/products/search';
     return axiosClient.get(url, {
       params: {
         keyword: keyword,
-        price: price,
       },
     });
   },

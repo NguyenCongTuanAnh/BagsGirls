@@ -9,7 +9,6 @@ function ShopDetail() {
     window.scrollTo(0, 0);
   }, []);
   return (
-    <Fragment>
       <body>
       <div className="fullpage">
           <div className="header001">
@@ -23,7 +22,6 @@ function ShopDetail() {
           </div>
         </div>
       </body>
-    </Fragment>
   );
 }
 

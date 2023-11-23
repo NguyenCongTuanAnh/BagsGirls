@@ -18,16 +18,26 @@ public interface IProductRepository extends JpaRepository<Products, String> {
 
     @Query("SELECT p FROM Products p " +
             "LEFT JOIN p.productDetails pd " +
-            "LEFT JOIN p.brand b " +
-            "LEFT JOIN pd.material m " +
-            "LEFT JOIN pd.color c " +
+            "LEFT JOIN p.brand brand " +
+            "LEFT JOIN pd.material material " +
+            "LEFT JOIN pd.color color " +
+            "LEFT JOIN pd.size sizes " +
+            "LEFT JOIN pd.type types " +
+            "LEFT JOIN pd.producer producer " +
+            "LEFT JOIN pd.compartment compartment " +
+            "LEFT JOIN pd.buckleType buckleType " +
             "WHERE p.productName LIKE %:keyword% " +
-            "OR pd.retailPrice = :price " +
-            "OR b.brandName LIKE %:keyword% " +
-            "OR c.colorName LIKE %:keyword% " +
-            "OR m.materialName LIKE %:keyword%")
-    List<Products> searchProductsByKeywordOrPriceOrBrandOrMaterial(String keyword, BigDecimal price);
-
+            "OR p.productCode LIKE %:keyword% " +
+            "OR brand.brandName LIKE %:keyword% " +
+            "OR color.colorName LIKE %:keyword% " +
+            "OR material.materialName LIKE %:keyword% " +
+            "OR sizes.sizeName LIKE %:keyword% " +
+            "OR types.typeName LIKE %:keyword% " +
+            "OR producer.producerName LIKE %:keyword% " +
+            "OR compartment.compartmentName LIKE %:keyword% " +
+            "OR buckleType.buckleTypeName LIKE %:keyword%"
+    )
+    List<Products> searchProductsByKeywordOrBrandOrMaterial(String keyword);
 
 
 }

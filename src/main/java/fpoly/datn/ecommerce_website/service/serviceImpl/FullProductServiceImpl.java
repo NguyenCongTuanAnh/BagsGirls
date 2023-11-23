@@ -131,8 +131,8 @@ public class FullProductServiceImpl {
     }
 
     // search sproduct theo name, price, material,color
-    public List<Products> searchProducts(String keyword, BigDecimal price) {
-        return productRepository.searchProductsByKeywordOrPriceOrBrandOrMaterial(keyword, price);
+    public List<Products> searchProducts(String keyword) {
+        return productRepository.searchProductsByKeywordOrBrandOrMaterial(keyword);
     }
 
 }

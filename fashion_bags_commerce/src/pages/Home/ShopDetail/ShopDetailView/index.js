@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './shopDetail.module.scss';
-import { Checkbox, Image, Input, Select } from 'antd';
+import { Checkbox, Image, Input, Select, notification } from 'antd';
 import fullProductAPI from '~/api/client/fullProductAPI';
 import { Link, useParams } from 'react-router-dom';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
@@ -70,11 +70,19 @@ function ShopDetailView() {
         }
         localStorage.setItem('temporaryCart', JSON.stringify(updatedTemporaryCart));
         setTemporaryCart(updatedTemporaryCart);
-        alert('Đã thêm sản phẩm vào giỏ hàng thành công!');
+        notification.success({
+          message: 'Thành công',
+          description: 'Bạn đã thêm sản phẩm vào giỏ hàng',
+          duration: 2,
+        });
         // }
       } else {
         // Hiển thị thông báo cho người dùng rằng số lượng không đủ trong kho
-        alert('Số lượng không đủ trong kho!');
+        notification.error({
+          message: 'Thất bại',
+          description: 'Số lượng sản phẩm trong kho không đủ',
+          duration: 2,
+        });
       }
     } catch (error) {
       console.error('Error adding product to cart:', error);
@@ -117,10 +125,10 @@ function ShopDetailView() {
         const data = response.data;
         setProduct(data);
         setDataDetail(data?.productDetails[0]);
-        setLoading(true)
+        setLoading(true);
         console.log('>>>> data', data);
       } catch (error) {
-        setLoading(true)
+        setLoading(true);
         console.error('Error fetching product details:', error);
       }
     };
@@ -148,10 +156,8 @@ function ShopDetailView() {
 
   const handleColorChange = (color) => {
     setSelectedColor(color);
+    setSelectedMaterial(null);
     setMaterialOptions(getMaterialOptionsForColor(color));
-    setSelectedMaterial(null); // Reset selected material when changing color
-
-    // Update dataDetail to reflect the details of the selected color
     const selectedColorDetail = product.productDetails.find((detail) => detail.colorName === color);
     setDataDetail(selectedColorDetail);
   };
@@ -161,7 +167,6 @@ function ShopDetailView() {
       return null;
     }
 
-    // Extract unique color names from product details
     const uniqueColors = [...new Set(product.productDetails.map((variant) => variant.colorName))];
 
     return uniqueColors.map((color, index) => (
@@ -188,7 +193,7 @@ function ShopDetailView() {
   };
 
   const renderMaterial = () => {
-    if (!materialOptions.length) {
+    if (!selectedColor || !materialOptions.length) {
       return null;
     }
 
@@ -207,7 +212,7 @@ function ShopDetailView() {
 
   if (!product) {
     // You can render a loading state or an error message here
-   
+
     return (
       <div style={{ textAlign: 'center', marginTop: '20px' }}>
         <BeatLoader color="#d64336" loading={true} size={50} />
@@ -318,11 +323,15 @@ function ShopDetailView() {
                 <h4 className={styles.price}>{VNDFormaterFunc(dataDetail.retailPrice)}</h4>
               </span>
               <div className={styles.group_color}>
-                <p style={{ fontSize: '14pt', float: 'left', padding: '5px 15px 0 0' }}>Màu sắc: </p>{' '}
-                <div className={styles.variant}>{renderColor()}</div>
+                <div className={styles.variant}>
+                  <p style={{ fontSize: '14pt', float: 'left', padding: '5px 15px 0 0' }}>Màu sắc: </p>
+                  {renderColor()}
+                </div>
                 <br></br>
-                <p style={{ fontSize: '14pt', float: 'left', padding: '5px 60px 0 0' }}>Size: </p>{' '}
-                <div className={styles.variant}>{renderMaterial()}</div>
+                <div className={styles.variant}>
+                  <p style={{ fontSize: '14pt', float: 'left', padding: '5px 15px 0 0' }}>Chất liệu: </p>
+                  {renderMaterial()}
+                </div>
               </div>
               <div className={styles.amount}>
                 <h3 style={{ fontStyle: 'italic', fontSize: '16pt' }}>

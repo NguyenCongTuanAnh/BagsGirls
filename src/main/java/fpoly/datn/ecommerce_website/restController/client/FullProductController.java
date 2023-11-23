@@ -64,27 +64,19 @@ public class FullProductController {
 
     @GetMapping("/products/search")
     public ResponseEntity<List<Products>> searchProducts(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) BigDecimal price
+            @RequestParam(required = false) String keyword
     ) {
         List<Products> foundProducts;
 
         // Gọi phương thức tìm kiếm sản phẩm từ service
-        if (keyword != null && price != null) {
-            foundProducts = productService.searchProducts(keyword, price);
-        } else if (keyword != null) {
-            foundProducts = productService.searchProducts(keyword, null);
-        } else if (price != null) {
-            foundProducts = productService.searchProducts(null, price);
+        if (keyword != null) {
+            foundProducts = productService.searchProducts(keyword);
         } else {
             // Nếu không có yêu cầu tìm kiếm cụ thể, có thể trả về tất cả sản phẩm
-            foundProducts=  productRepository.findAll();
+            foundProducts = productRepository.findAll();
         }
-
         // Trả về danh sách sản phẩm tìm thấy
         return ResponseEntity.ok(foundProducts);
     }
-
-
 
 }
