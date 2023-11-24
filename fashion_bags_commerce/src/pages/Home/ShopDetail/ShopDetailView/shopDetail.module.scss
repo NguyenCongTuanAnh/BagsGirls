@@ -5,12 +5,17 @@
   font-size: 100%;
   font-weight: normal;
   vertical-align: baseline;
-  background: transparent;
+  background: red;
   border-bottom: 1px solid #000000;
 }
+.group_images {
+  padding-right: 60px;
+}
 .image_main {
-  margin: 0 0 10px 20px;
-  padding: 10px 0 0 0;
+  box-shadow: 0 0px 10px rgba(0, 0, 0, 0.3);
+
+  width: 400px;
+  height: 650px;
   display: flex;
 }
 .image_child {
