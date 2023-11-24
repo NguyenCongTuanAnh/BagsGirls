@@ -5,6 +5,7 @@ import vndFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import { DeleteFilled, DeleteOutlined, DoubleRightOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { Tab } from 'bootstrap';
+import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 
 function CartItem() {
   const [cartItems, setCartItems] = useState([]);
@@ -119,8 +120,8 @@ function CartItem() {
       title: 'Xóa',
       dataIndex: 'operation',
       render: (text, record) => (
-        <Button type="dashed" danger onClick={() => handleRemoveItem(record)} icon={<DeleteOutlined/>}>
-           Xóa
+        <Button type="dashed" danger onClick={() => handleRemoveItem(record)} icon={<DeleteOutlined />}>
+          Xóa
         </Button>
       ),
       key: 'operation',
@@ -185,7 +186,7 @@ function CartItem() {
           footer={() => (
             <div>
               <h3>
-                Tổng tiền: <span style={{ color: 'red' }}> {vndFormaterFunc(calculateTotal())}</span>
+                Tổng tiền: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
               </h3>
             </div>
           )}
@@ -209,11 +210,6 @@ function CartItem() {
                   <li className={styles.productDetailItem}>
                     <span className={styles.label}>Giá trị hàng hóa: </span>
                     <span className={styles.labelName}>{vndFormaterFunc(calculateTotal())}</span>
-                  </li>
-                  <hr></hr>
-                  <li className={styles.productDetailItem}>
-                    <span className={styles.label}>Phí vận chuyển: </span>
-                    <span className={styles.labelName}>chưa có</span>
                   </li>
                   <hr></hr>
                   <li className={styles.productDetailItem}>

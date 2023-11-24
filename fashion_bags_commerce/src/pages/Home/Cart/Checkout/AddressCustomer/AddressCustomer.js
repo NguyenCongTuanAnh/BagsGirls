@@ -73,7 +73,9 @@ const AddressVietnam = () => {
   return (
     <div className="form-container">
       <form onSubmit={handleSubmit}>
-        <h1>Thông tin người nhận hàng</h1>
+      <div className="titleNhanHang">
+  <h1>Thông tin người đặt hàng</h1>
+</div>
         <p>
           Bạn đã có tài khoản?{' '}
           <span>

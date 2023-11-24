@@ -13,7 +13,7 @@
 }
 .image_main {
   box-shadow: 0 0px 10px rgba(0, 0, 0, 0.3);
-
+  border-radius: 20px;
   width: 400px;
   height: 650px;
   display: flex;
@@ -39,6 +39,7 @@
   text-transform: uppercase;
   border-bottom: 1px solid #000000;
   padding-bottom: 20px;
+  font-family: 'Times New Roman', Times, serif;
   margin-bottom: 25px;
 }
 .price {
