@@ -1,17 +1,21 @@
 import { FacebookOutlined, GooglePlusOutlined } from '@ant-design/icons';
 import React, { useState } from 'react';
 import styles from '../../indexLogin.module.scss';
-import { Link, useHistory, useNavigate } from 'react-router-dom';
+import { useNavigate, useHistory } from 'react-router-dom';
 import { Button, Form, notification } from 'antd';
 import Checkbox from 'antd/es/checkbox/Checkbox';
 import Input from 'antd/es/input/Input';
 import axios from 'axios';
 import AuthAPI from '~/api/auth/AuthAPI';
 import customerAPI from '~/api/customerAPI';
+
 import staffAPI from '~/api/staffAPI';
 function LoginForm(props) {
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Đặt mặc định là false khi chưa đăng nhập
+
   const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -37,8 +41,12 @@ function LoginForm(props) {
         notification.success({
           message: 'Đăng nhập thành công!!!',
           description: `Welcome back to ${response.data.data.users.fullName}`,
-          duration: 2,
+          duration: 1,
         });
+
+        setIsLoggedIn(true); // Đặt state để thông báo đã đăng nhập
+
+        // Chuyển hướng người dùng sau khi đăng nhập thành công
         navigate('/');
       }
       if (response.data.data.users.role === 'ROLE_STAFF' || response.data.data.users.role === 'ROLE_ADMIN') {
@@ -60,7 +68,7 @@ function LoginForm(props) {
       notification.error({
         message: 'Lỗi',
         description: 'Thông tin đăng nhập không chính xác',
-        duration: 2,
+        duration: 1,
       });
       localStorage.removeItem('usersTokenString');
       localStorage.removeItem('userId');
@@ -135,7 +143,7 @@ function LoginForm(props) {
           }}
         >
           <Button type="primary" htmlType="submit">
-            Submit
+            Đăng nhập
           </Button>
         </Form.Item>
       </Form>

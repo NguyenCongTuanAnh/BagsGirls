@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from './ListCheckOut.module.scss';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
-import { Input } from 'antd';
-import { Form } from 'react-router-dom';
+import { Input, Select } from 'antd';
+
 function ListCheckOut() {
   const [cartItems, setCartItems] = useState([]);
 
@@ -22,10 +22,10 @@ function ListCheckOut() {
 
   return (
     <div className={styles.list_product}>
-      <div className={styles.titleĐonHang}>
+      <div className={styles.titleDonHang}>
         <h1>Đơn hàng</h1>
       </div>
-      <br></br>
+      <br />
 
       {cartItems.map((item, index) => (
         <div className={styles.item} key={index}>
@@ -50,36 +50,47 @@ function ListCheckOut() {
           </div>
         </div>
       ))}
-      <hr></hr>
+      <hr />
       <div>
         <h3>
           Tổng tiền: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
         </h3>
       </div>
 
-      <hr></hr>
+      <hr />
       <div className={styles.voucher}>
         <h4>Voucher:</h4>
       </div>
 
-      <hr></hr>
-      <form className={styles.pay}>
+      <hr />
+      <div className={styles.pay}>
         <h3>Phương thức thanh toán:</h3>
-        <Input name="thanhtoan" type="radio" value="Thanh toán khi nhận hàng" />
-        <Input name="thanhtoan" type="radio" value="credit_card" />
-        <Input name="thanhtoan" type="radio" value="bank_transfer" />
-      </form>
+        {/* <Select
+          style={{ width: '100%', height: '40px', fontSize: '16px' }}
+          placeholder="Vui lòng chọn hình thức thanh toán"
+        >
+          <Select.Option>Thanh Toán khi nhận hàng</Select.Option>
+          <Select.Option>Chuyển khoản ngân hàng</Select.Option>
+          <Select.Option>Ví điện tử</Select.Option>
+        </Select> */}
+        <Input name="radioPay" type="radio" value={''} />
+        Chuyển khoản ngân hàng
+        <Input name="radioPay" type="radio" value={''} />
+        Thanh toán khi nhận hàng
+        <Input name="radioPay" type="radio" value={''} />
+        Ví điện tử
+      </div>
 
-      <hr></hr>
+      <hr />
 
       <div className={styles.totalCheckout}>
-        <br></br>
+        <br />
         <h4>
           Tổng thanh toán: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
         </h4>
-        <br></br>
+        <br />
       </div>
-      <br></br>
+      <br />
 
       <button className={styles.checkOut}>Thanh toán</button>
     </div>

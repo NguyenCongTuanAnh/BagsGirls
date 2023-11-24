@@ -1,17 +1,18 @@
-import { Badge, Carousel } from 'antd';
+import { Badge } from 'antd';
 import { Link } from 'react-router-dom';
-
-import styles from '../MainHeader/index.module.scss';
-import { SearchOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { SearchOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import fullProductAPI from '~/api/client/fullProductAPI';
 
+import styles from '../MainHeader/index.module.scss';
+
 function MainHeader() {
-  const [cartCount, setCartCount] = useState(0); // Default value set to 0
-  const [searchKeyword, setSearchKeyword] = useState([]); // Default value set to 0
+  const [cartCount, setCartCount] = useState(0); // Mặc định là 0
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(true); // Đặt mặc định là false khi chưa đăng nhập
 
   useEffect(() => {
-    // Retrieve cart count from local storage or API
+    // Lấy số lượng sản phẩm trong giỏ hàng từ local storage hoặc API
     const storedCart = localStorage.getItem('temporaryCart');
     const parsedCart = storedCart ? JSON.parse(storedCart) : [];
     const totalCount = parsedCart.reduce((acc, item) => acc + item.quantity, 0);
@@ -34,11 +35,10 @@ function MainHeader() {
     setSearchKeyword(event.target.value);
   };
 
-  // Thêm hàm xử lý khi nhấn Enter
   const handleEnterKeyPress = (event) => {
     if (event.key === 'Enter') {
-      event.preventDefault(); // Ngăn chặn hành động mặc định của form (nếu có)
-      handleSearch(); // Gọi hàm xử lý tìm kiếm
+      event.preventDefault();
+      handleSearch();
     }
   };
 
@@ -52,32 +52,45 @@ function MainHeader() {
           <div className={styles.toolLeft}></div>
           <div className={styles.search}>
             <div className={styles.searchForm}>
-              <form className={styles.form} >
+              <form className={styles.form}>
                 <SearchOutlined className={styles.icon} />
-
                 <input
                   className={styles.searchInput}
                   placeholder="Tìm kiếm sản phẩm"
                   value={searchKeyword}
                   onChange={handleInputChange}
-                  onKeyDown={handleEnterKeyPress} // Sử dụng hàm xử lý khi nhấn phím
+                  onKeyDown={handleEnterKeyPress}
                 />
               </form>
             </div>
           </div>
           <div className={styles.toolRight}>
             <div className={styles.profile}>
-              <div className={styles.login}>
-                <ul className={styles.horizontalLogin}>
-                  <li>
-                    <Link to={'/login'}>ĐĂNG NHẬP</Link>
-                  </li>
-                  <span> / </span>
-                  <li>
-                    <Link to={'/login'}>ĐĂNG KÝ</Link>
-                  </li>
-                </ul>
-              </div>
+              {isLoggedIn ? (
+                <Link to={'/login'}>
+                  <UserOutlined
+                    style={{
+                      fontSize: '25px',
+                      border: '1px black solid',
+                      margin: '0 0 0 40px',
+                      padding: '10px',
+                      borderRadius: '32px',
+                    }}
+                  />
+                </Link>
+              ) : (
+                <div className={styles.login}>
+                  <ul className={styles.horizontalLogin}>
+                    <li>
+                      <Link to={'/login'}>ĐĂNG NHẬP</Link>
+                    </li>
+                    <span> / </span>
+                    <li>
+                      <Link to={'/register'}>ĐĂNG KÝ</Link>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
             <div className={styles.cart}>
               <Link to="/cart">

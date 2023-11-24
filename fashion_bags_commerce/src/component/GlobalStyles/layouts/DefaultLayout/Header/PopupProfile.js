@@ -25,9 +25,9 @@ function PopupProfile() {
       canNavigate = true;
       setTimeout(() => {
         localStorage.removeItem('customerTokenString');
-        localStorage.removeItem('staffTokenString');
+        // localStorage.removeItem('staffTokenString');
         localStorage.removeItem('customerId');
-        localStorage.removeItem('staffId');
+        // localStorage.removeItem('staffId');
         localStorage.removeItem('token');
         navigate('/login');
       }, 1000);
@@ -42,7 +42,7 @@ function PopupProfile() {
       actions={[
         <Popconfirm
           title="Xác Nhận"
-          description="Bạn Có chắc chắn muốn Thêm?"
+          description="Bạn Có chắc chắn muốn đăng xuất?"
           okText="Đồng ý"
           cancelText="Không"
           onConfirm={handleLgOut}
