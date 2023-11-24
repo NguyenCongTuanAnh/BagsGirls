@@ -5,11 +5,13 @@ import { useEffect, useState } from 'react';
 import fullProductAPI from '~/api/client/fullProductAPI';
 
 import styles from '../MainHeader/index.module.scss';
+import PopupProfile from '~/component/GlobalStyles/layouts/DefaultLayout/Header/PopupProfile';
+import UserProfile from './UserProfile';
 
 function MainHeader() {
   const [cartCount, setCartCount] = useState(0); // Mặc định là 0
   const [searchKeyword, setSearchKeyword] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Đặt mặc định là false khi chưa đăng nhập
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Đặt mặc định là false khi chưa đăng nhập
 
   useEffect(() => {
     // Lấy số lượng sản phẩm trong giỏ hàng từ local storage hoặc API
@@ -17,6 +19,11 @@ function MainHeader() {
     const parsedCart = storedCart ? JSON.parse(storedCart) : [];
     const totalCount = parsedCart.reduce((acc, item) => acc + item.quantity, 0);
     setCartCount(totalCount);
+
+    const userToken = localStorage.getItem('customerTokenString');
+    if (userToken) {
+      setIsLoggedIn(true);
+    }
   }, []);
 
   const handleSearch = () => {
@@ -67,17 +74,10 @@ function MainHeader() {
           <div className={styles.toolRight}>
             <div className={styles.profile}>
               {isLoggedIn ? (
-                <Link to={'/login'}>
-                  <UserOutlined
-                    style={{
-                      fontSize: '25px',
-                      border: '1px black solid',
-                      margin: '0 0 0 40px',
-                      padding: '10px',
-                      borderRadius: '32px',
-                    }}
-                  />
-                </Link>
+                <div style={{ paddingTop: '20px' }}>
+                  {' '}
+                  <UserProfile />
+                </div>
               ) : (
                 <div className={styles.login}>
                   <ul className={styles.horizontalLogin}>
