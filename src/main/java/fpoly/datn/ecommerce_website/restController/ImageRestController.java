@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -67,8 +68,8 @@ public class ImageRestController {
 //    }
 //
 //    //delete
-//    @RequestMapping(value = "/image", method = RequestMethod.DELETE)
-//    public ResponseEntity<?> delete(@RequestParam String id) {
-//        return new ResponseEntity<>(this.imageService.delete(id), HttpStatus.OK);
-//    }
+    @RequestMapping(value = "/image", method = RequestMethod.DELETE)
+    public ResponseEntity<?> delete(@RequestParam String imageId) {
+        return new ResponseEntity<>(this.imageService.delete(imageId), HttpStatus.OK);
+    }
 }

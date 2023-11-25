@@ -42,6 +42,8 @@ public class BuckleTypeRestController {
     @RequestMapping(value = "/buckletype/pagination", method = RequestMethod.GET)
     public ResponseEntity<?> phanTrang(@RequestParam(name = "page", defaultValue = "0") int pageNum,
                                        @RequestParam(name = "size", defaultValue = "15") int pageSize){
+        System.out.println(pageSize);
+        System.out.println(pageNum);
         return ResponseEntity.ok(buckleTypeService.findAllPagination(pageNum, pageSize));
     }
 

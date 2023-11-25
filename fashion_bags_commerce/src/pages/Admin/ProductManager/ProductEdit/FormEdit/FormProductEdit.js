@@ -1,13 +1,45 @@
 import styles from '../FormEdit/FormProductEdit.module.scss';
 
-import React, { Fragment, useEffect, useState } from 'react';
-import { EditOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Col, Drawer, Form, Input, Popconfirm, Row, Select, Space, Table, notification } from 'antd';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
+import { EditOutlined, InboxOutlined, PlusOutlined } from '@ant-design/icons';
+import {
+  Button,
+  Col,
+  Drawer,
+  Form,
+  Image,
+  Input,
+  Modal,
+  Popconfirm,
+  Row,
+  Select,
+  Space,
+  Table,
+  Upload,
+  message,
+  notification,
+} from 'antd';
 import ProductDetailsEdit from './ProductDetailsEdit/ProductDetailsEdit';
 import baloDetailsAPI from '~/api/productDetailsAPI';
 import brandAPI from '~/api/propertitesBalo/brandAPI';
 import productAPI from '~/api/productsAPI';
+import productDetailsAPI from '~/api/productDetailsAPI';
+import { deleteObject, getStorage, ref } from 'firebase/storage';
+import { storage } from '~/firebase/firebase';
+import Dragger from 'antd/es/upload/Dragger';
+import imageAPI from '~/api/ImageAPI';
+import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
+import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 const { Option } = Select;
+
+const getBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+
 function FormProductEdit(props) {
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
@@ -16,23 +48,29 @@ function FormProductEdit(props) {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [loading, setLoading] = useState(false);
   const [baloList, setBaloList] = useState([]);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
+  const [previewTitle, setPreviewTitle] = useState('');
+  const [imageList, setImageList] = useState([]);
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
   });
+  const [fileList, setFileList] = useState([]);
 
   const start = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      fetchProducts();
+      fetchProducts(product.productId);
+      props.handleRefresh();
     }, 1000);
   };
-  const fetchProducts = async (productCode) => {
+  const fetchProducts = useCallback(async (productId) => {
     setLoading(true);
 
     try {
-      const response = await baloDetailsAPI.getAllByProductId(productCode);
+      const response = await baloDetailsAPI.getAllByProductId(productId);
       const data = response.data;
 
       setBaloList(data);
@@ -42,19 +80,22 @@ function FormProductEdit(props) {
     } catch (error) {
       console.error('Đã xảy ra lỗi: ', error);
     }
-  };
+  }, []);
   const handleLoadBrand = async () => {
     const brandData = await brandAPI.getAll();
     setBrand(brandData.data);
   };
   useEffect(() => {
-    handleLoadBrand();
-  }, []);
-  useEffect(() => {
-    fetchProducts(product.productCode);
-
-    handleLoadBrand();
-  }, []);
+    const imgListConvert = props.product.images || [];
+    const transformedImageList = imgListConvert.map((image) => ({
+      uid: image.imageId,
+      name: image.imgName,
+      status: 'done', // Hoặc bạn có thể set giá trị status khác nếu cần thiết
+      url: image.imgUrl,
+    }));
+    setImageList(transformedImageList);
+    // setFileList(transformedImageList);
+  }, [props.product.images]);
 
   const columns = [
     {
@@ -66,106 +107,100 @@ function FormProductEdit(props) {
       render: (text, record, index) => <span>{(pagination.current - 1) * pagination.pageSize + index + 1}</span>,
     },
     {
-      title: 'Balo Color',
+      title: 'Màu Sắc',
       dataIndex: ['color', 'colorName'],
       width: 200,
       sorter: (a, b) => a.color.colorName.localeCompare(b.color.colorName),
     },
     {
-      title: 'Type Balo',
+      title: 'Kiểu Balo',
       dataIndex: ['type', 'typeName'],
       width: 200,
       sorter: (a, b) => a.type.typeName.localeCompare(b.type.typeName),
     },
     {
-      title: 'Material Balo',
+      title: 'Chất Liệu',
       dataIndex: ['material', 'materialName'],
       width: 200,
       sorter: (a, b) => a.material.materialName.localeCompare(b.material.materialName),
     },
     {
-      title: 'Size Balo',
+      title: 'Kích Thước',
       dataIndex: ['size', 'sizeName'],
       width: 200,
       sorter: (a, b) => a.size.sizeName.localeCompare(b.size.sizeName),
     },
     {
-      title: 'Brand Balo',
+      title: 'Thương Hiệu',
       dataIndex: ['product', 'brand', 'brandName'],
       width: 200,
       sorter: (a, b) => a.product.brand.brandName.localeCompare(b.product.brandbrandName),
     },
     {
-      title: 'Compartment Balo',
+      title: 'Kiểu Ngăn',
       dataIndex: ['compartment', 'compartmentName'],
       width: 200,
       sorter: (a, b) => a.compartment.compartmentName.localeCompare(b.compartment.compartmentName),
     },
     {
-      title: 'Producer Balo',
+      title: 'Nhà Sản Xuất',
       dataIndex: ['producer', 'producerName'],
       width: 200,
       sorter: (a, b) => a.producer.producerName.localeCompare(b.producer.producerName),
     },
 
     {
-      title: 'Describe',
+      title: 'Mô Tả',
       dataIndex: 'productDetailDescribe',
       width: 500,
       sorter: (a, b) => a.productDetailDescribe.localeCompare(b.productDetailDescribe),
     },
     {
-      title: 'Status',
+      title: 'Trạng Thái',
       dataIndex: 'productDetailStatus',
       width: 200,
       sorter: (a, b) => a.productDetailStatus - b.productDetailStatus,
       render: (productDetailStatus) => {
         switch (productDetailStatus) {
           case 1:
-            return 'Hoạt động';
+            return 'Hoạt Động';
           case 0:
-            return 'Không hoạt động';
+            return 'Không Hoạt Động';
           case -1:
-            return 'Trạng thái khác';
+            return 'Trạng Thái Khác';
           default:
-            return 'Không xác định';
+            return 'Không Xác Định';
         }
       },
     },
     {
-      title: 'Import Price',
+      title: 'Giá Nhập',
       dataIndex: 'importPrice',
       fixed: 'right',
-      width: 100,
+      width: 150,
       sorter: (a, b) => a.importPrice - b.importPrice,
+      render: (importPrice) => VNDFormaterFunc(importPrice) + ' / Cái',
     },
     {
-      title: 'Retails Price',
+      title: 'Giá Bán',
       dataIndex: 'retailPrice',
       fixed: 'right',
-      width: 100,
+      width: 150,
       sorter: (a, b) => a.retailPrice - b.retailPrice,
+      render: (retailPrice) => VNDFormaterFunc(retailPrice),
     },
     {
-      title: 'Amount',
+      title: 'Số Lượng',
       dataIndex: 'productDetailAmount',
       fixed: 'right',
-      width: 100,
+      width: 150,
       sorter: (a, b) => a.productDetailAmount - b.productDetailAmount,
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      width: 100,
-      fixed: 'right',
-      render: (_, record) => (
-        <Space size="middle">
-          <Button></Button>
-        </Space>
-      ),
+      render: (productDetailAmount) => productDetailAmount + ' cái',
     },
   ];
   const showDrawer = () => {
+    fetchProducts(product.productId);
+    handleLoadBrand();
     setOpen(true);
   };
   const onClose = () => {
@@ -203,14 +238,161 @@ function FormProductEdit(props) {
     selectedRowKeys,
     onChange: (selectedKeys) => {
       setSelectedRowKeys(selectedKeys);
-      console.log('====================================');
-      console.log(selectedKeys);
-      console.log('====================================');
     },
   };
-  const handleDeleteSelected = () => {
+  const handleDeleteSelected = async () => {
     setSelectedRowKeys([]);
+    if (selectedRowKeys.length === 0) {
+      notification.info({
+        message: 'Lỗi',
+        description: 'Vui lòng Chọn Sản phẩm chi tiết cần xóa!!!!',
+        duration: 2,
+      });
+    } else {
+      var isDone = true;
+      for (const e of selectedRowKeys) {
+        try {
+          const response = await productDetailsAPI.delete(e);
+          if (response.status !== 200) {
+            isDone = false;
+          }
+        } catch (error) {
+          isDone = false;
+        }
+      }
+      if (isDone === true) {
+        start();
+        notification.success({
+          message: 'Thành công',
+          description: 'Đã xóa thành công!!!!',
+          duration: 2,
+        });
+        fetchProducts(props.product.productId);
+      } else {
+        notification.error({
+          message: 'Lỗi',
+          description: 'Đã có lỗi trong quá trình xóa!!!!',
+          duration: 2,
+        });
+      }
+    }
   };
+  useEffect(() => {
+    let err = '';
+    var tempList = fileList;
+    if (fileList.length > 6) {
+      err = 'Chỉ được chọn tối đa 6 ảnh , vui lòng chọn lại!!!!';
+      tempList = [];
+      setFileList([]);
+    } else {
+      for (let i = 0; i < fileList.length; i++) {
+        const element = fileList[i];
+
+        if (!(element.type !== 'image/jpg' || element.type !== 'image/png')) {
+          err = 'Vui lòng chọn ảnh có định dạng PNG/JPG';
+          tempList = [];
+          setFileList([]);
+          break;
+        }
+        if (element.size / 1024 / 1024 > 5) {
+          err = 'Size ảnh quá lớn (nhỏ hơn 5Mb), vui lòng chọn lại';
+          tempList = [];
+          setFileList([]);
+          break;
+        }
+      }
+    }
+    if (err !== '') {
+      message.error(err);
+      err = '';
+    }
+    if (tempList.length !== 0) {
+      console.log(fileList);
+      console.log(tempList);
+      console.log('TH');
+    }
+  }, [fileList]);
+
+  const addFileImg = (fileLists) => {
+    setFileList(fileLists);
+  };
+  const beforeUpload = (file, fileLists) => {
+    addFileImg(fileLists);
+    return false;
+  };
+  const UploadDragger = (
+    <Dragger multiple name="files" showUploadList={false} beforeUpload={beforeUpload}>
+      <p className="ant-upload-drag-icon">
+        <InboxOutlined />
+      </p>
+      <p className="ant-upload-text">Kéo thả hình ảnh vào đây</p>
+    </Dragger>
+  );
+  const handleCancel = () => setPreviewOpen(false);
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+    setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
+  };
+  const handleChange = ({ fileList: newFileList }) => {
+    const deletedFiles = imageList.filter((oldFile) => !newFileList.some((newFile) => newFile.uid === oldFile.uid));
+    handleDeleteImage(deletedFiles[0]);
+    console.log(newFileList);
+    setImageList(newFileList);
+  };
+  const handleDeleteImage = async (file) => {
+    console.log(file);
+    const desertRef1 = ref(storage, 'mulitpleFiles/' + file.name);
+    deleteObject(desertRef1)
+      .then(async () => {
+        try {
+          const response = await imageAPI.delete(file.uid);
+          if (response.status === 200) {
+            notification.success({
+              message: 'Thành Công',
+              description: 'Xóa thành công ' + file.name,
+              duration: 2,
+            });
+            props.handleRefresh();
+            fetchProducts(product.productId);
+          } else {
+            notification.error({
+              message: 'Lỗi',
+              description: 'Xóa lỗi',
+              duration: 2,
+            });
+          }
+        } catch (error) {}
+      })
+      .catch((error) => {
+        notification.error({
+          message: 'Lỗi',
+          description: 'Xóa ' + file.fileName + 'lỗi',
+          duration: 2,
+        });
+      });
+  };
+  const DeleteButton = (
+    <div>
+      <Popconfirm
+        title="Xác Nhận"
+        description="Bạn Có chắc chắn muốn Sửa?"
+        okText="Đồng ý"
+        cancelText="Không"
+        onConfirm={handleDeleteSelected}
+        onCancel={() => {
+          console.log('abc');
+        }}
+      >
+        <Button type="primary" loading={false} disabled={selectedRowKeys.length === 0}>
+          Xóa Balo Chi tiết
+        </Button>
+      </Popconfirm>
+    </div>
+  );
   return (
     <Fragment>
       <Button style={{ borderColor: 'blue', color: 'blue' }} onClick={showDrawer} icon={<EditOutlined />}>
@@ -221,8 +403,11 @@ function FormProductEdit(props) {
         width={1600}
         onClose={onClose}
         open={open}
-        bodyStyle={{
-          paddingBottom: 80,
+        styles={{
+          body: {
+            paddingBottom: 80,
+            // Các style khác bạn muốn áp dụng vào phần body của Drawer
+          },
         }}
         extra={
           <Space>
@@ -345,6 +530,29 @@ function FormProductEdit(props) {
           </Row>
         </Form>
 
+        <hr></hr>
+        <div>
+          <Upload
+            listType="picture-card"
+            fileList={imageList}
+            onPreview={handlePreview}
+            onChange={handleChange}
+          ></Upload>
+          {imageList.length >= 96 || fileList.length >= 96 ? null : UploadDragger}
+          <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
+            <Image
+              onClick={() => {
+                setPreviewOpen(false);
+              }}
+              alt="example"
+              style={{
+                width: '100%',
+              }}
+              src={previewImage}
+            />
+          </Modal>
+        </div>
+        <hr></hr>
         <div>
           <h1>Thông tin Balo Chi tiết</h1>
           <hr></hr>
@@ -353,10 +561,16 @@ function FormProductEdit(props) {
               marginBottom: 16,
             }}
           >
-            <Button type="primary" onClick={start} loading={loading}>
-              Reload
-            </Button>
-
+            <div>
+              <Row>
+                <Col span={2}>
+                  <Button type="primary" onClick={start} loading={loading}>
+                    Reload
+                  </Button>
+                </Col>
+                <Col span={1}>{selectedRowKeys.length === 0 ? null : DeleteButton}</Col>
+              </Row>
+            </div>
             <Table
               rowKey={(record) => record.productDetailId}
               rowSelection={rowSelection}
@@ -369,22 +583,6 @@ function FormProductEdit(props) {
                 y: 500,
               }}
             />
-            <div>
-              <Popconfirm
-                title="Xác Nhận"
-                description="Bạn Có chắc chắn muốn Sửa?"
-                okText="Đồng ý"
-                cancelText="Không"
-                onConfirm={handleDeleteSelected}
-                onCancel={() => {
-                  console.log('abc');
-                }}
-              >
-                <Button type="primary" loading={false} disabled={selectedRowKeys.length === 0}>
-                  Xóa Balo Chi tiết
-                </Button>
-              </Popconfirm>
-            </div>
           </div>
         </div>
       </Drawer>

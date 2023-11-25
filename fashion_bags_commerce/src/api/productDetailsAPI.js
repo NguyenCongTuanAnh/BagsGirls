@@ -9,8 +9,12 @@ const productDetailsAPI = {
     const url = `api/product-details?id=${id}`;
     return axiosClient.get(url);
   },
-  getAllByProductId(productCode) {
+  getAllByProductCode(productCode) {
     const url = `api/product-detail/${productCode}`;
+    return axiosClient.get(url);
+  },
+  getAllByProductId(productId) {
+    const url = `api/product-detail/getProductDetailsByProductId/${productId}`;
     return axiosClient.get(url);
   },
   add(data) {
@@ -25,8 +29,8 @@ const productDetailsAPI = {
     const url = `api/product-details?id=${data.id}`;
     return axiosClient.put(url, data);
   },
-  delete(id) {
-    const url = `api/product-details?id=${id}`;
+  delete(productDetailId) {
+    const url = `api/product-details?productDetailId=${productDetailId}`;
     return axiosClient.delete(url);
   },
   findByKeywork(keyword) {

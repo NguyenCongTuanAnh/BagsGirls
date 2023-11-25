@@ -30,9 +30,13 @@ function LoginForm(props) {
       if (response.data.data.users.role === 'ROLE_CUSTOMER') {
         const customer = await customerAPI.findByUserId(response.data.data.users.userId);
 
-        localStorage.setItem('token', response.data.data.token);
+        localStorage.setItem('customerToken', response.data.data.token);
         localStorage.setItem('customerId', customer.data.customerId);
-        const userToken = await AuthAPI.getUserToken();
+        const userToken = await AuthAPI.getCustomerToken();
+        console.log('====================================');
+        console.log('kh');
+        console.log(userToken);
+        console.log('====================================');
         localStorage.setItem('customerTokenString', JSON.stringify(userToken.data));
         notification.success({
           message: 'Đăng nhập thành công!!!',
@@ -44,9 +48,9 @@ function LoginForm(props) {
       if (response.data.data.users.role === 'ROLE_STAFF' || response.data.data.users.role === 'ROLE_ADMIN') {
         const staff = await staffAPI.findByUserId(response.data.data.users.userId);
 
-        localStorage.setItem('token', response.data.data.token);
+        localStorage.setItem('staffToken', response.data.data.token);
         localStorage.setItem('staffId', staff.data.staffId);
-        const userToken = await AuthAPI.getUserToken();
+        const userToken = await AuthAPI.getStaffToken();
         localStorage.setItem('staffTokenString', JSON.stringify(userToken.data));
         notification.success({
           message: 'Đăng nhập thành công!!!',

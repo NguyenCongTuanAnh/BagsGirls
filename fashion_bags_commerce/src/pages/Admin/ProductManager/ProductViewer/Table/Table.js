@@ -42,7 +42,7 @@ function TableContent() {
     },
     {
       title: 'Balo Brands',
-      dataIndex: ['brands', 'brandName'],
+      dataIndex: ['brand', 'brandName'],
       width: 200,
       // sorter: (a, b) => a.productName.localeCompare(b.productName),
     },
@@ -70,8 +70,8 @@ function TableContent() {
       width: 150,
       render: (_, record) => (
         <Space size="middle">
-          <FormProductViewDetails productCode={record.productCode} />
-          <FormProductEdit product={record} brandId={record.brand.brandId} />
+          <FormProductViewDetails product={record} handleRefresh={reload} />
+          <FormProductEdit product={record} brandId={record.brand.brandId} handleRefresh={reload} />
           <Popconfirm
             title="Xác Nhận"
             description="Bạn Có chắc chắn muốn xóa?"
@@ -93,13 +93,20 @@ function TableContent() {
   ];
   const onCancel = () => {};
   const reload = () => {
+    console.log('====================================');
+    console.log('ĐÃ Làm MỚI');
+    console.log('====================================');
     setLoading(true);
     getAllBalo(currentPage, pagesSize);
     setTimeout(() => {
       setLoading(false);
     }, 500);
   };
-
+  const reload2 = () => {
+    console.log('====================================');
+    console.log('TEST');
+    console.log('====================================');
+  };
   useEffect(() => {
     handleLoading();
     getAllBalo(currentPage, pagesSize);
@@ -108,11 +115,9 @@ function TableContent() {
   const getAllBalo = async (pageNum, pageSize) => {
     try {
       const response = await baloAPI.getAll(pageNum, pageSize);
+      console.log('hhhh');
+      console.log(response.data.content);
       const data = response.data.content;
-      console.log('====================================');
-      console.log('log');
-      console.log(data);
-      console.log('====================================');
       setTotalItem(response.data.totalElements);
       setProductList(data);
       setTimeout(() => {}, 500);
@@ -143,7 +148,6 @@ function TableContent() {
   const onHandleSizeChange = (current, pageSize) => {
     setCurrentPage(1);
     setPagesSize(pageSize);
-
     getAllBalo(current, pageSize);
     handleLoading();
   };
@@ -162,34 +166,13 @@ function TableContent() {
       <Button icon={<ReloadOutlined />} onClick={reload} loading={loading}>
         Làm mới
       </Button>
-
-      {/* <Table
-        className="table table-striped"
-        scroll={{
-          x: 1000,
-          y: 660,
-        }}
-        rowKey={(record) => record.productCode}
-        columns={columns}
-        dataSource={productList}
-        onChange={handleTableChange}
-        pagination={false}
-      />
-      <div className={styles.pagination}>
-        <Pagination
-          showSizeChanger
-          onShowSizeChange={onHandleSizeChange}
-          onChange={onHandlePageNum}
-          defaultCurrent={1}
-          total={totalItem}
-        />
-      </div> */}
       <Table
         className="table table-striped"
         scroll={{
           x: 1000,
           y: 670,
         }}
+        loading={loading}
         rowKey={(record) => record.productId}
         columns={columns}
         dataSource={productList}

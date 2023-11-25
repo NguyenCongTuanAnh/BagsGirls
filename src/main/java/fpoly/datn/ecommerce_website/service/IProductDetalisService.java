@@ -8,7 +8,7 @@ import java.util.List;
 public interface IProductDetalisService {
     List<ProductDetailDTO> findAll();
 
-    List<ProductDetails> findAllByProductId(String baloID);
+    List<ProductDetails> findAllByProductCode(String baloID);
 
     ProductDetails findById(String id);
 
