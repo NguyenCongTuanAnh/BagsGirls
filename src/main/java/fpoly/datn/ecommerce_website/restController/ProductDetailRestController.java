@@ -61,7 +61,7 @@ public class ProductDetailRestController {
 //    }
 //
 //    //delete
-    @RequestMapping(value = "/product-detail", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/product-details", method = RequestMethod.DELETE)
     public ResponseEntity<?> delete(@RequestParam String productDetailId) {
         productDetailService.delete(productDetailId);
         return new ResponseEntity<>("Delete successfully!", HttpStatus.OK);
@@ -70,7 +70,18 @@ public class ProductDetailRestController {
     @RequestMapping(value = "product-detail/{productCode}", method = RequestMethod.GET)
     public ResponseEntity<?> getAllbyproduct(@PathVariable String productCode) {
         return new ResponseEntity<>(
-                this.productDetailService.findAllByProductId(productCode)
+                this.productDetailService.findAllByProductCode(productCode)
+                        .stream()
+                        .map(productDetail -> modelMapper.map(productDetail, ProductDetailDTO.class))
+                        .collect(Collectors.toList())
+                , HttpStatus.OK
+        );
+
+    }
+    @RequestMapping(value = "product-detail/getProductDetailsByProductId/{productId}", method = RequestMethod.GET)
+    public ResponseEntity<?> getAllbyproductId(@PathVariable String productId) {
+        return new ResponseEntity<>(
+                this.productDetailService.findAllByProductId(productId)
                         .stream()
                         .map(productDetail -> modelMapper.map(productDetail, ProductDetailDTO.class))
                         .collect(Collectors.toList())

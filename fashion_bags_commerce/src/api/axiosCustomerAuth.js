@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { getStaffToken } from './auth/helper/UserCurrent';
+import { getStaffToken, getCustomerToken } from './auth/helper/UserCurrent';
 
-const axiosClient = axios.create({
+const axiosCustomerAuth = axios.create({
   baseURL: 'http://localhost:8080/',
   headers: {
     'Content-Type': 'application/json; charset=utf-8',
@@ -10,13 +10,15 @@ const axiosClient = axios.create({
 
 //interceptor
 // Add a request interceptor
-axiosClient.interceptors.request.use(
+axiosCustomerAuth.interceptors.request.use(
   function (config) {
     // Do something before request is sent
-    const staffToken = getStaffToken();
-
-    if (staffToken) {
-      config.headers.Authorization = `Bearer ${staffToken}`;
+    const customerToken = getCustomerToken();
+    console.log('====================================');
+    console.log(customerToken);
+    console.log('====================================');
+    if (customerToken) {
+      config.headers.Authorization = `Bearer ${customerToken}`;
     }
     return config;
   },
@@ -27,7 +29,7 @@ axiosClient.interceptors.request.use(
 );
 
 // Add a response interceptor
-axiosClient.interceptors.response.use(
+axiosCustomerAuth.interceptors.response.use(
   function (response) {
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
@@ -43,4 +45,4 @@ axiosClient.interceptors.response.use(
   },
 );
 
-export default axiosClient;
+export default axiosCustomerAuth;

@@ -1,22 +1,35 @@
 import { useEffect, useState } from 'react';
 import { redirect, useNavigate } from 'react-router-dom';
-import { getToken } from '../helper/UserCurrent';
+import { getStaffToken } from '../helper/UserCurrent';
 import AuthAPI from '../AuthAPI';
 import { notification } from 'antd';
 
-const validateToken = async (token) => {
-  const response = await AuthAPI.validateToken(token);
-  return response.data;
+const clearAuthToken = () => {
+  localStorage.removeItem('staffTokenString');
+  localStorage.removeItem('staffId');
+  localStorage.removeItem('token');
 };
+
 const AdminAuth = ({ children }) => {
   const [accessChecked, setAccessChecked] = useState(false);
-  const token = getToken();
+  const token = getStaffToken();
   const userInfo = JSON.parse(localStorage.getItem('staffTokenString'));
-  console.log('====================================');
-  console.log(userInfo);
-  console.log('====================================');
   const navigate = useNavigate();
+  const validateToken = async (token) => {
+    const response = await AuthAPI.validateToken(token);
+    if (JSON.stringify(response.data) === 'false') {
+      notification.info({
+        message: 'Lỗi',
+        description: 'Phiên đăng nhập đã hết hạn!!!!',
+        duration: 2,
+      });
+      clearAuthToken();
+      navigate('/login');
+    }
+  };
   useEffect(() => {
+    validateToken(token);
+
     const ischecked = async () => {
       if (token === null) {
         navigate('/login');

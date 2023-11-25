@@ -13,7 +13,11 @@ public interface IProductDetailRepository extends JpaRepository<ProductDetails, 
     @Query("SELECT pd FROM  ProductDetails pd " +
             "join Products p on p.productId = pd.product.productId " +
             "where pd.product.productCode = :productCode")
-    List<ProductDetails> findAllByProductId(@Param("productCode") String productCode);
+    List<ProductDetails> findAllByProductCode(@Param("productCode") String productCode);
+    @Query("SELECT pd FROM  ProductDetails pd " +
+            "join Products p on p.productId = pd.product.productId " +
+            "where pd.product.productId = :productId")
+    List<ProductDetails> findAllByProductId(@Param("productId") String productId);
 
     @Query("SELECT bd FROM Products b JOIN ProductDetails bd ON b.productId = bd.product.productId  " +
             "WHERE b.productCode LIKE %:keyword% " +

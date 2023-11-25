@@ -25,5 +25,5 @@ public final class Constants {
 
     public static final String JWTSECRET = "QHMBQfsViR66wU3Yx/MOdkKcHdmJeRy4JdbDbrjmZdfu35Q7yzH6b3vJCrQcNgoOEFfsGyhOeF5Pby7R+YzG0w==";
 
-    public static final int JWTEXPIRATIONINMS = 86400; // 30'
+    public static final int JWTEXPIRATIONINMS = 604800; // 86400 is 1 day => 86400 * 7 = 604,800 (7 weeks)
 }

@@ -6,17 +6,29 @@ export const getUserToken = () => {
   return userToken || null;
 };
 
-export const getIdUser = () => {
-  const userToken = getDetailUser();
+export const getStaffIdUser = () => {
+  const userToken = getStaffDetailUser();
+  return userToken?.idUser || null;
+};
+export const getCustomerIdUser = () => {
+  const userToken = getCustomerDetailUser();
   return userToken?.idUser || null;
 };
 
-export const getToken = () => {
-  const token = localStorage.getItem('token');
+export const getStaffToken = () => {
+  const token = localStorage.getItem('staffToken');
+  return token || null;
+};
+export const getCustomerToken = () => {
+  const token = localStorage.getItem('customerToken');
   return token || null;
 };
 
-export const getDetailUser = () => {
-  const token = getToken();
+export const getStaffDetailUser = () => {
+  const token = getStaffToken();
+  return token ? jwtDecode(token) : null;
+};
+export const getCustomerDetailUser = () => {
+  const token = getCustomerToken();
   return token ? jwtDecode(token) : null;
 };

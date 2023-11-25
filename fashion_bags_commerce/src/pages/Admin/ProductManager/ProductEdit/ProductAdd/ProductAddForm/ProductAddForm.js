@@ -218,20 +218,32 @@ function ProductAddForm() {
   };
   const handleUpload = async () => {
     const newList = [];
+
     if (fileList.length === 0) {
       message.info('Vui lòng chọn ảnh!!!!');
       return;
     }
     for (let i = 0; i < fileList.length; i++) {
+      const addCodeImg = generateCustomCode('image', 5);
+      const now = new Date();
+      const dateString = `${now.getMonth()}_${now.getDate()}_${now.getFullYear()}_${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}:${now.getMilliseconds()}`;
       const file = fileList[i];
-
-      const storageRef = ref(storage, `mulitpleFiles/${file.name}`);
+      const name = addCodeImg + '_' + dateString;
+      const renamedFile = new File([file], name, { type: file.type });
+      console.log(renamedFile);
+      console.log(name);
+      const storageRef = ref(storage, `mulitpleFiles/${name}`);
 
       try {
-        await uploadBytes(storageRef, file);
+        await uploadBytes(storageRef, renamedFile);
         const downloadURL = await getDownloadURL(storageRef);
 
-        newList.push(downloadURL);
+        const uploadedImage = {
+          imgUrl: downloadURL,
+          imgCode: addCodeImg,
+          imgName: name,
+        };
+        newList.push(uploadedImage);
 
         message.success('Tải lên hình ảnh thành công');
       } catch (error) {

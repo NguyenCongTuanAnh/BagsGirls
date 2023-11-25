@@ -1,18 +1,16 @@
 import './FormProductViewDetails.css';
 
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { InfoOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Col, Drawer, Form, Input, Row, Select, Space, Table } from 'antd';
 import baloDetailsAPI from '~/api/productDetailsAPI';
 import FormProductEdit from '../../ProductEdit/FormEdit/FormProductEdit';
 const { Option } = Select;
 function FormProductViewDetails(props) {
-  console.log('productCode');
-  console.log(props);
-  const productCode = props.productCode;
+  const productId = props.product.productId;
   const [open, setOpen] = useState(false);
   const showDrawer = () => {
-    fetchProducts(productCode);
+    fetchProducts(productId);
     setOpen(true);
   };
   const onClose = () => {
@@ -26,14 +24,12 @@ function FormProductViewDetails(props) {
     pageSize: 10,
   });
 
-  const fetchProducts = async (productCode) => {
+  const fetchProducts = useCallback(async (productId) => {
     setLoading(true);
 
     try {
-      const response = await baloDetailsAPI.getAllByProductId(productCode);
+      const response = await baloDetailsAPI.getAllByProductId(productId);
       const data = response.data;
-      console.log(data);
-      console.log('Đây là productCode:', props);
       setBaloList(data);
       setTimeout(() => {
         setLoading(false);
@@ -41,12 +37,12 @@ function FormProductViewDetails(props) {
     } catch (error) {
       console.error('Đã xảy ra lỗi: ', error);
     }
-  };
-  useEffect(() => {
-    if (productCode && open) {
-      fetchProducts(productCode);
-    }
-  }, [productCode]);
+  }, []);
+  // useEffect(() => {
+  //   if (productId && open) {
+  //     fetchProducts(productId);
+  //   }
+  // }, [productId]);
 
   const columns = [
     {
@@ -182,8 +178,9 @@ function FormProductViewDetails(props) {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      fetchProducts();
-    }, 1000);
+      fetchProducts(productId);
+      props.handleRefresh();
+    }, 300);
   };
 
   return (
@@ -197,8 +194,10 @@ function FormProductViewDetails(props) {
         height={900} // max=900
         onClose={onClose}
         open={open}
-        bodyStyle={{
-          paddingBottom: 80,
+        styles={{
+          body: {
+            paddingBottom: 80,
+          },
         }}
       >
         <div>

@@ -31,11 +31,13 @@ public class ProductDetailServiceImpl implements IProductDetalisService {
     }
 
     @Override
-    public List<ProductDetails> findAllByProductId(String productCode) {
-        return this.iProductDetailRepository.findAllByProductId(productCode);
+    public List<ProductDetails> findAllByProductCode(String productCode) {
+        return this.iProductDetailRepository.findAllByProductCode(productCode);
     }
 
-
+    public List<ProductDetails> findAllByProductId(String productId) {
+        return this.iProductDetailRepository.findAllByProductId(productId);
+    }
     @Override
     public ProductDetails findById(String id) {
         Optional<ProductDetails> optional = iProductDetailRepository.findById(id);

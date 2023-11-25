@@ -28,8 +28,6 @@ function BaloDetailsPreview(props) {
 
   const [baloList, setBaloList] = useState(props.baloList);
   const [baloListPreview, setBaloListPreview] = useState(props.baloListPreview);
-  console.log(props.baloList);
-  console.log('balolist');
   const columns = [
     {
       title: 'Balo Code',
@@ -220,26 +218,15 @@ function BaloDetailsPreview(props) {
       );
 
       try {
-        console.log('====================================');
-        console.log('baloAdd');
-        console.log(baloAdd);
-        console.log('====================================');
         const response = await baloAPI.add(baloAdd);
-
         const id = response.data.productId;
-
         const result = await props.handleSendUpload();
         result.forEach((obj) => {
-          const url = obj;
-          const now = new Date();
-          const dateString = `${
-            now.getMonth() + 1
-          }/${now.getDate()}/${now.getFullYear()},${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}:${now.getMilliseconds()}`;
-          const addCodeImg = generateCustomCode('image', 5);
+          const uploadedImage = obj;
           const imageAdd = {
-            imgCode: addCodeImg,
-            imgName: addCodeImg + dateString,
-            imgUrl: url,
+            imgCode: uploadedImage.imgCode,
+            imgName: uploadedImage.imgName,
+            imgUrl: uploadedImage.imgUrl,
             isPrimary: true,
             products: {
               productId: id,

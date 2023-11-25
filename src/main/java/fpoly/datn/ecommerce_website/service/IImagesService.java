@@ -9,4 +9,6 @@ public interface IImagesService {
     List<ImageDTO> findAll();
 
     ImageDTO save(ImageDTO imageDTO);
+
+    Boolean delete(String imageId);
 }

@@ -15,7 +15,7 @@ function ProductDetailsEdit(props) {
     setOpen(false);
   };
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [baloList, setBaloList] = useState([]);
   const [pagination, setPagination] = useState({
     current: 1,

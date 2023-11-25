@@ -18,6 +18,10 @@ const imageAPI = {
       },
     });
   },
+  delete(imageId) {
+    const url = `api/image?imageId=${imageId}`;
+    return axiosClient.delete(url);
+  },
 };
 
 export default imageAPI;

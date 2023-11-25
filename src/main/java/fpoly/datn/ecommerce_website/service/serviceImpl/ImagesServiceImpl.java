@@ -32,4 +32,9 @@ public class ImagesServiceImpl implements IImagesService {
         Images images = this.iImageRepository.save(modelMapper.map(imageDTO, Images.class));
         return modelMapper.map(images, ImageDTO.class);
     }
+    @Override
+    public Boolean delete(String imageId) {
+        this.iImageRepository.deleteById(imageId);
+        return true;
+    }
 }

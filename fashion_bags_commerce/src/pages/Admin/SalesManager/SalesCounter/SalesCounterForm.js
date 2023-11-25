@@ -89,7 +89,7 @@ const SalesCounterForm = () => {
     const [totalPayment, setTotalPayment] = useState(0);
     const [totalAmount, setTotalAmount] = useState(0);
     const [staffId, setStaffId] = useState('');
-    const [staff, setStaff] = useState(JSON.parse(localStorage.getItem('usersTokenString')));
+    const [staff, setStaff] = useState(JSON.parse(localStorage.getItem('staffTokenString')));
     const [billInfo, setBillInfo] = useState({});
     const [form] = Form.useForm();
     const searchInputRef = useRef(null);

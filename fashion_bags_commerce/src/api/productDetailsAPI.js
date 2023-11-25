@@ -9,8 +9,12 @@ const productDetailsAPI = {
     const url = `api/product-details?id=${id}`;
     return axiosClient.get(url);
   },
-  getAllByProductId(productCode) {
+  getAllByProductCode(productCode) {
     const url = `api/product-detail/${productCode}`;
+    return axiosClient.get(url);
+  },
+  getAllByProductId(productId) {
+    const url = `api/product-detail/getProductDetailsByProductId/${productId}`;
     return axiosClient.get(url);
   },
   add(data) {

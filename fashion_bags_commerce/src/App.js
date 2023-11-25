@@ -24,12 +24,8 @@ import CustomerView from './pages/Admin/Customer/CustomerView';
 import HoaDonView from './pages/Admin/QuanLyHoaDon/HienThiHoaDon/indexHoaDonView';
 import Shop from './pages/Home/Shop/shop';
 import ShopDetail from './pages/Home/ShopDetail/shopDetail';
-import GuestGuard from './api/auth/guard/GuestGuard';
-import AuthGuard from './api/auth/guard/StaffAuth';
 import UnAuthorPage from './pages/ExceptionPage/UnAuthorPage/UnAuthorPage';
-import { getToken, getUserToken } from './api/auth/helper/UserCurrent';
 import { Fragment } from 'react';
-import RequireAuth from './api/auth/guard/StaffAuth';
 import NotFoundPage from './pages/ExceptionPage/UnAuthorPage/NotFoundPage';
 import { Switch } from 'antd';
 import AdminAuth from './api/auth/guard/AdminAuth';
@@ -69,16 +65,7 @@ const dynamicRoutes = [
   },
 ];
 
-const getTokenAndUserInfo = () => {
-  // Lấy token và thông tin người dùng từ Local Storage
-  const token = getToken();
-  const userInfo = JSON.parse(getUserToken());
-  return { token, userInfo };
-};
 function App() {
-  const PrivateRoute = ({ component: Component, roles, ...rest }) => {
-    <Route element={<Component {...rest} />} />;
-  };
   return (
     <Fragment>
       <Router>
