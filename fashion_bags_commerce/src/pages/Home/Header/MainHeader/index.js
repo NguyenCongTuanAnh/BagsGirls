@@ -21,10 +21,19 @@ function MainHeader() {
     setCartCount(totalCount);
 
     const userToken = localStorage.getItem('customerTokenString');
-    if (userToken) {
+    const userToken1 = localStorage.getItem('customerId');
+    const userToken2 = localStorage.getItem('customerToken');
+    if (userToken && userToken1 && userToken2) {
       setIsLoggedIn(true);
     }
   }, []);
+
+  const changeLoggedIn = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem('customerTokenString');
+    localStorage.removeItem('customerId');
+    localStorage.removeItem('customerToken');
+  };
 
   const handleSearch = () => {
     fullProductAPI
@@ -76,7 +85,7 @@ function MainHeader() {
               {isLoggedIn ? (
                 <div style={{ paddingTop: '20px' }}>
                   {' '}
-                  <UserProfile />
+                  <UserProfile changeLoggedIn={changeLoggedIn} />
                 </div>
               ) : (
                 <div className={styles.login}>
