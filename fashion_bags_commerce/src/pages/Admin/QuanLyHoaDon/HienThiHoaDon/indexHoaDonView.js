@@ -1,7 +1,7 @@
 import Sidebar from '~/component/GlobalStyles/layouts/DefaultLayout/SideBar';
 import { Layout } from 'antd';
 import HeaderContent from '~/component/GlobalStyles/layouts/DefaultLayout/Header';
-import TableContent from '../HienThiHoaDon/TableHoaDon/TableHoaDon';
+import TableHoaDon from '../HienThiHoaDon/TableHoaDon/TableHoaDon';
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -44,7 +44,7 @@ function HoaDonView() {
                     <HeaderContent titlePage="Danh Sách Hóa Đơn" />
                 </Header>
                 <Content style={contentStyle}>
-                    <TableContent style={{ boder: 'black solid 1px' }} />
+                    <TableHoaDon style={{ boder: 'black solid 1px' }} />
                 </Content>
 
                 {/* <Footer className="footerStyle">Đây là component của Footer</Footer> */}
