@@ -4,34 +4,14 @@ import { Avatar, Badge, Button, Card, Popconfirm, Popover, message } from 'antd'
 import { Navigate, useNavigate } from 'react-router-dom';
 const { Meta } = Card;
 
-function UserProfile() {
+function UserProfile(props) {
+  const { changeLoggedIn } = props;
   const [messageApi, contextHolder] = message.useMessage();
   const key = 'updatable';
   const navigate = useNavigate();
   let canNavigate = false;
   const handleLgOut = () => {
-    messageApi.open({
-      key,
-      type: 'loading',
-      content: 'Đang đăng xuất...',
-    });
-    setTimeout(() => {
-      messageApi.open({
-        key,
-        type: 'success',
-        content: 'Mời đăng nhập lại!!!',
-        duration: 2,
-      });
-      canNavigate = true;
-      setTimeout(() => {
-        localStorage.removeItem('customerTokenString');
-        localStorage.removeItem('customerId');
-        localStorage.removeItem('token');
-        localStorage.removeItem('temporaryCart');
-        navigate('/');
-        window.location.reload();
-      }, 1000);
-    }, 1000);
+    changeLoggedIn();
   };
   const PopupProContent = (
     <Card
