@@ -77,6 +77,7 @@ function App() {
           <Route path="/cart" element={<CartView />} />
           <Route path="/cart/checkout" element={<Checkout />} />
           <Route path="/unauthorized" element={<UnAuthorPage />} />
+          <Route path="/bill-view" element={<HoaDonView />} />
           <Route
             path="/shift-view"
             element={

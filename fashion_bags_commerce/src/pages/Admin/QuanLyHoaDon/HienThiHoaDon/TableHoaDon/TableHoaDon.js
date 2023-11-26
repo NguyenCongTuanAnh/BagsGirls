@@ -1,117 +1,144 @@
-import { Button, Card, Col, Pagination, Popconfirm, Row, Space, Spin, Table, notification } from 'antd';
-import { CheckOutlined, ClockCircleOutlined, CloseOutlined, DeleteOutlined, ReloadOutlined, SyncOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { Button, Card, Col, DatePicker, Input, Pagination, Popconfirm, Row, Select, Space, Spin, Table, Tabs, Tag, TreeSelect, notification } from 'antd';
+import { CheckCircleOutlined, ClockCircleOutlined, CloseCircleOutlined, DeleteOutlined, FilterFilled, ReloadOutlined, SearchOutlined, SyncOutlined, TableOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
-import billDetailsAPI from '~/api/BillDetailsAPI';
+import moment from "moment";
+import billsAPI from '~/api/BillApi';
+import staffAPI from '~/api/staffAPI';
 import styles from './index.module.scss';
 import SearchForm from './FormSearch/SearchForm';
-import Loc from './FormLoc/LocTheoNgay';
+import dayjs from 'dayjs';
+const { RangePicker } = DatePicker;
 
 
-function TableContent() {
-    const [buckleTypeList, setBuckleTypeList] = useState([]);
-    const [loading, setLoading] = useState(false);
+function TableHoaDon() {
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(15);
     const [totalItem, setTotalItem] = useState();
+    const [status, setStatus] = useState("0");
     const [search, setSearch] = useState('');
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [filterTenNhanVien, setFilterTenNhanVien] = useState("");
+    const [listStaff, setListStaff] = useState([]);
+
 
     const handleTableChange = (pagination, filters, sorter) => { };
-
-
-
     const columns = [
         {
-            title: 'STT',
-            width: 40,
-            render: (text, record, index) => <span>{(currentPage - 1) * pageSize + index + 1}</span>,
+            key: "stt",
+            dataIndex: "index",
+            title: "STT",
+            width: 70,
+            render: (text, record, index) => {
+                return (
+                    <span id={record.id}>
+                        {(currentPage - 1) * pageSize + (index + 1)}
+                    </span>
+                );
+            },
         },
         {
-            title: 'Mã hóa đơn',
-            dataIndex: 'buckleTypeName',
-            width: 100,
-            // sorter: (a, b) => a.buckleTypeName.localeCompare(b.buckleTypeName),
+            title: "Mã",
+            dataIndex: "billCode",
+            key: "code",
         },
         {
             title: 'Ngày tạo',
-            dataIndex: 'buckleTypeName',
+            dataIndex: 'billCreateDate',
             width: 100,
-            // sorter: (a, b) => a.buckleTypeName.localeCompare(b.buckleTypeName),
-        },
-        {
-            title: 'Tên nhân viên',
-            dataIndex: 'buckleTypeName',
-            width: 100,
-            // sorter: (a, b) => a.buckleTypeName.localeCompare(b.buckleTypeName),
-        },
-        {
-            title: 'SĐT khách hàng',
-            dataIndex: 'buckleTypeName',
-            width: 100,
-            // sorter: (a, b) => a.buckleTypeName.localeCompare(b.buckleTypeName),
-        },
-        {
-            title: 'Tên khách hàng',
-            dataIndex: 'buckleTypeName',
-            width: 100,
-            // sorter: (a, b) => a.buckleTypeName.localeCompare(b.buckleTypeName),
-        },
-        {
-            title: 'Sản phẩm',
-            dataIndex: 'buckleTypeName',
-            width: 100,
-            // sorter: (a, b) => a.buckleTypeName.localeCompare(b.buckleTypeName),
-        },
-        {
-            title: 'Tổng tiền',
-            dataIndex: 'buckleTypeName',
-            width: 100,
-            // sorter: (a, b) => a.buckleTypeName.localeCompare(b.buckleTypeName),
-        },
-        {
-            title: 'Trạng thái',
-            dataIndex: 'buckleTypeStatus',
+            sorter: (a, b) => a.billCreateDate.localeCompare(b.billCreateDate),
+            render: (date) => {
+                const formattedDate = new Date(date).toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                });
 
-            width: 100,
-            sorter: (a, b) => a.buckleTypeStatus.localeCompare(b.buckleTypeStatus),
+                return <span>{formattedDate}</span>;
+            },
+        },
+        {
+            title: "Tên nhân viên",
+            dataIndex: ['staff', 'users', 'fullName'],
+            key: "staffName",
+
+        },
+        {
+            title: "Tên khách hàng",
+            dataIndex: ['customer', 'users', 'fullName'],
+            key: "customerName",
+        },
+        {
+            title: "Số điện thoại",
+            dataIndex: ['customer', 'users', 'phoneNumber'],
+            key: "phoneNumber",
+
+        },
+        {
+            title: "Tổng tiền",
+            dataIndex: 'billTotalPrice',
+            key: "billTotalPrice",
+
+        },
+
+        {
+            title: "Trạng thái",
+            dataIndex: "billStatus",
+            key: "status",
             render: (status) => {
                 let statusText;
                 let statusClass;
+                let backgroundColor; // Define a variable for text color
 
                 switch (status) {
-                    case 1:
-                        statusText = 'Hoạt động';
+                    case 4:
+                        statusText = 'Chờ xác nhận';
                         statusClass = 'active-status';
+                        backgroundColor = '#ffcc00';
                         break;
-                    case 0:
-                        statusText = 'Không hoạt động';
-                        statusClass = 'inactive-status';
+                    case 3:
+                        statusText = 'Đang đóng gói';
+                        statusClass = 'inactiveStatus';
+                        backgroundColor = '#66cc66';
+                        break;
+                    case 2:
+                        statusText = 'Đang vận chuyển';
+                        statusClass = 'inactiveStatus';
+                        backgroundColor = '#3399ff';
+                        break;
+                    case 1:
+                        statusText = 'Hoàn thành';
+                        statusClass = 'inactiveStatus';
+                        backgroundColor = '#99cc00';
                         break;
                     case -1:
-                        statusText = 'Ngừng hoạt động';
+                        statusText = 'Đã hủy';
                         statusClass = 'other-status';
+                        backgroundColor = '#ff3333';
                         break;
                     default:
-                        statusText = 'Trạng thái khác';
-                        statusClass = 'inactive-status';
+                        statusText = 'Đã hủy';
+                        statusClass = 'other-status';
+                        backgroundColor = '#ff3333';
                 }
-
-                return <span className={statusClass}>{statusText}</span>;
-            },
+                const textStyles = { backgroundColor: backgroundColor, padding: '13px', fontSize: '16px', fontWeight: 'bold', borderRadius: '20px', color: 'white' };
+                return <span className={statusClass} style={textStyles}>{statusText}</span>;
+            }
         },
         {
             title: 'Hành động',
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    {/* <FormEditBuckleType buckleType={record} reload={() => setLoading(true)} /> */}
+
                     <Popconfirm
                         title="Xác Nhận"
-                        description="Bạn Có chắc chắn muốn xóa?"
+                        description="Bạn có chắc chắn muốn xóa?"
                         okText="Đồng ý"
                         cancelText="Không"
                         onConfirm={() => {
-                            handleDeleteBuckleType(record.buckleTypeId, -1);
-                            reload();
                         }}
                         onCancel={onCancel}
                     >
@@ -123,35 +150,46 @@ function TableContent() {
         },
     ];
     const onCancel = () => { };
-    const reload = () => {
-        setLoading(true);
-        getAllPhanTrang(currentPage, pageSize);
-        setTimeout(() => {
-            setLoading(false);
-        }, 500);
+
+    const onRangeChange = (dates, dateStrings) => {
+        const start = new Date(dateStrings[0]).toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+        const end = new Date(dateStrings[1]).toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        });
+        if (dates) {
+            setStartDate(start);
+            setEndDate(end);
+        } else {
+            setStartDate('0001/01/01');
+            setEndDate(dayjs());
+        }
+        // console.log(startDate, endDate);
     };
 
-    useEffect(() => {
-        reload();
-    }, []);
-
-    useEffect(() => {
-        if (loading) {
-            reload();
-        }
-    }, [loading]);
-
-    const getAllPhanTrang = async (pageNum, pageSize) => {
-        try {
-            const response = await billDetailsAPI.getAll(pageNum, pageSize);
-            const data = response.data.content;
-            setTotalItem(response.data.totalElements);
-            setBuckleTypeList(data);
-            setTimeout(() => { }, 500);
-        } catch (error) {
-            console.error('Đã xảy ra lỗi: ', error);
-        }
-    };
+    const rangePresets = [
+        {
+            label: "Last 7 Days",
+            value: [dayjs().add(-7, "d"), dayjs()],
+        },
+        {
+            label: "Last 14 Days",
+            value: [dayjs().add(-14, "d"), dayjs()],
+        },
+        {
+            label: "Last 30 Days",
+            value: [dayjs().add(-30, "d"), dayjs()],
+        },
+        {
+            label: "Last 90 Days",
+            value: [dayjs().add(-90, "d"), dayjs()],
+        },
+    ];
 
     const handleSearchChange = (newFilter) => {
         if (newFilter === undefined || newFilter.trim().length === 0) {
@@ -165,71 +203,160 @@ function TableContent() {
         };
     };
 
-    const handleDeleteBuckleType = async (id, status) => {
+
+
+    const onChangeBill = (e) => {
+        setStatus(e);
+    }
+
+    const getAllPhanTrangCompartment = async (pageNum, pageSize) => {
         try {
-            await billDetailsAPI.billDetailsAPI(id, status);
-            notification.info({
-                message: 'Xóa thành Công',
-                description: 'Kiểu khóa Có ID: ' + id + ' đã được xóa thành công!!!',
-                duration: 2,
-            });
-            setLoading(true);
+            const response = await billsAPI.getAllSearchPagination(startDate, endDate, status, search, pageNum, pageSize);
+            const data = response.data.content;
+            setTotalItem(response.data.totalElements);
+            setData(data);
+            setTimeout(() => { }, 500);
         } catch (error) {
-            console.error('Đã xảy ra lỗi khi xóa kiểu khóa: ', error);
+            console.error('Đã xảy ra lỗi: ', error);
         }
     };
-    const onShowSizeChange = (current, pageSize) => {
-        setPageSize(pageSize);
-        setCurrentPage(current);
-        getAllPhanTrang(current, pageSize);
-    };
+    // const getAllStaff = async () => {
+    //     try {
+    //         const x = await staffAPI.getAllStaff();
+    //         // console.log('Staff API Response:', x);
+    //         const lst = x.data.content;
+    //         setListStaff(lst);
+    //     } catch (error) {
+    //         console.error('Error fetching staff data:', error);
+    //     };
+    // }
+    useEffect(() => {
+        getAllPhanTrangCompartment(currentPage, pageSize);
+        // getAllStaff();
+        setTimeout(() => {
+            setLoading(false);
+        }, 500);
+    }, [loading, search, status, startDate, endDate]);
     return (
-        <div
-            style={{
-                padding: '10px',
-            }}
-        >
-            <Card style={{ marginBottom: '15px', marginTop: '5px' }}>
-                <Loc onClick={reload} loading={loading} ></Loc>
+        <div>
+            <Card>
+                <section >
+                    <Row>
+                        <h2 style={{ marginBottom: "30px" }}>
+                            <FilterFilled /> Bộ lọc
+                        </h2>
+                    </Row>
+                    <Row>
+                        <Col span={8}>
+                            <div style={{ paddingTop: '10px', fontSize: '16px' }}>
+                                <span style={{ fontWeight: 500 }}>Ngày tạo</span>
+                                <RangePicker
+                                    className={styles.filter_inputSearch}
+                                    presets={rangePresets}
+                                    onChange={onRangeChange}
 
+                                />
+                            </div>
+                        </Col>
+                        <Col span={6}>
+                            <div style={{ paddingTop: '10px', fontSize: '16px' }}>
+                                <span style={{ paddingTop: '20px', fontSize: '16px', fontWeight: 500 }}>
+                                    Nhân viên
+                                    <Select
+                                        bordered={false}
+                                        style={{ width: '50%', borderBottom: '1px solid #ccc' }}
+                                        onChange={(value) => {
+                                            setFilterTenNhanVien(value);
+                                        }}
+                                        defaultValue=""
+                                    >
+                                        <Select.Option value="">Tất cả</Select.Option>
+                                        {/* {(listStaff ?? []).map((item, index) => (
+                                            <Select.Option key={index} value={item.usersFullName}>
+                                                {item.usersFullName}
+                                            </Select.Option>
+                                        ))} */}
+                                    </Select>
+                                </span>
+                            </div>
+                        </Col>
+
+                        <Col span={8}>
+                            <SearchForm onSubmit={handleSearchChange} style={{ width: '100%', marginBottom: '10px' }} />
+                        </Col>
+                    </Row>
+                </section>
             </Card>
             <Card>
-                <Row>
-                    <Col span={12}>
-                        <Button className={styles.buttonAll} icon={<UnorderedListOutlined />} >Tất cả</Button>
-                        <Button className={styles.buttonAllYellow} icon={<ReloadOutlined />} loading={loading}>Chờ xác nhận</Button>
-                        <Button className={styles.buttonAllGreen} icon={<ClockCircleOutlined />} loading={loading}>Đang xử lý</Button>
-                        <Button className={styles.buttonAllDone} icon={<CheckOutlined />} loading={loading}>Hoàn thành</Button>
-                        <Button className={styles.buttonAllRed} icon={<CloseOutlined />} loading={loading}>Đã hủy</Button>
-                    </Col>
-                    <Col span={12}> <SearchForm onSubmit={handleSearchChange} /></Col>
-                </Row>
-                <Table
-                    size="middle"
-                    className="table table-striped"
-                    scroll={{
-                        x: 1000,
-                        y: 630,
-                    }}
-                    rowKey={(record) => record.buckleTypeId}
-                    columns={columns}
-                    dataSource={buckleTypeList}
-                    onChange={handleTableChange}
-                    pagination={false}
-                />
-                <div className={styles.pagination}>
-                    <Pagination
-                        showSizeChanger
-                        onShowSizeChange={onShowSizeChange}
-                        onChange={onShowSizeChange}
-                        current={currentPage}
-                        defaultPageSize={pageSize}
-                        defaultCurrent={1}
-                        total={totalItem}
-                    />
-                </div></Card>
+                <section>
+                    <h2 style={{ marginBottom: "10px" }}>
+                        <TableOutlined /> Danh sách hóa đơn
 
-        </div>
+                    </h2>
+                    <Tabs
+                        defaultActiveKey={status}
+                        onChange={(e) => onChangeBill(e)
+                        }
+                        items={[
+                            CheckCircleOutlined,
+                            CloseCircleOutlined,
+                            ClockCircleOutlined,
+                            ClockCircleOutlined,
+                            ClockCircleOutlined,
+                            ClockCircleOutlined,
+                        ].map((Icon, i) => {
+                            const id = String(i + 1);
+                            return {
+                                label: (
+                                    <span>
+                                        <Icon />
+                                        {id === "1" ? "Tất cả"
+                                            : id === "2" ? "Chờ xác nhận"
+                                                : id === '3' ? "Đang đóng gói"
+                                                    : id === "4" ? "Đang giao"
+                                                        : id === "5" ? "Thành công"
+                                                            : id === "6" ? "Đã hủy" : ""}
+
+                                    </span>
+                                ),
+                                key: id === "1" ? "0"
+                                    : id === "2" ? "4"
+                                        : id === '3' ? "3"
+                                            : id === "4" ? "2"
+                                                : id === "5" ? "1"
+                                                    : id === "6" ? "-1" : '',
+                                children: (
+                                    <div style={{ padding: "8px" }}>
+                                        <span style={{ fontWeight: 500 }}>
+                                            {/* <TableOutlined /> Danh sách yêu cầu */}
+                                        </span>
+                                        <Table
+                                            style={{ marginTop: "10px" }}
+                                            dataSource={data}
+                                            columns={columns}
+                                            loading={loading}
+                                            rowKey={(record) => record.billCode}
+                                            loadingIndicator={<div>Loading...</div>}
+                                            pagination={{
+                                                pageSizeOptions: [5, 10, 15, 20],
+                                                defaultPageSize: 5,
+                                                defaultCurrent: 1,
+                                                showLessItems: true,
+                                                style: { marginRight: "10px" },
+                                                onChange: (currentPage, pageSize) => {
+                                                    setCurrentPage(currentPage);
+                                                    setPageSize(pageSize);
+                                                },
+                                            }}
+                                        />
+                                    </div>
+                                ),
+                            };
+                        })}
+                    />
+                </section>
+            </Card>
+        </div >
     );
-}
-export default TableContent;
+};
+export default TableHoaDon;

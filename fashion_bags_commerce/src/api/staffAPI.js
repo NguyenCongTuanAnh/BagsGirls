@@ -2,7 +2,7 @@ import axiosClient from './axiosClient';
 
 const staffAPI = {
   getAll(pageNum, pageSize) {
-    const url = '/staff/pagination';
+    const url = 'api/staff/pagination';
     return axiosClient.get(url, {
       params: {
         page: pageNum - 1,
@@ -11,8 +11,15 @@ const staffAPI = {
     });
   },
 
+  getAllStaff() {
+    const url = 'api/staff/';
+    return axiosClient.get(url, {
+
+    });
+  },
+
   getSearchPagination(key, pageNum, pageSize) {
-    const url = '/staff/search';
+    const url = 'api/staff/search';
     return axiosClient.get(url, {
       params: {
         keyword: key,
@@ -23,19 +30,19 @@ const staffAPI = {
   },
 
   getRoles(params) {
-    const url = '/role/';
+    const url = 'api/role/';
     return axiosClient.get(url, { params });
   },
   get(id, data) {
-    const url = `/staff?id=${id}`;
+    const url = `api/staff?id=${id}`;
     return axiosClient.get(url, data);
   },
   getOne(id, data) {
-    const url = `/staff?id=${id}`;
+    const url = `api/staff?id=${id}`;
     return axiosClient.get(url, data);
   },
   add(data) {
-    const url = `/staff`;
+    const url = `api/staff`;
     return axiosClient.post(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +50,7 @@ const staffAPI = {
     });
   },
   update(id, data) {
-    const url = `/staff?id=${id}`;
+    const url = `api/staff?id=${id}`;
     return axiosClient.put(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +58,7 @@ const staffAPI = {
     });
   },
   updateStatus(id, status) {
-    const url = `/staff/update-status?id=${id}&status=${status}`;
+    const url = `api/staff/update-status?id=${id}&status=${status}`;
     return axiosClient.put(url, null, {
       headers: {
         'Content-Type': 'application/json',
@@ -59,7 +66,7 @@ const staffAPI = {
     });
   },
   delete(id) {
-    const url = `/staff?id=${id}`;
+    const url = `api/staff?id=${id}`;
     return axiosClient.delete(url);
   },
   findByUserId(userId) {
