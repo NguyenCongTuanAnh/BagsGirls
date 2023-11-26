@@ -29,27 +29,27 @@ function TableContent() {
       render: (text, record, index) => <span>{(currentPage - 1) * pagesSize + index + 1}</span>,
     },
     {
-      title: 'Code',
+      title: 'Mã Balo',
       dataIndex: 'productCode',
-      width: 200,
+      width: 85,
       sorter: (a, b) => a.productCode.localeCompare(b.productCode),
     },
     {
-      title: 'Name Balo',
+      title: 'Tên Balo',
       dataIndex: 'productName',
-      width: 300,
+      width: 270,
       sorter: (a, b) => a.productName.localeCompare(b.productName),
     },
     {
-      title: 'Balo Brands',
+      title: 'Thương Hiệu',
       dataIndex: ['brand', 'brandName'],
-      width: 200,
-      // sorter: (a, b) => a.productName.localeCompare(b.productName),
+      width: 80,
+      sorter: (a, b) => a.brand.brandName.localeCompare(b.brand.brandName),
     },
     {
-      title: 'Status',
+      title: 'Trạng Thái',
       dataIndex: 'productStatus',
-      width: 100,
+      width: 80,
       render: (status) => {
         switch (status) {
           case 1:
@@ -71,7 +71,7 @@ function TableContent() {
       render: (_, record) => (
         <Space size="middle">
           <FormProductViewDetails product={record} handleRefresh={reload} />
-          <FormProductEdit product={record} brandId={record.brand.brandId} handleRefresh={reload} />
+          <FormProductEdit product={record} brand={record.brand} handleRefresh={reload} />
           <Popconfirm
             title="Xác Nhận"
             description="Bạn Có chắc chắn muốn xóa?"
@@ -102,11 +102,6 @@ function TableContent() {
       setLoading(false);
     }, 500);
   };
-  const reload2 = () => {
-    console.log('====================================');
-    console.log('TEST');
-    console.log('====================================');
-  };
   useEffect(() => {
     handleLoading();
     getAllBalo(currentPage, pagesSize);
@@ -115,8 +110,6 @@ function TableContent() {
   const getAllBalo = async (pageNum, pageSize) => {
     try {
       const response = await baloAPI.getAll(pageNum, pageSize);
-      console.log('hhhh');
-      console.log(response.data.content);
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
       setProductList(data);
@@ -183,6 +176,7 @@ function TableContent() {
         <Pagination
           className={styles.pagination}
           showSizeChanger
+          pageSizeOptions={['10', '20', '30', '100']}
           onShowSizeChange={onHandleSizeChange}
           onChange={onHandlePageNum}
           defaultCurrent={1}
