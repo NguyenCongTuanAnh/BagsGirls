@@ -174,7 +174,8 @@ function ProductAddForm() {
       buckleTypeName: buckleTypeSelectedName,
     };
     console.log('====================================');
-    console.log(tempBalo);
+    console.log([...baloListPreview, tempBalo]);
+    console.log([...baloList, addBalo]);
     console.log('====================================');
     setBaloListPreview([...baloListPreview, tempBalo]);
 
