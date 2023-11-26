@@ -23,83 +23,69 @@ import imageAPI from '~/api/ImageAPI';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 
 const { Option } = Select;
-function BaloDetailsPreview(props) {
+function ProductDetailsPreviewTable(props) {
   const [loading, setLoading] = useState(false);
 
   const [baloList, setBaloList] = useState(props.baloList);
   const [baloListPreview, setBaloListPreview] = useState(props.baloListPreview);
   const columns = [
     {
-      title: 'Balo Code',
-      dataIndex: 'productCode',
-      fixed: 'left',
-      width: 100,
-      sorter: (a, b) => a.productCode.localeCompare(b.productCode),
-    },
-    {
-      title: 'Name Balo',
-      dataIndex: 'productName',
-      width: 300,
-      fixed: 'left',
-      sorter: (a, b) => a.productName.localeCompare(b.productName),
-    },
-    {
-      title: 'Color Balo',
+      title: 'Màu Sắc',
       dataIndex: 'colorName',
       width: 100,
       sorter: (a, b) => a.productColor.localeCompare(b.productColor),
     },
     {
-      title: 'Type Balo',
+      title: 'Kiểu Balo',
       dataIndex: 'typeName',
       width: 200,
       sorter: (a, b) => a.typeName.localeCompare(b.typeName),
     },
     {
-      title: 'Material Balo',
+      title: 'Chất Liệu',
       dataIndex: 'materialName',
       width: 100,
       sorter: (a, b) => a.materialName.localeCompare(b.materialName),
     },
     {
-      title: 'Size Balo',
+      title: 'Kích Thước',
       dataIndex: 'sizeName',
       width: 100,
       sorter: (a, b) => a.sizeName.localeCompare(b.sizeName),
     },
     {
-      title: 'Brand Balo',
+      title: 'Thương Hiệu',
       dataIndex: 'brandName',
       width: 100,
       sorter: (a, b) => a.brandName.localeCompare(b.brandName),
     },
     {
-      title: 'Compartment Balo',
+      title: 'Kiểu Ngăn',
       dataIndex: 'compartmentName',
       width: 100,
       sorter: (a, b) => a.compartmentName.localeCompare(b.compartmentName),
     },
     {
-      title: 'Producer Balo',
+      title: 'NSX',
       dataIndex: 'producerName',
       width: 100,
       sorter: (a, b) => a.producerName.localeCompare(b.producerName),
     },
 
     {
-      title: 'Describe',
+      title: 'Mô Tả',
       dataIndex: 'productDetailDescribe',
       width: 500,
       sorter: (a, b) => a.productDetailDescribe.localeCompare(b.productDetailDescribe),
     },
     {
-      title: 'Status',
+      title: 'Trạng Thái',
       dataIndex: 'productDetailStatus',
       width: 100,
       sorter: (a, b) => a.baloDetailStatus - b.baloDetailStatus,
     },
     {
-      title: 'Import Price',
+      title: 'Giá Nhập',
       dataIndex: 'importPrice',
       fixed: 'right',
       width: 100,
@@ -109,7 +95,7 @@ function BaloDetailsPreview(props) {
       ),
     },
     {
-      title: 'Retails Price',
+      title: 'Giá Bán',
       dataIndex: 'retailPrice',
       fixed: 'right',
       width: 100,
@@ -119,7 +105,7 @@ function BaloDetailsPreview(props) {
       ),
     },
     {
-      title: 'Amount',
+      title: 'Số Lượng',
       dataIndex: 'baloDetailAmount',
       fixed: 'right',
       width: 100,
@@ -139,12 +125,19 @@ function BaloDetailsPreview(props) {
     },
   ];
 
+  useEffect(() => {
+    setBaloList(props.baloList);
+    setBaloListPreview(props.baloListPreview);
+  }, [props.baloList, props.baloListPreview]);
   const handleEditChange = (value, key, field) => {
     if (value <= 0) {
       message.error('Giá trị không hợp lệ ! (giá trị sẽ không thay đổi)');
     } else {
       const newData = [...baloListPreview];
       const target = newData.find((item) => item.productCode === key);
+      // console.log(key);
+      // console.log(target);
+      // console.log(newData);
       if (target) {
         target[field] = value;
         setBaloListPreview(newData);
@@ -161,19 +154,11 @@ function BaloDetailsPreview(props) {
   const save = async () => {
     if (baloList.length !== 0) {
       const tempBalo = baloList[0];
-      console.log('====================================');
-      console.log('tempBalo');
-      console.log(tempBalo);
-      console.log('====================================');
-      const baloAdd = {
-        productCode: tempBalo.productCode,
-        productName: tempBalo.productName,
-        brand: { brandId: tempBalo.brandId },
-        productStatus: tempBalo.productStatus,
-      };
 
       let baloDetails = baloList.map(
         ({
+          productId,
+          productDetailId,
           buckleTypeId,
           colorId,
           compartmentId,
@@ -187,6 +172,9 @@ function BaloDetailsPreview(props) {
           productDetailDescribe,
           baloDetailAmount,
         }) => ({
+          product: {
+            buckleTyproductIdpeId: productId,
+          },
           buckleType: {
             buckleTypeId: buckleTypeId,
           },
@@ -208,7 +196,7 @@ function BaloDetailsPreview(props) {
           type: {
             typeId: typeId,
           },
-
+          productDetailId: productDetailId || null,
           importPrice: importPrice,
           retailPrice: retailPrice,
           productDetailDescribe: productDetailDescribe,
@@ -218,40 +206,32 @@ function BaloDetailsPreview(props) {
       );
 
       try {
-        const response = await baloAPI.add(baloAdd);
-        const id = response.data.productId;
-        const result = await props.handleSendUpload();
-        for (const obj of result) {
-          const uploadedImage = obj;
-          const imageAdd = {
-            imgCode: uploadedImage.imgCode,
-            imgName: uploadedImage.imgName,
-            imgUrl: uploadedImage.imgUrl,
-            isPrimary: true,
-            products: {
-              productId: id,
-            },
-          };
-          const response = await imageAPI.upload(imageAdd);
-        }
+        const id = tempBalo.productId;
 
-        baloDetails.forEach((element) => {
-          element = {
+        var isDoneSuccess = true;
+        for (const element of baloDetails) {
+          var addElement = {
             ...element,
             product: {
               productId: id,
             },
           };
-          console.log('đây là detail');
-          console.log(element);
-          const response2 = baloDetailsAPI.add(element);
-        });
+          console.log('Dây là detail add');
+          console.log(addElement);
+          const response2 = await baloDetailsAPI.add(addElement);
+          if (response2.status !== 200) {
+            isDoneSuccess = false;
+          }
+        }
 
-        notification.success({
-          message: 'Add thành công',
-          description: 'Dữ liệu đã được thêm thành công',
-          duration: 2,
-        });
+        if (isDoneSuccess === true) {
+          notification.success({
+            message: 'Sửa thành công',
+            description: 'Chi tiết balo sửa thành công',
+            duration: 2,
+          });
+          props.handleRefresh();
+        }
       } catch (error) {
         console.log(error);
         notification.error({
@@ -276,7 +256,6 @@ function BaloDetailsPreview(props) {
   };
   useEffect(() => {
     start();
-
     setBaloList(props.baloList);
     setBaloListPreview(props.baloListPreview);
   }, [props.baloList, props.baloListPreview]);
@@ -296,6 +275,7 @@ function BaloDetailsPreview(props) {
             </div>
             <div className={styles.buttonSave}>
               <Popconfirm
+                getPopupContainer={(triggerNode) => triggerNode.parentNode}
                 title="Xác Nhận"
                 description="Bạn Có chắc chắn muốn Thêm?"
                 okText="Đồng ý"
@@ -316,7 +296,14 @@ function BaloDetailsPreview(props) {
           ></span>
         </div>
         <Table
-          rowKey={(record) => record.productCode}
+          rowKey={(record) =>
+            record.productDetailId +
+            record.brandId +
+            record.buckleTypeId +
+            record.colorId +
+            record.compartmentId +
+            record.materialId
+          }
           loading={loading}
           columns={columns}
           dataSource={baloListPreview}
@@ -331,4 +318,4 @@ function BaloDetailsPreview(props) {
     </Fragment>
   );
 }
-export default BaloDetailsPreview;
+export default ProductDetailsPreviewTable;

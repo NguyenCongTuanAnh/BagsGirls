@@ -24,12 +24,13 @@ import baloDetailsAPI from '~/api/productDetailsAPI';
 import brandAPI from '~/api/propertitesBalo/brandAPI';
 import productAPI from '~/api/productsAPI';
 import productDetailsAPI from '~/api/productDetailsAPI';
-import { deleteObject, getStorage, ref } from 'firebase/storage';
+import { deleteObject, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { storage } from '~/firebase/firebase';
 import Dragger from 'antd/es/upload/Dragger';
 import imageAPI from '~/api/ImageAPI';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
+import ProductDetailsAdd from './ProductDetailsEdit/ProductDetailsAdd/ProductDetailsAdd';
 const { Option } = Select;
 
 const getBase64 = (file) =>
@@ -41,6 +42,9 @@ const getBase64 = (file) =>
   });
 
 function FormProductEdit(props) {
+  notification.config({
+    getContainer: () => document.getElementById('notification-container'),
+  });
   const [form] = Form.useForm();
   const [open, setOpen] = useState(false);
   const [product, setProduct] = useState(props.product);
@@ -57,6 +61,7 @@ function FormProductEdit(props) {
     pageSize: 10,
   });
   const [fileList, setFileList] = useState([]);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const start = () => {
     setLoading(true);
@@ -85,18 +90,23 @@ function FormProductEdit(props) {
     const brandData = await brandAPI.getAll();
     setBrand(brandData.data);
   };
-  useEffect(() => {
+  const handleCovertImg = (downloadedImageList) => {
     const imgListConvert = props.product.images || [];
+    imgListConvert.push(...downloadedImageList);
     const transformedImageList = imgListConvert.map((image) => ({
       uid: image.imageId,
       name: image.imgName,
       status: 'done', // Hoặc bạn có thể set giá trị status khác nếu cần thiết
       url: image.imgUrl,
     }));
+    console.log('====================================');
+    console.log(transformedImageList);
+    console.log('====================================');
     setImageList(transformedImageList);
-    // setFileList(transformedImageList);
-  }, [props.product.images]);
-
+  };
+  useEffect(() => {
+    handleCovertImg([]);
+  }, []);
   const columns = [
     {
       title: 'STT',
@@ -280,8 +290,8 @@ function FormProductEdit(props) {
   useEffect(() => {
     let err = '';
     var tempList = fileList;
-    if (fileList.length > 6) {
-      err = 'Chỉ được chọn tối đa 6 ảnh , vui lòng chọn lại!!!!';
+    if (imageList.length + fileList.length > 6) {
+      err = `Mỗi sản phẩm chỉ tối đa 6 ảnh (Đã có ${imageList.length} cái) , vui lòng chọn lại!!!!`;
       tempList = [];
       setFileList([]);
     } else {
@@ -306,13 +316,69 @@ function FormProductEdit(props) {
       message.error(err);
       err = '';
     }
-    if (tempList.length !== 0) {
-      console.log(fileList);
+    if (tempList.length !== 0 && err === '') {
       console.log(tempList);
       console.log('TH');
+      handleUploadImage(tempList);
     }
   }, [fileList]);
 
+  const handleUploadImage = async (moreImgList) => {
+    const key = 'updatable';
+    var waitingTime = 9999999;
+    messageApi.open({
+      key,
+      type: 'loading',
+      content: 'Đang Upload ảnh lên hệ thống',
+      duration: waitingTime,
+    });
+    for (let i = 0; i < moreImgList.length; i++) {
+      var isDone = false;
+      const addCodeImg = generateCustomCode('image', 5);
+      const now = new Date();
+      const dateString = `${now.getMonth()}_${now.getDate()}_${now.getFullYear()}_${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}:${now.getMilliseconds()}`;
+      const file = moreImgList[i];
+      const name = addCodeImg + '_' + dateString;
+      const renamedFile = new File([file], name, { type: file.type });
+      const storageRef = ref(storage, `mulitpleFiles/${name}`);
+      try {
+        await uploadBytes(storageRef, renamedFile);
+        const downloadURL = await getDownloadURL(storageRef);
+
+        const uploadedImage = {
+          imgUrl: downloadURL,
+          imgCode: addCodeImg,
+          imgName: name,
+          isPrimary: true,
+          products: {
+            productId: product.productId,
+          },
+        };
+        //// save vào db
+        const response = await imageAPI.upload(uploadedImage);
+        if (response.status === 200) {
+          // message.success('Tải lên hình ảnh thành công');
+          const tempList = [];
+          tempList.push(response.data);
+          handleCovertImg(tempList);
+        }
+      } catch (error) {
+        console.log('Lỗi khi tải lên:', error);
+        message.error('Lỗi khi tải lên hình ảnh');
+      }
+      isDone = true;
+      waitingTime = 0;
+    }
+
+    messageApi.open({
+      key,
+      type: 'success',
+      content: 'Đã tải ảnh thành công!',
+      duration: 2,
+    });
+
+    // return newList;
+  };
   const addFileImg = (fileLists) => {
     setFileList(fileLists);
   };
@@ -395,197 +461,200 @@ function FormProductEdit(props) {
   );
   return (
     <Fragment>
-      <Button style={{ borderColor: 'blue', color: 'blue' }} onClick={showDrawer} icon={<EditOutlined />}>
-        Sửa
-      </Button>
-      <Drawer
-        title={'Edit - ' + product.productCode}
-        width={1600}
-        onClose={onClose}
-        open={open}
-        styles={{
-          body: {
-            paddingBottom: 80,
-            // Các style khác bạn muốn áp dụng vào phần body của Drawer
-          },
-        }}
-        extra={
-          <Space>
-            <Button onClick={onClose} type="primary">
-              Thoát
-            </Button>
-          </Space>
-        }
-      >
-        <h1>Thông tin Balo</h1>
-        <div>
-          <Popconfirm
-            title="Xác Nhận"
-            description="Bạn Có chắc chắn muốn Sửa?"
-            okText="Đồng ý"
-            cancelText="Không"
-            onConfirm={handleEdit}
-            onCancel={() => {
-              console.log('abc');
-            }}
-          >
-            <Button type="primary" loading={false}>
-              Sửa Balo
-            </Button>
-          </Popconfirm>
-        </div>
-        <hr></hr>
-        <Form
-          layout="vertical"
-          hideRequiredMark
-          initialValues={{
-            productCode: product.productCode,
-            productName: product.productName,
-            productStatus: product.productStatus,
-            brandId: props.brandId,
+      <div id="notification-container">
+        {contextHolder}
+        <Button style={{ borderColor: 'blue', color: 'blue' }} onClick={showDrawer} icon={<EditOutlined />}>
+          Sửa
+        </Button>
+        <Drawer
+          title={'Edit - ' + product.productCode}
+          width={1600}
+          onClose={onClose}
+          open={open}
+          styles={{
+            body: {
+              paddingBottom: 80,
+            },
           }}
-          onFinish={handleEditProductDetails}
-          form={form}
+          extra={
+            <Space>
+              <Button onClick={onClose} type="primary">
+                Thoát
+              </Button>
+            </Space>
+          }
         >
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="productCode"
-                label="Mã Code Balo "
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng điền Mã Code Balo',
-                  },
-                ]}
-              >
-                <Input placeholder="Vui lòng điền Mã Code Balo" readOnly />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="productName"
-                label="Tên "
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng điền Tên Balo',
-                  },
-                ]}
-              >
-                <Input name="baloName" placeholder="Vui lòng điền Tên Balo" />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="productStatus"
-                label="Trạng Thái Balo"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please select an owner',
-                  },
-                ]}
-              >
-                <Select placeholder="Vui lòng chọn Trạng Thái Balo">
-                  <Option value={1}>Hoạt Động</Option>
-                  <Option value={0}>Không Hoạt Động</Option>
-                  <Option value={-1}>Hủy Hoạt Động</Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Row>
-                <Col span={12}>
-                  <Form.Item
-                    label="Thương Hiệu"
-                    name="brandId"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Vui lòng chọn Thương Hiệu!',
-                      },
-                    ]}
-                  >
-                    <Select
-                      size="large"
-                      style={{
-                        width: 200,
-                      }}
-                    >
-                      {brand.map((o) => (
-                        <Select.Option key={o.brandId} value={o.brandId}>
-                          {o.brandName}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col span={12}></Col>
-              </Row>
-            </Col>
-          </Row>
-        </Form>
-
-        <hr></hr>
-        <div>
-          <Upload
-            listType="picture-card"
-            fileList={imageList}
-            onPreview={handlePreview}
-            onChange={handleChange}
-          ></Upload>
-          {imageList.length >= 96 || fileList.length >= 96 ? null : UploadDragger}
-          <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
-            <Image
-              onClick={() => {
-                setPreviewOpen(false);
+          <h1>Thông tin Balo</h1>
+          <div>
+            <Popconfirm
+              title="Xác Nhận"
+              description="Bạn Có chắc chắn muốn Sửa?"
+              okText="Đồng ý"
+              cancelText="Không"
+              onConfirm={handleEdit}
+              onCancel={() => {
+                console.log('abc');
               }}
-              alt="example"
-              style={{
-                width: '100%',
-              }}
-              src={previewImage}
-            />
-          </Modal>
-        </div>
-        <hr></hr>
-        <div>
-          <h1>Thông tin Balo Chi tiết</h1>
-          <hr></hr>
-          <div
-            style={{
-              marginBottom: 16,
-            }}
-          >
-            <div>
-              <Row>
-                <Col span={2}>
-                  <Button type="primary" onClick={start} loading={loading}>
-                    Reload
-                  </Button>
-                </Col>
-                <Col span={1}>{selectedRowKeys.length === 0 ? null : DeleteButton}</Col>
-              </Row>
-            </div>
-            <Table
-              rowKey={(record) => record.productDetailId}
-              rowSelection={rowSelection}
-              loading={loading}
-              columns={columns}
-              dataSource={baloList}
-              pagination={pagination}
-              scroll={{
-                x: 1500,
-                y: 500,
-              }}
-            />
+            >
+              <Button type="primary" loading={false}>
+                Sửa Balo
+              </Button>
+            </Popconfirm>
           </div>
-        </div>
-      </Drawer>
+          <hr></hr>
+          <Form
+            layout="vertical"
+            hideRequiredMark
+            initialValues={{
+              productCode: product.productCode,
+              productName: product.productName,
+              productStatus: product.productStatus,
+              brandId: props.brand.brandId,
+            }}
+            onFinish={handleEditProductDetails}
+            form={form}
+          >
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="productCode"
+                  label="Mã Code Balo "
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Vui lòng điền Mã Code Balo',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Vui lòng điền Mã Code Balo" readOnly />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item
+                  name="productName"
+                  label="Tên "
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Vui lòng điền Tên Balo',
+                    },
+                  ]}
+                >
+                  <Input name="baloName" placeholder="Vui lòng điền Tên Balo" />
+                </Form.Item>
+              </Col>
+            </Row>
+            <Row gutter={16}>
+              <Col span={12}>
+                <Form.Item
+                  name="productStatus"
+                  label="Trạng Thái Balo"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please select an owner',
+                    },
+                  ]}
+                >
+                  <Select placeholder="Vui lòng chọn Trạng Thái Balo">
+                    <Option value={1}>Hoạt Động</Option>
+                    <Option value={0}>Không Hoạt Động</Option>
+                    <Option value={-1}>Hủy Hoạt Động</Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Row>
+                  <Col span={12}>
+                    <Form.Item
+                      label="Thương Hiệu"
+                      name="brandId"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng chọn Thương Hiệu!',
+                        },
+                      ]}
+                    >
+                      <Select
+                        size="large"
+                        style={{
+                          width: 200,
+                        }}
+                      >
+                        {brand.map((o) => (
+                          <Select.Option key={o.brandId} value={o.brandId}>
+                            {o.brandName}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}></Col>
+                </Row>
+              </Col>
+            </Row>
+          </Form>
+          <hr></hr>
+          <div>
+            <Upload
+              listType="picture-card"
+              fileList={imageList}
+              onPreview={handlePreview}
+              onChange={handleChange}
+            ></Upload>
+            {imageList.length >= 96 || fileList.length >= 96 ? null : UploadDragger}
+            <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
+              <Image
+                onClick={() => {
+                  setPreviewOpen(false);
+                }}
+                alt="example"
+                style={{
+                  width: '100%',
+                }}
+                src={previewImage}
+              />
+            </Modal>
+          </div>
+          <hr></hr>
+          <div>
+            <h1>Thông tin Balo Chi tiết</h1>
+            <hr></hr>
+            <div
+              style={{
+                marginBottom: 16,
+              }}
+            >
+              <div>
+                <Row>
+                  <Col span={2}>
+                    <Button type="primary" onClick={start} loading={loading}>
+                      Reload
+                    </Button>
+                  </Col>
+                  <Col span={2}>
+                    <ProductDetailsAdd productDetailList={baloList} brand={props.brand} handleRefresh={start} />
+                  </Col>
+                  <Col span={1}>{selectedRowKeys.length === 0 ? null : DeleteButton}</Col>
+                </Row>
+              </div>
+              <Table
+                rowKey={(record) => record.productDetailId}
+                rowSelection={rowSelection}
+                loading={loading}
+                columns={columns}
+                dataSource={baloList}
+                pagination={pagination}
+                scroll={{
+                  x: 1500,
+                  y: 500,
+                }}
+              />
+            </div>
+          </div>
+        </Drawer>
+      </div>
     </Fragment>
   );
 }
