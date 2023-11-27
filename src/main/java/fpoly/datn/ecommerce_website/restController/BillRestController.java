@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -41,9 +43,22 @@ public class BillRestController {
             @RequestParam(name = "size", defaultValue = "15") Integer pageSize,
             @RequestParam(name ="status", defaultValue = "") Integer status,
             @RequestParam(name ="search", defaultValue = "") String search,
-            @RequestParam(name ="startDate", defaultValue = "0001/01/01") Date startDate,
-            @RequestParam(name ="endDate", defaultValue = "9999/01/01") Date endDate){
-        return new ResponseEntity<>(this.billService.getAllBillsPagination(startDate, endDate, status, search, pageNum, pageSize), HttpStatus.OK);
+            @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
+            @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr) {
+
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+            // Chuyển đổi chuỗi thành đối tượng Date
+            Date startDate = dateFormat.parse(startDateStr);
+            Date endDate = dateFormat.parse(endDateStr);
+
+            // Gọi service để lấy dữ liệu
+            return new ResponseEntity<>(this.billService.getAllBillsPagination(startDate, endDate, status, search, pageNum, pageSize), HttpStatus.OK);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Lỗi khi chuyển đổi ngày", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @RequestMapping(value = "/bills", method = RequestMethod.POST)
