@@ -10,10 +10,11 @@ const billsAPI = {
       },
     });
   },
-  getAllSearchPagination(startDate, endDate, status, search, pageNum, pageSize) {
+  getAllSearchPagination(filterStaffName, startDate, endDate, status, search, pageNum, pageSize) {
     const url = 'api/bills/pagination';
     return axiosClient.get(url, {
       params: {
+        filterStaffName: filterStaffName,
         startDate: startDate,
         endDate: endDate,
         search: search,

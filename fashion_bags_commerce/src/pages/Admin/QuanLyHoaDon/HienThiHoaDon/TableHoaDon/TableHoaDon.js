@@ -7,21 +7,23 @@ import staffAPI from '~/api/staffAPI';
 import styles from './index.module.scss';
 import SearchForm from './FormSearch/SearchForm';
 import dayjs from 'dayjs';
+import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
+import FormCapNhatTrangThai from '../../CapNhatHoaDon/CapNhatTrangThai';
 const { RangePicker } = DatePicker;
 
 
 function TableHoaDon() {
     const [data, setData] = useState([]);
+    const [listStaff, setListStaff] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(15);
-    const [totalItem, setTotalItem] = useState();
     const [status, setStatus] = useState("0");
     const [search, setSearch] = useState('');
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
-    const [filterTenNhanVien, setFilterTenNhanVien] = useState("");
-    const [listStaff, setListStaff] = useState([]);
+    const [filterStaffName, setFilterStaffName] = useState("");
+
 
 
     const handleTableChange = (pagination, filters, sorter) => { };
@@ -80,6 +82,10 @@ function TableHoaDon() {
             title: "Tổng tiền",
             dataIndex: 'billTotalPrice',
             key: "billTotalPrice",
+            sorter: (a, b) => a.price.localeCompare(b.price),
+            render: (price) => {
+                return <span>{VNDFormaterFunc(price)}</span>;
+            },
 
         },
 
@@ -131,8 +137,10 @@ function TableHoaDon() {
             title: 'Hành động',
             key: 'action',
             render: (_, record) => (
-                <Space size="middle">
+                // <FormCapNhatTrangThai>Cập nhật</FormCapNhatTrangThai>
 
+                <Space size="middle">
+                    <FormCapNhatTrangThai status={record} reload={() => setLoading(true)} />
                     <Popconfirm
                         title="Xác Nhận"
                         description="Bạn có chắc chắn muốn xóa?"
@@ -200,32 +208,33 @@ function TableHoaDon() {
 
     const getAllPhanTrangCompartment = async (pageNum, pageSize) => {
         try {
-            const response = await billsAPI.getAllSearchPagination(startDate, endDate, status, search, pageNum, pageSize);
+            const response = await billsAPI.getAllSearchPagination(filterStaffName, startDate, endDate, status, search, pageNum, pageSize);
             const data = response.data.content;
-            setTotalItem(response.data.totalElements);
+            console.log(response);
+            console.log(data);
+            // setTotalItem(response.data.totalElements);
             setData(data);
-            setTimeout(() => { }, 500);
         } catch (error) {
             console.error('Đã xảy ra lỗi: ', error);
         }
     };
-    // const getAllStaff = async () => {
-    //     try {
-    //         const x = await staffAPI.getAllStaff();
-    //         // console.log('Staff API Response:', x);
-    //         const lst = x.data.content;
-    //         setListStaff(lst);
-    //     } catch (error) {
-    //         console.error('Error fetching staff data:', error);
-    //     };
-    // }
+    const getAllStaff = async () => {
+        try {
+            const response = await staffAPI.getAllStaff();
+            const list = response.data;
+            setListStaff(list);
+        } catch (error) {
+            console.error('Error fetching staff data:', error);
+        };
+    }
     useEffect(() => {
         getAllPhanTrangCompartment(currentPage, pageSize);
-        // getAllStaff();
+        getAllStaff();
+
         setTimeout(() => {
             setLoading(false);
         }, 500);
-    }, [loading, search, status, startDate, endDate]);
+    }, [loading, search, status, startDate, endDate, filterStaffName]);
     return (
         <div>
             <Card>
@@ -255,16 +264,16 @@ function TableHoaDon() {
                                         bordered={false}
                                         style={{ width: '50%', borderBottom: '1px solid #ccc' }}
                                         onChange={(value) => {
-                                            setFilterTenNhanVien(value);
+                                            setFilterStaffName(value);
                                         }}
                                         defaultValue=""
                                     >
                                         <Select.Option value="">Tất cả</Select.Option>
-                                        {/* {(listStaff ?? []).map((item, index) => (
+                                        {(listStaff ?? []).map((item, index) => (
                                             <Select.Option key={index} value={item.usersFullName}>
                                                 {item.usersFullName}
                                             </Select.Option>
-                                        ))} */}
+                                        ))}
                                     </Select>
                                 </span>
                             </div>

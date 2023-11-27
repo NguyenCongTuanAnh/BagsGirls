@@ -27,23 +27,31 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
 //            "or c.customer.users.phoneNumber like %:search%)")
 //    Page<BillsQDTO> findAllBills(@Param("search") String search, @Param("status") String status, Pageable pageable);
 
-    @Query(value = "SELECT b FROM Bills b WHERE" +
-            " (b.billCode LIKE %:search% OR b.staff.users.fullName LIKE %:search%" +
-            " OR b.customer.users.fullName LIKE %:search% OR b.customer.users.phoneNumber LIKE %:search%)" +
-            " AND (b.billCreateDate BETWEEN :startDate AND :endDate)")
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " (b.billCode LIKE %:search% " +
+            " OR b.staff.users.fullName LIKE %:search% " +
+            " OR b.customer.users.fullName LIKE %:search% " +
+            " OR b.customer.users.phoneNumber LIKE %:search% " +
+            " OR CAST(b.billTotalPrice AS string) like %:search%) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND b.staff.users.fullName LIKE %:filterStaffName% ")
     Page<Bills> findAllBillsBySearch(
+            @Param("filterStaffName") String filterStaffName,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
             @Param("search") String search,
             Pageable pageable);
 
-    @Query(value = "SELECT b FROM Bills b WHERE b.billStatus = :status" +
-            " AND (b.billCode LIKE %:search%" +
-            " OR b.staff.users.fullName LIKE %:search%" +
-            " OR b.customer.users.fullName LIKE %:search%" +
-            " OR b.customer.users.phoneNumber LIKE %:search%)" +
-            " AND (b.billCreateDate BETWEEN :startDate AND :endDate)")
+    @Query(value = " SELECT b FROM Bills b WHERE b.billStatus = :status " +
+            " AND (b.billCode LIKE %:search% " +
+            " OR b.staff.users.fullName LIKE %:search% " +
+            " OR b.customer.users.fullName LIKE %:search% " +
+            " OR b.customer.users.phoneNumber LIKE %:search% " +
+            " OR CAST(b.billTotalPrice AS string) like %:search%) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND b.staff.users.fullName LIKE %:filterStaffName% ")
     Page<Bills> findAllBillsBySearchStatus(
+            @Param("filterStaffName") String filterStaffName,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
             @Param("status") Integer status,

@@ -10,12 +10,9 @@ const staffAPI = {
       },
     });
   },
-
   getAllStaff() {
-    const url = 'api/staff/';
-    return axiosClient.get(url, {
-
-    });
+    const url = 'api/staff/get-all';
+    return axiosClient.get(url, null);
   },
 
   getSearchPagination(key, pageNum, pageSize) {
