@@ -152,24 +152,13 @@ function TableHoaDon() {
     const onCancel = () => { };
 
     const onRangeChange = (dates, dateStrings) => {
-        const start = new Date(dateStrings[0]).toLocaleDateString('en-GB', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
-        const end = new Date(dateStrings[1]).toLocaleDateString('en-GB', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
         if (dates) {
-            setStartDate(start);
-            setEndDate(end);
+            setStartDate(dateStrings[0]);
+            setEndDate(dateStrings[1]);
         } else {
-            setStartDate('0001/01/01');
-            setEndDate(dayjs());
+            setStartDate('0001-01-01');
+            setEndDate('9999-02-02');
         }
-        // console.log(startDate, endDate);
     };
 
     const rangePresets = [
