@@ -50,12 +50,8 @@ public class BillRestController {
 
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-            // Chuyển đổi chuỗi thành đối tượng Date
             Date startDate = dateFormat.parse(startDateStr);
             Date endDate = dateFormat.parse(endDateStr);
-
-            // Gọi service để lấy dữ liệu
             return new ResponseEntity<>(this.billService.getAllBillsPagination(filterStaffName, startDate, endDate, status, search, pageNum, pageSize), HttpStatus.OK);
         } catch (ParseException e) {
             e.printStackTrace();
