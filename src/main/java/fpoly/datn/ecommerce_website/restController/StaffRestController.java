@@ -38,7 +38,7 @@ public class StaffRestController {
     @Autowired
     private ModelMapper modelMapper;
 
-    @RequestMapping("/staff/")
+    @RequestMapping("/staff/get-all")
     public ResponseEntity<List<StaffDTO1>> getAll() {
         List<Staffs> list = staffService.findAll();
         System.out.println(list.size());
