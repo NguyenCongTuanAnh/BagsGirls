@@ -6,6 +6,8 @@ import { Input, Select } from 'antd';
 function ListCheckOut() {
   const [cartItems, setCartItems] = useState([]);
 
+  
+
   useEffect(() => {
     // Fetch cart items from local storage
     const storedCart = localStorage.getItem('temporaryCart');
@@ -65,14 +67,7 @@ function ListCheckOut() {
       <hr />
       <div className={styles.pay}>
         <h3>Phương thức thanh toán:</h3>
-        {/* <Select
-          style={{ width: '100%', height: '40px', fontSize: '16px' }}
-          placeholder="Vui lòng chọn hình thức thanh toán"
-        >
-          <Select.Option>Thanh Toán khi nhận hàng</Select.Option>
-          <Select.Option>Chuyển khoản ngân hàng</Select.Option>
-          <Select.Option>Ví điện tử</Select.Option>
-        </Select> */}
+      
         <Input name="radioPay" type="radio" value={''} />
         Chuyển khoản ngân hàng
         <Input name="radioPay" type="radio" value={''} />

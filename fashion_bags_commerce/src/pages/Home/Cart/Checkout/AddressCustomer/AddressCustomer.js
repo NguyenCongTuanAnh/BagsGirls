@@ -23,9 +23,18 @@ const AddressVietnam = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const currentDateTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
+
+    const currentTime = new Date(); 
+    const currentDateTime = dayjs(currentTime).subtract(7,'hour').format('YYYY-MM-DD HH:mm:ss');
+
+const utcTime = currentTime.toISOString();
+
+
+const localTime = new Date(utcTime); 
     setBillCreateDate(currentDateTime);
-    const fullAddress = `${address} | ${selectedWard} | ${selectedDistrict} | ${selectedProvince}`;
+
+    
+    const fullAddress = `${address} | ${getAddressName(selectedWard,'ward')} | ${selectedDistrict} | ${selectedProvince}`;
 
     try {
       const billData = {
