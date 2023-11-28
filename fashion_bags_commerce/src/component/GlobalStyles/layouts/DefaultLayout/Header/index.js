@@ -5,28 +5,22 @@ import Title from 'antd/es/typography/Title';
 import NotificationIcon from './NotificationIcon';
 import MessageIcon from './MessageIcon';
 import PopupProfile from './PopupProfile';
-import style from './index.module.scss';
-
-const header = {
-  // backgroundColor: '#ffffff',
-  padding: '20px 0 0 40px',
-  margin: '0 20px 10px 10px',
-  backgroundColor: 'lightblue',
-};
+import styles from './index.module.scss';
 
 const headerIcons = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-end',
 };
-const wrapper = {};
 function HeaderContent(props) {
   return (
-    <header style={header}>
-      <div className={wrapper}>
+    <header className={styles.header}>
+      <div>
         <div className="row">
           <div className="col-md-4">
-            <Title level={1}>{props.titlePage}</Title>
+            <Title style={{ color: 'black' }} level={1}>
+              {props.titlePage}
+            </Title>
           </div>
           <div className="col-md-8">
             <div style={headerIcons}>

@@ -41,6 +41,6 @@ public class CustomerDTO1 {
 
     private String usersUserNote;
     @NotBlank
-    private Role userRoleName;
+    private Role role;
 
 }

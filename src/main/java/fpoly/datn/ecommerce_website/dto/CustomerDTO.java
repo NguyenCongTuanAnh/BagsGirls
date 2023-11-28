@@ -37,9 +37,9 @@ public class CustomerDTO {
     private String usersPhoneNumber;
     private String usersAddress;
 
-    private String usersUserNote;
+//    private String usersUserNote;
 
-        private String usersRolesRoleId;
+//    private String usersRolesRoleId;
 
     private Users users;
 
