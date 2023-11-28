@@ -4,9 +4,13 @@ import './styles.scss';
 import { Link } from 'react-router-dom';
 import billsAPI from '~/api/BillApi';
 import dayjs from 'dayjs';
+import { Button, notification } from 'antd';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 
 const AddressVietnam = () => {
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [submittedData, setSubmittedData] = useState(null);
+
   const host = 'https://provinces.open-api.vn/api/';
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -23,36 +27,68 @@ const AddressVietnam = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    const fullAddress = `${address} | ${selectedWard} | ${selectedDistrict} | ${selectedProvince}`;
 
-    const currentTime = new Date(); 
-    const currentDateTime = dayjs(currentTime).subtract(7,'hour').format('YYYY-MM-DD HH:mm:ss');
+    try {
+      setSubmittedData({
+        fullName,
+        phoneNumber,
+        address,
+        selectedProvince,
+        selectedDistrict,
+        selectedWard,
+        fullAddress,
+      });
+      setNotificationMessage('Địa chỉ đã được thêm thành công!');
+    } catch (error) {
+      console.error('Error submitting information:', error);
+    }
+  };
 
-const utcTime = currentTime.toISOString();
+  const handleConfirmation = async () => {
+    const currentTime = new Date();
+    const currentDateTime = dayjs(currentTime).subtract(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
 
+    const utcTime = currentTime.toISOString();
 
-const localTime = new Date(utcTime); 
+    const localTime = new Date(utcTime);
     setBillCreateDate(currentDateTime);
 
-    
-    const fullAddress = `${address} | ${getAddressName(selectedWard,'ward')} | ${selectedDistrict} | ${selectedProvince}`;
+    const fullAddress = `${address} | ${selectedWard} | ${selectedDistrict} | ${selectedProvince}`;
 
     try {
       const billData = {
         receiverName: fullName,
         orderPhone: phoneNumber,
         shippingAddress: fullAddress,
-        billCreateDate: currentDateTime, // Get current date in ISO format
+        billCreateDate: currentDateTime,
         billStatus: 4,
-        billCode: generateCustomCode('Bill', 4), // Generate custom bill code
+        billCode: generateCustomCode('Bill', 4),
       };
 
-      // Send the Bill object to the API using billsAPI.add()
       const response = await billsAPI.add(billData);
       console.log('Successful information submission, Bill Code:', response.data.billCode);
       console.log('Successful information submission:', response.data);
     } catch (error) {
       console.error('Error submitting information:', error);
     }
+  };
+  const getAddressName = (code, type) => {
+    let name = '';
+    switch (type) {
+      case 'ward':
+        name = wards.find((ward) => ward.code === code)?.name || '';
+        break;
+      case 'district':
+        name = districts.find((district) => district.code === code)?.name || '';
+        break;
+      case 'province':
+        name = provinces.find((province) => province.code === code)?.name || '';
+        break;
+      default:
+        break;
+    }
+    return name;
   };
 
   useEffect(() => {
@@ -100,24 +136,6 @@ const localTime = new Date(utcTime);
   const handleWardChange = (event) => {
     const wardCode = event.target.value;
     setSelectedWard(wardCode);
-  };
-
-  const getAddressName = (code, type) => {
-    let name = '';
-    switch (type) {
-      case 'ward':
-        name = wards.find((ward) => ward.code === code)?.name || '';
-        break;
-      case 'district':
-        name = districts.find((district) => district.code === code)?.name || '';
-        break;
-      case 'province':
-        name = provinces.find((province) => province.code === code)?.name || '';
-        break;
-      default:
-        break;
-    }
-    return name;
   };
 
   return (
@@ -187,7 +205,34 @@ const localTime = new Date(utcTime);
           placeholder="Điền rõ thông tin số nhà, tên đường, xã, huyện, tỉnh"
           required
         />
-        <button type="submit">Giao đến địa chỉ này</button>
+        <button>Giao đến địa chỉ này</button>
+        <br></br>
+        {submittedData && (
+          <div>
+            <h2>Thông tin người đặt hàng:</h2>
+            <table>
+              <tbody>
+                <tr>
+                  <td>Họ và tên:</td>
+                  <td>{submittedData.fullName}</td>
+                </tr>
+                <tr>
+                  <td>Số điện thoại:</td>
+                  <td>{submittedData.phoneNumber}</td>
+                </tr>
+                <tr>
+                  <td>Địa chỉ:</td>
+                  <td>{submittedData.fullAddress}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
+        <br></br>
+
+        <button onClick={handleConfirmation} style={{ display: submittedData ? 'block' : 'none' }}>
+          Xác nhận địa chỉ
+        </button>
       </form>
     </div>
   );

@@ -12,15 +12,15 @@ const headerStyle = {
   color: '#fff',
   height: 'auto',
   paddingInline: 0,
-  lineHeight: '64px',
+  margin: '20px 0 20px 0',
+
   backgroundColor: '#f3f4f3',
 };
 const contentStyle = {
-  // lineHeight: '120px',
   margin: '0 20px 10px 10px',
   color: 'black',
-  backgroundColor: 'lightblue',
-
+  backgroundColor: 'white',
+  height: '750px',
 };
 const footerStyle = {
   margin: '0 10px 10px 20px',

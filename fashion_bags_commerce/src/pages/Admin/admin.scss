@@ -1,0 +1,29 @@
+/* Trong file styles.css */
+
+.headerStyle {
+  border-left: 270px;
+  color: #fff;
+  height: auto;
+  padding-inline: 0;
+  margin: 0;
+}
+
+.contentStyle {
+  margin: 0 20px 10px 10px;
+  color: black;
+  background-color: white;
+  height: 750px;
+}
+
+.footerStyle {
+  margin: 0 10px 10px 20px;
+  border-left: 270px;
+  color: black;
+  background-color: #fff;
+}
+
+.layoutContent {
+  margin-left: 270px;
+  flex-grow: 1;
+  background-color: #f3f4f3;
+}

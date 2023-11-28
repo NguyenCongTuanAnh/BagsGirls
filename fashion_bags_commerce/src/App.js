@@ -95,6 +95,22 @@ function App() {
             }
           />
           <Route
+            path="/customer-view"
+            element={
+              <AdminAuth>
+                <CustomerView />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/voucher-view"
+            element={
+              <AdminAuth>
+                <VoucherView />
+              </AdminAuth>
+            }
+          />
+          <Route
             path="/color-view"
             element={
               <AdminAuth>
