@@ -27,14 +27,13 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
 //            "or c.customer.users.phoneNumber like %:search%)")
 //    Page<BillsQDTO> findAllBills(@Param("search") String search, @Param("status") String status, Pageable pageable);
 
-    @Query(value = " SELECT b FROM Bills b WHERE " +
-            " (b.billCode LIKE %:search% " +
-            " OR b.staff.users.fullName LIKE %:search% " +
-            " OR b.customer.users.fullName LIKE %:search% " +
+    @Query(value = "SELECT b FROM Bills b WHERE " +
+            " (b.billCode LIKE %:filterStaffName% " +
             " OR b.customer.users.phoneNumber LIKE %:search% " +
             " OR CAST(b.billTotalPrice AS string) like %:search%) " +
-            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-            " AND b.staff.users.fullName LIKE %:filterStaffName% ")
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " )
+//            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+//            " AND (b.staff IS NULL OR b.staff.users.fullName LIKE %:filterStaffName%) ")
     Page<Bills> findAllBillsBySearch(
             @Param("filterStaffName") String filterStaffName,
             @Param("startDate") Date startDate,

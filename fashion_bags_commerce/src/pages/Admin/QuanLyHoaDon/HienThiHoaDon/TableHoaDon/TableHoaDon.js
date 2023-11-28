@@ -62,15 +62,31 @@ function TableHoaDon() {
             },
         },
         {
-            title: "Tên nhân viên",
-            dataIndex: ['staff', 'users', 'fullName'],
-            key: "staffName",
+            title: 'Tên nhân viên',
+            dataIndex: 'staff',
+            key: 'staffName',
+            render: (staff) => {
+                // Kiểm tra xem 'staff' có giá trị hay không
+                if (staff && staff.users && staff.users.fullName) {
+                    return staff.users.fullName;
+                } else {
+                    return 'Đơn hàng online';
+                }
+            },
 
         },
         {
             title: "Tên khách hàng",
-            dataIndex: ['customer', 'users', 'fullName'],
-            key: "customerName",
+            dataIndex: 'receiverName',
+            key: 'receiverName',
+            render: (text, record) => {
+                if (!record.customer.customerId) {
+                    return record.receiverName;
+                } else {
+                    return record.customer.users.fullName;
+                }
+
+            },
         },
         {
             title: "Số điện thoại",
@@ -210,9 +226,6 @@ function TableHoaDon() {
         try {
             const response = await billsAPI.getAllSearchPagination(filterStaffName, startDate, endDate, status, search, pageNum, pageSize);
             const data = response.data.content;
-            console.log(response);
-            console.log(data);
-            // setTotalItem(response.data.totalElements);
             setData(data);
         } catch (error) {
             console.error('Đã xảy ra lỗi: ', error);
