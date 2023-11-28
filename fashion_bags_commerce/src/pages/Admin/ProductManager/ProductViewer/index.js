@@ -12,8 +12,7 @@ function ProductViewer() {
         <Sidebar keyIndex="11" openKey="sub999" />
       </Sider>
       <Layout className="layoutContent">
-      <Header className="headerStyle" style={{ background: 'lightcyan' }}>
-
+        <Header className="headerStyle">
           <HeaderContent titlePage="Danh Sách Sản Phẩm" />
         </Header>
         <Content className="contentStyle">

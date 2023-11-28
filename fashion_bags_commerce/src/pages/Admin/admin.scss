@@ -9,10 +9,12 @@
 }
 
 .contentStyle {
-  margin: 0 20px 10px 10px;
+  margin: 0 40px 40px 40px;
   color: black;
-  background-color: white;
-  height: 750px;
+  background: white;
+  background-image: url(https://i.imgur.com/fIkdNV4.png);
+  border-radius: 32px;
+  height: 100%;
 }
 
 .footerStyle {
@@ -25,5 +27,5 @@
 .layoutContent {
   margin-left: 270px;
   flex-grow: 1;
-  background-color: #f3f4f3;
+  background-color: white;
 }

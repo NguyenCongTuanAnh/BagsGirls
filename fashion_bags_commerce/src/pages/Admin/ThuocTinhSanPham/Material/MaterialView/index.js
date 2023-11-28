@@ -12,8 +12,7 @@ function MaterialView() {
         <Sidebar keyIndex="15" openKey="sub11" />
       </Sider>
       <Layout className="layoutContent" >
-      <Header className="headerStyle" style={{ background: 'lightcyan' }}>
-
+        <Header className="headerStyle">
           <HeaderContent titlePage="Danh Sách Chất Liệu" />
         </Header>
         <Content className="contentStyle">

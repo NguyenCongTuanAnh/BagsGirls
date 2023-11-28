@@ -12,8 +12,7 @@ function TypeView() {
         <Sidebar keyIndex="16" openKey="sub11" />
       </Sider>
       <Layout className="layoutContent">
-      <Header className="headerStyle" style={{ background: 'lightcyan' }}>
-
+        <Header className="headerStyle">
           <HeaderContent titlePage="Danh Sách Kiểu Balo" />
         </Header>
         <Content className="contentStyle">

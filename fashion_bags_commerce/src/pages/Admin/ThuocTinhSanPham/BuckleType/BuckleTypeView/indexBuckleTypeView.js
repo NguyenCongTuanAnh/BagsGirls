@@ -12,8 +12,7 @@ function BuckleTypeView() {
         <Sidebar keyIndex="17" openKey="sub11" />
       </Sider>
       <Layout className="layoutContent" >
-      <Header className="headerStyle" style={{ background: 'lightcyan' }}>
-
+        <Header className="headerStyle">
           <HeaderContent titlePage="Danh Sách Kiểu Khóa" />
         </Header>
         <Content className="contentStyle">

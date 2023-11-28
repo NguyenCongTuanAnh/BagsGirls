@@ -12,8 +12,7 @@ function BrandView() {
         <Sidebar keyIndex="13" openKey="sub11" />
       </Sider>
       <Layout className="layoutContent">
-      <Header className="headerStyle" style={{ background: 'lightcyan' }}>
-
+        <Header className="headerStyle">
           <HeaderContent titlePage="Danh Sách Thương hiệu" />
         </Header>
         <Content className="contentStyle">

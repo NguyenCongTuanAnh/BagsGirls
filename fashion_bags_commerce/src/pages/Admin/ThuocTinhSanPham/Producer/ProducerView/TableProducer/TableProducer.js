@@ -152,7 +152,7 @@ function TableContent() {
         className="table table-striped"
         scroll={{
           x: 1000,
-          y: 670,
+          y: 570,
         }}
         rowKey={(record) => record.producerId}
         columns={columns}

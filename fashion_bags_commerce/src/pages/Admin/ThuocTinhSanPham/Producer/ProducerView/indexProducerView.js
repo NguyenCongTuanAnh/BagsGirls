@@ -13,8 +13,7 @@ function ProducerView() {
         <Sidebar keyIndex="19" openKey="sub11" />
       </Sider>
       <Layout className="layoutContent" >
-      <Header className="headerStyle" style={{ background: 'lightcyan' }}>
-
+        <Header className="headerStyle">
           <HeaderContent titlePage="Danh Sách Nhà Sản Xuất" />
         </Header>
         <Content className="contentStyle">

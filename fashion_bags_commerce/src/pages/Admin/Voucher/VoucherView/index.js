@@ -39,7 +39,7 @@ function VoucherView() {
         <Sidebar keyIndex="sub6" openKey="sub6" />
       </Sider>
       <Layout className="layoutContent">
-        <Header className="headerStyle" style={{ background: 'lightcyan' }}>
+        <Header className="headerStyle">
           <HeaderContent titlePage="Danh Sách Voucher" />
         </Header>
         <Content className="contentStyle">

@@ -12,8 +12,7 @@ function CompartmentView() {
         <Sidebar keyIndex="18" openKey="sub11" />
       </Sider>
       <Layout className="layoutContent" >
-      <Header className="headerStyle" style={{ background: 'lightcyan' }}>
-
+        <Header className="headerStyle">
           <HeaderContent titlePage="Danh Sách Kiểu Ngăn" />
         </Header>
         <Content className="contentStyle">

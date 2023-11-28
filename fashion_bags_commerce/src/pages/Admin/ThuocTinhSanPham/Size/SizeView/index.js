@@ -14,8 +14,7 @@ function SizeView() {
         <Sidebar keyIndex="14" openKey="sub11" />
       </Sider>
       <Layout className="layoutContent" >
-      <Header className="headerStyle" style={{ background: 'lightcyan' }}>
-
+        <Header className="headerStyle">
           <HeaderContent titlePage="Danh Sách Kích Cỡ" />
         </Header>
         <Content className="contentStyle">
