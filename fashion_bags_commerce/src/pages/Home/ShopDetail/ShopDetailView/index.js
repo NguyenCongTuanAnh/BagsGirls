@@ -265,17 +265,17 @@ function ShopDetailView() {
                         <hr></hr>
                         <li className={styles.productDetailItem}>
                           <span className={styles.label}>Loại sản phẩm: </span>
-                          <span className={styles.labelName}>{dataDetail.typeName}</span>
+                          <span className={styles.labelName}>{dataDetail ? dataDetail.typeName : 'NUll'}</span>
                         </li>
                         <hr></hr>
                         <li className={styles.productDetailItem}>
                           <span className={styles.label}>Màu sắc: </span>
-                          <span className={styles.labelName}>{dataDetail.colorName}</span>
+                          <span className={styles.labelName}>{dataDetail ? dataDetail.colorName : 'NULL'}</span>
                         </li>
                         <hr></hr>
                         <li className={styles.productDetailItem}>
                           <span className={styles.label}>Chất liệu: </span>
-                          <span className={styles.labelName}>{dataDetail.materialName}</span>
+                          <span className={styles.labelName}>{dataDetail ? dataDetail.materialName : 'NULL'}</span>
                         </li>
                         <hr></hr>
                         <li className={styles.productDetailItem}>
@@ -291,18 +291,18 @@ function ShopDetailView() {
 
                         <li className={styles.productDetailItem}>
                           <span className={styles.label}>Kiểu khóa: </span>
-                          <span className={styles.labelName}>{dataDetail.buckleTypeName}</span>
+                          <span className={styles.labelName}>{dataDetail ? dataDetail.buckleTypeName : 'NULL'}</span>
                         </li>
                         <hr></hr>
                         <li className={styles.productDetailItem}>
                           <span className={styles.label}>Số ngăn: </span>
-                          <span className={styles.labelName}>{dataDetail.compartmentName}</span>
+                          <span className={styles.labelName}>{dataDetail ? dataDetail.compartmentName : 'NULL'}</span>
                         </li>
 
                         <hr></hr>
                         <li className={styles.productDetailItem}>
                           <span className={styles.label}>Phù hợp sử dụng: </span>
-                          <span className={styles.labelName}>{dataDetail.describe}</span>
+                          <span className={styles.labelName}>{dataDetail ? dataDetail.describe : 'NULL'}</span>
                         </li>
                       </ul>
                     </div>
@@ -318,7 +318,7 @@ function ShopDetailView() {
                 {product.productName}-{product.productCode}-{product.brandName}
               </h1>
               <span>
-                <h4 className={styles.price}>{VNDFormaterFunc(dataDetail.retailPrice)}</h4>
+                <h4 className={styles.price}>{dataDetail ? VNDFormaterFunc(dataDetail.retailPrice) : 'NULL'}</h4>
               </span>
               <div className={styles.group_color}>
                 <div className={styles.variant}>
@@ -333,7 +333,7 @@ function ShopDetailView() {
               </div>
               <div className={styles.amount}>
                 <h3 style={{ fontStyle: 'italic', fontSize: '16pt' }}>
-                  Có sẵn: <span style={{ color: 'red' }}>{dataDetail.amount}</span> sản phẩm
+                  Có sẵn: <span style={{ color: 'red' }}>{dataDetail ? dataDetail.amount : 'NULL'}</span> sản phẩm
                 </h3>
 
                 <div className={styles.title_attr}>

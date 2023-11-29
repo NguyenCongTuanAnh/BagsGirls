@@ -13,6 +13,7 @@ import {
   Space,
   Spin,
   Table,
+  Typography,
   notification,
 } from 'antd';
 import { useEffect, useState, useContext, useRef, Fragment, useCallback } from 'react';
@@ -411,15 +412,47 @@ function ProductDetailsViewer() {
       render: (productDetailStatus) => {
         switch (productDetailStatus) {
           case 1:
-            return <Button type="primary">Còn Hàng</Button>;
+            return (
+              <Popover
+                content={
+                  <Typography.Text type="success" strong>
+                    Sản Phẩm này sẵn hàng
+                  </Typography.Text>
+                }
+                title="Tình Trạng"
+              >
+                <Button type="primary">Còn Hàng</Button>
+              </Popover>
+            );
           case 0:
             return (
-              <Button type="default" danger>
-                Hết Hàng
-              </Button>
+              <Popover
+                content={
+                  <Typography.Text type="danger" strong>
+                    Sản Phẩm này tạm thời hết hàng
+                  </Typography.Text>
+                }
+                title="Tình Trạng"
+              >
+                {' '}
+                <Button type="primary" danger>
+                  Hết Hàng
+                </Button>
+              </Popover>
             );
           case -1:
-            return <Button>Ngưng Hoạt Động</Button>;
+            return (
+              <Popover
+                content={
+                  <Typography.Text type="secondary" strong>
+                    Sản Phẩm này đã ngưng hoạt động
+                  </Typography.Text>
+                }
+                title="Tình Trạng"
+              >
+                <Button>Ngưng Hoạt Động</Button>
+              </Popover>
+            );
           default:
             return 'Không xác định';
         }
@@ -983,9 +1016,7 @@ function ProductDetailsViewer() {
               ))}
             </Select>
           </Col>
-          <Col span={4} className={styles.selectProps}>
-            {' '}
-          </Col>
+          <Col span={4} className={styles.selectProps}></Col>
           <Col span={4} className={styles.selectProps}>
             <Select
               placeholder={'Tình Trạng'}
@@ -1144,35 +1175,33 @@ function ProductDetailsViewer() {
         </Row>
       </div>
       <div>
-        <Form>
-          <Row>
-            <Col span={4} className={styles.selectProps}>
-              <Popover
-                placement="rightTop"
-                content={filterComponent}
-                title="Title"
-                trigger="click"
-                open={openPopover}
-                on
-                onOpenChange={handleOpenPopoverChange}
-              >
-                <Button type="primary">Lọc Thêm</Button>
-              </Popover>
-            </Col>
-            <Col span={4} className={styles.selectProps}>
-              <Popconfirm
-                title="Reset"
-                description="Bạn chăc chắn Reset Lọc và Tìm kiếm?"
-                onConfirm={handleRefresh}
-                onCancel
-                okText="Có"
-                cancelText="Không"
-              >
-                <Button type="primary">Reset</Button>
-              </Popconfirm>
-            </Col>
-          </Row>
-        </Form>
+        <Row>
+          <Col span={4} className={styles.selectProps}>
+            <Popover
+              placement="rightTop"
+              content={filterComponent}
+              title="Title"
+              trigger="click"
+              open={openPopover}
+              on
+              onOpenChange={handleOpenPopoverChange}
+            >
+              <Button type="primary">Lọc Thêm</Button>
+            </Popover>
+          </Col>
+          <Col span={4} className={styles.selectProps}>
+            <Popconfirm
+              title="Reset"
+              description="Bạn chăc chắn Reset Lọc và Tìm kiếm?"
+              onConfirm={handleRefresh}
+              onCancel
+              okText="Có"
+              cancelText="Không"
+            >
+              <Button type="primary">Reset</Button>
+            </Popconfirm>
+          </Col>
+        </Row>
       </div>
 
       <hr />
@@ -1188,7 +1217,7 @@ function ProductDetailsViewer() {
           y: 670,
         }}
         loading={loading}
-        rowKey={(record) => record.productId}
+        rowKey={(record) => record.productDetailId}
         columns={columns}
         dataSource={productList}
         onChange={handleTableChange}
