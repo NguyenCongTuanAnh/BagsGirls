@@ -6,7 +6,7 @@ import ShopView from './ShopView/index';
 import styles from './index.module.scss';
 import { Link } from 'react-router-dom';
 import { Fragment, useEffect } from 'react';
-import AddressVietnam from '~/pages/Home/Cart/Checkout/AddressCustomer/AddressCustomer';
+import AddressVietnam from '~/pages/Home/Cart/Checkout/AddressCustomer/CheckoutDetail';
 import CartItem from '../Cart/CartItem/cartItem';
 
 function Shop() {
@@ -14,19 +14,19 @@ function Shop() {
   //   window.scrollTo(0, 0);
   // }, []);
   return (
-      <body>
-        <div className="fullpage">
-          <div className="header001">
-            <Header />
-          </div>
-          <div className="page_content">
-            <ShopView />
-          </div>
-          <div className="footer_client">
-            <Footer />
-          </div>
+    <body>
+      <div className="fullpage">
+        <div className="header001">
+          <Header />
         </div>
-      </body>
+        <div className="page_content">
+          <ShopView />
+        </div>
+        <div className="footer_client">
+          <Footer />
+        </div>
+      </div>
+    </body>
   );
 }
 

@@ -5,26 +5,6 @@
   background-color: white;
   margin-bottom: 20px;
 }
-.titleĐonHang {
-  position: relative;
-}
-
-.titleĐonHang h1 {
-  font-size: 40px;
-  position: relative;
-  font-family: 'Times New Roman', Times, serif;
-  padding-left: 20px; /* Khoảng cách giữa tiêu đề và thanh dọc */
-}
-
-.titleĐonHang h1::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%; /* Chiều cao của thanh dọc */
-  width: 4px; /* Độ rộng của thanh dọc */
-  background-color: orange; /* Màu sắc của thanh dọc */
-}
 
 .item {
   display: flex;

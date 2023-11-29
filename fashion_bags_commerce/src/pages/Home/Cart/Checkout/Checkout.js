@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import Header from '../../Header';
-import AddressVietnam from '~/pages/Home/Cart/Checkout/AddressCustomer/AddressCustomer';
+import AddressVietnam from '~/pages/Home/Cart/Checkout/AddressCustomer/CheckoutDetail';
 import styles from './checkout.module.scss';
-import CartItem from '../CartItem/cartItem';
-import ListCheckOut from './ListProductCheckout/ListProductCheckout';
+import CheckoutDetail from '~/pages/Home/Cart/Checkout/AddressCustomer/CheckoutDetail';
 function Checkout() {
   const [loginType, setLoginType] = useState(1); // Default login type
 
@@ -24,8 +23,8 @@ function Checkout() {
       <div>
         <div className="page_content">
           <div className={styles.contentCheckOut}>
-            <AddressVietnam />
-            <ListCheckOut />
+            <CheckoutDetail />
+            {/* <ListCheckOut /> */}
           </div>
         </div>
       </div>
