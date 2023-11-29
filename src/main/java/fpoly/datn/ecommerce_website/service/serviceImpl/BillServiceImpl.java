@@ -1,6 +1,8 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
 import fpoly.datn.ecommerce_website.dto.BillsDTO;
+import fpoly.datn.ecommerce_website.dto.BillsQDTO;
+import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.repository.IBillRepository;
 import fpoly.datn.ecommerce_website.service.IBillService;
@@ -11,7 +13,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BillServiceImpl implements IBillService {
@@ -36,6 +42,19 @@ public class BillServiceImpl implements IBillService {
         Page<Bills> bills = this.iBillRepository.findAll(pageable);
         return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
     }
+
+    @Override
+    public Page<BillsDTO> getAllBillsPagination(String filterStaffName, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNum, pageSize);
+        if(status == 0){
+            Page<Bills> bills = this.iBillRepository.findAllBillsBySearch(filterStaffName, startDate, endDate, search, pageable);
+            return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
+        }else {
+            Page<Bills> bills = this.iBillRepository.findAllBillsBySearchStatus(filterStaffName, startDate, endDate, status, search, pageable);
+            return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
+        }
+    };
+
 
     @Override
     public BillsDTO save(BillsDTO billsDTO) {

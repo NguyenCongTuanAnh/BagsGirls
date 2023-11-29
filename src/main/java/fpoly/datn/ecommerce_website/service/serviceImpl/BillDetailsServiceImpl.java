@@ -1,6 +1,7 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
 import fpoly.datn.ecommerce_website.dto.BillDetailsDTO;
+import fpoly.datn.ecommerce_website.dto.BillDetailsQDTO;
 import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.repository.IBillDetailRepository;
 import fpoly.datn.ecommerce_website.service.IBillDetailsService;
@@ -24,18 +25,18 @@ public class BillDetailsServiceImpl implements IBillDetailsService {
     @Override
     public List<BillDetailsDTO> getAll() {
         List<BillDetails> bills = this.iBillDetailRepository.findAll();
-
         return bills.stream()
                 .map(bill -> modelMapper.map(bill, BillDetailsDTO.class))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Page<BillDetailsDTO> getPagination(int pageNum, int pageSize) {
+    public Page<BillDetailsDTO> getPagination( int pageNum, int pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
         Page<BillDetails> bills = this.iBillDetailRepository.findAll(pageable);
         return bills.map(bill -> modelMapper.map(bill, BillDetailsDTO.class));
     }
+
 
     @Override
     public BillDetailsDTO getOne(String id) {

@@ -71,7 +71,10 @@ const FormCustomerCreate = () => {
 
   return (
     <Fragment>
-      <Button style={{ width: '100px' }} type="primary" onClick={showDrawer} icon={<PlusOutlined />}></Button>
+      <Button type="primary" onClick={showDrawer} icon={<PlusOutlined />}>
+        {' '}
+        Thêm khách hàng
+      </Button>
       <Drawer
         title="Tạo mới tài khoản khách hàng"
         width={720}
@@ -104,7 +107,7 @@ const FormCustomerCreate = () => {
                   },
                 ]}
               >
-                <Input placeholder="Please enter user name" />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -118,7 +121,7 @@ const FormCustomerCreate = () => {
                   },
                 ]}
               >
-                <Select placeholder="Please choose the status">
+                <Select placeholder="Chọn trạng thái">
                   <Option value="1">Hoạt động</Option>
                   <Option value="0">Không Hoạt động</Option>
                   <Option value="-1">Ngừng Hoạt động</Option>
@@ -129,8 +132,8 @@ const FormCustomerCreate = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="usersAccount"
-                label="Tài khoản"
+                name="usersEmail"
+                label="Email"
                 rules={[
                   {
                     required: true,
@@ -138,7 +141,7 @@ const FormCustomerCreate = () => {
                   },
                 ]}
               >
-                <Input placeholder="Please enter account" />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -152,15 +155,12 @@ const FormCustomerCreate = () => {
                   },
                 ]}
               >
-                <Input.Password
-                  placeholder="Please choose the password"
-                  iconRender={(visible) => (visible ? <EyeInvisibleOutlined /> : <EyeFilled />)}
-                />
+                <Input.Password iconRender={(visible) => (visible ? <EyeInvisibleOutlined /> : <EyeFilled />)} />
               </Form.Item>
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={12}>
+            {/* <Col span={12}>
               <Form.Item
                 name="usersEmail"
                 label="Email"
@@ -171,9 +171,9 @@ const FormCustomerCreate = () => {
                   },
                 ]}
               >
-                <Input placeholder="Please enter email" />
+                <Input />
               </Form.Item>
-            </Col>
+            </Col> */}
             <Col span={12}>
               <Form.Item
                 name="usersPhoneNumber"
@@ -185,7 +185,7 @@ const FormCustomerCreate = () => {
                   },
                 ]}
               >
-                <Input placeholder="Please enter number phone" type="number" />
+                <Input type="number" />
               </Form.Item>
             </Col>
           </Row>
@@ -201,7 +201,7 @@ const FormCustomerCreate = () => {
                   },
                 ]}
               >
-                <Input placeholder="Please enter địa chỉ" />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -215,11 +215,11 @@ const FormCustomerCreate = () => {
           </Row>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Role" name="usersRolesRoleId" initialValue={initialValue}>
-                <Select placeholder="Select a Role" loading={loading}>
+              <Form.Item label="Role" name="role" initialValue={initialValue}>
+                <Select placeholder="Chức vụ" loading={loading}>
                   {roles.map((role) => (
-                    <Select.Option key={role.roleId} value={role.roleId}>
-                      {role.roleName}
+                    <Select.Option key={role} value={role}>
+                      {role}
                     </Select.Option>
                   ))}
                 </Select>
@@ -236,7 +236,7 @@ const FormCustomerCreate = () => {
                   },
                 ]}
               >
-                <Input placeholder="Please enter number phone" type="number" />
+                <Input type="number" />
               </Form.Item>
             </Col>
           </Row>
@@ -252,13 +252,13 @@ const FormCustomerCreate = () => {
                   },
                 ]}
               >
-                <Input.TextArea rows={4} placeholder="please enter url description" />
+                <Input.TextArea rows={4} />
               </Form.Item>
             </Col>
           </Row>
           <div>
-            <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
-              Submit
+            <Button type="default" danger htmlType="submit" icon={<PlusOutlined />}>
+              Thêm
             </Button>
           </div>
         </Form>

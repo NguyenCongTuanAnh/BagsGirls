@@ -2,7 +2,7 @@ import axiosClient from './axiosClient';
 
 const customerAPI = {
   getAll(pageNum, pageSize) {
-    const url = '/customer/pagination';
+    const url = 'api/customer/pagination';
     return axiosClient.get(url, {
       params: {
         page: pageNum - 1,
@@ -11,7 +11,7 @@ const customerAPI = {
     });
   },
   getSearchPagination(key, pageNum, pageSize) {
-    const url = '/customer/search';
+    const url = 'api/customer/search';
     return axiosClient.get(url, {
       params: {
         keyword: key,
@@ -22,20 +22,20 @@ const customerAPI = {
   },
 
   getRoles(params) {
-    const url = '/role/';
+    const url = 'api/role/';
     return axiosClient.get(url, { params });
   },
 
   get(id) {
-    const url = `/customer?id=${id}`;
+    const url = `api/customer?id=${id}`;
     return axiosClient.get(url);
   },
   getOne(id) {
-    const url = `/customer?id=${id}`;
+    const url = `api/customer?id=${id}`;
     return axiosClient.get(url, { id });
   },
   add(data) {
-    const url = `/customer`;
+    const url = `api/customer`;
     return axiosClient.post(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const customerAPI = {
     });
   },
   update(id, data) {
-    const url = `/customer?id=${id}`;
+    const url = `api/customer?id=${id}`;
     return axiosClient.put(url, data, {
       headers: {
         'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ const customerAPI = {
     });
   },
   updateStatus(id, status) {
-    const url = `/customer/update-status?id=${id}&status=${status}`;
+    const url = `api/customer/update-status?id=${id}&status=${status}`;
     return axiosClient.put(url, null, {
       headers: {
         'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ const customerAPI = {
     });
   },
   delete(id) {
-    const url = `/customer?id=${id}`;
+    const url = `api/customer?id=${id}`;
     return axiosClient.delete(url);
   },
   findByKeywork(keyword) {

@@ -50,7 +50,7 @@ const TableContent = () => {
       setSearch(newFilter.trim());
       setLoading(true);
       setCurrentPage(1);
-    };
+    }
   };
 
   const getAll = async (keyword, page, size) => {
@@ -76,17 +76,17 @@ const TableContent = () => {
       width: 100,
     },
     {
-      title: 'Tài khoản',
-      dataIndex: ['users', 'account'],
-      sorter: (a, b) => a.users.account.localeCompare(b.users.account),
+      title: 'Email',
+      dataIndex: ['users', 'email'],
+      sorter: (a, b) => a.users.usersEmail.localeCompare(b.users.usersEmail),
       width: 100,
     },
-    {
-      title: 'Mật khẩu',
-      dataIndex: ['users', 'password'],
-      sorter: (a, b) => a.users.password.localeCompare(b.users.password),
-      width: 100,
-    },
+    // {
+    //   title: 'Mật khẩu',
+    //   dataIndex: ['users', 'password'],
+    //   sorter: (a, b) => a.users.password.localeCompare(b.users.password),
+    //   width: 100,
+    // },
     {
       title: 'SĐT',
       dataIndex: ['users', 'phoneNumber'],
@@ -103,16 +103,16 @@ const TableContent = () => {
     },
 
     {
-      title: 'Địa chỉ',
-      dataIndex: ['users', 'address'],
-      sorter: (a, b) => a.users.address.localeCompare(b.users.address),
+      title: 'Chức vụ',
+      dataIndex: ['users', 'role'],
+      sorter: (a, b) => a.users.role.localeCompare(b.users.role),
       width: 100,
     },
 
     {
-      title: 'Chức vụ',
-      dataIndex: ['users', 'roles', 'roleName'],
-      sorter: (a, b) => a.users.roles.roleName.localeCompare(b.users.roles.roleName),
+      title: 'Địa chỉ',
+      dataIndex: ['users', 'address'],
+      sorter: (a, b) => a.users.address.localeCompare(b.users.address),
       width: 100,
     },
     {
@@ -181,7 +181,9 @@ const TableContent = () => {
             }}
             onCancel={onCancel}
           >
-            <Button type="primary" danger icon={<DeleteOutlined />}></Button>
+            <Button type="default" danger icon={<DeleteOutlined />}>
+              Xóa
+            </Button>
           </Popconfirm>
         </Space>
       ),
@@ -210,7 +212,6 @@ const TableContent = () => {
       <Button icon={<ReloadOutlined />} className="" onClick={reload} loading={loading}></Button>
 
       <Table
-        className="table table-striped"
         scroll={{
           x: 550,
           y: 570,

@@ -2,7 +2,7 @@ import axiosClient from './axiosClient';
 
 const billDetailsAPI = {
   getAll(pageNum, pageSize) {
-    const url = '/bill-details';
+    const url = 'api/bill-details';
     return axiosClient.get(url, {
       params: {
         page: pageNum - 1,
@@ -11,7 +11,7 @@ const billDetailsAPI = {
     });
   },
   get(id) {
-    const url = `/billDetails?id=${id}`;
+    const url = `api/billDetails?id=${id}`;
     return axiosClient.get(url);
   },
   add(data) {
@@ -23,11 +23,11 @@ const billDetailsAPI = {
     });
   },
   update(data) {
-    const url = `/billDetails?id=${data.id}`;
+    const url = `api/billDetails?id=${data.id}`;
     return axiosClient.put(url, data);
   },
   updateStatus(billDetailsID, status) {
-    const url = `/billDetails/update-status?billDetailsID=${billDetailsID}&status=${status}`;
+    const url = `api/billDetails/update-status?billDetailsID=${billDetailsID}&status=${status}`;
     return axiosClient.put(url, null, {
       headers: {
         'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ const billDetailsAPI = {
     });
   },
   delete(id) {
-    const url = `/billDetails?id=${id}`;
+    const url = `api/billDetails?id=${id}`;
     return axiosClient.delete(url);
   },
 };

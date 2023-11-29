@@ -19,7 +19,7 @@ function ExtendContent({ titleContent }) {
                   <div className={styles.productImage}>
                     <a>
                       <div className={styles.contentImage}>
-                        <Image src="https://www.vascara.com/uploads/page/2023/September/18/20761695020769.jpg"></Image>
+                        <Image src="https://i.imgur.com/7TWGiF7.jpg"></Image>
                       </div>
                     </a>
                   </div>
@@ -30,7 +30,7 @@ function ExtendContent({ titleContent }) {
                   <div className={styles.productImage}>
                     <a>
                       <div className={styles.contentImage}>
-                        <Image src="https://www.vascara.com/uploads/page/2023/May/26/19981685090294.jpg"></Image>
+                        <Image src="https://i.imgur.com/aJzSBoW.jpg"></Image>
                       </div>
                     </a>
                   </div>
@@ -41,7 +41,7 @@ function ExtendContent({ titleContent }) {
                   <div className={styles.productImage}>
                     <a>
                       <div className={styles.contentImage}>
-                        <Image src="https://www.vascara.com/uploads/page/2023/April/14/19601681461167.jpg"></Image>
+                        <Image src="https://i.imgur.com/7TWGiF7.jpg"></Image>
                       </div>
                     </a>
                   </div>

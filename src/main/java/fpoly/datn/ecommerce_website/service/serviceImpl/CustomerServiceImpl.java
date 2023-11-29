@@ -66,7 +66,7 @@ public class CustomerServiceImpl implements ICustomerService {
               .address(customerDTO.getUsersAddress())
               .phoneNumber(customerDTO.getUsersPhoneNumber())
               .userNote(customerDTO.getUsersUserNote())
-              .role(customerDTO.getUserRoleName())
+              .role(customerDTO.getRole())
               .build();
         Users savedUserInfo = userInfoRepository.save(users);
         if (savedUserInfo != null) {

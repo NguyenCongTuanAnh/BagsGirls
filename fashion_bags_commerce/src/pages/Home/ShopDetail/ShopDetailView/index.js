@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styles from './shopDetail.module.scss';
-import { Checkbox, Image, Input, Select, notification } from 'antd';
+import { Carousel, Checkbox, Image, Input, Select, notification } from 'antd';
 import fullProductAPI from '~/api/client/fullProductAPI';
 import { Link, useParams } from 'react-router-dom';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
@@ -73,7 +73,7 @@ function ShopDetailView() {
         notification.success({
           message: 'Thành công',
           description: 'Bạn đã thêm sản phẩm vào giỏ hàng',
-          duration: 2,
+          duration: 1,
         });
         // }
       } else {
@@ -81,7 +81,7 @@ function ShopDetailView() {
         notification.error({
           message: 'Thất bại',
           description: 'Số lượng sản phẩm trong kho không đủ',
-          duration: 2,
+          duration: 1,
         });
       }
     } catch (error) {
@@ -104,7 +104,11 @@ function ShopDetailView() {
 
     if (quantity + 1 > amountInDatabase) {
       // Hiển thị thông báo khi số lượng vượt quá số lượng trong kho
-      alert('Số lượng vượt quá số lượng trong kho!');
+      notification.error({
+        message: 'Thất bại',
+        description: 'Số lượng đã đạt giới hạn ',
+        duration: 1,
+      });
     } else {
       // Tăng giá trị quantity khi số lượng không vượt quá số lượng trong kho
       setQuantity(quantity + 1);
@@ -227,22 +231,16 @@ function ShopDetailView() {
         <div className="row custom-row">
           <div className="col-xl-7 col-lg-7 col-md-12 col-sm-12 col-xs-12">
             <div className={styles.group_images}>
-              <div className={styles.image_main}>
+              {/* <div className={styles.image_main}>
                 <Image src={product.img ? product.img.imgUrl : ''} style={{ width: '700px', height: '450px' }}></Image>
-              </div>
-
-              <div>
+              </div> */}
+              <Carousel autoplay={true} autoplaySpeed={1200} draggable={true}>
                 {product.imgs &&
                   product.imgs.length > 0 &&
                   product.imgs.map((image, index) => (
-                    <Image
-                      key={index}
-                      src={image.imgUrl}
-                      className={styles.image_child}
-                      style={{ width: '236px', height: '150px' }}
-                    />
+                    <img key={index} src={image.imgUrl} className={styles.image_main} />
                   ))}
-              </div>
+              </Carousel>
 
               <br></br>
               <div className={styles.content_product_pc}>
@@ -338,7 +336,7 @@ function ShopDetailView() {
                   Có sẵn: <span style={{ color: 'red' }}>{dataDetail.amount}</span> sản phẩm
                 </h3>
 
-                <div className={' title_attr'}>
+                <div className={styles.title_attr}>
                   <div className={styles.book_number}>
                     <div className={styles.item_change1} onClick={handleDecrement}>
                       <MinusOutlined />

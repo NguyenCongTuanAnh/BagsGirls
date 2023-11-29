@@ -10,7 +10,7 @@ function LayoutCarousel() {
         <Carousel autoplay={true} autoplaySpeed={2000} draggable={true}>
           <div>
             <img
-              src="https://www.vascara.com/uploads/banner/2023/November/1/17381698802488.jpg"
+              src="https://i.imgur.com/rtHttD2.png"
               alt="TEACHER'S DAY 2023"
               // className="d-block w-100"
             />
@@ -19,21 +19,14 @@ function LayoutCarousel() {
             <img
               alt="TEACHER'S DAY"
               // className="d-block w-100"
-              src="https://www.vascara.com/uploads/banner/2023/November/15/17451700018159.jpg"
+              src="https://i.imgur.com/D6SaqWh.jpg"
             ></img>
           </div>
           <div className="carousel_item">
             <img
               alt="NEW ARRIVAL - T10"
               // className="d-block w-100"
-              src="https://www.vascara.com/uploads/banner/2023/November/14/17421699974436.jpg"
-            ></img>
-          </div>
-          <div className="carousel_item">
-            <img
-              alt="BLACK FRIDAY - 50%"
-              // className="d-block w-100"
-              src="https://www.vascara.com/uploads/banner/2023/November/17/17471700188478.png"
+              src="https://i.imgur.com/eLX3rvG.jpg"
             ></img>
           </div>
         </Carousel>

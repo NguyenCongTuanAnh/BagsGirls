@@ -81,6 +81,7 @@ function App() {
           <Route path="/cart" element={<CartView />} />
           <Route path="/cart/checkout" element={<Checkout />} />
           <Route path="/unauthorized" element={<UnAuthorPage />} />
+          <Route path="/bill-view" element={<HoaDonView />} />
           <Route
             path="/shift-view"
             element={
@@ -103,6 +104,21 @@ function App() {
               <StaffAuth>
                 <ProductDetailsViewerPage />
               </StaffAuth>
+              />
+                 <Route
+            path="/view-productDetails"
+            element={
+              <StaffAuth>
+                <ProductDetailsViewerPage />
+              </StaffAuth>
+            }
+          />
+          <Route
+            path="/voucher-view"
+            element={
+              <AdminAuth>
+                <VoucherView />
+              </AdminAuth>
             }
           />
           <Route

@@ -6,7 +6,7 @@ import customerAPI from '~/api/customerAPI';
 function FormCustomerEdit(props) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(false);
-  const [stringStatus, setStringStatus] = useState("");
+  const [stringStatus, setStringStatus] = useState('');
   const [data, setData] = useState({
     customerId: props.customerData.customerId,
     customerStatus: props.customerData.customerStatus,
@@ -19,17 +19,17 @@ function FormCustomerEdit(props) {
     usersPhoneNumber: props.customerData.users.phoneNumber,
     usersAddress: props.customerData.users.address,
     usersUserNote: props.customerData.users.userNote,
-    usersRolesRoleId: props.customerData.users.roles.roleId,
+    roleName: props.customerData.users.roleName,
   });
 
   const showDrawer = () => {
     setOpen(true);
     if (data.customerStatus === 1) {
-      setStringStatus("Hoạt động");
+      setStringStatus('Hoạt động');
     } else if (data.customerStatus === -1) {
-      setStringStatus("Ngừng hoạt động");
+      setStringStatus('Ngừng hoạt động');
     } else {
-      setStringStatus("Không hoạt động");
+      setStringStatus('Không hoạt động');
     }
   };
   const onClose = () => {
@@ -76,8 +76,8 @@ function FormCustomerEdit(props) {
 
   return (
     <Fragment>
-      <Button type="primary" className="btn btn-warning" onClick={showDrawer} icon={<EditOutlined />}>
-       
+      <Button style={{ borderColor: 'blue', color: 'blue' }} onClick={showDrawer} icon={<EditOutlined />}>
+        Sửa
       </Button>
       <Drawer
         title={'Update tài khoản khách hàng có id: ' + data.customerId}
@@ -111,16 +111,17 @@ function FormCustomerEdit(props) {
                   },
                 ]}
               >
-                <Input name="usersFullName" value={data.usersFullName} onChange={updateData} placeholder="Please enter user name" />
+                <Input
+                  name="usersFullName"
+                  value={data.usersFullName}
+                  onChange={updateData}
+                  placeholder="Please enter user name"
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item label="Trạng Thái">
-                <Select
-                  onChange={updateStatus}
-                  defaultValue={stringStatus}
-                  placeholder="Vui lòng chọn Trạng Thái"
-                >
+                <Select onChange={updateStatus} defaultValue={stringStatus} placeholder="Vui lòng chọn Trạng Thái">
                   <Select.Option value="1">Hoạt động</Select.Option>
                   <Select.Option value="0">Không hoạt động</Select.Option>
                   <Select.Option value="-1">Ngừng hoạt động</Select.Option>
@@ -140,7 +141,12 @@ function FormCustomerEdit(props) {
                   },
                 ]}
               >
-                <Input name="usersAccount" value={data.usersAccount} onChange={updateData} placeholder="Please enter account" />
+                <Input
+                  name="usersAccount"
+                  value={data.usersAccount}
+                  onChange={updateData}
+                  placeholder="Please enter account"
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -158,7 +164,8 @@ function FormCustomerEdit(props) {
                   name="usersPassword"
                   value={data.usersPassword}
                   onChange={updateData}
-                  iconRender={(visible) => (visible ? <EyeInvisibleOutlined /> : <EyeFilled />)} />
+                  iconRender={(visible) => (visible ? <EyeInvisibleOutlined /> : <EyeFilled />)}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -178,7 +185,8 @@ function FormCustomerEdit(props) {
                   name="usersEmail"
                   value={data.usersEmail}
                   onChange={updateData}
-                  placeholder="Please enter email" />
+                  placeholder="Please enter email"
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -192,7 +200,8 @@ function FormCustomerEdit(props) {
                   },
                 ]}
               >
-                <Input name="usersPhoneNumber"
+                <Input
+                  name="usersPhoneNumber"
                   value={data.usersPhoneNumber}
                   onChange={updateData}
                   placeholder="Please enter number phone"
@@ -216,7 +225,8 @@ function FormCustomerEdit(props) {
                   name="usersAddress"
                   value={data.usersAddress}
                   onChange={updateData}
-                  placeholder="Please enter địa chỉ" />
+                  placeholder="Please enter địa chỉ"
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -240,7 +250,12 @@ function FormCustomerEdit(props) {
                   },
                 ]}
               >
-                <Input name="customerPoint" onChange={updateData} placeholder="Please enter number phone" type="number" />
+                <Input
+                  name="customerPoint"
+                  onChange={updateData}
+                  placeholder="Please enter number phone"
+                  type="number"
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -260,7 +275,8 @@ function FormCustomerEdit(props) {
                   name="usersUserNote"
                   value={data.usersUserNote}
                   onChange={updateData}
-                  rows={4} placeholder="please enter url description" />
+                  rows={4}
+                />
               </Form.Item>
             </Col>
           </Row>
