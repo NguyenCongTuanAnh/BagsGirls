@@ -20,12 +20,12 @@ public class BaseUserRequest {
     @Length(max = EntityProperties.LENGTH_NAME)
     private String fullName;
 
-    @NotBlank(message = "Email không được để trống")
+
     @Length(max = EntityProperties.LENGTH_EMAIL)
     @Email(message = "Email không đúng định dạng")
     private String email;
 
-    @NotBlank(message = "Ngày sinh không được để trống")
+
     private String dateOfBirth;
 
     @NotBlank(message = "Mật khẩu không được để trống")
@@ -40,7 +40,7 @@ public class BaseUserRequest {
     @NotNull
     private Boolean gender;
 
-    @NotBlank(message = "Địa chỉ không được để trống")
+
     @Length(max = EntityProperties.LENGTH_ADDRESS)
     private String address;
 

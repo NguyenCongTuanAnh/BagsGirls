@@ -102,21 +102,11 @@ function App() {
           <Route
             path="/view-productDetails"
             element={
-              <StaffAuth>
+              <AdminAuth>
                 <ProductDetailsViewerPage />
-              </StaffAuth>
-            }
-              />
-
-           <Route
-            path="/view-productDetails"
-            element={
-              <StaffAuth>
-                <ProductDetailsViewerPage />
-              </StaffAuth>
+              </AdminAuth>
             }
           />
-
           <Route
             path="/voucher-view"
             element={

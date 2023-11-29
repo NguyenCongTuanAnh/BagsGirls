@@ -92,28 +92,7 @@ public class ProductDetailRestController {
                 sortList,
                 sortOrder.toString()
         );
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        System.out.println("productName " + productName);
-        System.out.println("productCode " + productCode);
-        System.out.println("colorName " + colorName);
-        System.out.println("typeName " + typeName);
-        System.out.println("materialName " + materialName);
-        System.out.println("sizeName " + sizeName);
-        System.out.println("brandName " + brandName);
-        System.out.println("compartmentName " + compartmentName);
-        System.out.println("producerName " + producerName);
-        System.out.println("buckleTypeName " + buckleTypeName);
-        System.out.println("productDetailDescribe " + productDetailDescribe);
-        System.out.println("minProductDetailAmount " + minProductDetailAmount);
-        System.out.println("maxProductDetailAmount " + maxProductDetailAmount);
-        System.out.println("minImportPrice " + minImportPrice);
-        System.out.println("productName " + productName);
-        System.out.println("maxImportPrice " + maxImportPrice);
-        System.out.println("minRetailPrice " + minRetailPrice);
-        System.out.println("maxRetailPrice " + maxRetailPrice);
-        System.out.println("productDetailStatus " + productDetailStatus);
-        System.out.println("sortList " + sortList);
-        System.out.println("sortOrder.toString() " +  sortOrder.toString());
+
         return new ResponseEntity<>
                 (productPage, HttpStatus.OK);
     }
