@@ -1,13 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import axios from 'axios';
 import './styles.scss';
 import { Link } from 'react-router-dom';
 import billsAPI from '~/api/BillApi';
 import dayjs from 'dayjs';
-import { Button, notification } from 'antd';
+import { Input, Button, notification } from 'antd';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
+import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 
-const AddressVietnam = () => {
+const CheckoutDetail = () => {
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    // Fetch cart items from local storage
+    const storedCart = localStorage.getItem('temporaryCart');
+    if (storedCart) {
+      setCartItems(JSON.parse(storedCart));
+    }
+  }, []);
+
+  const calculateTotal = () => {
+    return cartItems.reduce((total, item) => {
+      return total + item.quantity * item.retailPrice;
+    }, 0);
+  };
+
   const [notificationMessage, setNotificationMessage] = useState('');
   const [submittedData, setSubmittedData] = useState(null);
 
@@ -21,47 +38,69 @@ const AddressVietnam = () => {
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
-
+  const [email, setEmail] = useState('');
+  const [billNote, setBillNote] = useState('');
   const [billCreateDate, setBillCreateDate] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const fullAddress = `${address} | ${selectedWard} | ${selectedDistrict} | ${selectedProvince}`;
+    const getNameFromCode = (code, list) => {
+      console.log(list, code);
+      const selectedItem = list.find((item) => item.code === parseInt(code));
+      return selectedItem ? selectedItem.name : '';
+    };
+    const selectedProvinceName = getNameFromCode(selectedProvince, provinces);
+    const selectedDistrictName = getNameFromCode(selectedDistrict, districts);
+    const selectedWardName = getNameFromCode(selectedWard, wards);
+
+    const fullAddress = `${address} | ${selectedWardName} | ${selectedDistrictName} | ${selectedProvinceName}`;
 
     try {
-      setSubmittedData({
+      const data = {
         fullName,
         phoneNumber,
         address,
+        email,
+        billNote,
         selectedProvince,
         selectedDistrict,
         selectedWard,
         fullAddress,
-      });
-      setNotificationMessage('Địa chỉ đã được thêm thành công!');
+      };
+
+      setSubmittedData(data);
+      console.log('dia chi', data);
+      console.log('tinh', selectedProvinceName);
+      console.log('huyen', selectedDistrictName);
+      console.log('xa', selectedWardName);
     } catch (error) {
       console.error('Error submitting information:', error);
     }
   };
-
   const handleConfirmation = async () => {
     const currentTime = new Date();
     const currentDateTime = dayjs(currentTime).subtract(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
-
-    const utcTime = currentTime.toISOString();
-
-    const localTime = new Date(utcTime);
     setBillCreateDate(currentDateTime);
 
-    const fullAddress = `${address} | ${selectedWard} | ${selectedDistrict} | ${selectedProvince}`;
+    const getNameFromCode = (code, list) => {
+      const selectedItem = list.find((item) => item.code === +code);
+      return selectedItem ? selectedItem.name : '';
+    };
+    const selectedProvinceName = getNameFromCode(selectedProvince, provinces);
+    const selectedDistrictName = getNameFromCode(selectedDistrict, districts);
+    const selectedWardName = getNameFromCode(selectedWard, wards);
+
+    const fullAddress = `${address} | ${selectedWardName} | ${selectedDistrictName} | ${selectedProvinceName}`;
 
     try {
       const billData = {
         receiverName: fullName,
         orderPhone: phoneNumber,
+        orderEmail: email,
         shippingAddress: fullAddress,
         billCreateDate: currentDateTime,
+        billNote: billNote,
         billStatus: 4,
         billCode: generateCustomCode('Bill', 4),
       };
@@ -69,26 +108,11 @@ const AddressVietnam = () => {
       const response = await billsAPI.add(billData);
       console.log('Successful information submission, Bill Code:', response.data.billCode);
       console.log('Successful information submission:', response.data);
+
+      setSubmittedData(billData);
     } catch (error) {
       console.error('Error submitting information:', error);
     }
-  };
-  const getAddressName = (code, type) => {
-    let name = '';
-    switch (type) {
-      case 'ward':
-        name = wards.find((ward) => ward.code === code)?.name || '';
-        break;
-      case 'district':
-        name = districts.find((district) => district.code === code)?.name || '';
-        break;
-      case 'province':
-        name = provinces.find((province) => province.code === code)?.name || '';
-        break;
-      default:
-        break;
-    }
-    return name;
   };
 
   useEffect(() => {
@@ -103,13 +127,14 @@ const AddressVietnam = () => {
   }, []);
 
   const handleProvinceChange = (event) => {
-    const provinceCode = event.target.value;
-    setSelectedProvince(provinceCode);
+    const provinceName = event.target.value;
+    console.log('tinh', provinceName);
+    setSelectedProvince(provinceName);
     setSelectedDistrict('');
     setSelectedWard('');
 
     axios
-      .get(`${host}p/${provinceCode}?depth=2`)
+      .get(`${host}p/${provinceName}?depth=2`)
       .then((response) => {
         setDistricts(response.data.districts);
       })
@@ -120,6 +145,7 @@ const AddressVietnam = () => {
 
   const handleDistrictChange = (event) => {
     const districtCode = event.target.value;
+    console.log('huyen', districtCode);
     setSelectedDistrict(districtCode);
     setSelectedWard('');
 
@@ -135,11 +161,14 @@ const AddressVietnam = () => {
 
   const handleWardChange = (event) => {
     const wardCode = event.target.value;
+    console.log('xa', wardCode);
+
     setSelectedWard(wardCode);
   };
 
   return (
     <div className="form-container">
+      {/* <div className="col-6"> */}
       <form onSubmit={handleSubmit}>
         <div className="titleNhanHang">
           <h1>Thông tin người đặt hàng</h1>
@@ -167,7 +196,15 @@ const AddressVietnam = () => {
           placeholder="Số điện thoại"
           required
         />
-        <select value={selectedProvince} onChange={handleProvinceChange}>
+        <input
+          className="inputLabel"
+          type="text"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email ( Nếu có ) "
+          required
+        />
+        <select value={selectedProvince} id="selectedProvince" onChange={handleProvinceChange}>
           <option disabled value="">
             Chọn Tỉnh/Thành phố
           </option>
@@ -177,7 +214,7 @@ const AddressVietnam = () => {
             </option>
           ))}
         </select>
-        <select value={selectedDistrict} onChange={handleDistrictChange}>
+        <select value={selectedDistrict} id="selectedDistrict" onChange={handleDistrictChange}>
           <option disabled value="">
             Chọn Quận/Huyện
           </option>
@@ -187,7 +224,7 @@ const AddressVietnam = () => {
             </option>
           ))}
         </select>
-        <select value={selectedWard} onChange={handleWardChange}>
+        <select value={selectedWard} id="selectedWard" onChange={handleWardChange}>
           <option disabled value="">
             Chọn Phường/Xã
           </option>
@@ -202,9 +239,18 @@ const AddressVietnam = () => {
           type="text"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
-          placeholder="Điền rõ thông tin số nhà, tên đường, xã, huyện, tỉnh"
+          placeholder="Điền rõ thông tin số nhà, tên đường"
           required
         />
+        <textarea
+          className=""
+          rows={5}
+          value={billNote}
+          onChange={(e) => setBillNote(e.target.value)}
+          placeholder="Ghi chú của khách hàng"
+        />
+
+        <br></br>
         <button>Giao đến địa chỉ này</button>
         <br></br>
         {submittedData && (
@@ -221,10 +267,18 @@ const AddressVietnam = () => {
                   <td>{submittedData.phoneNumber}</td>
                 </tr>
                 <tr>
+                  <th>Email:</th>
+                  <td>{submittedData.email}</td>
+                </tr>
+                <tr>
                   <th>Địa chỉ:</th>
                   <td style={{ maxHeight: '100px', maxWidth: '300px', overflowY: 'auto' }}>
                     {submittedData.fullAddress}
                   </td>
+                </tr>
+                <tr>
+                  <th>Ghi chú:</th>
+                  <td style={{ maxHeight: '100px', maxWidth: '300px', overflowY: 'auto' }}>{submittedData.billNote}</td>
                 </tr>
               </tbody>
             </table>
@@ -236,8 +290,82 @@ const AddressVietnam = () => {
           Xác nhận địa chỉ
         </button>
       </form>
+
+      {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+     
+      <form className="list_product">
+        <div className="titleNhanHang">
+          <h1>Đơn hàng</h1>
+        </div>
+        <br />
+
+        {cartItems.map((item, index) => (
+          <div className={item} key={index}>
+            {/* Render each item as needed */}
+            <div className="avatar">
+              <img src={item.image} className="image" alt={item.productName} />
+              <div className="info">
+                <div className="productTitle">{item.productName}</div>
+                <div className="titleChild">
+                  <i>{`Color: ${item.colorName}`}</i>
+                  <br />
+                  <i> {`Material: ${item.materialName}`}</i>
+                </div>
+                <div className="number">{`Quantity: ${item.quantity}`}</div>
+                <span className="price_sale">
+                  Price:{' '}
+                  <ins>
+                    <span className="price">{VNDFormaterFunc(item.retailPrice)}</span>
+                  </ins>
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+        <hr />
+        <div>
+          <h3>
+            Tổng tiền: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
+          </h3>
+        </div>
+
+        <hr />
+        <div className="voucher">
+          <h4>Voucher:</h4>
+        </div>
+
+        <hr />
+        <div className="pay">
+          <h3>Phương thức thanh toán:</h3>
+          <label>
+            <input name="radioPay" type="radio" value={''} />
+            Chuyển khoản ngân hàng
+          </label>
+          <label>
+            <input name="radioPay" type="radio" value={''} />
+            Thanh toán khi nhận hàng
+          </label>
+          <label>
+            <input name="radioPay" type="radio" value={''} />
+            Ví điện tử
+          </label>
+        </div>
+
+        <hr />
+
+        <div className="totalCheckout">
+          <br />
+          <h4>
+            Tổng thanh toán: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
+          </h4>
+          <br />
+        </div>
+        <br />
+
+        <button className="checkOut">Thanh toán</button>
+      </form>
     </div>
   );
 };
 
-export default AddressVietnam;
+export default CheckoutDetail;
