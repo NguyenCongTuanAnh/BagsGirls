@@ -1,24 +1,143 @@
-import { Button, Pagination, Popconfirm, Space, Spin, Table, notification } from 'antd';
-import { useEffect, useState, useContext } from 'react';
+import { Button, Input, Pagination, Popconfirm, Space, Spin, Table, notification } from 'antd';
+import { useEffect, useState, useContext, useRef } from 'react';
 import FormProductEdit from '../../ProductEdit/FormEdit/FormProductEdit';
 import FormProductViewDetails from '../../ProductViewDetails/FormViewer/FormProductViewDetails';
+import Highlighter from 'react-highlight-words';
 import baloAPI from '~/api/productsAPI';
 
 import styles from './index.module.scss';
-import { DeleteOutlined, ReloadOutlined } from '@ant-design/icons';
+import { DeleteOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 
 function TableContent() {
   const [productList, setProductList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pagesSize, setPagesSize] = useState(15);
+  const [pagesSize, setPagesSize] = useState(10);
   const [totalItem, setTotalItem] = useState();
+  const [sortedInfo, setSortedInfo] = useState({});
+  const [filteredInfo, setFilteredInfo] = useState({});
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const searchInput = useRef(null);
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText('');
+  };
+  const getColumnSearchProps = (dataIndex, name) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({
+                closeDropdown: false,
+              });
+              setSearchText(selectedKeys[0]);
+              setSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              close();
+            }}
+          >
+            close
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1677ff' : undefined,
+        }}
+      />
+    ),
+    // onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilter: (value, record) => {
+      const filteredData = name ? record[dataIndex][name] : record[dataIndex];
+      return filteredData?.toString().toLowerCase().includes(value.toLowerCase());
+    },
+
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{
+            backgroundColor: '#ffc069',
+            padding: 0,
+          }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ''}
+        />
+      ) : (
+        text
+      ),
+  });
 
   const handleTableChange = (pagination, filters, sorter) => {
-    console.log('Trang hiện tại:', pagination);
-    console.log('Kích thước trang:', pagination.pageSize);
-    console.log('Bộ lọc:', filters);
-    console.log('Thông tin sắp xếp:', sorter);
+    console.log('Various parameters', pagination, filters, sorter);
+    setFilteredInfo(filters);
+    setSortedInfo(sorter);
+  };
+  const clearFilters = () => {
+    setFilteredInfo({});
+  };
+  const clearAll = () => {
+    setFilteredInfo({});
+    setSortedInfo({});
   };
   const columns = [
     {
@@ -32,19 +151,23 @@ function TableContent() {
       title: 'Mã Balo',
       dataIndex: 'productCode',
       width: 85,
+
       sorter: (a, b) => a.productCode.localeCompare(b.productCode),
+      ...getColumnSearchProps('productCode'),
     },
     {
       title: 'Tên Balo',
       dataIndex: 'productName',
       width: 270,
       sorter: (a, b) => a.productName.localeCompare(b.productName),
+      ...getColumnSearchProps('productName'),
     },
     {
       title: 'Thương Hiệu',
       dataIndex: ['brand', 'brandName'],
       width: 80,
       sorter: (a, b) => a.brand.brandName.localeCompare(b.brand.brandName),
+      ...getColumnSearchProps('brand', 'brandName'),
     },
     {
       title: 'Trạng Thái',
@@ -70,7 +193,7 @@ function TableContent() {
       width: 150,
       render: (_, record) => (
         <Space size="middle">
-          <FormProductViewDetails product={record} handleRefresh={reload} />
+          <FormProductViewDetails product={record} handleRefresh={reload} brand={record.brand} />
           <FormProductEdit product={record} brand={record.brand} handleRefresh={reload} />
           <Popconfirm
             title="Xác Nhận"

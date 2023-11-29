@@ -1,6 +1,7 @@
+import styles from './LoginForm.module.scss';
 import { FacebookOutlined, GooglePlusOutlined } from '@ant-design/icons';
+
 import React, { useState } from 'react';
-import styles from '../../indexLogin.module.scss';
 import { Link, useHistory, useNavigate } from 'react-router-dom';
 import { Button, Form, notification } from 'antd';
 import Checkbox from 'antd/es/checkbox/Checkbox';
@@ -144,8 +145,8 @@ function LoginForm(props) {
         </Form.Item>
       </Form>
 
-      <button className={styles.linkBtn} onClick={() => props.onFormSwitch('register')}>
-        Bạn không có tài khoản? Đăng ký ở đây!!!
+      <button className={styles.linkBtn} onClick={() => navigate('/signup')}>
+        Đăng ký ở đây!!!
       </button>
     </div>
   );

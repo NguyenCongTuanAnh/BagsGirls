@@ -42,6 +42,7 @@ const getBase64 = (file) =>
   });
 
 function FormProductEdit(props) {
+  console.log(props.brand);
   notification.config({
     getContainer: () => document.getElementById('notification-container'),
   });
@@ -49,6 +50,7 @@ function FormProductEdit(props) {
   const [open, setOpen] = useState(false);
   const [product, setProduct] = useState(props.product);
   const [brand, setBrand] = useState([]);
+  const [productBrand, setProductBrand] = useState(props.brand || {});
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [loading, setLoading] = useState(false);
   const [baloList, setBaloList] = useState([]);
@@ -105,7 +107,11 @@ function FormProductEdit(props) {
     setImageList(transformedImageList);
   };
   useEffect(() => {
-    handleCovertImg([]);
+    if (open) {
+      handleCovertImg([]);
+      setProductBrand(props.brand || '');
+      console.log(props.brand.brandId);
+    }
   }, []);
   const columns = [
     {
@@ -288,38 +294,41 @@ function FormProductEdit(props) {
     }
   };
   useEffect(() => {
-    let err = '';
-    var tempList = fileList;
-    if (imageList.length + fileList.length > 6) {
-      err = `Mỗi sản phẩm chỉ tối đa 6 ảnh (Đã có ${imageList.length} cái) , vui lòng chọn lại!!!!`;
-      tempList = [];
-      setFileList([]);
-    } else {
-      for (let i = 0; i < fileList.length; i++) {
-        const element = fileList[i];
+    if (open) {
+      console.log(props.brand.brandId);
+      let err = '';
+      var tempList = fileList;
+      if (imageList.length + fileList.length > 6) {
+        err = `Mỗi sản phẩm chỉ tối đa 6 ảnh (Đã có ${imageList.length} cái) , vui lòng chọn lại!!!!`;
+        tempList = [];
+        setFileList([]);
+      } else {
+        for (let i = 0; i < fileList.length; i++) {
+          const element = fileList[i];
 
-        if (!(element.type !== 'image/jpg' || element.type !== 'image/png')) {
-          err = 'Vui lòng chọn ảnh có định dạng PNG/JPG';
-          tempList = [];
-          setFileList([]);
-          break;
-        }
-        if (element.size / 1024 / 1024 > 5) {
-          err = 'Size ảnh quá lớn (nhỏ hơn 5Mb), vui lòng chọn lại';
-          tempList = [];
-          setFileList([]);
-          break;
+          if (!(element.type !== 'image/jpg' || element.type !== 'image/png')) {
+            err = 'Vui lòng chọn ảnh có định dạng PNG/JPG';
+            tempList = [];
+            setFileList([]);
+            break;
+          }
+          if (element.size / 1024 / 1024 > 5) {
+            err = 'Size ảnh quá lớn (nhỏ hơn 5Mb), vui lòng chọn lại';
+            tempList = [];
+            setFileList([]);
+            break;
+          }
         }
       }
-    }
-    if (err !== '') {
-      message.error(err);
-      err = '';
-    }
-    if (tempList.length !== 0 && err === '') {
-      console.log(tempList);
-      console.log('TH');
-      handleUploadImage(tempList);
+      if (err !== '') {
+        message.error(err);
+        err = '';
+      }
+      if (tempList.length !== 0 && err === '') {
+        console.log(tempList);
+        console.log('TH');
+        handleUploadImage(tempList);
+      }
     }
   }, [fileList]);
 
@@ -509,7 +518,7 @@ function FormProductEdit(props) {
               productCode: product.productCode,
               productName: product.productName,
               productStatus: product.productStatus,
-              brandId: props.brand.brandId,
+              brandId: productBrand.brandId,
             }}
             onFinish={handleEditProductDetails}
             form={form}

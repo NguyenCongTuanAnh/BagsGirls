@@ -5,8 +5,10 @@ import { InfoOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Col, Drawer, Form, Input, Row, Select, Space, Table } from 'antd';
 import baloDetailsAPI from '~/api/productDetailsAPI';
 import FormProductEdit from '../../ProductEdit/FormEdit/FormProductEdit';
+import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 const { Option } = Select;
 function FormProductViewDetails(props) {
+  console.log(props.brand);
   const productId = props.product.productId;
   const [open, setOpen] = useState(false);
   const showDrawer = () => {
@@ -38,11 +40,11 @@ function FormProductViewDetails(props) {
       console.error('Đã xảy ra lỗi: ', error);
     }
   }, []);
-  // useEffect(() => {
-  //   if (productId && open) {
-  //     fetchProducts(productId);
-  //   }
-  // }, [productId]);
+  useEffect(() => {
+    if (productId && open) {
+      fetchProducts(productId);
+    }
+  }, [productId]);
 
   const columns = [
     {
@@ -54,33 +56,33 @@ function FormProductViewDetails(props) {
       render: (text, record, index) => <span>{(pagination.current - 1) * pagination.pageSize + index + 1}</span>,
     },
     {
-      title: 'Balo Code',
+      title: 'Mã Balo',
       dataIndex: ['product', 'productCode'],
       width: 100,
       fixed: 'left',
       sorter: (a, b) => a.product.productCode.localeCompare(b.product.ButtonproductCode),
     },
     {
-      title: 'Balo Name',
+      title: 'Tên Balo',
       dataIndex: ['product', 'productName'],
       width: 300,
       fixed: 'left',
       sorter: (a, b) => a.product.productName.localeCompare(b.product.productName),
     },
     {
-      title: 'Balo Color',
+      title: 'Màu Sắc',
       dataIndex: ['color', 'colorName'],
       width: 100,
       sorter: (a, b) => a.color.colorName.localeCompare(b.color.colorName),
     },
     {
-      title: 'Type Balo',
+      title: 'Kiểu Balo',
       dataIndex: ['type', 'typeName'],
       width: 200,
       sorter: (a, b) => a.type.typeName.localeCompare(b.type.typeName),
     },
     {
-      title: 'Material Balo',
+      title: 'Chất Liệu',
       dataIndex: ['material', 'materialName'],
       width: 100,
       sorter: (a, b) => a.material.materialName.localeCompare(b.material.materialName),
@@ -92,77 +94,79 @@ function FormProductViewDetails(props) {
       sorter: (a, b) => a.size.sizeName.localeCompare(b.size.sizeName),
     },
     {
-      title: 'Brand Balo',
+      title: 'Thương Hiệu',
       dataIndex: ['product', 'brand', 'brandName'],
       width: 100,
       sorter: (a, b) => a.product.brand.brandName.localeCompare(b.product.brandbrandName),
     },
     {
-      title: 'Compartment Balo',
+      title: 'Kiểu Ngăn',
       dataIndex: ['compartment', 'compartmentName'],
       width: 100,
       sorter: (a, b) => a.compartment.compartmentName.localeCompare(b.compartment.compartmentName),
     },
     {
-      title: 'Image Url',
+      title: 'Ảnh',
       dataIndex: 'imageUrl',
       width: 300,
       sorter: (a, b) => a.imageUrl.localeCompare(b.imageUrl),
     },
     {
-      title: 'Producer Balo',
+      title: 'NSX',
       dataIndex: ['producer', 'producerName'],
       width: 100,
       sorter: (a, b) => a.producer.producerName.localeCompare(b.producer.producerName),
     },
 
     {
-      title: 'Describe',
+      title: 'Mô Tả',
       dataIndex: 'productDetailDescribe',
       width: 500,
       sorter: (a, b) => a.productDetailDescribe.localeCompare(b.productDetailDescribe),
     },
     {
-      title: 'Status',
+      title: 'Trạng Thái',
       dataIndex: 'productDetailStatus',
       width: 100,
       sorter: (a, b) => a.productDetailStatus - b.productDetailStatus,
       render: (productDetailStatus) => {
         switch (productDetailStatus) {
           case 1:
-            return 'Hoạt động';
+            return 'Còn Hàng';
           case 0:
-            return 'Không hoạt động';
+            return 'Hết Hàng';
           case -1:
-            return 'Trạng thái khác';
+            return 'Tạm Ngưng';
           default:
             return 'Không xác định';
         }
       },
     },
     {
-      title: 'Import Price',
+      title: 'Giá Nhập',
       dataIndex: 'importPrice',
       fixed: 'right',
       width: 100,
       sorter: (a, b) => a.importPrice - b.importPrice,
+      render: (text, record) => VNDFormaterFunc(record),
     },
     {
-      title: 'Retails Price',
+      title: 'Giá Bán',
       dataIndex: 'retailPrice',
       fixed: 'right',
       width: 100,
       sorter: (a, b) => a.retailPrice - b.retailPrice,
+      render: (text, record) => VNDFormaterFunc(record),
     },
     {
-      title: 'Amount',
+      title: 'Số Lượng',
       dataIndex: 'productDetailAmount',
       fixed: 'right',
       width: 100,
       sorter: (a, b) => a.productDetailAmount - b.productDetailAmount,
     },
     {
-      title: 'Action',
+      title: 'Hành Động',
       key: 'action',
       width: 100,
       fixed: 'right',

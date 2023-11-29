@@ -70,6 +70,12 @@ const items = [
       </Link>,
       '11',
     ),
+    getItem(
+      <Link style={{ textDecoration: 'none' }} to={'/view-productDetails'}>
+        Danh Sách Sản Phẩm Chi Tiết
+      </Link>,
+      '12',
+    ),
   ]),
   getItem('Danh mục sản phẩm', 'sub11', <AppstoreOutlined />, [
     getItem(
@@ -165,7 +171,7 @@ const items = [
     getItem('Option 12', '41'),
   ]),
 ];
-const rootSubmenuKeys = ['sub1', 'sub2', 'sub4', 'sub5', 'sub6', 'sub7', 'sub8', 'sub9', 'sub10', 'sub11','sub999'];
+const rootSubmenuKeys = ['sub1', 'sub2', 'sub4', 'sub5', 'sub6', 'sub7', 'sub8', 'sub9', 'sub10', 'sub11', 'sub999'];
 function Sidebar(props) {
   const { key, keyIndex, openKey } = props;
   const [openKeys, setOpenKeys] = useState([props.openKey]);

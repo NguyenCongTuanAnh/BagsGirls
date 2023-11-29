@@ -1,9 +1,58 @@
 import axiosClient from './axiosClient';
 
 const productDetailsAPI = {
-  getAll(params) {
-    const url = 'api/product-details/';
-    return axiosClient.get(url, { params });
+  getAll(
+    pageNum,
+    pageSize,
+    productName,
+    productCode,
+    colorName,
+    typeName,
+    materialName,
+    sizeName,
+    brandName,
+    compartmentName,
+    producerName,
+    buckleTypeName,
+    productDetailDescribe,
+    minProductDetailAmount,
+    maxProductDetailAmount,
+    minImportPrice,
+    maxImportPrice,
+    minRetailPrice,
+    maxRetailPrice,
+    productDetailStatus,
+    sortList,
+    sortOrder,
+  ) {
+    const url = 'api/product-details';
+
+    return axiosClient.get(url, {
+      params: {
+        page: pageNum - 1,
+        size: pageSize,
+        productName: productName,
+        productCode: productCode,
+        colorName: colorName,
+        typeName: typeName,
+        materialName: materialName,
+        sizeName: sizeName,
+        brandName: brandName,
+        compartmentName: compartmentName,
+        producerName: producerName,
+        buckleTypeName: buckleTypeName,
+        productDetailDescribe: productDetailDescribe,
+        minProductDetailAmount: minProductDetailAmount,
+        maxProductDetailAmount: maxProductDetailAmount,
+        minImportPrice: minImportPrice,
+        maxImportPrice: maxImportPrice,
+        minRetailPrice: minRetailPrice,
+        maxRetailPrice: maxRetailPrice,
+        productDetailStatus: productDetailStatus,
+        sortList: sortList,
+        sortOrder: sortOrder,
+      },
+    });
   },
   get(id) {
     const url = `api/product-details?id=${id}`;
