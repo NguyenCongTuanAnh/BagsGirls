@@ -210,19 +210,21 @@ const AddressVietnam = () => {
         {submittedData && (
           <div>
             <h2>Thông tin người đặt hàng:</h2>
-            <table>
+            <table className="table table-stripped table table-bordered" style={{ width: '100%', height: 'auto' }}>
               <tbody>
                 <tr>
-                  <td>Họ và tên:</td>
+                  <th>Họ và tên:</th>
                   <td>{submittedData.fullName}</td>
                 </tr>
                 <tr>
-                  <td>Số điện thoại:</td>
+                  <th>Số điện thoại:</th>
                   <td>{submittedData.phoneNumber}</td>
                 </tr>
                 <tr>
-                  <td>Địa chỉ:</td>
-                  <td>{submittedData.fullAddress}</td>
+                  <th>Địa chỉ:</th>
+                  <td style={{ maxHeight: '100px', maxWidth: '300px', overflowY: 'auto' }}>
+                    {submittedData.fullAddress}
+                  </td>
                 </tr>
               </tbody>
             </table>

@@ -6,8 +6,6 @@ import { Input, Select } from 'antd';
 function ListCheckOut() {
   const [cartItems, setCartItems] = useState([]);
 
-  
-
   useEffect(() => {
     // Fetch cart items from local storage
     const storedCart = localStorage.getItem('temporaryCart');
@@ -24,7 +22,7 @@ function ListCheckOut() {
 
   return (
     <div className={styles.list_product}>
-      <div className={styles.titleDonHang}>
+      <div className="titleNhanHang">
         <h1>Đơn hàng</h1>
       </div>
       <br />
@@ -67,7 +65,6 @@ function ListCheckOut() {
       <hr />
       <div className={styles.pay}>
         <h3>Phương thức thanh toán:</h3>
-      
         <Input name="radioPay" type="radio" value={''} />
         Chuyển khoản ngân hàng
         <Input name="radioPay" type="radio" value={''} />
