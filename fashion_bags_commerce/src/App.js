@@ -98,14 +98,17 @@ function App() {
               </StaffAuth>
             }
           />
+
           <Route
             path="/view-productDetails"
             element={
               <StaffAuth>
                 <ProductDetailsViewerPage />
               </StaffAuth>
+            }
               />
-                 <Route
+
+           <Route
             path="/view-productDetails"
             element={
               <StaffAuth>
@@ -113,6 +116,7 @@ function App() {
               </StaffAuth>
             }
           />
+
           <Route
             path="/voucher-view"
             element={
