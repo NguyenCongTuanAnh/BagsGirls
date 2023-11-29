@@ -113,7 +113,7 @@ public class UserServiceImpl implements IUserService {
         newUser.setRole(request.getRole());
         Users users = userInfoRepository.save(newUser);
         if (users.getRole() == Role.ROLE_CUSTOMER){
-            System.out.println("TH1");
+
             Customers addCustomer = Customers.builder()
                     .customerStatus(1)
                     .customerPoint(0)
@@ -121,7 +121,7 @@ public class UserServiceImpl implements IUserService {
                     .build();
             Customers customers = this.customerRepository.save(addCustomer);
         }else {
-            System.out.println("TH2");
+
             Staffs addStaff = Staffs.builder()
                     .staffStatus(1)
                     .users(users)

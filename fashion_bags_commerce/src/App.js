@@ -34,6 +34,9 @@ import ShopView from './pages/Home/Shop/ShopView';
 import { Content } from 'antd/es/layout/layout';
 import CartView from './pages/Home/Cart/cart';
 import Checkout from './pages/Home/Cart/Checkout/Checkout';
+import LoginForm from './pages/Login/FormLogin/FormLogin/LoginForm';
+import RegisterForm from './pages/Login/FormLogin/FormRegister/RegisterForm';
+import ProductDetailsViewerPage from './pages/Admin/ProductManager/ProductDetailsViewer';
 
 const dynamicRoutes = [
   { path: '/product-viewer', component: <ProductViewer />, title: 'Trang sản Phẩm' },
@@ -70,7 +73,8 @@ function App() {
     <Fragment>
       <Router>
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/signup" element={<RegisterForm />} />
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/shop/detail/:productId" element={<ShopDetail />} />
@@ -95,11 +99,18 @@ function App() {
             }
           />
           <Route
-            path="/customer-view"
+            path="/view-productDetails"
             element={
-              <AdminAuth>
-                <CustomerView />
-              </AdminAuth>
+              <StaffAuth>
+                <ProductDetailsViewerPage />
+              </StaffAuth>
+              />
+                 <Route
+            path="/view-productDetails"
+            element={
+              <StaffAuth>
+                <ProductDetailsViewerPage />
+              </StaffAuth>
             }
           />
           <Route

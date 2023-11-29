@@ -1,14 +1,19 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
-import fpoly.datn.ecommerce_website.dto.ImageDTO;
 import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
+import fpoly.datn.ecommerce_website.entity.Products;
 import fpoly.datn.ecommerce_website.repository.IProductDetailRepository;
 import fpoly.datn.ecommerce_website.service.IProductDetalisService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,13 +26,78 @@ public class ProductDetailServiceImpl implements IProductDetalisService {
 
     @Autowired
     private ModelMapper modelMapper;
-
+    private List<Sort.Order> createSortOrder(List<String> sortList, String sortDirection) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        Sort.Direction direction;
+        for (String sort : sortList) {
+            if (sortDirection != null) {
+                direction = Sort.Direction.fromString(sortDirection);
+            } else {
+                direction = Sort.Direction.DESC;
+            }
+            sorts.add(new Sort.Order(direction, sort));
+        }
+        return sorts;
+    }
 
     @Override
     public List<ProductDetailDTO> findAll() {
         return this.iProductDetailRepository.findAll().stream()
                 .map(productDetails -> modelMapper.map(productDetails, ProductDetailDTO.class))
                 .collect(Collectors.toList());
+    }
+    @Override
+    public Page<ProductDetailDTO> findAllPagination(
+            int pageNum,
+            int pageSize,
+            String productName,
+            String productCode,
+            String colorName,
+            String typeName,
+            String materialName,
+            String sizeName,
+            String brandName,
+            String compartmentName,
+            String producerName,
+            String buckleTypeName,
+            String productDetailDescribe,
+            Integer  minProductDetailAmount,
+            Integer  maxProductDetailAmount,
+            Integer  minImportPrice,
+            Integer  maxImportPrice,
+            Integer  minRetailPrice,
+            Integer  maxRetailPrice,
+            Integer  productDetailStatus,
+            List<String> sortList,
+            String sortOrder
+    ) {
+        PageRequest pageRequest = PageRequest.of(pageNum, pageSize, Sort.by(createSortOrder(sortList, sortOrder)));
+        Page<ProductDetails> productPage = this.iProductDetailRepository
+                .getProductDetailsWithoutDelete(
+                         productName,
+                         productCode,
+                         colorName,
+                         typeName,
+                         materialName,
+                         sizeName,
+                         brandName,
+                         compartmentName,
+                         producerName,
+                         buckleTypeName,
+                         productDetailDescribe,
+                        minProductDetailAmount,
+                        maxProductDetailAmount,
+                        minImportPrice,
+                        maxImportPrice,
+                        minRetailPrice,
+                        maxRetailPrice,
+                        productDetailStatus,
+                        pageRequest);
+
+        List<ProductDetailDTO> productDTOList = productPage.getContent()
+                .stream().map(product -> modelMapper.map(product, ProductDetailDTO.class))
+                .collect(Collectors.toList());
+        return new PageImpl<>(productDTOList, pageRequest, productPage.getTotalElements());
     }
 
     @Override

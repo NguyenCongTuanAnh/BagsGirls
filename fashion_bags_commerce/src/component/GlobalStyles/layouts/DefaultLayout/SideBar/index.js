@@ -70,6 +70,12 @@ const items = [
       </Link>,
       '11',
     ),
+    getItem(
+      <Link style={{ textDecoration: 'none' }} to={'/view-productDetails'}>
+        Danh Sách Sản Phẩm Chi Tiết
+      </Link>,
+      '12',
+    ),
   ]),
   getItem('Danh mục sản phẩm', 'sub11', <AppstoreOutlined />, [
     getItem(
