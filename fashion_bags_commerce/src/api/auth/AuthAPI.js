@@ -12,6 +12,15 @@ const AuthAPI = {
       },
     });
   },
+  signup(data) {
+    const url = '/api/authentication/register';
+
+    return axiosCustomerAuth.post(url, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
   getCustomerToken() {
     const url = '/api/authentication/getUserToken';
 

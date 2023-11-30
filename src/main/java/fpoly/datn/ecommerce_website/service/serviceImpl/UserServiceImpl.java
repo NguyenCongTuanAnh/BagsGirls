@@ -99,36 +99,53 @@ public class UserServiceImpl implements IUserService {
     @Override
     public Users create(@Valid CreateUserRequest request) {
         Users newUser = new Users();
-        Users userFindByEmail = userInfoRepository.findByEmail(request.getEmail());
-        if (userFindByEmail != null) {
-            throw new RestApiException(Message.EMAIL_EXISTS);
+        Boolean isExists = false;
+        if(request.getRole() == Role.ROLE_CUSTOMER){
+            Customers customers = customerRepository.findByEmail(request.getEmail());
+            if (customers != null) {
+                isExists = true;
+            }
         }
-        newUser.setAddress(request.getAddress());
-        newUser.setEmail(request.getEmail());
-        Date dateOfBirth = ConvertStringToDate.convert(request.getDateOfBirth(), "yyyy-MM-dd"); // db chưa có cột ngày sinh
-        newUser.setGender(request.getGender());
-        newUser.setFullName(request.getFullName());
-        newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-        newUser.setPhoneNumber(request.getPhoneNumber());
-        newUser.setRole(request.getRole());
-        Users users = userInfoRepository.save(newUser);
-        if (users.getRole() == Role.ROLE_CUSTOMER){
-
-            Customers addCustomer = Customers.builder()
-                    .customerStatus(1)
-                    .customerPoint(0)
-                    .users(users)
-                    .build();
-            Customers customers = this.customerRepository.save(addCustomer);
-        }else {
-
-            Staffs addStaff = Staffs.builder()
-                    .staffStatus(1)
-                    .users(users)
-                    .build();
-            Staffs staff = this.staffRepository.save(addStaff);
+        else if(request.getRole() == Role.ROLE_STAFF || request.getRole() == Role.ROLE_ADMIN){
+            Staffs staffs = staffRepository.findByEmail(request.getEmail());
+            if (staffs != null) {
+                isExists = true;
+            }
         }
-        return users;
+     if(isExists ==true){
+         throw new RestApiException(Message.EMAIL_EXISTS);
+
+     }else {
+         newUser.setAddress(request.getAddress());
+         newUser.setEmail(request.getEmail());
+         Date dateOfBirth = null; // db chưa có cột ngày sinh
+         newUser.setGender(request.getGender());
+         newUser.setFullName(request.getFullName());
+         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
+         newUser.setPhoneNumber(request.getPhoneNumber());
+         newUser.setRole(request.getRole());
+         newUser.setUserStatus(1);
+         Users users = userInfoRepository.save(newUser);
+         if (users.getRole() == Role.ROLE_CUSTOMER) {
+
+             Customers addCustomer = Customers.builder()
+                     .customerStatus(1)
+                     .customerPoint(0)
+                     .users(users)
+                     .build();
+             Customers customers = this.customerRepository.save(addCustomer);
+         } else {
+
+             Staffs addStaff = Staffs.builder()
+                     .staffStatus(1)
+                     .users(users)
+                     .build();
+             Staffs staff = this.staffRepository.save(addStaff);
+
+         }
+         return users;
+     }
+
     }
     @Override
     public PageableObject<Users> findUser(final FindUserRequest request) {

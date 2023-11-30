@@ -27,7 +27,7 @@ import ShopDetail from './pages/Home/ShopDetail/shopDetail';
 import UnAuthorPage from './pages/ExceptionPage/UnAuthorPage/UnAuthorPage';
 import { Fragment } from 'react';
 import NotFoundPage from './pages/ExceptionPage/UnAuthorPage/NotFoundPage';
-import { Switch } from 'antd';
+import { QRCode, Switch } from 'antd';
 import AdminAuth from './api/auth/guard/AdminAuth';
 import StaffAuth from './api/auth/guard/StaffAuth';
 import ShopView from './pages/Home/Shop/ShopView';
@@ -37,6 +37,7 @@ import Checkout from './pages/Home/Cart/Checkout/Checkout';
 import LoginForm from './pages/Login/FormLogin/FormLogin/LoginForm';
 import RegisterForm from './pages/Login/FormLogin/FormRegister/RegisterForm';
 import ProductDetailsViewerPage from './pages/Admin/ProductManager/ProductDetailsViewer';
+import QRCodeScanner from './component/GlobalStyles/layouts/DefaultLayout/QRCode/QRCode';
 
 const dynamicRoutes = [
   { path: '/product-viewer', component: <ProductViewer />, title: 'Trang sản Phẩm' },
@@ -90,12 +91,13 @@ function App() {
               </AdminAuth>
             }
           />
+
           <Route
             path="/admin"
             element={
-              <Admin>
-                <Admin />
-              </Admin>
+              <StaffAuth>
+                <QRCodeScanner />
+              </StaffAuth>
             }
           />
 
@@ -110,21 +112,11 @@ function App() {
           <Route
             path="/view-productDetails"
             element={
-              <StaffAuth>
+              <AdminAuth>
                 <ProductDetailsViewerPage />
-              </StaffAuth>
+              </AdminAuth>
             }
           />
-
-          <Route
-            path="/view-productDetails"
-            element={
-              <StaffAuth>
-                <ProductDetailsViewerPage />
-              </StaffAuth>
-            }
-          />
-
           <Route
             path="/voucher-view"
             element={

@@ -3,6 +3,8 @@ package fpoly.datn.ecommerce_website.service.serviceImpl;
 import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
 import fpoly.datn.ecommerce_website.entity.Products;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Message;
+import fpoly.datn.ecommerce_website.infrastructure.exception.rest.RestApiException;
 import fpoly.datn.ecommerce_website.repository.IProductDetailRepository;
 import fpoly.datn.ecommerce_website.service.IProductDetalisService;
 import org.modelmapper.ModelMapper;
@@ -110,8 +112,13 @@ public class ProductDetailServiceImpl implements IProductDetalisService {
     }
     @Override
     public ProductDetails findById(String id) {
-        Optional<ProductDetails> optional = iProductDetailRepository.findById(id);
-        return optional.get();
+        try {
+            Optional<ProductDetails> optional = iProductDetailRepository.findById(id);
+            return optional.orElse(null);
+        } catch (Exception ex) {
+            throw new RestApiException(Message.ERROR_UNKNOWN);
+
+        }
     }
 
 

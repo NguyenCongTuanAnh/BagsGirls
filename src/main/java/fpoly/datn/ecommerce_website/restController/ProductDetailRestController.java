@@ -2,6 +2,7 @@ package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.ProductDTO;
 import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
+import fpoly.datn.ecommerce_website.entity.ProductDetails;
 import fpoly.datn.ecommerce_website.service.serviceImpl.ProductDetailServiceImpl;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -33,8 +34,14 @@ public class ProductDetailRestController {
     //getOne
     @RequestMapping(value = "/product-details/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getOne(@PathVariable String id) {
+        ProductDetails productDetails = this.productDetailService.findById(id);
+        if (productDetails == null) {
+            return new ResponseEntity<>(
+                    null
+                    , HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(
-                modelMapper.map(this.productDetailService.findById(id), ProductDetailDTO.class)
+                modelMapper.map(productDetails, ProductDetailDTO.class)
                 , HttpStatus.OK);
     }
 
@@ -92,28 +99,7 @@ public class ProductDetailRestController {
                 sortList,
                 sortOrder.toString()
         );
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        System.out.println("productName " + productName);
-        System.out.println("productCode " + productCode);
-        System.out.println("colorName " + colorName);
-        System.out.println("typeName " + typeName);
-        System.out.println("materialName " + materialName);
-        System.out.println("sizeName " + sizeName);
-        System.out.println("brandName " + brandName);
-        System.out.println("compartmentName " + compartmentName);
-        System.out.println("producerName " + producerName);
-        System.out.println("buckleTypeName " + buckleTypeName);
-        System.out.println("productDetailDescribe " + productDetailDescribe);
-        System.out.println("minProductDetailAmount " + minProductDetailAmount);
-        System.out.println("maxProductDetailAmount " + maxProductDetailAmount);
-        System.out.println("minImportPrice " + minImportPrice);
-        System.out.println("productName " + productName);
-        System.out.println("maxImportPrice " + maxImportPrice);
-        System.out.println("minRetailPrice " + minRetailPrice);
-        System.out.println("maxRetailPrice " + maxRetailPrice);
-        System.out.println("productDetailStatus " + productDetailStatus);
-        System.out.println("sortList " + sortList);
-        System.out.println("sortOrder.toString() " +  sortOrder.toString());
+
         return new ResponseEntity<>
                 (productPage, HttpStatus.OK);
     }
@@ -151,6 +137,7 @@ public class ProductDetailRestController {
                 , HttpStatus.OK
         );
 
+
     }
     @RequestMapping(value = "product-detail/getProductDetailsByProductId/{productId}", method = RequestMethod.GET)
     public ResponseEntity<?> getAllbyproductId(@PathVariable String productId) {
@@ -174,6 +161,13 @@ public class ProductDetailRestController {
                         .collect(Collectors.toList())
                 , HttpStatus.OK);
     }
+//    @RequestMapping(value = "product-detail/getById", method = RequestMethod.GET)
+//    public ResponseEntity<?> getById(@RequestParam String productDetailId) {
+//        return new ResponseEntity<>(
+//               modelMapper.map( this.productDetailService.findById(productDetailId), ProductDetailDTO.class)
+//                , HttpStatus.OK
+//        );
+//    }
 //
 //
 //    @RequestMapping(value = "/product-detail/amount", method = RequestMethod.GET)
