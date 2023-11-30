@@ -93,12 +93,20 @@ function App() {
           <Route
             path="/admin"
             element={
-              <StaffAuth>
+              <Admin>
                 <Admin />
-              </StaffAuth>
+              </Admin>
             }
           />
 
+          <Route
+            path="/customer-view"
+            element={
+              <AdminAuth>
+                <CustomerView />
+              </AdminAuth>
+            }
+          />
           <Route
             path="/view-productDetails"
             element={
@@ -106,9 +114,9 @@ function App() {
                 <ProductDetailsViewerPage />
               </StaffAuth>
             }
-              />
+          />
 
-           <Route
+          <Route
             path="/view-productDetails"
             element={
               <StaffAuth>
