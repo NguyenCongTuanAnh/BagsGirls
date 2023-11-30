@@ -1,16 +1,18 @@
 import dayjs from 'dayjs';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   AutoComplete,
   Button,
   Col,
   Form,
   Input,
+  Modal,
   Popconfirm,
   Row,
   Select,
   Table,
   Tabs,
+  Typography,
   message,
   notification,
 } from 'antd';
@@ -27,6 +29,9 @@ import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import customerAPI from '~/api/customerAPI';
 import billsAPI from '~/api/BillApi';
 import billDetailsAPI from '~/api/BillDetailsAPI';
+import { QrReader } from 'react-qr-reader';
+import { Html5Qrcode } from 'html5-qrcode';
+import productDetailsAPI from '~/api/productDetailsAPI';
 const { Option } = AutoComplete;
 
 const SalesCounterForm = () => {
@@ -93,6 +98,14 @@ const SalesCounterForm = () => {
     const [billInfo, setBillInfo] = useState({});
     const [form] = Form.useForm();
     const searchInputRef = useRef(null);
+    const [showScanner, setShowScanner] = useState(false);
+    const [scannerActive, setScannerActive] = useState(true);
+    const [isModalQROpen, setIsModalQROpen] = useState(false);
+    const [prevCode, setPrevCode] = useState('');
+    let html5QrCode;
+    const soundEffect = new Audio(
+      'https://firebasestorage.googleapis.com/v0/b/bagsgirl-datn.appspot.com/o/sound-effect%2FA3TMECN-beep.mp3?alt=media&token=6c474e99-443f-4fbc-b5ef-231e6f742659',
+    );
 
     const [messageApi, contextHolder] = message.useMessage();
 
@@ -398,6 +411,129 @@ const SalesCounterForm = () => {
       setStaffId(staff.userId);
       return staff;
     };
+
+    const QRCodeScanner = ({ showScanner }) => {
+      const [data, setData] = useState('');
+
+      const qrcodeId = props.tabNum;
+
+      const handleFindbyId = async () => {
+        if (data !== '') {
+          try {
+            const response = await productDetailsAPI.findById(data);
+            if (response.status === 200) {
+              messageApi.success(`Mã hợp lệ`);
+
+              soundEffect.play();
+              const item = response.data;
+              if (item.productDetailAmount <= 0) {
+                notification.error({
+                  message: 'Lỗi',
+                  description: `Hiện tại Sản Phẩm đang hết hàng!!!!`,
+                });
+              } else {
+                if (isItemAlreadyAdded(item)) {
+                  const updatedItems = selectedItems.map((o) => {
+                    if (o.productDetailId === item.productDetailId) {
+                      const newCartAmount = o.cartAmount + 1;
+                      if (newCartAmount <= item.productDetailAmount) {
+                        return { ...o, cartAmount: newCartAmount };
+                      } else {
+                        notification.error({
+                          message: 'Lỗi',
+                          description: `Số lượng vượt quá giới hạn. Số lượng tối đa: ${item.productDetailAmount}`,
+                        });
+                        return o;
+                      }
+                    }
+                    return o;
+                  });
+                  setSelectedItems(updatedItems);
+                  setInputValue(item.product.productCode);
+                  setTotalPrice(calculateTotalPrice(updatedItems));
+                  notification.success({
+                    message: 'Thành Công',
+                    description: 'Số lượng đã được Update!!!!',
+                    duration: 2,
+                  });
+                } else {
+                  const newItem = { ...item, cartAmount: 1 };
+                  setSelectedItems(selectedItems.concat(newItem));
+                  setTotalPrice(calculateTotalPrice(selectedItems.concat(newItem)));
+                  setInputValue(item.productCode);
+
+                  notification.success({
+                    message: 'Thành Công',
+                    description: 'Sản Phẩm đã được thêm!!!!',
+                    duration: 2,
+                  });
+                }
+              }
+            }
+            setTimeout(() => {
+              setData('');
+            }, 1000);
+          } catch (error) {
+            messageApi.error(`Mã không hợp lệ, vui lòng quét lại!!!`);
+            setData('');
+          }
+        }
+      };
+      useEffect(() => {
+        handleFindbyId();
+      }, [data]);
+      useEffect(() => {
+        const config = { fps: 60, qrbox: { width: 200, height: 200 }, aspectRatio: 1 };
+        if (!html5QrCode?.getState()) {
+          html5QrCode = new Html5Qrcode(qrcodeId);
+          const qrCodeSuccessCallback = (decodedText) => {
+            setData(decodedText);
+            html5QrCode.pause(true);
+            html5QrCode.stop();
+          };
+
+          setTimeout(() => {
+            html5QrCode.start({ facingMode: 'environment' }, config, qrCodeSuccessCallback);
+          }, 500);
+        }
+      }, [isModalQROpen]);
+      const divStyle = {
+        width: '200px',
+        height: '200px',
+        backgroundColor: 'lightblue',
+        border: '1px solid black',
+        borderRadius: '5px',
+      };
+
+      return (
+        <div>
+          {isModalQROpen ? (
+            <div>
+              <div id={qrcodeId} style={divStyle}></div>
+              <div>
+                <Typography.Text>Mã: {data}</Typography.Text>
+              </div>
+              <Button onClick={handleClearQR}>Clear</Button>
+            </div>
+          ) : (
+            ''
+          )}
+        </div>
+      );
+    };
+
+    const showModal = () => {
+      setIsModalQROpen(true);
+    };
+    const handleOk = () => {
+      setIsModalQROpen(false);
+      html5QrCode.stop();
+    };
+    const handleCancel = () => {
+      setIsModalQROpen(false);
+      html5QrCode.stop();
+    };
+    const handleClearQR = () => {};
     return (
       <div className={styles.content}>
         {contextHolder}
@@ -677,31 +813,49 @@ const SalesCounterForm = () => {
               </div>
               <div>
                 <div style={{ width: 'auto' }}>
-                  <AutoComplete
-                    style={{ width: 600 }}
-                    onSelect={handleSelect}
-                    onChange={onSearch}
-                    value={inputValue}
-                    placeholder="Nhập từ khóa tìm kiếm"
-                    onFocus={onFocusInput}
-                    ref={searchInputRef}
-                  >
-                    {options.map((option) => (
-                      <Option key={option.productDetailId} value={option.productDetailId}>
-                        {option.product.productName +
-                          ' - ' +
-                          option.retailPrice +
-                          ' - ' +
-                          option.size.sizeName +
-                          ' - ' +
-                          option.color.colorName +
-                          ' - ' +
-                          option.product.brand.brandName +
-                          ' - ' +
-                          option.compartment.compartmentName}
-                      </Option>
-                    ))}
-                  </AutoComplete>
+                  <Row>
+                    <Col span={16}>
+                      <AutoComplete
+                        style={{ width: 600 }}
+                        onSelect={handleSelect}
+                        onChange={onSearch}
+                        value={inputValue}
+                        placeholder="Nhập từ khóa tìm kiếm"
+                        onFocus={onFocusInput}
+                        ref={searchInputRef}
+                      >
+                        {options.map((option) => (
+                          <Option key={option.productDetailId} value={option.productDetailId}>
+                            {option.product.productName +
+                              ' - ' +
+                              option.retailPrice +
+                              ' - ' +
+                              option.size.sizeName +
+                              ' - ' +
+                              option.color.colorName +
+                              ' - ' +
+                              option.product.brand.brandName +
+                              ' - ' +
+                              option.compartment.compartmentName}
+                          </Option>
+                        ))}
+                      </AutoComplete>
+                    </Col>
+                    <Col span={8}>
+                      <div>
+                        <Modal
+                          title="Basic Modal"
+                          width={250}
+                          open={isModalQROpen}
+                          onOk={handleOk}
+                          onCancel={handleCancel}
+                        >
+                          {isModalQROpen ? <QRCodeScanner showScanner={showScanner}></QRCodeScanner> : ''}
+                        </Modal>
+                        <Button onClick={showModal}>Mở Scan</Button>
+                      </div>
+                    </Col>
+                  </Row>
 
                   <Table
                     rowKey={(record) =>

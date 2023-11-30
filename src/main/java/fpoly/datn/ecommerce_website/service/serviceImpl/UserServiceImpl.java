@@ -114,7 +114,7 @@ public class UserServiceImpl implements IUserService {
         }
      if(isExists ==true){
          throw new RestApiException(Message.EMAIL_EXISTS);
-     
+
      }else {
          newUser.setAddress(request.getAddress());
          newUser.setEmail(request.getEmail());

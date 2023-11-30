@@ -58,6 +58,10 @@ const productDetailsAPI = {
     const url = `api/product-details?id=${id}`;
     return axiosClient.get(url);
   },
+  findById(productDetailId) {
+    const url = `api/product-details/${productDetailId}`;
+    return axiosClient.get(url);
+  },
   getAllByProductCode(productCode) {
     const url = `api/product-detail/${productCode}`;
     return axiosClient.get(url);
