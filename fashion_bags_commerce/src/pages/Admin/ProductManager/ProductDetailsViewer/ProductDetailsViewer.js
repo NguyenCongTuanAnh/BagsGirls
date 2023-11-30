@@ -8,6 +8,7 @@ import {
   Pagination,
   Popconfirm,
   Popover,
+  QRCode,
   Row,
   Select,
   Space,
@@ -296,6 +297,38 @@ function ProductDetailsViewer() {
     setFilteredInfo({});
     setSortedInfo({});
   };
+  const QRDisplay = (props) => {
+    const productDetailId = props.product.productDetailId;
+    const id = 'myqrcode' + productDetailId;
+
+    const downloadQRCode = () => {
+      const canvas = document.getElementById(id)?.querySelector('canvas');
+      if (canvas) {
+        const url = canvas.toDataURL();
+        const a = document.createElement('a');
+        a.download = `QRCode_` + productDetailId + `.png`;
+        a.href = url;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    };
+    return (
+      <div id={id}>
+        <QRCode
+          size={300}
+          value={productDetailId}
+          bgColor="#fff"
+          style={{
+            marginBottom: 16,
+          }}
+        />
+        <Button type="primary" onClick={downloadQRCode}>
+          Download
+        </Button>
+      </div>
+    );
+  };
   const columns = [
     {
       title: 'STT',
@@ -312,6 +345,11 @@ function ProductDetailsViewer() {
       fixed: 'left',
       sorter: (a, b) => a.product.productCode.localeCompare(b.product.ButtonproductCode),
       ...getColumnSearchProps('product', 'productCode'),
+      render: (text, record) => (
+        <Popover placement="right" content={<QRDisplay product={record} />} title="QR Code Sản Phẩm">
+          <Typography.Text>{text}</Typography.Text>
+        </Popover>
+      ),
     },
     {
       title: 'Tên Balo',

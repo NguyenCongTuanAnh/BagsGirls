@@ -71,7 +71,7 @@ public Page<ProductDetails> getProductDetailsWithoutDelete(
             "WHERE b.productCode LIKE %:keyword% " +
             "OR b.productId LIKE %:keyword% " +
             "OR b.productName LIKE %:keyword% " +
-            "OR bd.color.colorName LIKE %:keywor% " +
+            "OR bd.color.colorName LIKE %:keyword% " +
             "OR bd.type.typeName LIKE %:keyword% " +
             "OR bd.material.materialName LIKE %:keyword% " +
             "OR bd.size.sizeName LIKE %:keyword% " +

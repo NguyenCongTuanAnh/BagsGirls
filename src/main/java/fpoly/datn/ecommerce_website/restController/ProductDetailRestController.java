@@ -2,6 +2,7 @@ package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.ProductDTO;
 import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
+import fpoly.datn.ecommerce_website.entity.ProductDetails;
 import fpoly.datn.ecommerce_website.service.serviceImpl.ProductDetailServiceImpl;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -33,8 +34,14 @@ public class ProductDetailRestController {
     //getOne
     @RequestMapping(value = "/product-details/{id}", method = RequestMethod.GET)
     public ResponseEntity<?> getOne(@PathVariable String id) {
+        ProductDetails productDetails = this.productDetailService.findById(id);
+        if (productDetails == null) {
+            return new ResponseEntity<>(
+                    null
+                    , HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(
-                modelMapper.map(this.productDetailService.findById(id), ProductDetailDTO.class)
+                modelMapper.map(productDetails, ProductDetailDTO.class)
                 , HttpStatus.OK);
     }
 
@@ -130,6 +137,7 @@ public class ProductDetailRestController {
                 , HttpStatus.OK
         );
 
+
     }
     @RequestMapping(value = "product-detail/getProductDetailsByProductId/{productId}", method = RequestMethod.GET)
     public ResponseEntity<?> getAllbyproductId(@PathVariable String productId) {
@@ -153,6 +161,13 @@ public class ProductDetailRestController {
                         .collect(Collectors.toList())
                 , HttpStatus.OK);
     }
+//    @RequestMapping(value = "product-detail/getById", method = RequestMethod.GET)
+//    public ResponseEntity<?> getById(@RequestParam String productDetailId) {
+//        return new ResponseEntity<>(
+//               modelMapper.map( this.productDetailService.findById(productDetailId), ProductDetailDTO.class)
+//                , HttpStatus.OK
+//        );
+//    }
 //
 //
 //    @RequestMapping(value = "/product-detail/amount", method = RequestMethod.GET)
