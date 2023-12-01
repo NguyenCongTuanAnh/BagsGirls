@@ -1,6 +1,7 @@
 package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.BillDetailsDTO;
+import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.service.IBillDetailsService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,11 @@ public class BillDetailRestController {
         return new ResponseEntity<>(this.iBillDetailsService.getPagination(pageNum, pageSize), HttpStatus.OK);
     }
 
+
     @RequestMapping(value = "/bill-details", method = RequestMethod.POST)
-    public ResponseEntity<?> save(
-            @RequestBody BillDetailsDTO billDetailsDTO) {
-        return new ResponseEntity<>(this.iBillDetailsService.save(billDetailsDTO), HttpStatus.OK);
+    public ResponseEntity<BillDetailsDTO> addBillDetails(@RequestBody BillDetailsDTO billDetailsDTO) {
+        BillDetailsDTO addedBillDetails = iBillDetailsService.save(billDetailsDTO);
+        return new ResponseEntity<>(addedBillDetails, HttpStatus.CREATED);
     }
+
 }

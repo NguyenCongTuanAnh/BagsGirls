@@ -1,29 +1,35 @@
-package fpoly.datn.ecommerce_website.dto;
+    package fpoly.datn.ecommerce_website.dto;
 
-import fpoly.datn.ecommerce_website.entity.Bills;
-import fpoly.datn.ecommerce_website.entity.ProductDetails;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+    import fpoly.datn.ecommerce_website.entity.Bills;
+    import fpoly.datn.ecommerce_website.entity.ProductDetails;
+    import lombok.AllArgsConstructor;
+    import lombok.Builder;
+    import lombok.Getter;
+    import lombok.NoArgsConstructor;
+    import lombok.Setter;
+    import lombok.ToString;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@ToString
-@Setter
-@Getter
-public class BillDetailsDTO {
+    import java.util.List;
 
-    private String billDetailId;
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @ToString
+    @Setter
+    @Getter
+    public class BillDetailsDTO {
 
-    private Bills bills;
+        private String billDetailId;
 
-    private ProductDetails productDetails;
+        private String billId;
 
-    private Integer amount;
+        private List<ProductDetails> productDetails;
 
-    private Double price;
-}
+        private Bills bills;
+
+    //    private ProductDetails productDetails;
+
+        private Integer amount;
+
+        private Double price;
+    }

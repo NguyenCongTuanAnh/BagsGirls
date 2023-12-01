@@ -44,10 +44,12 @@ public class BillDetailsServiceImpl implements IBillDetailsService {
         return modelMapper.map(billDetails, BillDetailsDTO.class);
     }
 
+
     @Override
     public BillDetailsDTO save(BillDetailsDTO billDetailsDTO) {
         BillDetails billDetails = modelMapper.map(billDetailsDTO, BillDetails.class);
-        return modelMapper.map(this.iBillDetailRepository.save(billDetails), BillDetailsDTO.class);
+        BillDetails savedBillDetails = iBillDetailRepository.save(billDetails);
+        return modelMapper.map(savedBillDetails, BillDetailsDTO.class);
     }
 
     @Override

@@ -3,6 +3,7 @@ import axios from 'axios';
 import './styles.scss';
 import { Link } from 'react-router-dom';
 import billsAPI from '~/api/BillApi';
+import billDetailAPI from '~/api/BillDetailsAPI';
 import dayjs from 'dayjs';
 import { Input, Button, notification, Result } from 'antd';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
@@ -27,7 +28,6 @@ const CheckoutDetail = () => {
     }, 0);
   };
 
-  const [notificationMessage, setNotificationMessage] = useState('');
   const [submittedData, setSubmittedData] = useState(null);
 
   const host = 'https://provinces.open-api.vn/api/';
@@ -48,8 +48,7 @@ const CheckoutDetail = () => {
     event.preventDefault();
 
     const getNameFromCode = (code, list) => {
-      console.log(list, code);
-      const selectedItem = list.find((item) => item.code === parseInt(code));
+      const selectedItem = list.find((item) => item.code === +code);
       return selectedItem ? selectedItem.name : '';
     };
     const selectedProvinceName = getNameFromCode(selectedProvince, provinces);
@@ -84,7 +83,7 @@ const CheckoutDetail = () => {
     const currentTime = new Date();
     const currentDateTime = dayjs(currentTime).subtract(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
     setBillCreateDate(currentDateTime);
-
+  
     const getNameFromCode = (code, list) => {
       const selectedItem = list.find((item) => item.code === +code);
       return selectedItem ? selectedItem.name : '';
@@ -92,9 +91,9 @@ const CheckoutDetail = () => {
     const selectedProvinceName = getNameFromCode(selectedProvince, provinces);
     const selectedDistrictName = getNameFromCode(selectedDistrict, districts);
     const selectedWardName = getNameFromCode(selectedWard, wards);
-
+  
     const fullAddress = `${address} | ${selectedWardName} | ${selectedDistrictName} | ${selectedProvinceName}`;
-
+  
     try {
       const billData = {
         receiverName: fullName,
@@ -106,18 +105,37 @@ const CheckoutDetail = () => {
         billStatus: 4,
         billCode: generateCustomCode('Bill', 4),
       };
-
       const response = await billsAPI.add(billData);
+      console.log("Billsssss",response.data)
+
+      const billId = response.data.billId;
+      console.log("BillIDdđ",billId)
+  
+      // Tạo mảng dữ liệu cho billDetails
+      const billDetailsData = cartItems.map((item) => ({
+        billId: billId,
+        productId: item.pro,
+        quantity: item.quantity,
+      }));
+      console.log("Cartssss",cartItems)
+      const responseBillDetails = await Promise.all(
+        billDetailsData.map((billDetail) => billDetailAPI.add(billDetail))
+      );
+  
       setConfirmedAddress(true);
       setShowAddressForm(false);
-      console.log('Successful information submission, Bill Code:', response.data.billCode);
-      console.log('Successful information submission:', response.data);
+      setSubmittedData(responseBillDetails);
+  
+      console.log('bilsssssss:', response.data);
+      console.log('BilLDetails:', responseBillDetails);
 
-      setSubmittedData(billData);
     } catch (error) {
       console.error('Error submitting information:', error);
     }
   };
+  
+
+  const addBillDetails = async () => {};
 
   useEffect(() => {
     axios
@@ -248,7 +266,7 @@ const CheckoutDetail = () => {
             required
           />
           <textarea
-            className=""
+            className="textarea"
             rows={5}
             value={billNote}
             onChange={(e) => setBillNote(e.target.value)}
@@ -294,100 +312,107 @@ const CheckoutDetail = () => {
 
           <br></br>
 
-          <button onClick={handleConfirmation} style={{ display: submittedData ? 'block' : 'none' }}>
-            Xác nhận địa chỉ
-          </button>
+          <button style={{ display: submittedData ? 'block' : 'none' }}>Xác nhận địa chỉ</button>
           <br></br>
           {confirmedAddress && (
             <div>
               <h4>Đã xác nhận địa chỉ giao hàng thành công</h4>
             </div>
           )}
+
+          {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+
+          {/* <form className="list_product"> */}
+          <div className="titleNhanHang">
+            <h1>Đơn hàng</h1>
+          </div>
+          <br />
+
+          {cartItems.map((item, index) => (
+            <div className={item} key={index}>
+              {/* Render each item as needed */}
+              <div className="avatar">
+                <img src={item.image} className="image" alt={item.productName} />
+                <div className="info">
+                  <div className="productTitle">{item.productName}</div>
+                  <div className="titleChild">
+                    <i>{`Color: ${item.colorName}`}</i>
+                    <br />
+                    <i> {`Material: ${item.materialName}`}</i>
+                  </div>
+                  <div className="number">{`Quantity: ${item.quantity}`}</div>
+                  <span className="price_sale">
+                    Price:{' '}
+                    <ins>
+                      <span className="price">{VNDFormaterFunc(item.retailPrice)}</span>
+                    </ins>
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+          <hr />
+          <div>
+            <h3>
+              Tổng tiền: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
+            </h3>
+          </div>
+
+          <hr />
+          <div className="voucher">
+            <h4>Voucher:</h4>
+          </div>
+
+          <div className="pay">
+            <h3>Phương thức thanh toán:</h3>
+            <br></br>
+            <label className="labelCK">
+              <input className="inputCk" name="radioPay" type="radio" value={''} />
+              Thanh toán khi nhận hàng
+            </label>
+            <br></br>
+            <label className="labelCK">
+              <input className="inputCk" name="radioPay" type="radio" value={''} />
+              Chuyển khoản ngân hàng
+            </label>
+            <br></br>
+
+            <label className="labelCK">
+              <input className="inputCk" name="radioPay" type="radio" value={''} />
+              Ví điện tử
+            </label>
+          </div>
+          <br></br>
+          <div className="totalCheckout">
+            <br />
+            <h4>
+              Tổng thanh toán: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
+            </h4>
+            <br />
+          </div>
+          <br />
+
+          <button className="checkOut" onClick={handleConfirmation}>
+            Thanh toán
+          </button>
+          {/* </form>    */}
         </form>
       )}
+
       {!showAddressForm && confirmedAddress && (
         <Result
           status="success"
-          title="Thành công xác nhận địa chỉ"
+          title="Bạn đã đặt hàng thành công. Chúc bạn 1 ngày tốt lành"
           subTitle={submittedData.fullAddress} // Giả sử submittedData chứa thông tin fullAddress
-          extra={[<h3 key="continuePayment">Mời tiếp tục thanh toán</h3>]}
+          extra={[
+            <h3 key="continuePayment">
+              <Link className="btn btn-primary" to={'/'}>
+                Quay về trang chủ
+              </Link>
+            </h3>,
+          ]}
         />
       )}
-
-      {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-      <form className="list_product">
-        <div className="titleNhanHang">
-          <h1>Đơn hàng</h1>
-        </div>
-        <br />
-
-        {cartItems.map((item, index) => (
-          <div className={item} key={index}>
-            {/* Render each item as needed */}
-            <div className="avatar">
-              <img src={item.image} className="image" alt={item.productName} />
-              <div className="info">
-                <div className="productTitle">{item.productName}</div>
-                <div className="titleChild">
-                  <i>{`Color: ${item.colorName}`}</i>
-                  <br />
-                  <i> {`Material: ${item.materialName}`}</i>
-                </div>
-                <div className="number">{`Quantity: ${item.quantity}`}</div>
-                <span className="price_sale">
-                  Price:{' '}
-                  <ins>
-                    <span className="price">{VNDFormaterFunc(item.retailPrice)}</span>
-                  </ins>
-                </span>
-              </div>
-            </div>
-          </div>
-        ))}
-        <hr />
-        <div>
-          <h3>
-            Tổng tiền: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
-          </h3>
-        </div>
-
-        <hr />
-        <div className="voucher">
-          <h4>Voucher:</h4>
-        </div>
-
-        <div className="pay">
-          <h3>Phương thức thanh toán:</h3>
-          <br></br>
-          <label className="labelCK">
-            <input className="inputCk" name="radioPay" type="radio" value={''} />
-            Thanh toán khi nhận hàng
-          </label>
-          <br></br>
-          <label className="labelCK">
-            <input className="inputCk" name="radioPay" type="radio" value={''} />
-            Chuyển khoản ngân hàng
-          </label>
-          <br></br>
-
-          <label className="labelCK">
-            <input className="inputCk" name="radioPay" type="radio" value={''} />
-            Ví điện tử
-          </label>
-        </div>
-        <br></br>
-        <div className="totalCheckout">
-          <br />
-          <h4>
-            Tổng thanh toán: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
-          </h4>
-          <br />
-        </div>
-        <br />
-
-        <button className="checkOut">Thanh toán</button>
-      </form>
     </div>
   );
 };
