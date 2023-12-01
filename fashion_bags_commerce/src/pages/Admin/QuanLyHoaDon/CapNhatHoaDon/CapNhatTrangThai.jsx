@@ -8,36 +8,36 @@ import Icon from '@ant-design/icons/lib/components/Icon';
 
 function FormCapNhatTrangThai(props) {
     const [visible, setVisible] = useState(false);
-    const [current, setCurrent] = useState(props.status);
-    const [status, setStatus] = useState(props.status);
-
+    const [current, setCurrent] = useState();
     const { Step } = Steps;
 
 
     const showModal = () => {
+        setCurrent(currentData(props.status.billStatus));
         setVisible(true);
     };
     const onChange = (value) => {
         console.log('onChange:', value);
         setCurrent(value);
     };
-
+    const currentData = (value) => {
+        switch (value) {
+            case 0:
+                return '4';
+            case 1:
+                return '3';
+            case 2:
+                return '2';
+            case 3:
+                return '1';
+            default:
+                return '1';
+        }
+    }
 
     const generateSubTitle = (step) => {
-        switch (current) {
-            case 0:
-                return 4;
-            case 1:
-                return 3;
-            case 2:
-                return 2;
-            case 3:
-                return 1;
-            default:
-                return 1;
-        }
+        return step.subTitle;
     };
-
     return (
         <>
             <Button type="primary" onClick={showModal}>
@@ -83,7 +83,7 @@ function FormCapNhatTrangThai(props) {
                         <Step
                             key={index}
                             title={item.title}
-                            status={generateSubTitle(item)}
+                            // subTitle={generateSubTitle(item)}
                             description={item.description}
                         />
                     ))}
