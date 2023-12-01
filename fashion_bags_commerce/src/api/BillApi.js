@@ -10,17 +10,17 @@ const billsAPI = {
       },
     });
   },
-  getAllSearchPagination(filterStaffName, startDate, endDate, status, search, pageNum, pageSize) {
+  getAllSearchPagination(startDate, endDate, status, search, pageNum, pageSize) {
     const url = 'api/bills/pagination';
     return axiosClient.get(url, {
       params: {
-        filterStaffName: filterStaffName,
+        // filterStaffName: filterStaffName,
         startDate: startDate,
         endDate: endDate,
         search: search,
         status: status,
         page: pageNum - 1,
-        size: pageSize,
+        size: pageSize
       },
     });
   },
