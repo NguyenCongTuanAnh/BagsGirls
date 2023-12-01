@@ -2,7 +2,7 @@
   padding: 20px;
   border-radius: 8px;
   background-color: white;
-  display: flex;
+  // display: flex;
   flex-wrap: wrap;
   width: 1920px;
   margin: 0 auto;
@@ -89,7 +89,9 @@
     display: flex;
     border-radius: 8px;
     border: 1px solid #ccc;
-    width: 550px;
+    width: auto;
+    
+    margin-bottom: 10px;
   }
 
   .image {
@@ -141,8 +143,8 @@
 
   .pay {
     display: grid;
-    grid-template-columns: max-content auto; 
-    grid-gap: 8px; 
+    grid-template-columns: max-content auto;
+    grid-gap: 8px;
   }
 
   .labelCK {
@@ -180,10 +182,13 @@
 }
 
 .pay {
-    margin-top: 20px;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: white;
-    
-  }
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;
+}
+.textarea {
+  padding-top: 10px;
+  font-size: 20px;
+}
