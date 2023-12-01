@@ -38,6 +38,7 @@ import LoginForm from './pages/Login/FormLogin/FormLogin/LoginForm';
 import RegisterForm from './pages/Login/FormLogin/FormRegister/RegisterForm';
 import ProductDetailsViewerPage from './pages/Admin/ProductManager/ProductDetailsViewer';
 import QRCodeScanner from './component/GlobalStyles/layouts/DefaultLayout/QRCode/QRCode';
+import PrintTableComponent from './component/GlobalStyles/layouts/DefaultLayout/PrintTableComponent/PrintProduct';
 
 const dynamicRoutes = [
   { path: '/product-viewer', component: <ProductViewer />, title: 'Trang sản Phẩm' },
@@ -83,6 +84,7 @@ function App() {
           <Route path="/cart/checkout" element={<Checkout />} />
           <Route path="/unauthorized" element={<UnAuthorPage />} />
           <Route path="/bill-view" element={<HoaDonView />} />
+          <Route path="/print-table" element={<PrintTableComponent />} />
           <Route
             path="/shift-view"
             element={

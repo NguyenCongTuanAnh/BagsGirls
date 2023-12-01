@@ -90,6 +90,10 @@ const productDetailsAPI = {
     const url = `api/product-details/search?keyword=${keyword}`;
     return axiosClient.get(url, { keyword });
   },
+  updateAmount(productDetailId, amount) {
+    const url = `api/product-detail/update-amount?productDetailId=${productDetailId}&amount=${amount}`;
+    return axiosClient.post(url);
+  },
 };
 
 export default productDetailsAPI;
