@@ -39,6 +39,9 @@ function ShopDetailView() {
 
       if (quantity <= amountInDatabase) {
         const productToAdd = {
+          productId: product.productId,
+          productDetailId: dataDetail.productDetailId,
+
           image: product.img.imgUrl,
           productName: product.productName,
           productCode: product.productCode,

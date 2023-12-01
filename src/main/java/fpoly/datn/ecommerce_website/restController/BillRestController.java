@@ -38,8 +38,8 @@ public class BillRestController {
     @RequestMapping(value = "/bills/pagination", method = RequestMethod.GET)
     public ResponseEntity<?> getAllPagination(
             @RequestParam(name = "page", defaultValue = "0") Integer pageNum,
-            @RequestParam(name = "size", defaultValue = "10") Integer pageSize,
-            @RequestParam(name ="status", defaultValue = "0") Integer status,
+            @RequestParam(name = "size", defaultValue = "15") Integer pageSize,
+            @RequestParam(name ="status", defaultValue = "") Integer status,
             @RequestParam(name ="search", defaultValue = "") String search,
             @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
             @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr

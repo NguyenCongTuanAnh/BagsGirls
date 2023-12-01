@@ -80,6 +80,11 @@ function CartItem() {
       dataIndex: 'brandName',
       key: 'brandName',
     },
+    // {
+    //   title: 'id',
+    //   dataIndex: 'productDetailId',
+    //   key: 'productDetailId',
+    // },
     {
       title: 'Số lượng',
       dataIndex: 'quantity',
