@@ -44,14 +44,14 @@ public class BillServiceImpl implements IBillService {
     }
 
     @Override
-    public Page<BillsDTO> getAllBillsPagination(String filterStaffName, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize) {
+    public Page<BillsDTO> getAllBillsPagination( Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize) {
         Pageable pageable = PageRequest.of(pageNum, pageSize);
-        if(status == 4){
-            Page<Bills> bills = this.iBillRepository.findAll(pageable);
+        if(status == 0){
+            Page<Bills> bills = this.iBillRepository.findAllBillsBySearch(startDate, endDate, search, pageable);
 
             return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
         }else {
-            Page<Bills> bills = this.iBillRepository.findAllBillsBySearch(filterStaffName, startDate, endDate, search, pageable);
+            Page<Bills> bills = this.iBillRepository.findAllBillsBySearchStatus(startDate, endDate, status, search, pageable);
 
             return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
         }

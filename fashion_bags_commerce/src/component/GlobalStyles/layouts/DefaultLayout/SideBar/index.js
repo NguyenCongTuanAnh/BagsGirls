@@ -52,11 +52,11 @@ const items = [
   getItem('Quản lý Hóa Đơn', 'sub4', <PaperClipOutlined style={{ fontSize: '23px' }} />, [
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/bill-view'}>
-        Hóa đơn hôm nay
+        Hóa đơn online
       </Link>,
       '6',
     ),
-    getItem('Chỉnh sửa Hóa Đơn', '7'),
+    getItem('Hóa đơn tại quầy', '7'),
     getItem('Xuất Hóa Đơn', '8'),
     getItem('Option 12', '9'),
   ]),

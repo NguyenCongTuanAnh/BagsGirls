@@ -1,47 +1,93 @@
 import React, { useState } from 'react';
-import { Button, Modal, Timeline } from 'antd';
+import { Steps, Button, Modal } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
 
 import billsAPI from '~/api/BillApi';
+import { icon } from '@fortawesome/fontawesome-svg-core';
+import Icon from '@ant-design/icons/lib/components/Icon';
 
 function FormCapNhatTrangThai(props) {
-    const [open, setOpen] = useState(false);
+    const [visible, setVisible] = useState(false);
+    const [current, setCurrent] = useState(props.status);
+    const [status, setStatus] = useState(props.status);
+
+    const { Step } = Steps;
+
 
     const showModal = () => {
-        setOpen(true);
+        setVisible(true);
+    };
+    const onChange = (value) => {
+        console.log('onChange:', value);
+        setCurrent(value);
+    };
+
+
+    const generateSubTitle = (step) => {
+        switch (current) {
+            case 0:
+                return 4;
+            case 1:
+                return 3;
+            case 2:
+                return 2;
+            case 3:
+                return 1;
+            default:
+                return 1;
+        }
     };
 
     return (
         <>
-            <Button type="primary" onClick={() => setOpen(true)}>
+            <Button type="primary" onClick={showModal}>
                 Xác nhận
             </Button>
             <Modal
-                title="Modal 1000px width"
+                title="Tình trạng hóa đơn"
                 centered
-                open={open}
-                onOk={() => setOpen(false)}
-                onCancel={() => setOpen(false)}
+                visible={visible}
+                onOk={() => setVisible(false)}
+                onCancel={() => setVisible(false)}
                 width={1000}
             >
-                <Timeline
-                    items={[
+                <Steps
+                    type="navigation"
+                    size="small"
+                    current={current}
+                    onChange={onChange}
+                    className="site-navigation-steps"
+                >
+                    {[
                         {
-                            children: 'Create a services site 2015-09-01',
+                            title: 'Giai đoạn 1',
+                            status: '4',
+                            description: 'Chờ xác nhận',
                         },
                         {
-                            children: 'Solve initial network problems 2015-09-01',
+                            title: 'Giai đoạn 2',
+                            status: '3',
+                            description: 'Đang đóng gói',
                         },
                         {
-                            dot: <ClockCircleOutlined className="timeline-clock-icon" />,
-                            color: 'red',
-                            children: 'Technical testing 2015-09-01',
+                            title: 'Giai đoạn 3',
+                            status: '2',
+                            description: 'Đang giao',
                         },
                         {
-                            children: 'Network problems being solved 2015-09-01',
+                            title: 'Giai đoạn 4',
+                            status: '1',
+                            description: 'Thành công',
                         },
-                    ]}
-                />
+                    ].map((item, index) => (
+                        <Step
+                            key={index}
+                            title={item.title}
+                            status={generateSubTitle(item)}
+                            description={item.description}
+                        />
+                    ))}
+                </Steps>
             </Modal>
         </>
     );
