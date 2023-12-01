@@ -89,7 +89,7 @@ function TableHoaDon() {
         if (staff && staff.users && staff.users.fullName) {
           return staff.users.fullName;
         } else {
-          return 'Đơn hàng online';
+          return 'NULL';
         }
       },
     },
@@ -97,18 +97,18 @@ function TableHoaDon() {
       title: 'Tên khách hàng',
       dataIndex: 'receiverName',
       key: 'receiverName',
-      render: (text, record) => {
-        if (!record.customer.customerId) {
-          return record.receiverName;
-        } else {
-          return record.customer.users.fullName;
-        }
-      },
+      // render: (text, record) => {
+      //   if (record.customer.users.fullName==null) {
+      //     return record.receiverName;
+      //   } else {
+      //     return record.customer.users.fullName;
+      //   }
+      // },
     },
     {
       title: 'Số điện thoại',
-      dataIndex: ['customer', 'users', 'phoneNumber'],
-      key: 'phoneNumber',
+      dataIndex: 'orderPhone',
+      key: 'orderPhone',
     },
     {
       title: 'Tổng tiền',

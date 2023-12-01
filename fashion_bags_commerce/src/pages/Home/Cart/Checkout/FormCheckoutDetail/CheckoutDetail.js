@@ -362,12 +362,12 @@ const CheckoutDetail = () => {
           <br></br>
           <label className="labelCK">
             <input className="inputCk" name="radioPay" type="radio" value={''} />
-            Chuyển khoản ngân hàng
+            Thanh toán khi nhận hàng
           </label>
           <br></br>
           <label className="labelCK">
             <input className="inputCk" name="radioPay" type="radio" value={''} />
-            Thanh toán khi nhận hàng
+            Chuyển khoản ngân hàng
           </label>
           <br></br>
 
