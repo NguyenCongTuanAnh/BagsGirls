@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import Header from '../../Header';
-import AddressVietnam from '~/pages/Home/Cart/Checkout/AddressCustomer/CheckoutDetail';
+import AddressVietnam from '~/pages/Home/Cart/Checkout/FormCheckoutDetail/CheckoutDetail';
 import styles from './checkout.module.scss';
-import CheckoutDetail from '~/pages/Home/Cart/Checkout/AddressCustomer/CheckoutDetail';
+import CheckoutDetail from '~/pages/Home/Cart/Checkout/FormCheckoutDetail/CheckoutDetail';
 function Checkout() {
   const [loginType, setLoginType] = useState(1); // Default login type
 

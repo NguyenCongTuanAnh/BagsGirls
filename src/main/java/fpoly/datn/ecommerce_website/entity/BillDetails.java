@@ -31,6 +31,7 @@ public class BillDetails {
     @ManyToOne
     @JoinColumn(name = "bill_id", referencedColumnName = "bill_id")
     private Bills bills;
+
     @ManyToOne
     @JoinColumn(name = "product_detail_id", referencedColumnName = "product_detail_id")
     private ProductDetails productDetails;
