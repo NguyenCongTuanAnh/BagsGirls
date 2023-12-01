@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import style from './index.module.scss';
+import { hover } from '@testing-library/user-event/dist/hover';
 
 function getItem(label, key, icon, children, type) {
   return {
@@ -33,9 +34,9 @@ const items = [
       Trang chủ
     </Link>,
     'sub1',
-    <HomeOutlined />,
+    <HomeOutlined style={{ fontSize: '23px' }} />,
   ),
-  getItem('Quản lý Bán Hàng', 'sub2', <ShoppingCartOutlined />, [
+  getItem('Quản lý Bán Hàng', 'sub2', <ShoppingCartOutlined style={{ fontSize: '23px' }} />, [
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/sales-counter'}>
         Bán Hàng Tại Quầy
@@ -43,21 +44,24 @@ const items = [
       '4',
     ),
     getItem('Quản lý Đặt Hàng', '5'),
-    getItem('Submenu', 'sub3', <AppstoreOutlined />, [getItem('Option 7', '7'), getItem('Option 8', '8')]),
+    getItem('Submenu', 'sub3', <AppstoreOutlined style={{ fontSize: '23px' }} />, [
+      getItem('Option 7', '7'),
+      getItem('Option 8', '8'),
+    ]),
   ]),
-  getItem('Quản lý Hóa Đơn', 'sub4', <PaperClipOutlined />, [
+  getItem('Quản lý Hóa Đơn', 'sub4', <PaperClipOutlined style={{ fontSize: '23px' }} />, [
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/bill-view'}>
-        Hóa đơn hôm nay
+        Hóa đơn online
       </Link>,
       '6',
     ),
-    getItem('Chỉnh sửa Hóa Đơn', '7'),
+    getItem('Hóa đơn tại quầy', '7'),
     getItem('Xuất Hóa Đơn', '8'),
     getItem('Option 12', '9'),
   ]),
 
-  getItem('Quản lý Sản Phẩm', 'sub999', <CalendarOutlined />, [
+  getItem('Quản lý Sản Phẩm', 'sub999', <CalendarOutlined style={{ fontSize: '23px' }} />, [
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/product-add'}>
         Thêm Sản Phẩm
@@ -72,12 +76,12 @@ const items = [
     ),
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/view-productDetails'}>
-        Danh Sách Sản Phẩm Chi Tiết
+        Sản Phẩm Chi Tiết
       </Link>,
-      '12',
+      '122',
     ),
   ]),
-  getItem('Danh mục sản phẩm', 'sub11', <AppstoreOutlined />, [
+  getItem('Danh mục sản phẩm', 'sub11', <AppstoreOutlined style={{ fontSize: '23px' }} />, [
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/color-view'}>
         Màu sắc
@@ -137,23 +141,23 @@ const items = [
       Quản lý Voucher
     </Link>,
     'sub6',
-    <RedEnvelopeOutlined />,
+    <RedEnvelopeOutlined style={{ fontSize: '23px' }} />,
   ),
   getItem(
     <Link style={{ textDecoration: 'none' }} to={'/staff-view'}>
       Quản lý Nhân Viên
     </Link>,
     'sub7',
-    <UserOutlined />,
+    <UserOutlined style={{ fontSize: '23px' }} />,
   ),
   getItem(
     <Link style={{ textDecoration: 'none' }} to={'/customer-view'}>
       Quản lý Khách Hàng
     </Link>,
     'sub8',
-    <TeamOutlined />,
+    <TeamOutlined style={{ fontSize: '23px' }} />,
   ),
-  getItem('Giao Ca', 'sub10', <ContactsOutlined />, [
+  getItem('Giao Ca', 'sub10', <ContactsOutlined style={{ fontSize: '23px' }} />, [
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/shift-view'}>
         Danh sách ca làm việc
@@ -164,7 +168,7 @@ const items = [
     getItem('Option 11', '36'),
     getItem('Option 12', '37'),
   ]),
-  getItem('Thống Kê ', 'sub9', <BarChartOutlined />, [
+  getItem('Thống Kê ', 'sub9', <BarChartOutlined style={{ fontSize: '23px' }} />, [
     getItem('Option 9', '38'),
     getItem('Option 10', '39'),
     getItem('Option 11', '40'),

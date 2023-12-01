@@ -14,7 +14,7 @@ public interface IBillService {
 
     Page<BillsDTO> getPagination(int pageNum, int pageSize);
 
-    Page<BillsDTO> getAllBillsPagination(String filterStaffName, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize);
+    Page<BillsDTO> getAllBillsPagination( Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize);
 
     BillsDTO save(BillsDTO billsDTO);
 

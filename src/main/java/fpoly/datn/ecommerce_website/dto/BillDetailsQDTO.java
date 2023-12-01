@@ -27,6 +27,8 @@ public class BillDetailsQDTO {
 
     private String staffName;
 
+    private String orderName;
+
     private String customerPhoneNumber;
 
     private Double billTotalPrice;

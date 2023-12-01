@@ -43,32 +43,27 @@ function NavMenu() {
             onClick={({ key }) => handleMenuClick(key)}
           >
             <Link key={1} className={styles.submenu} to={'/'}>
-              <SubMenu  title="TRANG CHỦ">
+              <SubMenu title="TRANG CHỦ">
                 {/* <Menu.Item key="1.1">NEW ARRIVAL</Menu.Item>
                 <Menu.Item key="1.2">COLLECTION</Menu.Item> */}
               </SubMenu>
             </Link>
-            <Link className={styles.submenu} to={'/'}>
-              <SubMenu  title="GIỚI THIỆU">
-                {/* <Menu.Item key="3.1">#GIRLS</Menu.Item>
-                <Menu.Item key="3.2">#BOYS</Menu.Item> */}
-              </SubMenu>
+            <Link className={styles.submenu} to={'/gioi-thieu'}>
+              <SubMenu title="GIỚI THIỆU"></SubMenu>
             </Link>
             <Link className={styles.submenu} to={'/shop'}>
-              <SubMenu  title="SẢN PHẨM">
-                 <Menu.Item key="3.1">GIRLS</Menu.Item>
+              <SubMenu title="SẢN PHẨM">
+                <Menu.Item key="3.1">GIRLS</Menu.Item>
                 <Menu.Item key="3.2">BOYS</Menu.Item>
               </SubMenu>
             </Link>
 
-            
-
-            <Link className={styles.submenu} to={'/'}>
-              <SubMenu  title="BLOG"></SubMenu>
+            <Link className={styles.submenu} to={'/blog'}>
+              <SubMenu title="BLOG"></SubMenu>
             </Link>
 
             <Link className={styles.submenu} to={'/'}>
-              <SubMenu  title="LIÊN HỆ"></SubMenu>
+              <SubMenu title="LIÊN HỆ"></SubMenu>
             </Link>
           </Menu>
         </div>
