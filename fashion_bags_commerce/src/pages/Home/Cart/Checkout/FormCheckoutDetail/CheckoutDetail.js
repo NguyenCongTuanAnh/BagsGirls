@@ -113,11 +113,17 @@ const CheckoutDetail = () => {
   
       // Tạo mảng dữ liệu cho billDetails
       const billDetailsData = cartItems.map((item) => ({
-        billId: billId,
-        productId: item.pro,
-        quantity: item.quantity,
+       bills :{
+            billId: billId,
+        },
+        productDetails: {
+          productDetailId: item.productDetailId
+        },
+        amount: item.quantity,
+        price: item.retailPrice
       }));
       console.log("Cartssss",cartItems)
+
       const responseBillDetails = await Promise.all(
         billDetailsData.map((billDetail) => billDetailAPI.add(billDetail))
       );
@@ -125,7 +131,6 @@ const CheckoutDetail = () => {
       setConfirmedAddress(true);
       setShowAddressForm(false);
       setSubmittedData(responseBillDetails);
-  
       console.log('bilsssssss:', response.data);
       console.log('BilLDetails:', responseBillDetails);
 
