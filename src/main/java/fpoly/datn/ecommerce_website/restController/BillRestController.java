@@ -1,14 +1,11 @@
 package fpoly.datn.ecommerce_website.restController;
 
-import fpoly.datn.ecommerce_website.dto.BillDetailsDTO;
 import fpoly.datn.ecommerce_website.dto.BillsDTO;
-import fpoly.datn.ecommerce_website.service.IBillDetailsService;
 import fpoly.datn.ecommerce_website.service.IBillService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,7 +17,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -28,9 +24,6 @@ public class BillRestController {
 
     @Autowired
     private IBillService billService;
-    @Autowired
-    private IBillDetailsService iBillDetailsService;
-
     @Autowired
     private ModelMapper modelMapper;
 
@@ -48,7 +41,7 @@ public class BillRestController {
     public ResponseEntity<?> getAllPagination(
             @RequestParam(name = "page", defaultValue = "0") Integer pageNum,
             @RequestParam(name = "size", defaultValue = "15") Integer pageSize,
-            @RequestParam(name ="status", defaultValue = "4") Integer status,
+            @RequestParam(name ="status", defaultValue = "") Integer status,
             @RequestParam(name ="search", defaultValue = "") String search,
             @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
             @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr,
@@ -71,32 +64,4 @@ public class BillRestController {
             @RequestBody BillsDTO billsDTO) {
         return new ResponseEntity<>(this.billService.save(billsDTO), HttpStatus.OK);
     }
-
-//    @PostMapping("/createbill")
-//    public ResponseEntity<BillsDTO> createBill(@RequestBody BillsDTO billDTO) {
-//        // Tạo một Bill mới
-//        BillsDTO savedBill = billService.save(billDTO);
-//
-//        // Kiểm tra xem Bill có được tạo thành công không
-//        if (savedBill != null) {
-//            // Lấy ID của Bill vừa tạo
-//            String billId = savedBill.getBillId();
-//
-//            // Lấy danh sách chi tiết sản phẩm từ BillDTO
-//            List<BillDetailsDTO> billDetails = billDTO.getBillDetailsDTOS();
-//
-//            // Nếu danh sách chi tiết không rỗng và Bill ID có tồn tại
-//            if (billDetails != null && billId != null) {
-//                // Duyệt qua từng chi tiết và tạo BillDetail liên kết với Bill mới tạo
-//                for (BillDetailsDTO detail : billDetails) {
-//                    detail.setBillDetailId(billId); // Liên kết BillDetail với Bill mới tạo
-//                    iBillDetailsService.save(detail); // Lưu BillDetail vào cơ sở dữ liệu
-//                }
-//            }
-//
-//            return new ResponseEntity<>(savedBill, HttpStatus.CREATED);
-//        } else {
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//    }
 }

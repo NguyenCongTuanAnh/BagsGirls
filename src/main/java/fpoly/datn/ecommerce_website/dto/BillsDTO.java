@@ -13,7 +13,6 @@ import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,9 +25,9 @@ public class BillsDTO {
     private String billId;
 
     private Staffs staff;
-
+    //
     private Customers customer;
-
+    //
     private Vouchers voucher;
 
     private String billCode;
@@ -68,6 +67,4 @@ public class BillsDTO {
     private String billNote;
 
     private Integer billStatus;
-
-    private List<BillDetailsDTO> billDetailsDTOS;
 }
