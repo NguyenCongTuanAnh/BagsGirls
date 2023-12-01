@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import CartItem from './CartItem/cartItem';
 import { Fragment, useEffect, useState } from 'react';
 import { DoubleRightOutlined } from '@ant-design/icons';
-import AddressVietnam from '~/pages/Home/Cart/Checkout/AddressCustomer/CheckoutDetail';
+import AddressVietnam from '~/pages/Home/Cart/Checkout/FormCheckoutDetail/CheckoutDetail';
 
 const { Header: HeaderLayout, Footer: FooterLayout, Content: ContentLayout } = Layout;
 

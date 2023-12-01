@@ -21,6 +21,7 @@ function ShopDetailView() {
   const [temporaryCart, setTemporaryCart] = useState([]);
 
   const [materialOptions, setMaterialOptions] = useState([]);
+  const [defaultMaterial, setDefaultMaterial] = useState(null);
 
   const [loading, setLoading] = useState(false);
   useEffect(() => {
@@ -91,11 +92,11 @@ function ShopDetailView() {
 
   const handleInputChange = (event) => {
     // Kiểm tra nếu giá trị nhập vào không phải là số, thì không thay đổi giá trị của input
-    // if (/\D/g.test(event.target.value)) return;
+    if (/\D/g.test(event.target.value)) return "";
     console.log('>>>> value', event.target.value);
 
     // Cập nhật giá trị quantity
-    // setQuantity(parseInt(event.target.value, 10));
+    setQuantity(parseInt(event.target.value, 10));
   };
 
   const handleIncrement = () => {
@@ -136,18 +137,26 @@ function ShopDetailView() {
         console.error('Error fetching product details:', error);
       }
     };
-
+  
     fetchProductDetail();
   }, [productId]);
 
   console.log('>>> data detail', dataDetail);
 
   useEffect(() => {
-    // Assuming productDetails contains color and material information
+    // Thiết lập mặc định cho màu sắc và chất liệu
     if (product && product.productDetails) {
       const uniqueColors = [...new Set(product.productDetails.map((detail) => detail.colorName))];
-      // Set initial material options for the first color in the product details
-      setMaterialOptions(getMaterialOptionsForColor(uniqueColors[0]));
+      const defaultColor = uniqueColors[0]; // Lấy màu sắc đầu tiên
+  
+      setSelectedColor(defaultColor);
+      setMaterialOptions(getMaterialOptionsForColor(defaultColor));
+  
+      // Thiết lập mặc định cho chất liệu
+      const defaultMaterialOptions = getMaterialOptionsForColor(defaultColor);
+      if (defaultMaterialOptions.length > 0) {
+        setSelectedMaterial(defaultMaterialOptions[0]); // Chọn chất liệu đầu tiên nếu có
+      }
     }
   }, [product]);
 
@@ -200,7 +209,8 @@ function ShopDetailView() {
     if (!selectedColor || !materialOptions.length) {
       return null;
     }
-
+  
+    // Render danh sách chất liệu và tick vào checkbox chất liệu đầu tiên nếu có
     return materialOptions.map((material, index) => (
       <div key={index} className={styles.variant}>
         <Checkbox
@@ -213,9 +223,15 @@ function ShopDetailView() {
       </div>
     ));
   };
+  useEffect(() => {
+    if (selectedColor && materialOptions.length > 0) {
+      const defaultMaterialForColor = getMaterialOptionsForColor(selectedColor)[0];
+      setDefaultMaterial(defaultMaterialForColor);
+      setSelectedMaterial(defaultMaterialForColor);
+    }
+  }, [selectedColor, materialOptions]);
 
   if (!product) {
-    // You can render a loading state or an error message here
 
     return (
       <div style={{ textAlign: 'center', marginTop: '20px' }}>

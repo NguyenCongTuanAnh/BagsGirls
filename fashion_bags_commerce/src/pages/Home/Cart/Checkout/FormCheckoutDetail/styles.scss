@@ -7,10 +7,12 @@
   width: 1920px;
   margin: 0 auto;
   form {
-    text-align: center;
+    padding: 20px;
+
+    text-align: left;
     display: flex;
     flex-direction: column;
-    margin: 0 20% 0 10%;
+    margin: 0 10% 0 10%;
 
     input[type='text'],
     input[type='tel'],
@@ -69,7 +71,7 @@
 
   /////////////////////////////////////////////////////////////////////////////
   .list_product {
-    padding: 20px;
+    // padding: 20px;
     // border: 1px solid #ccc;
     // margin: 0 10% 0 10%;
     margin-left: 10%;
@@ -136,12 +138,15 @@
   .voucher h4 {
     margin-bottom: 10px;
   }
+
   .pay {
-    margin-top: 20px;
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: white;
+    display: grid;
+    grid-template-columns: max-content auto; 
+    grid-gap: 8px; 
+  }
+
+  .labelCK {
+    align-self: center;
   }
 
   .pay h3 {
@@ -149,10 +154,11 @@
     color: #333; /* Màu chữ cho tiêu đề */
   }
 
-  /* Lựa chọn thanh toán */
   .pay Input[type='radio'] {
-    margin-bottom: 10px; /* Khoảng cách giữa các lựa chọn */
-    display: block; /* Hiển thị mỗi lựa chọn trên một dòng */
+    margin-bottom: 10px;
+
+    width: 19px;
+    height: 14px;
   }
   .totalCheckout {
     background-color: rgb(209, 207, 207);
@@ -172,3 +178,12 @@
     }
   }
 }
+
+.pay {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: white;
+    
+  }
