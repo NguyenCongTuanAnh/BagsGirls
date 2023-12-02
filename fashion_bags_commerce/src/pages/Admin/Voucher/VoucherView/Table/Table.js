@@ -53,13 +53,13 @@ const TableContent = () => {
       render: (text, record, index) => <span>{(currentPage - 1) * pagesSize + index + 1}</span>,
     },
     {
-      title: 'Code',
+      title: 'Mã',
       dataIndex: 'voucherCode',
       sorter: (a, b) => a.voucherCode.localeCompare(b.voucherCode),
       width: 100,
     },
     {
-      title: 'Name voucher',
+      title: 'Tên khuyến mãi',
       dataIndex: 'voucherName',
       width: 100,
       sorter: (a, b) => a.voucherName.localeCompare(b.voucherName),
@@ -126,7 +126,7 @@ const TableContent = () => {
       },
     },
     {
-      title: 'Action',
+      title: 'Hành động',
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
@@ -142,7 +142,9 @@ const TableContent = () => {
             }}
             onCancel={onCancel}
           >
-            <Button className="btn btn-danger " icon={<DeleteOutlined />}></Button>
+            <Button type="default" danger icon={<DeleteOutlined />}>
+              xóa
+            </Button>
           </Popconfirm>
         </Space>
       ),

@@ -49,7 +49,7 @@ function FormBrandCreate(props) {
 
   return (
     <Fragment>
-      <Button type="primary" style={{ width: '100px' }} onClick={showModal} icon={<PlusOutlined />}></Button>
+      <Button style={{ border: '1px white solid', color: 'white', background: 'green' }} onClick={showModal} icon={<PlusOutlined />}>Thêm</Button>
       <Modal title="Thêm thương hiệu" open={modalOpen} onCancel={handleCancel} footer={null}>
         <div>
           <Form
@@ -66,7 +66,7 @@ function FormBrandCreate(props) {
             onFinish={addFunc} // Xử lý khi submit form
           >
             <Form.Item
-              label="Brand Name"
+              label="Tên thương hiệu"
               name="brandName"
               rules={[
                 {
@@ -78,7 +78,7 @@ function FormBrandCreate(props) {
               <Input />
             </Form.Item>
 
-            <Form.Item label="Status" name="brandStatus">
+            <Form.Item label="Trạng thái" name="brandStatus">
               <Select
                 style={{ width: 300 }}
                 placeholder="Vui lòng chọn trạng thái"
@@ -100,8 +100,8 @@ function FormBrandCreate(props) {
             </Form.Item>
 
             <div style={{ textAlign: 'center' }}>
-              <Button type="primary" htmlType="submit">
-                Submit
+              <Button style={{ border: '1px white solid', color: 'white', background: 'green' }} htmlType="submit">
+                Thêm
               </Button>
             </div>
           </Form>

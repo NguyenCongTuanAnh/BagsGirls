@@ -71,7 +71,7 @@ public class Bills {
     private BigDecimal billTotalPrice;
 
     @Column(name = "product_amount")
-    private Integer productAmount;
+        private Integer productAmount;
 
     @Column(name = "bill_price_after_voucher")
     private Double billPriceAfterVoucher;

@@ -49,7 +49,7 @@ function FormSizeCreate(props) {
 
   return (
     <Fragment>
-      <Button type="primary" onClick={showModal} style={{ width: '100px' }} icon={<PlusOutlined />}></Button>
+      <Button style={{ border: '1px white solid', color: 'white', background: 'green' }} onClick={showModal} icon={<PlusOutlined />}>Thêm</Button>
       <Modal title="Thêm kích cỡ" open={modalOpen} onCancel={handleCancel} footer={null}>
         <div>
           <Form
@@ -66,7 +66,7 @@ function FormSizeCreate(props) {
             onFinish={addFunc} // Xử lý khi submit form
           >
             <Form.Item
-              label="size Name"
+              label="Tên"
               name="sizeName"
               rules={[
                 {
@@ -137,8 +137,8 @@ function FormSizeCreate(props) {
             </Form.Item>
 
             <div style={{ textAlign: 'center' }}>
-              <Button type="primary" htmlType="submit">
-                Submit
+              <Button style={{ border: '1px white solid', color: 'white', background: 'green' }} htmlType="submit">
+                Thêm
               </Button>
             </div>
           </Form>

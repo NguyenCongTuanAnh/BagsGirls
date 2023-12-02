@@ -54,19 +54,19 @@ const TableContent = () => {
       render: (text, record, index) => <span>{(currentPage - 1) * pagesSize + index + 1}</span>,
     },
     {
-      title: 'Code',
+      title: 'Mã',
       dataIndex: 'materialCode',
       sorter: (a, b) => a.materialCode.localeCompare(b.materialCode),
       width: 150,
     },
     {
-      title: 'Name ',
+      title: 'Tên chất liệu ',
       dataIndex: 'materialName',
       width: 150,
       sorter: (a, b) => a.materialName.localeCompare(b.materialName),
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'materialStatus',
 
       width: 150,
@@ -97,14 +97,14 @@ const TableContent = () => {
       },
     },
     {
-      title: 'Action',
+      title: 'Hành động',
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
           <FormMaterialEdit material={record} />
           <Popconfirm
             title="Xác Nhận"
-            description="Bạn Có chắc chắn muốn xóa?"
+            description="Bạn Có chắc chắn muốn hủy trạng thái?"
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
@@ -113,8 +113,8 @@ const TableContent = () => {
             }}
             onCancel={onCancel}
           >
-            <Button type="primary" danger icon={<DeleteOutlined />}>
-              Delete
+            <Button type="default" danger icon={<DeleteOutlined />}>
+              Xóa
             </Button>
           </Popconfirm>
         </Space>
