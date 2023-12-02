@@ -118,7 +118,7 @@ function TableHoaDon() {
       title: 'Tổng tiền',
       dataIndex: 'billTotalPrice',
       key: 'billTotalPrice',
-      // sorter: (a, b) => a.price.localeCompare(b.price),
+      // sorter: (a, b) => a.billTotalPrice.localeCompare(b.billTotalPrice),
       render: (price) => {
         return <span>{VNDFormaterFunc(price)}</span>;
       },
@@ -356,7 +356,7 @@ function TableHoaDon() {
       <Card>
         <section>
           <h2 style={{ marginBottom: '10px' }}>
-            <TableOutlined /> Danh sách hóa đơn online
+            <TableOutlined /> Danh sách hóa đơn tại quầy
           </h2>
           <Tabs
             defaultActiveKey={status}

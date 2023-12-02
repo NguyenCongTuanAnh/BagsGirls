@@ -51,14 +51,15 @@ const items = [
   ]),
   getItem('Quản lý Hóa Đơn', 'sub4', <PaperClipOutlined style={{ fontSize: '23px' }} />, [
     getItem(
-      <Link style={{ textDecoration: 'none' }} to={'/bill-view'}>
+      <Link style={{ textDecoration: 'none' }} to={'/bill-online-view'}>
         Hóa đơn online
       </Link>,
       '6',
     ),
-    getItem('Hóa đơn tại quầy', '7'),
-    getItem('Xuất Hóa Đơn', '8'),
-    getItem('Option 12', '9'),
+    getItem(<Link style={{ textDecoration: 'none' }} to={'/bill-offline-view'}>
+      Hóa đơn tại quầy
+    </Link>,
+      '7',),
   ]),
 
   getItem('Quản lý Sản Phẩm', 'sub999', <CalendarOutlined style={{ fontSize: '23px' }} />, [
