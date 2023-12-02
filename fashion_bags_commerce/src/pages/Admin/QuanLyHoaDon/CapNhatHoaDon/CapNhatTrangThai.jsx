@@ -1,30 +1,66 @@
 import React, { useState } from 'react';
-import { Steps, Button, Modal } from 'antd';
-import { ClockCircleOutlined } from '@ant-design/icons';
-
+import { Steps, Button, Modal, notification, Popconfirm } from 'antd';
 import billsAPI from '~/api/BillApi';
-import { icon } from '@fortawesome/fontawesome-svg-core';
-import Icon from '@ant-design/icons/lib/components/Icon';
+import { ReloadOutlined } from '@ant-design/icons';
 
 function FormCapNhatTrangThai(props) {
     const [visible, setVisible] = useState(false);
-    const [current, setCurrent] = useState(props.status);
-    const [status, setStatus] = useState(props.status);
-
+    const [current, setCurrent] = useState();
+    const [billId, setBillId] = useState();
     const { Step } = Steps;
 
 
     const showModal = () => {
+        setBillId(props.status.billId);
+        setCurrent(currentData(props.status.billStatus));
         setVisible(true);
     };
     const onChange = (value) => {
-        console.log('onChange:', value);
         setCurrent(value);
     };
+    const currentData = (value) => {
+        switch (value) {
+            case 1:
+                return 4;
+            case 2:
+                return 2;
+            case 3:
+                return 1;
+            case 4:
+                return 0;
+            default:
+                return -1;
+        }
+    }
 
+    const updateStatusBill = async (id, status) => {
+        const xoa = await billsAPI.updateStatus(id, status);
+        notification.success({
+            message: 'Cập nhật thành công',
+            description: 'Trạng thái đơn hàng ' + props.status.billCode + ' được cập nhật thành: ' + currentString(current),
+        });
+        setVisible(false);
+        props.reload();
+    };
 
-    const generateSubTitle = (step) => {
-        switch (current) {
+    const currentString = (value) => {
+        switch (value) {
+            case 4:
+                return 'Thành công';
+            case 3:
+                return 'Thành công';
+            case 2:
+                return 'Đang giao';
+            case 1:
+                return 'Đang đóng gói';
+            case 0:
+                return 'Chờ xác nhận';
+            default:
+                return 'Đã hủy';
+        }
+    }
+    const statusTraVe = (value) => {
+        switch (value) {
             case 0:
                 return 4;
             case 1:
@@ -33,23 +69,38 @@ function FormCapNhatTrangThai(props) {
                 return 2;
             case 3:
                 return 1;
-            default:
+            case 4:
                 return 1;
+            default:
+                return -1;
         }
-    };
+    }
 
     return (
         <>
-            <Button type="primary" onClick={showModal}>
-                Xác nhận
+            <Button type="primary" disabled={props.disabled} onClick={showModal} icon={<ReloadOutlined />}>
+                Trạng thái
             </Button>
             <Modal
-                title="Tình trạng hóa đơn"
+                title={'Tình trạng hóa đơn: ' + currentString(props.status.billStatus)}
                 centered
                 visible={visible}
-                onOk={() => setVisible(false)}
                 onCancel={() => setVisible(false)}
                 width={1000}
+                footer={[
+                    <Button key="cancel" onClick={() => setVisible(false)}>
+                        Hủy
+                    </Button>,
+                    <Popconfirm
+                        key="popconfirm"
+                        title="Xác nhận cập nhật trạng thái?"
+                        onConfirm={() => updateStatusBill(billId, statusTraVe(current))}
+                        okText="Đồng ý"
+                        cancelText="Hủy"
+                    >
+                        <Button type="primary">Xác nhận</Button>
+                    </Popconfirm>,
+                ]}
             >
                 <Steps
                     type="navigation"
@@ -83,7 +134,7 @@ function FormCapNhatTrangThai(props) {
                         <Step
                             key={index}
                             title={item.title}
-                            status={generateSubTitle(item)}
+                            // subTitle={generateSubTitle(item)}
                             description={item.description}
                         />
                     ))}

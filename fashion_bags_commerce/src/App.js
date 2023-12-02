@@ -21,7 +21,7 @@ import VoucherView from './pages/Admin/Voucher/VoucherView';
 import StaffView from './pages/Admin/Staff/StaffView';
 import SalesCounter from './pages/Admin/SalesManager/SalesCounter';
 import CustomerView from './pages/Admin/Customer/CustomerView';
-import HoaDonView from './pages/Admin/QuanLyHoaDon/HienThiHoaDon/indexHoaDonView';
+import HoaDonOnlineView from './pages/Admin/QuanLyHoaDon/HienThiHoaDon/indexHoaDonView';
 import Shop from './pages/Home/Shop/shop';
 import ShopDetail from './pages/Home/ShopDetail/shopDetail';
 import UnAuthorPage from './pages/ExceptionPage/UnAuthorPage/UnAuthorPage';
@@ -43,6 +43,7 @@ import PrintTableComponent from './component/GlobalStyles/layouts/DefaultLayout/
 
 import AboutPage from './pages/Home/GioiThieu';
 import BlogPage from './pages/Home/Blog';
+import HoaDonTaiQuayView from './pages/Admin/QuanLyHoaDon/HoaDonTaiQuay/indexHoaDonTaiQuayView';
 
 
 const dynamicRoutes = [
@@ -69,7 +70,7 @@ const dynamicRoutes = [
   },
   {
     path: '/bill-view',
-    component: <HoaDonView />,
+    component: <HoaDonOnlineView />,
     title: 'Trang hóa đơn',
     requiredRoles: ['ROLE_ADMIN', 'ROLE_STAFF'],
   },
@@ -88,12 +89,28 @@ function App() {
           <Route path="/cart" element={<CartView />} />
           <Route path="/cart/checkout" element={<Checkout />} />
           <Route path="/unauthorized" element={<UnAuthorPage />} />
-          <Route path="/bill-view" element={<HoaDonView />} />
-
           <Route path="/print-table" element={<PrintTableComponent />} />
 
           <Route path="/gioi-thieu" element={<AboutPage />} />
           <Route path="/blog" element={<BlogPage />} />
+
+          <Route
+            path="/bill-offline-view"
+            element={
+              <AdminAuth>
+                <HoaDonTaiQuayView />
+              </AdminAuth>
+            }
+          />
+
+          <Route
+            path="/bill-online-view"
+            element={
+              <AdminAuth>
+                <HoaDonOnlineView />
+              </AdminAuth>
+            }
+          />
 
           <Route
             path="/shift-view"
@@ -121,6 +138,7 @@ function App() {
               </AdminAuth>
             }
           />
+
           <Route
             path="/view-productDetails"
             element={
@@ -129,6 +147,7 @@ function App() {
               </AdminAuth>
             }
           />
+
           <Route
             path="/voucher-view"
             element={
@@ -137,6 +156,7 @@ function App() {
               </AdminAuth>
             }
           />
+
           <Route
             path="/color-view"
             element={
@@ -145,6 +165,7 @@ function App() {
               </AdminAuth>
             }
           />
+
           <Route
             path="/material-view"
             element={
@@ -153,6 +174,7 @@ function App() {
               </AdminAuth>
             }
           />
+
           <Route
             path="/brand-view"
             element={
@@ -161,6 +183,7 @@ function App() {
               </AdminAuth>
             }
           />
+
           <Route
             path="/size-view"
             element={
@@ -169,6 +192,7 @@ function App() {
               </AdminAuth>
             }
           />
+
           <Route
             path="/product-add"
             element={
@@ -177,6 +201,7 @@ function App() {
               </AdminAuth>
             }
           />
+
           <Route
             path="/sales-counter"
             element={
@@ -185,6 +210,7 @@ function App() {
               </StaffAuth>
             }
           />
+
           <Route
             path="/product-viewer"
             element={
@@ -193,6 +219,7 @@ function App() {
               </AdminAuth>
             }
           />
+
           <Route
             path="/product-add"
             element={
@@ -201,6 +228,7 @@ function App() {
               </AdminAuth>
             }
           />
+
           <Route
             path="/compartment-view"
             element={
@@ -209,6 +237,7 @@ function App() {
               </AdminAuth>
             }
           />
+
           <Route
             path="/type-view"
             element={
@@ -217,6 +246,7 @@ function App() {
               </AdminAuth>
             }
           />
+
           <Route
             path="/producer-view"
             element={
@@ -225,6 +255,7 @@ function App() {
               </AdminAuth>
             }
           />
+
           <Route
             path="/buckle-type-view"
             element={
