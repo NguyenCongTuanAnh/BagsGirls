@@ -83,12 +83,21 @@ const CheckoutDetail = () => {
     const currentTime = new Date();
     const currentDateTime = dayjs(currentTime).subtract(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
     setBillCreateDate(currentDateTime);
-    if (!fullName || !phoneNumber || !email || !selectedProvince || !selectedDistrict || !selectedWard || !address || !billNote) {
+    if (
+      !fullName ||
+      !phoneNumber ||
+      !email ||
+      !selectedProvince ||
+      !selectedDistrict ||
+      !selectedWard ||
+      !address ||
+      !billNote
+    ) {
       // Nếu một trong các trường thông tin còn trống, hiển thị thông báo hoặc xử lý một cách phù hợp
       console.log('Vui lòng điền đầy đủ thông tin');
       return; // Dừng việc thực hiện tiếp theo nếu có trường thông tin trống
     }
-  
+
     const getNameFromCode = (code, list) => {
       const selectedItem = list.find((item) => item.code === +code);
       return selectedItem ? selectedItem.name : '';
@@ -98,6 +107,15 @@ const CheckoutDetail = () => {
     const selectedWardName = getNameFromCode(selectedWard, wards);
 
     const fullAddress = `${address} | ${selectedWardName} | ${selectedDistrictName} | ${selectedProvinceName}`;
+
+    const cartItemsTotal = cartItems.reduce(
+      (acc, item) => {
+        acc.billTotalPrice += item.retailPrice * item.quantity;
+        acc.productAmount += item.quantity;
+        return acc;
+      },
+      { billTotalPrice: 0, productAmount: 0 },
+    );
 
     try {
       const billData = {
@@ -109,6 +127,8 @@ const CheckoutDetail = () => {
         billNote: billNote,
         billStatus: 4,
         billCode: generateCustomCode('Bill', 4),
+        billTotalPrice: cartItemsTotal.billTotalPrice,
+        productAmount: cartItemsTotal.productAmount,
       };
       const response = await billsAPI.add(billData);
       console.log('Billsssss', response.data);
@@ -136,6 +156,8 @@ const CheckoutDetail = () => {
       setSubmittedData(responseBillDetails);
       console.log('bilsssssss:', response.data);
       console.log('BilLDetails:', responseBillDetails);
+
+      localStorage.removeItem('temporaryCart');
     } catch (error) {
       console.error('Error submitting information:', error);
     }
@@ -219,7 +241,8 @@ const CheckoutDetail = () => {
           />
           <input
             className="inputLabel"
-            type="tel"
+            type="number"
+            size={10}
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="Số điện thoại"
@@ -399,7 +422,7 @@ const CheckoutDetail = () => {
           <br />
 
           <button className="checkOut" onClick={handleConfirmation}>
-            Thanh toán
+            Đặt Hàng
           </button>
           {/* </form>    */}
         </form>

@@ -62,8 +62,13 @@ function FormcolorEdit(props) {
   return (
     <Fragment>
       <div style={{ color: 'red' }}>
-        <Button type="primary" className="btn btn-warning" onClick={showComponent} icon={<EditOutlined />}>
-         
+        <Button
+          type="default"
+          style={{ border: '1px blue solid', color: 'blue' }}
+          onClick={showComponent}
+          icon={<EditOutlined />}
+        >
+          Sửa
         </Button>
         <Drawer
           title={'Edit - ' + data.colorName}
@@ -107,7 +112,7 @@ function FormcolorEdit(props) {
                   rules={[
                     {
                       required: true,
-                      message: 'Vui lòng điền tên Kiểu',
+                      message: 'Vui lòng điền tên',
                     },
                   ]}
                 >
@@ -115,7 +120,7 @@ function FormcolorEdit(props) {
                     name="colorName"
                     value={data.colorName}
                     onChange={updateData}
-                    placeholder="Vui lòng điền tên kiểu"
+                    placeholder="Vui lòng điền tên"
                   />
                 </Form.Item>
               </Col>

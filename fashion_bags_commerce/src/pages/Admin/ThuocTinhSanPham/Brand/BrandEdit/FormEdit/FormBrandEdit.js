@@ -62,8 +62,13 @@ function FormBrandEdit(props) {
   return (
     <Fragment>
       <div style={{ color: 'red' }}>
-        <Button type="primary" className="btn btn-warning" onClick={showComponent} icon={<EditOutlined />}>
-          
+        <Button
+          type="default"
+          style={{ border: '1px blue solid', color: 'blue' }}
+          onClick={showComponent}
+          icon={<EditOutlined />}
+        >
+          Sửa
         </Button>
         <Drawer
           title={'Edit - ' + data.brandName}

@@ -53,26 +53,26 @@ const TableContent = () => {
       render: (text, record, index) => <span>{(currentPage - 1) * pagesSize + index + 1}</span>,
     },
     {
-      title: 'Code',
+      title: 'Mã',
       dataIndex: 'sizeCode',
       sorter: (a, b) => a.sizeCode.localeCompare(b.sizeCode),
       width: 100,
     },
     {
-      title: 'Name size',
+      title: 'Tên kích cỡ',
       dataIndex: 'sizeName',
       width: 100,
       sorter: (a, b) => a.sizeName.localeCompare(b.sizeName),
     },
     {
-      title: 'Size (dài x rộng x cao)',
+      title: 'Kích cỡ (dài x rộng x cao)',
       dataIndex: 'size', // Use a single dataIndex for the combined data
       width: 100,
       sorter: (a, b) => a.lengthSize.localeCompare(b.lengthSize),
       render: (text, record) => `${record.sizeLength} x ${record.sizeWidth} x ${record.sizeHeight}`,
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'sizeStatus',
 
       width: 100,
@@ -103,7 +103,7 @@ const TableContent = () => {
       },
     },
     {
-      title: 'Action',
+      title: 'Hành động',
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
@@ -119,7 +119,9 @@ const TableContent = () => {
             }}
             onCancel={onCancel}
           >
-            <Button type="primary" danger icon={<DeleteOutlined />}></Button>
+            <Button type="default" danger icon={<DeleteOutlined />}>
+              Xóa
+            </Button>
           </Popconfirm>
         </Space>
       ),
