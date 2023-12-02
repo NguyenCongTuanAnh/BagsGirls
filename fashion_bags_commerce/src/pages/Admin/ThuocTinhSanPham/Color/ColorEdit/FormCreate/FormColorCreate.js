@@ -64,7 +64,15 @@ function FormcolorEditTonggle(props) {
   };
   return (
     <Fragment>
-      <Button type="primary" onClick={showDrawer} style={{ width: '100px' }} icon={<PlusOutlined />}></Button>
+      <Button
+        type="default"
+        style={{ border: '1px white solid', color: 'white', background: 'green' }}
+        onClick={showDrawer}
+        // style={{ width: '100px' }}
+        icon={<PlusOutlined />}
+      >
+        Thêm
+      </Button>
       <Modal title="Thêm Màu Sắc" visible={open} onCancel={onClose} footer={null}>
         <div>
           <Form
@@ -87,7 +95,7 @@ function FormcolorEditTonggle(props) {
             onFinish={addFunc}
           >
             <Form.Item
-              label="Color Name"
+              label="Tên"
               name="colorName"
               rules={[
                 {
@@ -99,7 +107,7 @@ function FormcolorEditTonggle(props) {
               <Input />
             </Form.Item>
 
-            <Form.Item label="Status" name="colorStatus">
+            <Form.Item label="Trạng thái" name="colorStatus">
               <Select
                 style={{ width: 300 }}
                 placeholder="Vui lòng chọn trạng thái"
@@ -117,8 +125,8 @@ function FormcolorEditTonggle(props) {
             </Form.Item>
 
             <div style={{ textAlign: 'center' }}>
-              <Button type="primary" htmlType="submit">
-                Submit
+              <Button type="default" style={{ border: '1px white solid', color: 'white ', background:'green' }} htmlType="submit">
+                Thêm
               </Button>
             </div>
           </Form>

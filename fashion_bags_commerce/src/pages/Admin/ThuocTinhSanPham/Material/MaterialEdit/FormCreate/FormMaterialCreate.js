@@ -49,7 +49,7 @@ function FormMaterialCreate(props) {
 
   return (
     <Fragment>
-      <Button type="primary" onClick={showModal} style={{ width: '100px' }} icon={<PlusOutlined />}></Button>
+      <Button style={{ border: '1px white solid', color: 'white', background: 'green' }} onClick={showModal} icon={<PlusOutlined />}> Thêm</Button>
       <Modal title="Thêm chất liệu" open={modalOpen} onCancel={handleCancel} footer={null}>
         <div>
           <Form
@@ -66,7 +66,7 @@ function FormMaterialCreate(props) {
             onFinish={addFunc} // Xử lý khi submit form
           >
             <Form.Item
-              label=" Name"
+              label="Tên"
               name="materialName"
               rules={[
                 {
@@ -78,7 +78,7 @@ function FormMaterialCreate(props) {
               <Input />
             </Form.Item>
 
-            <Form.Item label="Status" name="materialStatus">
+            <Form.Item label="Trạng thái" name="materialStatus">
               <Select
                 style={{ width: 300 }}
                 placeholder="Vui lòng chọn trạng thái"
@@ -96,8 +96,8 @@ function FormMaterialCreate(props) {
             </Form.Item>
 
             <div style={{ textAlign: 'center' }}>
-              <Button type="primary" htmlType="submit">
-                Submit
+              <Button style={{ border: '1px white solid', color: 'white', background: 'green' }} htmlType="submit">
+                Thêm
               </Button>
             </div>
           </Form>
