@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Steps, Button, Modal } from 'antd';
+import { Steps, Button, Modal, notification } from 'antd';
 import { ClockCircleOutlined } from '@ant-design/icons';
 
 import billsAPI from '~/api/BillApi';
@@ -9,6 +9,7 @@ import Icon from '@ant-design/icons/lib/components/Icon';
 function FormCapNhatTrangThai(props) {
     const [visible, setVisible] = useState(false);
     const [current, setCurrent] = useState();
+    const [billId, setBillId] = useState(props.status.billId);
     const { Step } = Steps;
 
 
@@ -17,10 +18,50 @@ function FormCapNhatTrangThai(props) {
         setVisible(true);
     };
     const onChange = (value) => {
-        console.log('onChange:', value);
+        // console.log('onChange:', value);
+        console.log(billId);
         setCurrent(value);
     };
     const currentData = (value) => {
+        switch (value) {
+            case 1:
+                return '4';
+            case 2:
+                return '2';
+            case 3:
+                return '1';
+            case 4:
+                return '0';
+            default:
+                return '0';
+        }
+    }
+
+    const updateStatusBill = async (id, status) => {
+        const xoa = await billsAPI.updateStatus(id, status);
+        notification.success({
+            message: 'Cập nhật thành công',
+            description: 'Trạng thái đơn hàng ' + props.status.billCode + ' được cập nhật thành: ' + currentString(current),
+        });
+        setVisible(false);
+        props.reload();
+    };
+
+    const currentString = (value) => {
+        switch (value) {
+            case 3:
+                return 'Thành công';
+            case 2:
+                return 'Đang giao';
+            case 1:
+                return 'Đang đóng gói';
+            case 0:
+                return 'Chờ xác nhận';
+            default:
+                return 'Đã hủy';
+        }
+    }
+    const statusTraVe = (value) => {
         switch (value) {
             case 0:
                 return '4';
@@ -44,10 +85,10 @@ function FormCapNhatTrangThai(props) {
                 Xác nhận
             </Button>
             <Modal
-                title="Tình trạng hóa đơn"
+                title={'Tình trạng hóa đơn: ' + currentString(props.status.billStatus)}
                 centered
                 visible={visible}
-                onOk={() => setVisible(false)}
+                onOk={() => updateStatusBill(billId, statusTraVe(current))}
                 onCancel={() => setVisible(false)}
                 width={1000}
             >

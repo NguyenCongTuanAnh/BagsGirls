@@ -4,6 +4,7 @@ import fpoly.datn.ecommerce_website.dto.BillsDTO;
 import fpoly.datn.ecommerce_website.dto.BillsQDTO;
 import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.entity.Bills;
+import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.repository.IBillRepository;
 import fpoly.datn.ecommerce_website.service.IBillService;
 import org.modelmapper.ModelMapper;
@@ -55,7 +56,16 @@ public class BillServiceImpl implements IBillService {
 
             return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
         }
-    };
+    }
+
+    @Override
+    public Bills updateStatus(String id, Integer status) {
+        Bills bill = iBillRepository.findById(id).get();
+        bill.setBillStatus(status);
+        return this.iBillRepository.save(bill);
+    }
+
+    ;
 
 
     @Override
