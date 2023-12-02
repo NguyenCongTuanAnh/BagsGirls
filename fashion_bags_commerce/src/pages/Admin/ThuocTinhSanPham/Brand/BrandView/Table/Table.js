@@ -9,7 +9,7 @@ const TableContent = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pagesSize, setPagesSize] = useState(15);
+  const [pagesSize, setPagesSize] = useState(10);
   const [totalItem, setTotalItem] = useState();
 
   const onCancel = () => {};

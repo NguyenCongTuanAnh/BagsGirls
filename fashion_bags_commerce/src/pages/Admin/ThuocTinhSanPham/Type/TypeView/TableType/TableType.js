@@ -10,7 +10,7 @@ function TableContent() {
   const [typeList, setTypeList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(15);
+  const [pageSize, setPageSize] = useState(10);
   const [totalItem, setTotalItem] = useState(); // Số lượng dữ liệu tổng cộng
 
   const handleTableChange = (pagination, filters, sorter) => {};
