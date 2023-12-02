@@ -1,6 +1,8 @@
 package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.BillsDTO;
+import fpoly.datn.ecommerce_website.entity.Bills;
+import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.service.IBillService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,12 @@ public class BillRestController {
             e.printStackTrace();
             return new ResponseEntity<>("Lỗi khi chuyển đổi ngày", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @RequestMapping(value = "/bills/update-status", method = RequestMethod.PUT)
+    public ResponseEntity<Bills> updateStatus(@RequestParam String id, @RequestParam int status) {
+        return new ResponseEntity<>(billService.updateStatus(id, status),
+                HttpStatus.OK);
     }
 
     @RequestMapping(value = "/bills", method = RequestMethod.POST)
