@@ -4,9 +4,13 @@ import FormProductEdit from '../../ProductEdit/FormEdit/FormProductEdit';
 import FormProductViewDetails from '../../ProductViewDetails/FormViewer/FormProductViewDetails';
 import Highlighter from 'react-highlight-words';
 import baloAPI from '~/api/productsAPI';
+import pdfMake from 'pdfmake/build/pdfmake';
 
 import styles from './index.module.scss';
 import { DeleteOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { CSVLink } from 'react-csv';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 function TableContent() {
   const [productList, setProductList] = useState([]);
@@ -236,6 +240,7 @@ function TableContent() {
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
       setProductList(data);
+      console.log(data);
       setTimeout(() => {}, 500);
     } catch (error) {
       console.error('Đã xảy ra lỗi: ', error);
@@ -273,6 +278,107 @@ function TableContent() {
     getAllBalo(current, pageSize);
     handleLoading();
   };
+
+  const handlePrint = () => {
+    let newList = [];
+    // let columnsName = [];
+    productList.forEach((item) => {
+      newList.push({
+        productId: item.productId,
+        productCode: item.productCode,
+        productName: item.productName,
+        brand: item.brand,
+        productStatus: item.productStatus,
+      });
+    });
+    // let columnsName = columns.map((e) => {
+    //   const { key, title, dataIndex, width, render } = e;
+    //   var listTemp = {
+    //     key: key,
+    //     title: title,
+    //     dataIndex: dataIndex,
+    //     width: width,
+    //     render: render.toString(),
+    //   };
+    //   // listTemp.push({
+    //   //   key: e.key,
+    //   //   title: e.title,
+    //   //   dataIndex: e.dataIndex,
+    //   //   width: e.width,
+    //   //   render: e.width,
+    //   // });
+
+    //   return listTemp;
+    // });
+    console.log(columns);
+    localStorage.setItem('printList', JSON.stringify(newList));
+    localStorage.setItem('columnsName', JSON.stringify(columns));
+    window.open('/print-table', '_blank');
+  };
+  const ProductSCVData = [
+    ['ID', 'Mã Balo', 'Tên Balo', 'Thương Hiệu', 'Trạng Thái'], // Header của file CSV
+    ...productList.map((product) => [
+      product.productId,
+      product.productCode,
+      product.productName,
+      product.brand.brandName,
+      product.productStatus,
+    ]), // Dữ liệu sản phẩm
+  ];
+  const generatePDF = () => {
+    const tableColumn = ['ID', 'Mã Balo', 'Tên Balo', 'Thương Hiệu', 'Trạng Thái'];
+    const tableRows = [['ID', 'Mã Balo', 'Tên Balo', 'Thương Hiệu', 'Trạng Thái']];
+
+    productList.forEach((product) => {
+      let statusText = '';
+      if (product.productStatus === 1) {
+        statusText = 'Còn Hàng';
+      } else if (product.productStatus === 2) {
+        statusText = 'Hết Hàng';
+      } else if (product.productStatus === 3) {
+        statusText = 'Đã Ngừng Sản Xuất';
+      } else {
+        statusText = 'Trạng Thái Không Xác Định';
+      }
+      const productData = [
+        product.productId,
+        product.productCode,
+        product.productName,
+        product.brand.brandName,
+        statusText,
+      ];
+      tableRows.push(productData);
+    });
+    const currentTime = new Date();
+    const docDefinition = {
+      content: [
+        {
+          text: 'Danh sách sản phẩm',
+          fontSize: 20,
+          bold: true,
+          alignment: 'center', // Thêm alignment để căn giữa
+          margin: [0, 0, 0, 10],
+        },
+        {
+          text: 'Thời Gian: ' + currentTime,
+          fontSize: 10,
+          bold: false,
+        },
+        {
+          table: {
+            headerRows: 1,
+            widths: [90, 90, 120, 70, 90],
+            body: tableRows.map((row) => row.map((cell) => ({ text: cell, alignment: 'center' }))),
+            // body: tableRows,
+          },
+        },
+      ],
+    };
+
+    const pdfDoc = pdfMake.createPdf(docDefinition); // Create the PDF
+    pdfDoc.download(`danh_sach_san_pham-trang_${currentPage}.pdf`); // Initiate the download
+  };
+
   return (
     <div
       style={{
@@ -282,7 +388,27 @@ function TableContent() {
       <Button icon={<ReloadOutlined />} onClick={reload} loading={loading}>
         Làm mới
       </Button>
+      <div>
+        <Button type="Button" onClick={handlePrint} style={{ backgroundColor: 'gray', color: 'white' }}>
+          Print
+        </Button>
+        <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'gray', color: 'white' }}>
+          Copy
+        </Button>
+        <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'gray', color: 'white' }}>
+          Excel
+        </Button>
+        <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'gray', color: 'white' }}>
+          <CSVLink data={ProductSCVData} filename={`danh_sach_san_pham-trang_${currentPage}.csv`}>
+            CSV
+          </CSVLink>
+        </Button>
+        <Button type="Button" onClick={generatePDF} style={{ backgroundColor: 'gray', color: 'white' }}>
+          PDF
+        </Button>
+      </div>
       <Table
+        id="table"
         className="table table-striped"
         scroll={{
           x: 1000,

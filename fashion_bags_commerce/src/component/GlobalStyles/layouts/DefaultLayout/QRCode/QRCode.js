@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useState } from 'react';
-import QrReader from 'react-qr-reader';
 
 import { Html5Qrcode, Html5QrcodeScanner } from 'html5-qrcode';
 

@@ -148,7 +148,7 @@ function FormProductViewDetails(props) {
       fixed: 'right',
       width: 100,
       sorter: (a, b) => a.importPrice - b.importPrice,
-      render: (text, record) => VNDFormaterFunc(record),
+      render: (importPrice) => VNDFormaterFunc(importPrice),
     },
     {
       title: 'Giá Bán',
@@ -156,7 +156,7 @@ function FormProductViewDetails(props) {
       fixed: 'right',
       width: 100,
       sorter: (a, b) => a.retailPrice - b.retailPrice,
-      render: (text, record) => VNDFormaterFunc(record),
+      render: (retailPrice) => VNDFormaterFunc(retailPrice),
     },
     {
       title: 'Số Lượng',
@@ -164,6 +164,7 @@ function FormProductViewDetails(props) {
       fixed: 'right',
       width: 100,
       sorter: (a, b) => a.productDetailAmount - b.productDetailAmount,
+      render: (productDetailAmount) => productDetailAmount + ' cái',
     },
     {
       title: 'Hành Động',

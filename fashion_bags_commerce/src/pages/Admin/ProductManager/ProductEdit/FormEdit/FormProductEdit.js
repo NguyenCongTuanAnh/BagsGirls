@@ -42,7 +42,6 @@ const getBase64 = (file) =>
   });
 
 function FormProductEdit(props) {
-  console.log(props.brand);
   notification.config({
     getContainer: () => document.getElementById('notification-container'),
   });
@@ -101,16 +100,13 @@ function FormProductEdit(props) {
       status: 'done', // Hoặc bạn có thể set giá trị status khác nếu cần thiết
       url: image.imgUrl,
     }));
-    console.log('====================================');
-    console.log(transformedImageList);
-    console.log('====================================');
+
     setImageList(transformedImageList);
   };
   useEffect(() => {
-    if (open) {
+    if (true) {
       handleCovertImg([]);
       setProductBrand(props.brand || '');
-      console.log(props.brand.brandId);
     }
   }, []);
   const columns = [
@@ -294,8 +290,7 @@ function FormProductEdit(props) {
     }
   };
   useEffect(() => {
-    if (open) {
-      console.log(props.brand.brandId);
+    if (true) {
       let err = '';
       var tempList = fileList;
       if (imageList.length + fileList.length > 6) {
@@ -366,7 +361,6 @@ function FormProductEdit(props) {
         //// save vào db
         const response = await imageAPI.upload(uploadedImage);
         if (response.status === 200) {
-          // message.success('Tải lên hình ảnh thành công');
           const tempList = [];
           tempList.push(response.data);
           handleCovertImg(tempList);

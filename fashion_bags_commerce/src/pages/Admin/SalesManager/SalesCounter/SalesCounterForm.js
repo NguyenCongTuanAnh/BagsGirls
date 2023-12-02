@@ -29,7 +29,6 @@ import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import customerAPI from '~/api/customerAPI';
 import billsAPI from '~/api/BillApi';
 import billDetailsAPI from '~/api/BillDetailsAPI';
-import { QrReader } from 'react-qr-reader';
 import { Html5Qrcode } from 'html5-qrcode';
 import productDetailsAPI from '~/api/productDetailsAPI';
 const { Option } = AutoComplete;
@@ -332,8 +331,12 @@ const SalesCounterForm = () => {
       if (customer == null && visible === true) {
         messageApi.error('Vui lòng Chọn Khách lẻ hoặc Điền KH Thân Thiết!!!');
       } else if (selectedItems.length === 0) {
-        messageApi.error('Vui lòng chọn Sản Phẩm!!');
       } else {
+        notification.success({
+          message: 'Thành Công',
+          description: `Đã hoàn thành đơn hàng`,
+          duration: 2,
+        });
         let addBill = {
           staff: {
             staffId: staff.staffId,
@@ -365,8 +368,9 @@ const SalesCounterForm = () => {
         if (customer === null) {
           addBill.customer = null;
         }
-        console.log(addBill);
+
         const addedBill = await handleAddBills(addBill);
+        var isErr = false;
         await Promise.all(
           selectedItems.map(async (o) => {
             let billDetail = {
@@ -379,14 +383,22 @@ const SalesCounterForm = () => {
               amount: o.cartAmount,
               price: o.retailPrice,
             };
-            const billDetails = await handleAddBillDetails(billDetail); // Thêm thông tin chi tiết hóa đơn
-            console.log(billDetails);
+
+            const billDetails = await handleAddBillDetails(billDetail);
+            const produtcAmount = await productDetailsAPI.updateAmount(o.productDetailId, o.cartAmount);
+            if (billDetails.status === 200 && produtcAmount.status === 200) {
+              isErr = true;
+            }
           }),
         );
-        notification.success({
-          message: 'Thành Công',
-          description: `Đã hoàn thành đơn hàng`,
-        });
+
+        if (isErr !== true) {
+          notification.success({
+            message: 'Thành Công',
+            description: `Đã hoàn thành đơn hàng`,
+            duration: 2,
+          });
+        }
       }
 
       setBillInfo(values);
@@ -397,7 +409,7 @@ const SalesCounterForm = () => {
     }
     async function handleAddBillDetails(billDetails) {
       const response = await billDetailsAPI.add(billDetails);
-      return response.data;
+      return response;
     }
     const onFocusInput = () => {
       if (searchInputRef.current) {
