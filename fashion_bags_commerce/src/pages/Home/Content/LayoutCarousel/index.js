@@ -35,7 +35,7 @@ function LayoutCarousel() {
       <div className={styles.block}>
         <div className="container">
           <div className="row">
-            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 item-banner">
+            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 item-banner">
               <a href="#" aria-label="Bộ sưu tập vascara">
                 <img
                   className={styles.imgContent}

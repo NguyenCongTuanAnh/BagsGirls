@@ -83,6 +83,11 @@ const CheckoutDetail = () => {
     const currentTime = new Date();
     const currentDateTime = dayjs(currentTime).subtract(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
     setBillCreateDate(currentDateTime);
+    if (!fullName || !phoneNumber || !email || !selectedProvince || !selectedDistrict || !selectedWard || !address || !billNote) {
+      // Nếu một trong các trường thông tin còn trống, hiển thị thông báo hoặc xử lý một cách phù hợp
+      console.log('Vui lòng điền đầy đủ thông tin');
+      return; // Dừng việc thực hiện tiếp theo nếu có trường thông tin trống
+    }
   
     const getNameFromCode = (code, list) => {
       const selectedItem = list.find((item) => item.code === +code);
@@ -91,9 +96,9 @@ const CheckoutDetail = () => {
     const selectedProvinceName = getNameFromCode(selectedProvince, provinces);
     const selectedDistrictName = getNameFromCode(selectedDistrict, districts);
     const selectedWardName = getNameFromCode(selectedWard, wards);
-  
+
     const fullAddress = `${address} | ${selectedWardName} | ${selectedDistrictName} | ${selectedProvinceName}`;
-  
+
     try {
       const billData = {
         receiverName: fullName,
@@ -106,39 +111,35 @@ const CheckoutDetail = () => {
         billCode: generateCustomCode('Bill', 4),
       };
       const response = await billsAPI.add(billData);
-      console.log("Billsssss",response.data)
+      console.log('Billsssss', response.data);
 
       const billId = response.data.billId;
-      console.log("BillIDdđ",billId)
-  
+      console.log('BillIDdđ', billId);
+
       // Tạo mảng dữ liệu cho billDetails
       const billDetailsData = cartItems.map((item) => ({
-       bills :{
-            billId: billId,
+        bills: {
+          billId: billId,
         },
         productDetails: {
-          productDetailId: item.productDetailId
+          productDetailId: item.productDetailId,
         },
         amount: item.quantity,
-        price: item.retailPrice
+        price: item.retailPrice,
       }));
-      console.log("Cartssss",cartItems)
+      console.log('Cartssss', cartItems);
 
-      const responseBillDetails = await Promise.all(
-        billDetailsData.map((billDetail) => billDetailAPI.add(billDetail))
-      );
-  
+      const responseBillDetails = await Promise.all(billDetailsData.map((billDetail) => billDetailAPI.add(billDetail)));
+
       setConfirmedAddress(true);
       setShowAddressForm(false);
       setSubmittedData(responseBillDetails);
       console.log('bilsssssss:', response.data);
       console.log('BilLDetails:', responseBillDetails);
-
     } catch (error) {
       console.error('Error submitting information:', error);
     }
   };
-  
 
   const addBillDetails = async () => {};
 
