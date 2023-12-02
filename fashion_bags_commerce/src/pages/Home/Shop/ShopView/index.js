@@ -74,11 +74,11 @@ function ShopView({ titleContent }) {
     <Fragment>
       <div>
         <h3 className={styles.sortTitle}>
-          <button class={styles.line_col} onClick={() => handleColumnChange('col-4')}>
+          <button className={styles.line_col} onClick={() => handleColumnChange('col-4')}>
             <FullscreenOutlined />
           </button>
           SẢN PHẨM
-          <button class={styles.line_col} onClick={() => handleColumnChange('col-3')}>
+          <button className={styles.line_col} onClick={() => handleColumnChange('col-3')}>
             <FullscreenExitOutlined />
           </button>
         </h3>
