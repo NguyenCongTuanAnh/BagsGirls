@@ -82,7 +82,7 @@ function FormCapNhatTrangThai(props) {
                 Trạng thái
             </Button>
             <Modal
-                title={'Tình trạng hóa đơn: ' + currentString(props.status.billStatus)}
+                title={'Tình trạng hóa đơn: ' + currentString(current)}
                 centered
                 visible={visible}
                 onCancel={() => setVisible(false)}
