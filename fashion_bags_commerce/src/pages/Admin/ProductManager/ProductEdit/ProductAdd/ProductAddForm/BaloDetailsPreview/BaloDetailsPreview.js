@@ -89,7 +89,7 @@ function BaloDetailsPreview(props) {
     {
       title: 'Describe',
       dataIndex: 'productDetailDescribe',
-      width: 500,
+      width: 250,
       sorter: (a, b) => a.productDetailDescribe.localeCompare(b.productDetailDescribe),
     },
     {
@@ -102,32 +102,53 @@ function BaloDetailsPreview(props) {
       title: 'Import Price',
       dataIndex: 'importPrice',
       fixed: 'right',
-      width: 100,
+      width: 150,
       sorter: (a, b) => a.importPrice - b.importPrice,
       render: (text, record) => (
-        <InputNumber value={text} onChange={(value) => handleEditChange(value, record.productCode, 'importPrice')} />
+        <InputNumber
+          value={text}
+          style={{
+            width: '100%',
+          }}
+          onChange={(value) => handleEditChange(value, record.productCode, 'importPrice')}
+          formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
+        />
       ),
     },
     {
       title: 'Retails Price',
       dataIndex: 'retailPrice',
       fixed: 'right',
-      width: 100,
+      width: 150,
       sorter: (a, b) => a.retailPrice - b.retailPrice,
       render: (text, record) => (
-        <InputNumber value={text} onChange={(value) => handleEditChange(value, record.productCode, 'retailPrice')} />
+        <InputNumber
+          style={{
+            width: '100%',
+          }}
+          value={text}
+          onChange={(value) => handleEditChange(value, record.productCode, 'retailPrice')}
+          formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
+        />
       ),
     },
     {
       title: 'Amount',
       dataIndex: 'baloDetailAmount',
       fixed: 'right',
-      width: 100,
+      width: 120,
       sorter: (a, b) => a.baloDetailAmount - b.baloDetailAmount,
       render: (text, record) => (
         <InputNumber
+          style={{
+            width: '100%',
+          }}
           value={text}
           onChange={(value) => handleEditChange(value, record.productCode, 'baloDetailAmount')}
+          formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
         />
       ),
     },
@@ -314,6 +335,23 @@ function BaloDetailsPreview(props) {
               marginLeft: 8,
             }}
           ></span>
+        </div>
+        <div>
+          <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'blue' }}>
+            Print
+          </Button>
+          <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'blue' }}>
+            Copy
+          </Button>
+          <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'blue' }}>
+            Excel
+          </Button>
+          <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'blue' }}>
+            CSV
+          </Button>
+          <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'blue' }}>
+            PDF
+          </Button>
         </div>
         <Table
           rowKey={(record) => record.productCode}

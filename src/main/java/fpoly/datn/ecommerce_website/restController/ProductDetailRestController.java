@@ -3,8 +3,11 @@ package fpoly.datn.ecommerce_website.restController;
 import fpoly.datn.ecommerce_website.dto.ProductDTO;
 import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Message;
+import fpoly.datn.ecommerce_website.infrastructure.exception.rest.RestApiException;
 import fpoly.datn.ecommerce_website.service.serviceImpl.ProductDetailServiceImpl;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -170,15 +173,23 @@ public class ProductDetailRestController {
 //    }
 //
 //
-//    @RequestMapping(value = "/product-detail/amount", method = RequestMethod.GET)
-//    public ResponseEntity<?> updateAmount(
-//            @RequestParam @NotNull String productDetailId,
-//            @RequestParam @NotNull Integer amount) {
-//        ProductDetails productDetails = this.productDetailService.findById(productDetailId);
-//        productDetails.setProductDetailAmount(amount);
-//
-//        return new ResponseEntity<>(
-//                modelMapper.map(this.productDetailService.save(productDetails), ProductDetailDTO.class)
-//                , HttpStatus.OK);
-//    }
+    @RequestMapping(value = "/product-detail/update-amount", method = RequestMethod.POST)
+    public ResponseEntity<?> updateAmount(
+            @RequestParam @NotNull String productDetailId,
+            @RequestParam @NotNull Integer amount) {
+        ProductDetails productDetails = this.productDetailService.findById(productDetailId);
+
+
+        if(productDetails.getProductDetailAmount() < amount) {
+
+            return  new ResponseEntity<>( "Số lượng upadte không hợp lệ!!!"
+                    , HttpStatus.CONFLICT);
+        }
+        int newAmount = productDetails.getProductDetailAmount()-amount;
+        productDetails.setProductDetailAmount(newAmount);
+
+        return new ResponseEntity<>(
+                modelMapper.map(this.productDetailService.save(modelMapper.map(productDetails, ProductDetailDTO.class)), ProductDetailDTO.class)
+                , HttpStatus.OK);
+    }
 }

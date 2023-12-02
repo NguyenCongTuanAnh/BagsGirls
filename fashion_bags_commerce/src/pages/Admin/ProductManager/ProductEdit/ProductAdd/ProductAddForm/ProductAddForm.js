@@ -2,7 +2,14 @@
 import styles from './index.module.scss';
 //React Component
 import React, { Fragment, memo, useContext, useEffect, useState } from 'react';
-import { InboxOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import {
+  AppstoreAddOutlined,
+  InboxOutlined,
+  PlusCircleFilled,
+  PlusOutlined,
+  PlusSquareOutlined,
+  UploadOutlined,
+} from '@ant-design/icons';
 import {
   Button,
   Col,
@@ -96,6 +103,7 @@ function ProductAddForm() {
     viewBaloProps();
   }, []);
   const [form] = Form.useForm();
+  const [addPropsform] = Form.useForm();
   const showDrawer = () => {
     setOpen(true);
   };
@@ -260,7 +268,7 @@ function ProductAddForm() {
   useEffect(() => {
     let err = '';
 
-    if (fileList.length >= 6) {
+    if (fileList.length > 6) {
       err = 'Chỉ được chọn tối đa 6 ảnh , vui lòng chọn lại!!!!';
       setFileList([]);
     } else {
@@ -293,6 +301,124 @@ function ProductAddForm() {
     addFileImg(fileLists);
     return false;
   };
+  const filterOption = (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
+
+  const addPropsHandle = async (values) => {
+    const namePropsList = Object.keys(values);
+    const nameProps = namePropsList[0];
+    const props = values;
+    var isErr = true;
+
+    try {
+      switch (nameProps) {
+        case 'color':
+          const addColor = {
+            colorCode: generateCustomCode('color', 5),
+            colorName: props.color,
+            colorStatus: 1,
+          };
+          const colorResponse = await colorAPI.add(addColor);
+          if (colorResponse.status === 200) isErr = false;
+          break;
+        case 'type':
+          const addType = {
+            typeCode: generateCustomCode('type', 5),
+            typeName: props.type,
+            typeStatus: 1,
+          };
+          const typeResponse = await typeAPI.add(addType);
+          if (typeResponse.status === 200) isErr = false;
+          break;
+        case 'material':
+          const addMaterial = {
+            materialCode: generateCustomCode('material', 5),
+            materialName: props.material,
+            materialStatus: 1,
+          };
+          const materialResponse = await materialAPI.add(addMaterial);
+          if (materialResponse.status === 200) isErr = false;
+          break;
+        case 'size':
+          const addSize = {
+            sizeCode: generateCustomCode('size', 5),
+            sizeName: props.size,
+            sizeStatus: 1,
+          };
+          const sizeResponse = await sizeAPI.add(addSize);
+          if (sizeResponse.status === 200) isErr = false;
+          break;
+        case 'compartment':
+          const compartmentAdd = {
+            compartmentCode: generateCustomCode('compartment', 5),
+            compartmentName: props.type,
+            compartmentStatus: 1,
+          };
+          const compartmentResponse = await compartmentAPI.add(compartmentAdd);
+          if (compartmentResponse.status === 200) isErr = false;
+          break;
+        case 'brand':
+          const brandAdd = {
+            brandCode: generateCustomCode('brand', 5),
+            brandName: props.brand,
+            brandStatus: 1,
+          };
+          const brandResponse = await brandAPI.add(brandAdd);
+          if (brandResponse.status === 200) isErr = false;
+          break;
+        case 'producer':
+          const producerAdd = {
+            producerCode: generateCustomCode('producer', 5),
+            producerName: props.producer,
+            producerStatus: 1,
+          };
+          const producerResponse = await producerAPI.add(producerAdd);
+          if (producerResponse.status === 200) isErr = false;
+          break;
+        case 'buckleType':
+          const buckleTypeAdd = {
+            buckleTypeCode: generateCustomCode('buckleType', 5),
+            buckleTypeName: props.buckleType,
+            buckleTypeStatus: 1,
+          };
+          const buckleTypeResponse = await buckleTypeAPI.add(buckleTypeAdd);
+          if (buckleTypeResponse.status === 200) isErr = false;
+          break;
+
+        default:
+          message.error('Không phù hợp');
+          break;
+      }
+      if (isErr === true) {
+        message.error('Thêm không thành công!!!');
+      } else {
+        message.success('Thêm thành công!!!');
+        viewBaloProps();
+      }
+    } catch (error) {}
+  };
+  const addExtendComp = (name, nameProps) =>
+    Modal.info({
+      title: `Thêm nhanh ${name}`,
+      content: (
+        <div>
+          <Form onFinish={addPropsHandle} form={addPropsform}>
+            <Form.Item
+              label={'Giá Trị ' + name}
+              name={nameProps}
+              rules={[
+                {
+                  required: true,
+                  message: 'Vui lòng điền!',
+                },
+              ]}
+            >
+              <Input></Input>
+            </Form.Item>
+          </Form>
+          <Button onClick={addPropsform.submit}>ADD</Button>
+        </div>
+      ),
+    });
 
   return (
     <Fragment>
@@ -368,6 +494,10 @@ function ProductAddForm() {
                   style={{
                     width: 200,
                   }}
+                  placeholder="Tình Trạng"
+                  showSearch
+                  optionFilterProp="children"
+                  filterOption={filterOption}
                   options={[
                     {
                       value: 1,
@@ -452,7 +582,16 @@ function ProductAddForm() {
           <Row>
             <Col span={8}>
               <Form.Item
-                label="Màu sắc"
+                label={
+                  <span
+                    onClick={() => {
+                      addExtendComp('Màu sắc', 'color');
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Màu sắc
+                  </span>
+                }
                 name="colorId"
                 rules={[
                   {
@@ -466,18 +605,30 @@ function ProductAddForm() {
                   style={{
                     width: 200,
                   }}
-                >
-                  {color.map((o) => (
-                    <Select.Option key={o.colorId} value={o.colorId}>
-                      {o.colorName}
-                    </Select.Option>
-                  ))}
-                </Select>
+                  placeholder="Màu sắc"
+                  showSearch
+                  optionFilterProp="children"
+                  filterOption={filterOption}
+                  options={color.map((item) => ({
+                    value: item.colorId,
+                    label: item.colorName,
+                  }))}
+                ></Select>
+                <span></span>
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item
-                label="Kiểu Balo"
+                label={
+                  <span
+                    onClick={() => {
+                      addExtendComp('Kiểu Balo', 'type');
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Kiểu Balo
+                  </span>
+                }
                 name="typeId"
                 rules={[
                   {
@@ -491,18 +642,29 @@ function ProductAddForm() {
                   style={{
                     width: 200,
                   }}
-                >
-                  {type.map((o) => (
-                    <Select.Option key={o.typeId} value={o.typeId}>
-                      {o.typeName}
-                    </Select.Option>
-                  ))}
-                </Select>
+                  placeholder="Kiểu Balo"
+                  showSearch
+                  optionFilterProp="children"
+                  filterOption={filterOption}
+                  options={type.map((item) => ({
+                    value: item.typeId,
+                    label: item.typeName,
+                  }))}
+                ></Select>
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item
-                label="Chất liệu Balo"
+                label={
+                  <span
+                    onClick={() => {
+                      addExtendComp('Chất liệu', 'material');
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Chất liệu Balo
+                  </span>
+                }
                 name="materialId"
                 rules={[
                   {
@@ -516,13 +678,15 @@ function ProductAddForm() {
                   style={{
                     width: 200,
                   }}
-                >
-                  {material.map((o) => (
-                    <Select.Option key={o.materialId} value={o.materialId}>
-                      {o.materialName}
-                    </Select.Option>
-                  ))}
-                </Select>
+                  placeholder="Chất Liệu"
+                  showSearch
+                  optionFilterProp="children"
+                  filterOption={filterOption}
+                  options={material.map((item) => ({
+                    value: item.materialId,
+                    label: item.materialName,
+                  }))}
+                ></Select>
               </Form.Item>
             </Col>
           </Row>
@@ -530,7 +694,16 @@ function ProductAddForm() {
           <Row>
             <Col span={8}>
               <Form.Item
-                label="Kiểu Ngăn"
+                label={
+                  <span
+                    onClick={() => {
+                      addExtendComp('Kiểu Ngăn', 'compartment');
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Kiểu Ngăn
+                  </span>
+                }
                 name="compartmentId"
                 rules={[
                   {
@@ -544,18 +717,29 @@ function ProductAddForm() {
                   style={{
                     width: 200,
                   }}
-                >
-                  {compartment.map((o) => (
-                    <Select.Option key={o.compartmentId} value={o.compartmentId}>
-                      {o.compartmentName}
-                    </Select.Option>
-                  ))}
-                </Select>
+                  placeholder="Kiểu ngăn"
+                  showSearch
+                  optionFilterProp="children"
+                  filterOption={filterOption}
+                  options={compartment.map((item) => ({
+                    value: item.compartmentId,
+                    label: item.compartmentName,
+                  }))}
+                ></Select>
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item
-                label="Balo Size"
+                label={
+                  <span
+                    onClick={() => {
+                      addExtendComp('Balo Size', 'size');
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Balo Size
+                  </span>
+                }
                 name="sizeId"
                 rules={[
                   {
@@ -569,18 +753,29 @@ function ProductAddForm() {
                   style={{
                     width: 200,
                   }}
-                >
-                  {size.map((o) => (
-                    <Select.Option key={o.sizeId} value={o.sizeId}>
-                      {o.sizeName} - {o.lengthSize}
-                    </Select.Option>
-                  ))}
-                </Select>
+                  placeholder="Size Balo"
+                  showSearch
+                  optionFilterProp="children"
+                  filterOption={filterOption}
+                  options={size.map((item) => ({
+                    value: item.sizeId,
+                    label: item.sizeName,
+                  }))}
+                ></Select>
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item
-                label="Thương Hiệu"
+                label={
+                  <span
+                    onClick={() => {
+                      addExtendComp('Thương Hiệu', 'brand');
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Thương Hiệu
+                  </span>
+                }
                 name="brandId"
                 rules={[
                   {
@@ -595,20 +790,31 @@ function ProductAddForm() {
                   style={{
                     width: 200,
                   }}
-                >
-                  {brand.map((o) => (
-                    <Select.Option key={o.brandId} value={o.brandId}>
-                      {o.brandName}
-                    </Select.Option>
-                  ))}
-                </Select>
+                  placeholder="Thương hiệu"
+                  showSearch
+                  optionFilterProp="children"
+                  filterOption={filterOption}
+                  options={brand.map((item) => ({
+                    value: item.brandId,
+                    label: item.brandName,
+                  }))}
+                ></Select>
               </Form.Item>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
               <Form.Item
-                label="Nhà Sản Xuất"
+                label={
+                  <span
+                    onClick={() => {
+                      addExtendComp('NSX', 'producer');
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Nhà Sản Xuất
+                  </span>
+                }
                 name="producerId"
                 rules={[
                   {
@@ -622,18 +828,29 @@ function ProductAddForm() {
                   style={{
                     width: 200,
                   }}
-                >
-                  {producer.map((o) => (
-                    <Select.Option key={o.producerId} value={o.producerId}>
-                      {o.producerName}
-                    </Select.Option>
-                  ))}
-                </Select>
+                  placeholder="NSX"
+                  showSearch
+                  optionFilterProp="children"
+                  filterOption={filterOption}
+                  options={producer.map((item) => ({
+                    value: item.producerId,
+                    label: item.producerName,
+                  }))}
+                ></Select>
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item
-                label="Kiểu Khóa"
+                label={
+                  <span
+                    onClick={() => {
+                      addExtendComp('Kiểu Khóa', 'buckleType');
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Kiểu Khóa{' '}
+                  </span>
+                }
                 name="buckleTypeId"
                 rules={[
                   {
@@ -647,13 +864,15 @@ function ProductAddForm() {
                   style={{
                     width: 200,
                   }}
-                >
-                  {buckleType.map((o) => (
-                    <Select.Option key={o.buckleTypeId} value={o.buckleTypeId}>
-                      {o.buckleTypeName}
-                    </Select.Option>
-                  ))}
-                </Select>
+                  placeholder="Kiểu khóa"
+                  showSearch
+                  optionFilterProp="children"
+                  filterOption={filterOption}
+                  options={buckleType.map((item) => ({
+                    value: item.buckleTypeId,
+                    label: item.buckleTypeName,
+                  }))}
+                ></Select>
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -672,6 +891,10 @@ function ProductAddForm() {
                   style={{
                     width: 200,
                   }}
+                  placeholder="Tình Trạng"
+                  showSearch
+                  optionFilterProp="children"
+                  filterOption={filterOption}
                   options={[
                     {
                       value: 1,
