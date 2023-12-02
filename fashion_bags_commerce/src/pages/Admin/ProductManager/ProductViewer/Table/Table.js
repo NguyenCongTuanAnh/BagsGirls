@@ -5,12 +5,12 @@ import FormProductViewDetails from '../../ProductViewDetails/FormViewer/FormProd
 import Highlighter from 'react-highlight-words';
 import baloAPI from '~/api/productsAPI';
 import pdfMake from 'pdfmake/build/pdfmake';
-
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+import * as XLSX from 'xlsx';
 import styles from './index.module.scss';
 import { DeleteOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { CSVLink } from 'react-csv';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 function TableContent() {
   const [productList, setProductList] = useState([]);
@@ -291,40 +291,34 @@ function TableContent() {
         productStatus: item.productStatus,
       });
     });
-    // let columnsName = columns.map((e) => {
-    //   const { key, title, dataIndex, width, render } = e;
-    //   var listTemp = {
-    //     key: key,
-    //     title: title,
-    //     dataIndex: dataIndex,
-    //     width: width,
-    //     render: render.toString(),
-    //   };
-    //   // listTemp.push({
-    //   //   key: e.key,
-    //   //   title: e.title,
-    //   //   dataIndex: e.dataIndex,
-    //   //   width: e.width,
-    //   //   render: e.width,
-    //   // });
 
-    //   return listTemp;
-    // });
     console.log(columns);
     localStorage.setItem('printList', JSON.stringify(newList));
     localStorage.setItem('columnsName', JSON.stringify(columns));
     window.open('/print-table', '_blank');
   };
-  const ProductSCVData = [
-    ['ID', 'Mã Balo', 'Tên Balo', 'Thương Hiệu', 'Trạng Thái'], // Header của file CSV
-    ...productList.map((product) => [
+  const tableRows = [['ID', 'Mã Balo', 'Tên Balo', 'Thương Hiệu', 'Trạng Thái']];
+
+  productList.forEach((product) => {
+    let statusText = '';
+    if (product.productStatus === 1) {
+      statusText = 'Còn Hàng';
+    } else if (product.productStatus === 2) {
+      statusText = 'Hết Hàng';
+    } else if (product.productStatus === 3) {
+      statusText = 'Đã Ngừng Sản Xuất';
+    } else {
+      statusText = 'Trạng Thái Không Xác Định';
+    }
+    const productData = [
       product.productId,
       product.productCode,
       product.productName,
       product.brand.brandName,
-      product.productStatus,
-    ]), // Dữ liệu sản phẩm
-  ];
+      statusText,
+    ];
+    tableRows.push(productData);
+  });
   const generatePDF = () => {
     const tableColumn = ['ID', 'Mã Balo', 'Tên Balo', 'Thương Hiệu', 'Trạng Thái'];
     const tableRows = [['ID', 'Mã Balo', 'Tên Balo', 'Thương Hiệu', 'Trạng Thái']];
@@ -379,6 +373,31 @@ function TableContent() {
     pdfDoc.download(`danh_sach_san_pham-trang_${currentPage}.pdf`); // Initiate the download
   };
 
+  const exportToExcel = () => {
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const fileExtension = '.xlsx';
+    const ws = XLSX.utils.json_to_sheet(tableRows);
+    const wb = { Sheets: { data: ws }, SheetNames: ['data'] };
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: fileType });
+    const fileName = 'product_list' + fileExtension;
+    saveAs(blob, fileName);
+  };
+
+  const saveAs = (blob, fileName) => {
+    if (window.navigator.msSaveOrOpenBlob) {
+      // Cho trình duyệt Edge/IE
+      window.navigator.msSaveBlob(blob, fileName);
+    } else {
+      // Cho các trình duyệt khác
+      const a = document.createElement('a');
+      document.body.appendChild(a);
+      a.href = window.URL.createObjectURL(blob);
+      a.download = fileName;
+      a.click();
+      document.body.removeChild(a);
+    }
+  };
   return (
     <div
       style={{
@@ -395,11 +414,11 @@ function TableContent() {
         <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'gray', color: 'white' }}>
           Copy
         </Button>
-        <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'gray', color: 'white' }}>
+        <Button type="Button" onClick={exportToExcel} style={{ backgroundColor: 'gray', color: 'white' }}>
           Excel
         </Button>
         <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'gray', color: 'white' }}>
-          <CSVLink data={ProductSCVData} filename={`danh_sach_san_pham-trang_${currentPage}.csv`}>
+          <CSVLink data={tableRows} filename={`danh_sach_san_pham-trang_${currentPage}.csv`}>
             CSV
           </CSVLink>
         </Button>

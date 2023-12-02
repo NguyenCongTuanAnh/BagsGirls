@@ -1,10 +1,11 @@
 import { Table } from 'antd';
 
-const { useEffect } = require('react');
+const { useEffect, useState } = require('react');
 
 const PrintProduct = () => {
-  window.print(); // Khi component được mount, thực hiện chức năng in
+  window.print();
   const printList = JSON.parse(localStorage.getItem('printList'));
+  const [printed, setPrinted] = useState(false);
   const columns = [
     {
       title: 'STT',
@@ -46,15 +47,14 @@ const PrintProduct = () => {
       },
     },
   ];
+  const handleAfterPrint = () => {
+    window.close(); // Đóng trang sau khi in thành công
+  };
+
   useEffect(() => {
-    const handleAfterPrint = () => {
-      window.close(); // Đóng trang sau khi in thành công
-    };
-
     window.addEventListener('afterprint', handleAfterPrint);
-
-    localStorage.removeItem('printList');
     return () => {
+      localStorage.removeItem('printList');
       window.removeEventListener('afterprint', handleAfterPrint);
     };
   }, []);
