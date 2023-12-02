@@ -9,6 +9,7 @@ import {
   Space,
   Table,
   Tabs,
+  notification,
 
 } from 'antd';
 import {
@@ -181,24 +182,44 @@ function TableHoaDon() {
     {
       title: 'Hành động',
       key: 'action',
-      render: (_, record) => (
-        <Space size="middle">
-          <FormCapNhatTrangThai status={record} reload={() => setLoading(true)} />
-          <Popconfirm
-            title="Xác Nhận"
-            description="Bạn có chắc chắn muốn xóa?"
-            okText="Đồng ý"
-            cancelText="Không"
-            onConfirm={() => { }}
-            onCancel={onCancel}
-          >
-            <Button className="btn btn-danger " icon={<DeleteOutlined />}></Button>
-          </Popconfirm>
-        </Space>
-      ),
+      render: (text, record) => {
+        if (record.billStatus != -1) {
+          return hanhDong(record, false);
+        } else {
+          return hanhDong(record, true);
+        }
+      },
       width: 100,
     },
   ];
+
+  const hanhDong = (record, button) => {
+    return (
+      < Space size="middle" >
+        <FormCapNhatTrangThai disabled={button} status={record} reload={() => setLoading(true)} />
+        <Popconfirm
+          title="Xác Nhận"
+          description="Bạn có chắc chắn muốn hủy đơn hàng?"
+          okText="Đồng ý"
+          cancelText="Không"
+          onConfirm={() => {
+            deleteHandle(record.billId, -1, record.billCode);
+            setLoading(true);
+          }}
+          onCancel={onCancel}
+        >
+          <Button disabled={button} type="primary" danger icon={<CloseCircleOutlined />}>Hủy</Button>
+        </Popconfirm>
+      </Space >
+    )
+  };
+  const deleteHandle = async (id, status, code) => {
+    const xoa = await billsAPI.updateStatus(id, status);
+    notification.success({
+      message: 'Hủy thành công',
+      description: 'Đơn hàng ' + code + ' hủy thành công!',
+    });
+  };
   const onCancel = () => { };
 
   const onRangeChange = (dates, dateStrings) => {

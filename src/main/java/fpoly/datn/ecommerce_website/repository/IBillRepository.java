@@ -31,7 +31,8 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " (b.billCode LIKE %:search% " +
             " OR b.orderPhone LIKE %:search% " +
             " OR CAST(b.billTotalPrice AS string) like %:search% OR :search IS NULL ) " +
-            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " )
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            "ORDER BY b.billCreateDate DESC" )
     Page<Bills> findAllBillsBySearch(
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -42,7 +43,8 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " AND ( b.billCode LIKE %:search% " +
             " OR b.orderPhone LIKE %:search% " +
             " OR CAST(b.billTotalPrice AS string) like %:search% OR :search IS NULL ) " +
-            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " )
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            "ORDER BY b.billCreateDate DESC" )
     Page<Bills> findAllBillsBySearchStatus(
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
