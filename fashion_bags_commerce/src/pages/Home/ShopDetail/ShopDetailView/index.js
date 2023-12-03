@@ -31,6 +31,37 @@ function ShopDetailView() {
     }, 5000);
   }, []);
 
+  const renderAddToCartButton = () => {
+    if (!dataDetail) {
+      return null;
+    }
+  
+    const storedCart = localStorage.getItem('temporaryCart');
+    const parsedCart = storedCart ? JSON.parse(storedCart) : [];
+    const productDetailIdToAdd = dataDetail ? dataDetail.productDetailId : null;
+  
+    const isProductInCart = parsedCart.some(
+      (item) => item.productDetailId === productDetailIdToAdd
+    );
+  
+    if (isProductInCart) {
+      return (
+        <div className={styles.button_buy_now_disabled} style={{ color: 'gray', fontSize: '25px' }}>
+          <ShoppingCartOutlined />
+          Sản phẩm đã được thêm vào giỏ hàng
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.button_buy_now} onClick={() => addToTemporaryCart(product)}>
+          <ShoppingCartOutlined />
+          Thêm vào giỏ hàng
+        </div>
+      );
+    }
+  };
+  
+
   const addToTemporaryCart = async (product) => {
     console.log(product);
     try {
@@ -376,11 +407,7 @@ function ShopDetailView() {
               <br></br>
 
               <Link to="">
-                {/* Thêm sản phẩm vào giỏ hàng và chuyển hướng đến trang /cart */}
-                <div className={styles.button_buy_now} onClick={() => addToTemporaryCart(product)}>
-                  <ShoppingCartOutlined />
-                  Thêm vào giỏ hàng
-                </div>
+              {renderAddToCartButton()}
               </Link>
               <Link to="/cart">
                 <div className={styles.button_buy_now1} onClick={() => addToTemporaryCart(product)}>
