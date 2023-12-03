@@ -1,6 +1,8 @@
 package fpoly.datn.ecommerce_website.dto;
 
 import fpoly.datn.ecommerce_website.entity.Users;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Ranking;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -22,24 +24,10 @@ public class CustomerDTO {
 
     private Integer customerStatus;
 
-    private Integer customerPoint;
-    @NotBlank
-    private String usersFullName;
-    @NotBlank
-    private String usersAccount;
-    @NotBlank
-    private String usersPassword;
-    @NotBlank
-    private String usersEmail;
-    @NotNull
-    private Integer usersStatus;
-    private Boolean usersGender;
-    private String usersPhoneNumber;
-    private String usersAddress;
+    private Integer consumePoints;
+    private Integer rankingPoints;
+    private Ranking customerRanking;
 
-//    private String usersUserNote;
-
-//    private String usersRolesRoleId;
 
     private Users users;
 

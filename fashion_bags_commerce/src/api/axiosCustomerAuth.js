@@ -14,9 +14,6 @@ axiosCustomerAuth.interceptors.request.use(
   function (config) {
     // Do something before request is sent
     const customerToken = getCustomerToken();
-    console.log('====================================');
-    console.log(customerToken);
-    console.log('====================================');
     if (customerToken) {
       config.headers.Authorization = `Bearer ${customerToken}`;
     }

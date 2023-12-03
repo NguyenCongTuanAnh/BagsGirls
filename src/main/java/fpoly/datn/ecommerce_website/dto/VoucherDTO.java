@@ -19,11 +19,10 @@ public class VoucherDTO {
     private String voucherId;
     private String voucherCode;
     private String voucherName;
-    private Integer discountPrice;
+    private Float discountPercent;
     private LocalDateTime voucherCreateDate;
     private String voucherType;
-    private Integer pointsToReceive;
-    private String paymentType;
+    private Double totalPriceToReceive;
     private Integer voucherAmount;
     private LocalDateTime voucherStartTime;
     private LocalDateTime voucherEndTime;

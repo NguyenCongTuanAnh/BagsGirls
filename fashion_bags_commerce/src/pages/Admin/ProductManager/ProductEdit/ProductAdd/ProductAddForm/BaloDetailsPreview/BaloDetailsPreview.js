@@ -336,23 +336,7 @@ function BaloDetailsPreview(props) {
             }}
           ></span>
         </div>
-        <div>
-          <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'blue' }}>
-            Print
-          </Button>
-          <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'blue' }}>
-            Copy
-          </Button>
-          <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'blue' }}>
-            Excel
-          </Button>
-          <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'blue' }}>
-            CSV
-          </Button>
-          <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'blue' }}>
-            PDF
-          </Button>
-        </div>
+
         <Table
           rowKey={(record) => record.productCode}
           loading={loading}

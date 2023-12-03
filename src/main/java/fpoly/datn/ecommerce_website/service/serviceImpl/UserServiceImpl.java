@@ -118,7 +118,7 @@ public class UserServiceImpl implements IUserService {
      }else {
          newUser.setAddress(request.getAddress());
          newUser.setEmail(request.getEmail());
-         Date dateOfBirth = null; // db chưa có cột ngày sinh
+         Date dateOfBirth = null;
          newUser.setGender(request.getGender());
          newUser.setFullName(request.getFullName());
          newUser.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -130,7 +130,7 @@ public class UserServiceImpl implements IUserService {
 
              Customers addCustomer = Customers.builder()
                      .customerStatus(1)
-                     .customerPoint(0)
+                     .rankingPoints(0)
                      .users(users)
                      .build();
              Customers customers = this.customerRepository.save(addCustomer);

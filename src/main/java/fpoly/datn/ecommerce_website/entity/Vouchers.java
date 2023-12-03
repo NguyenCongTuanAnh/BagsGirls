@@ -34,20 +34,18 @@ public class Vouchers {
     @Column(name = "voucher_name")
     private String voucherName;
 
-    @Column(name = "discount_price")
-    private Integer discountPrice;
+    @Column(name = "discount_percent")
+    private Float discountPercent;
 
     @Column(name = "voucher_create_date")
     private LocalDateTime voucherCreateDate;
 
     @Column(name = "voucher_type")
-    private String voucherType;
+    private Integer voucherType;
 
-    @Column(name = "points_to_receive")
-    private Integer pointsToReceive;
+    @Column(name = "totalPrice_to_receive")
+    private Integer totalPriceToReceive;
 
-    @Column(name = "payment_type")
-    private String paymentType;
 
     @Column(name = "voucher_amount")
     private Integer voucherAmount;

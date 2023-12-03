@@ -43,7 +43,6 @@ function RegisterForm(props) {
       };
       try {
         const response = await AuthAPI.signup(useradd);
-        console.log(response);
 
         if (response.status === 200) {
           notification.success({
@@ -56,10 +55,6 @@ function RegisterForm(props) {
           }, 100);
         }
       } catch (error) {
-        // messageApi.open({
-        //   type: 'error',
-        //   content: 'Đã có lỗi trong quá trình Đăng kí!!!',
-        // });
         if (error.response.status === 400) {
           messageApi.open({
             type: 'error',

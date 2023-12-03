@@ -1,5 +1,6 @@
 package fpoly.datn.ecommerce_website.entity;
 
+import fpoly.datn.ecommerce_website.infrastructure.constant.Ranking;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,8 +36,12 @@ public class Customers {
     @Column(name = "customer_status")
     private Integer customerStatus;
 
-    @Column(name = "customer_points")
-    private Integer customerPoint;
+    @Column(name = "consume_points")
+    private Integer consumePoints;
+    @Column(name = "ranking_points")
+    private Integer rankingPoints;
+    @Column(name = "customer_ranking")
+    private Ranking customerRanking;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
