@@ -75,6 +75,9 @@ function ProductAddForm() {
   const [size, setSize] = useState([]);
   const [type, setType] = useState([]);
   const [downloadedURL, setDownloadedURL] = useState([]);
+  const [previewImage, setPreviewImage] = useState('');
+  const [previewTitle, setPreviewTitle] = useState('');
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const viewBaloProps = async () => {
     try {
@@ -292,17 +295,65 @@ function ProductAddForm() {
     if (err !== '') {
       message.error(err);
       err = '';
+    } else {
+      message.success(`Đã thêm ${fileList.length} ảnh thành công !`);
     }
   }, [fileList]);
   const addFileImg = (fileLists) => {
+    console.log(fileLists);
     setFileList(fileLists);
+  };
+  const handlePreview = async (file) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setPreviewImage(file.url || file.preview);
+    setPreviewOpen(true);
+    setPreviewTitle(file.name || file.url.substring(file.url.lastIndexOf('/') + 1));
   };
   const beforeUpload = (file, fileLists) => {
     addFileImg(fileLists);
     return false;
   };
   const filterOption = (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
-
+  const [fileList1, setFileList1] = useState([
+    {
+      uid: '-1',
+      name: 'image.png',
+      status: 'done',
+      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    },
+    {
+      uid: '-2',
+      name: 'image.png',
+      status: 'done',
+      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    },
+    {
+      uid: '-3',
+      name: 'image.png',
+      status: 'done',
+      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    },
+    {
+      uid: '-4',
+      name: 'image.png',
+      status: 'done',
+      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    },
+    {
+      uid: '-xxx',
+      percent: 50,
+      name: 'image.png',
+      status: 'uploading',
+      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
+    },
+    {
+      uid: '-5',
+      name: 'image.png',
+      status: 'error',
+    },
+  ]);
   const addPropsHandle = async (values) => {
     const namePropsList = Object.keys(values);
     const nameProps = namePropsList[0];
@@ -926,9 +977,11 @@ function ProductAddForm() {
             </Col>
             <Col span={16} className={styles.dragger}>
               <Dragger
+                fileList={fileList1}
                 multiple
                 name="files"
                 showUploadList={false}
+                onPreview={handlePreview}
                 beforeUpload={beforeUpload}
                 height={'90%'}
                 style={{ width: '80%' }}
@@ -938,6 +991,15 @@ function ProductAddForm() {
                 </p>
                 <p className="ant-upload-text">Kéo thả hình ảnh vào đây</p>
               </Dragger>
+              <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={'handleCancel'}>
+                <img
+                  alt="example"
+                  style={{
+                    width: '100%',
+                  }}
+                  src={previewImage}
+                />
+              </Modal>
             </Col>
           </Row>
         </div>

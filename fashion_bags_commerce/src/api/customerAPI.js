@@ -30,6 +30,14 @@ const customerAPI = {
     const url = `api/customer?id=${id}`;
     return axiosClient.get(url);
   },
+  findByEmail(email) {
+    const url = `api/customer/findByEmail?email=${email}`;
+    return axiosClient.get(url);
+  },
+  findByPhoneNumber(phoneNumber) {
+    const url = `api/customer/findByPhoneNumber?phoneNumber=${phoneNumber}`;
+    return axiosClient.get(url);
+  },
   getOne(id) {
     const url = `api/customer?id=${id}`;
     return axiosClient.get(url, { id });
@@ -69,6 +77,10 @@ const customerAPI = {
   findByUserId(userId) {
     const url = `api/customer/findByUserId?userId=${userId}`;
     return axiosClient.get(url);
+  },
+  updatePoint(customerID, totalPrice) {
+    const url = `api/customer/updatePoint?customerId=${customerID}&totalPrice=${totalPrice}`;
+    return axiosClient.put(url);
   },
 };
 

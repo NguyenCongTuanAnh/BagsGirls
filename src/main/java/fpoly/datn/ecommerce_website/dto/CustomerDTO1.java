@@ -1,5 +1,6 @@
 package fpoly.datn.ecommerce_website.dto;
 
+import fpoly.datn.ecommerce_website.infrastructure.constant.Ranking;
 import fpoly.datn.ecommerce_website.infrastructure.constant.Role;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,11 @@ public class CustomerDTO1 {
 
     private Integer customerStatus;
 
-    private Integer customerPoint;
+    private Integer consumePoints;
+
+    private Integer rankingPoints;
+
+    private Ranking customerRanking;
     @NotBlank
     private String usersFullName;
     @NotBlank

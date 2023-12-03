@@ -4,6 +4,8 @@ import fpoly.datn.ecommerce_website.dto.CustomerDTO;
 import fpoly.datn.ecommerce_website.dto.CustomerDTO1;
 import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Users;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Constants;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Ranking;
 import fpoly.datn.ecommerce_website.repository.ICustomerRepository;
 import fpoly.datn.ecommerce_website.repository.IUserRepository;
 import fpoly.datn.ecommerce_website.service.ICustomerService;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +27,8 @@ public class CustomerServiceImpl implements ICustomerService {
     @Autowired
     private ModelMapper modelMapper;
 
-
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private IUserRepository userInfoRepository;
 
@@ -53,25 +57,32 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
 
-    public Customers save(CustomerDTO1 customerDTO) {
+    @Override
+    public Customers save(CustomerDTO customerDTO) {
 
-        Customers customer = modelMapper.map(customerDTO, Customers.class);
+
       Users users = Users.builder()
-              .account(customerDTO.getUsersAccount())
-              .fullName(customerDTO.getUsersFullName())
-              .password(customerDTO.getUsersPassword())
-              .email(customerDTO.getUsersEmail())
-              .userStatus(customerDTO.getUserStatus())
-              .gender(customerDTO.getUsersGender())
-              .address(customerDTO.getUsersAddress())
-              .phoneNumber(customerDTO.getUsersPhoneNumber())
-              .userNote(customerDTO.getUsersUserNote())
-              .role(customerDTO.getRole())
+              .account(customerDTO.getUsers().getAccount())
+              .fullName(customerDTO.getUsers().getFullName())
+              .password(passwordEncoder.encode(customerDTO.getUsers().getPassword()))
+              .email(customerDTO.getUsers().getEmail())
+              .userStatus(customerDTO.getUsers().getUserStatus())
+              .gender(customerDTO.getUsers().getGender())
+              .address(customerDTO.getUsers().getAddress())
+              .phoneNumber(customerDTO.getUsers().getPhoneNumber())
+              .birthDay(customerDTO.getUsers().getBirthDay())
+              .userNote(customerDTO.getUsers().getUserNote())
+              .role(customerDTO.getUsers().getRole())
               .build();
         Users savedUserInfo = userInfoRepository.save(users);
         if (savedUserInfo != null) {
-            customer.setUsers(savedUserInfo);
-
+            Customers customer = Customers.builder()
+                    .consumePoints(customerDTO.getConsumePoints())
+                    .customerStatus(customerDTO.getCustomerStatus())
+                    .rankingPoints(1)
+                    .customerRanking(Ranking.KH_TIEMNANG)
+                    .users(savedUserInfo)
+                    .build();
             return customerRepository.save(customer);
         } else {
             throw new IllegalStateException("Failed to save UserInfo");
@@ -129,5 +140,34 @@ public class CustomerServiceImpl implements ICustomerService {
         Customers customers = this.customerRepository.findByEmail(mail);
 
         return customers;
+    }
+    public CustomerDTO updatePointByTotalPrice(String customerId, Double totalPrice) {
+        Customers customers = this.customerRepository.findById(customerId).get();
+
+        int addPoint = 0;
+       if (totalPrice >= Constants.TOTALPRICE_TO_ADD_20POINT){
+           addPoint = 20;
+       }else if (totalPrice >= Constants.TOTALPRICE_TO_ADD_10POINT){
+           addPoint = 10;
+       }else if (totalPrice >= Constants.TOTALPRICE_TO_ADD_1POINT){
+           addPoint = 5;
+       }else{
+           addPoint = 1;
+       }
+       customers.setRankingPoints(addPoint + customers.getRankingPoints());
+
+        if ( customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHKC){
+         customers.setCustomerRanking(Ranking.KH_KIMCUONG);
+        }else if ( customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHV){
+           customers.setCustomerRanking(Ranking.KH_VANG);
+        }else if ( customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHB){
+          customers.setCustomerRanking(Ranking.KH_BAC);
+        }else if ( customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHTT){
+          customers.setCustomerRanking(Ranking.KH_THANTHIET);
+        }else{
+            customers.setCustomerRanking(Ranking.KH_TIEMNANG);
+        }
+
+        return modelMapper.map(this.customerRepository.save(customers), CustomerDTO.class);
     }
 }

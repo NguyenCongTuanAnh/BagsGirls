@@ -73,7 +73,7 @@ public class CustomerRestController {
     }
 
     @RequestMapping(value = "/customer", method = RequestMethod.POST)
-    public ResponseEntity<?> add(@RequestBody CustomerDTO1 customerDTO) {
+    public ResponseEntity<?> add(@RequestBody CustomerDTO customerDTO) {
 
         return new ResponseEntity<>(this.customerService.save(customerDTO), HttpStatus.OK);
 
@@ -119,5 +119,28 @@ public class CustomerRestController {
     ) {
         return new ResponseEntity<>
                 (this.customerRepository.findByEmail(email), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/customer/findByPhoneNumber", method = RequestMethod.GET)
+    public ResponseEntity<?> findByPhoneNumber(
+            @RequestParam(name = "phoneNumber") String phoneNumber
+    ) {
+        Customers customers = this.customerRepository.findByPhoneNumber(phoneNumber);
+//        if (customers == null) {
+//            return new ResponseEntity<>
+//                    ("Không tìm thấy users", HttpStatus.NOT_FOUND);
+//        }
+        return new ResponseEntity<>
+                (customers, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/customer/updatePoint", method = RequestMethod.PUT)
+    public ResponseEntity<?> updatePoint(
+            @RequestParam(name = "customerId") String customerId,
+            @RequestParam(name = "totalPrice") Double totalPrice
+    ) {
+        CustomerDTO customers = this.customerService.updatePointByTotalPrice(customerId, totalPrice);
+        return new ResponseEntity<>
+                (customers, HttpStatus.OK);
     }
 }

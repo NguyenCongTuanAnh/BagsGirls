@@ -1,5 +1,7 @@
 package fpoly.datn.ecommerce_website.service;
 
+import fpoly.datn.ecommerce_website.entity.Mail;
+
 public interface IMailSendService {
-    Boolean sendEmailTest(String email, String subject, String content);
+    Boolean notificationCreateCustomer(Mail mail);
 }

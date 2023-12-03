@@ -103,7 +103,11 @@ function LoginForm(props) {
             rules={[
               {
                 required: true,
-                message: 'Please input your email!',
+                message: 'Vui lòng nhập Email!',
+              },
+              {
+                pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: 'Vui lòng nhập địa chỉ E hợp lệ!',
               },
             ]}
           >
@@ -116,7 +120,7 @@ function LoginForm(props) {
             rules={[
               {
                 required: true,
-                message: 'Please input your password!',
+                message: 'Vui lòng điền Password!',
               },
             ]}
           >
