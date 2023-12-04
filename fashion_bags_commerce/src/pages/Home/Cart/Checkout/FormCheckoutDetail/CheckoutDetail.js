@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 import { Input, Button, notification, Result } from 'antd';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
+import productDetailsAPI from '~/api/productDetailsAPI';
 
 const CheckoutDetail = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -93,14 +94,29 @@ const CheckoutDetail = () => {
       console.error('Error submitting information:', error);
     }
   };
+
+  const updateProductDetailAmount = async (productDetailId, amountToUpdate) => {
+    try {
+      const response = await productDetailsAPI.updateAmount(productDetailId, amountToUpdate);
+
+      if (response.status === 200) {
+        console.log('Product detail amount updated successfully!');
+      } else {
+        console.error('Failed to update product detail amount:', response.data);
+        // Handle failure scenario here
+      }
+    } catch (error) {
+      console.error('Error updating product detail amount:', error);
+    }
+  };
+
   const handleConfirmation = async () => {
     const currentTime = new Date();
     const currentDateTime = dayjs(currentTime).subtract(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
     setBillCreateDate(currentDateTime);
-    if (!fullName || !phoneNumber || !email || !selectedProvince || !selectedDistrict || !selectedWard || !address) {
-      // Nếu một trong các trường thông tin còn trống, hiển thị thông báo hoặc xử lý một cách phù hợp
+    if (!fullName || !phoneNumber || !selectedProvince || !selectedDistrict || !selectedWard || !address) {
       console.log('Vui lòng điền đầy đủ thông tin');
-      return; // Dừng việc thực hiện tiếp theo nếu có trường thông tin trống
+      return;
     }
 
     const getNameFromCode = (code, list) => {
@@ -159,6 +175,12 @@ const CheckoutDetail = () => {
       setConfirmedAddress(true);
       setShowAddressForm(false);
       setSubmittedData(responseBillDetails);
+      await Promise.all(
+        cartItems.map(async (item) => {
+          // Subtract the quantity from the product detail amount
+          await updateProductDetailAmount(item.productDetailId, item.quantity);
+        }),
+      );
       console.log('bilsssssss:', response.data);
       console.log('BilLDetails:', responseBillDetails);
 
