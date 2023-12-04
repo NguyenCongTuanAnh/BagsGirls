@@ -1,14 +1,18 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
+import fpoly.datn.ecommerce_website.dto.BillDetailsDTO;
 import fpoly.datn.ecommerce_website.dto.CartDTO;
+import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.entity.Carts;
 import fpoly.datn.ecommerce_website.repository.ICartRepository;
 import fpoly.datn.ecommerce_website.service.CartService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.ModelMap;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +23,9 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private ICartRepository repo;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
 
     @Override
     public List<Carts> findAll() {
@@ -27,7 +34,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Page<Carts> findAllPhanTrang(Integer page) {
-        Pageable pageable = PageRequest.of(page,5);
+        Pageable pageable = PageRequest.of(page, 5);
         return repo.findAll(pageable);
     }
 
@@ -39,8 +46,8 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Carts save(CartDTO cartDTO) {
-
-        return null;
+        Carts cart = modelMapper.map(cartDTO, Carts.class);
+        return repo.save(cart);
     }
 
     @Override
@@ -57,11 +64,11 @@ public class CartServiceImpl implements CartService {
     @Override
     public Boolean delete(String id) {
         Optional<Carts> optional = repo.findById(id);
-        if(optional.isPresent()){
+        if (optional.isPresent()) {
             Carts kh = optional.get();
             repo.delete(kh);
             return true;
-        }else{
+        } else {
             return false;
         }
     }

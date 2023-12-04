@@ -51,6 +51,6 @@ public class Carts {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private Customers customer;
+    private Customers customers;
 
 }
