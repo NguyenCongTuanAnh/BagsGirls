@@ -196,7 +196,6 @@ function TableHoaDon() {
   const hanhDong = (record, button) => {
     return (
       < Space size="middle" >
-        <FormCapNhatTrangThai disabled={button} status={record} reload={() => setLoading(true)} />
         <Popconfirm
           title="Xác Nhận"
           description="Bạn có chắc chắn muốn hủy đơn hàng?"
