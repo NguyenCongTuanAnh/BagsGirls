@@ -3,6 +3,7 @@ package fpoly.datn.ecommerce_website.service.serviceImpl;
 import fpoly.datn.ecommerce_website.dto.BillDetailsDTO;
 import fpoly.datn.ecommerce_website.dto.BillDetailsQDTO;
 import fpoly.datn.ecommerce_website.entity.BillDetails;
+import fpoly.datn.ecommerce_website.entity.ProductDetails;
 import fpoly.datn.ecommerce_website.repository.IBillDetailRepository;
 import fpoly.datn.ecommerce_website.service.IBillDetailsService;
 import org.modelmapper.ModelMapper;
@@ -42,6 +43,11 @@ public class BillDetailsServiceImpl implements IBillDetailsService {
     public BillDetailsDTO getOne(String id) {
         BillDetails billDetails = this.iBillDetailRepository.getReferenceById(id);
         return modelMapper.map(billDetails, BillDetailsDTO.class);
+    }
+
+    @Override
+    public List<BillDetails> findAllByBillId(String billID) {
+        return this.iBillDetailRepository.findAllByBillId(billID);
     }
 
     @Override

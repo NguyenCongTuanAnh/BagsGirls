@@ -16,10 +16,7 @@ import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   CloseCircleOutlined,
-  DeleteOutlined,
   FilterFilled,
-  ReloadOutlined,
-  SearchOutlined,
   SyncOutlined,
   TableOutlined,
 } from '@ant-design/icons';
@@ -34,7 +31,6 @@ const { RangePicker } = DatePicker;
 
 function TableHoaDon() {
   const [data, setData] = useState([]);
-  // const [listStaff, setListStaff] = useState([]);
   const [totalItem, setTotalItem] = useState();
   const [loading, setLoading] = useState(true);
   const [PageNum, setPageNum] = useState(1);
@@ -43,7 +39,6 @@ function TableHoaDon() {
   const [search, setSearch] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  // const [filterStaffName, setFilterStaffName] = useState('');
 
   const handleTableChange = (pagination, filters, sorter) => { };
   const columns = [
@@ -76,19 +71,7 @@ function TableHoaDon() {
         return <span>{formattedDate}</span>;
       },
     },
-    // {
-    //   title: 'Tên nhân viên',
-    //   dataIndex: 'staff',
-    //   key: 'staffName',
-    //   render: (staff) => {
-    //     // Kiểm tra xem 'staff' có giá trị hay không
-    //     if (staff && staff.users && staff.users.fullName) {
-    //       return staff.users.fullName;
-    //     } else {
-    //       return 'NULL';
-    //     }
-    //   },
-    // },
+
     {
       title: 'Tên khách hàng',
       dataIndex: 'receiverName',
@@ -105,19 +88,12 @@ function TableHoaDon() {
       title: 'Số điện thoại',
       dataIndex: 'orderPhone',
       key: 'orderPhone',
-      // render: (text, record) => {
-      //   if (record.customer == null) {
-      //     return record.orderPhone;
-      //   } else {
-      //     return record.customer.users.phoneNumber;
-      //   }
-      // },
+
     },
     {
       title: 'Tổng tiền',
       dataIndex: 'billTotalPrice',
       key: 'billTotalPrice',
-      // sorter: (a, b) => a.price.localeCompare(b.price),
       render: (price) => {
         return <span>{VNDFormaterFunc(price)}</span>;
       },
@@ -182,7 +158,7 @@ function TableHoaDon() {
       title: 'Hành động',
       key: 'action',
       render: (text, record) => {
-        if (record.billStatus != -1) {
+        if (record.billStatus !== -1) {
           return hanhDong(record, false);
         } else {
           return hanhDong(record, true);
@@ -291,15 +267,6 @@ function TableHoaDon() {
       console.error('Đã xảy ra lỗi: ', error);
     }
   };
-  // const getAllStaff = async () => {
-  //   try {
-  //     const response = await staffAPI.getAllStaff();
-  //     const list = response.data;
-  //     setListStaff(list);
-  //   } catch (error) {
-  //     console.error('Error fetching staff data:', error);
-  //   }
-  // };
   useEffect(() => {
     getAllPhanTrangCompartment(PageNum, pageSize);
     setTimeout(() => {
@@ -323,28 +290,6 @@ function TableHoaDon() {
                 <RangePicker className={styles.filter_inputSearch} presets={rangePresets} onChange={onRangeChange} />
               </div>
             </Col>
-            {/* <Col span={6}>
-              <div style={{ paddingTop: '10px', fontSize: '16px' }}>
-                <span style={{ paddingTop: '20px', fontSize: '16px', fontWeight: 500 }}>
-                  Nhân viên
-                  <Select
-                    bordered={false}
-                    style={{ width: '50%', borderBottom: '1px solid #ccc' }}
-                    onChange={(value) => {
-                      setFilterStaffName(value);
-                    }}
-                    defaultValue=""
-                  >
-                    <Select.Option value="">Tất cả</Select.Option>
-                    {(listStaff ?? []).map((item, index) => (
-                      <Select.Option key={index} value={item.usersFullName}>
-                        {item.usersFullName}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </span>
-              </div>
-            </Col> */}
 
             <Col span={12}>
               <SearchForm onSubmit={handleSearchChange} style={{ width: '100%', marginBottom: '10px' }} />
