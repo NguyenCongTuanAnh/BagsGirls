@@ -668,7 +668,7 @@ const SalesCounterForm = () => {
                 },
               ]}
             >
-              <Input readOnly></Input>
+              <Input ></Input>
             </Form.Item>
             <Form.Item
               label="SĐT Khách Hàng"
@@ -684,7 +684,7 @@ const SalesCounterForm = () => {
                 },
               ]}
             >
-              <Input type="tel" readOnly></Input>
+              <Input type="tel" ></Input>
             </Form.Item>
             <Form.Item
               label="Email"
@@ -700,7 +700,7 @@ const SalesCounterForm = () => {
                 },
               ]}
             >
-              <Input width={200} readOnly></Input>
+              <Input width={200} ></Input>
             </Form.Item>
           </Form>
           <Row>

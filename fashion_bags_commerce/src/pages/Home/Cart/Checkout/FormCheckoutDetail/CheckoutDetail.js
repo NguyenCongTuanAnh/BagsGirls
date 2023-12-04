@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, useRef } from 'react';
 import axios from 'axios';
 import './styles.scss';
 import { Link } from 'react-router-dom';
@@ -13,6 +13,20 @@ const CheckoutDetail = () => {
   const [cartItems, setCartItems] = useState([]);
   const [confirmedAddress, setConfirmedAddress] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(true);
+
+  const bottomRef = useRef(null);
+  const scrollToBottom = () => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  };
+
+  const formRef = useRef(null);
+  const scrollToForm = () => {
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   useEffect(() => {
     // Fetch cart items from local storage
@@ -83,16 +97,7 @@ const CheckoutDetail = () => {
     const currentTime = new Date();
     const currentDateTime = dayjs(currentTime).subtract(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
     setBillCreateDate(currentDateTime);
-    if (
-      !fullName ||
-      !phoneNumber ||
-      !email ||
-      !selectedProvince ||
-      !selectedDistrict ||
-      !selectedWard ||
-      !address ||
-      !billNote
-    ) {
+    if (!fullName || !phoneNumber || !email || !selectedProvince || !selectedDistrict || !selectedWard || !address) {
       // Nếu một trong các trường thông tin còn trống, hiển thị thông báo hoặc xử lý một cách phù hợp
       console.log('Vui lòng điền đầy đủ thông tin');
       return; // Dừng việc thực hiện tiếp theo nếu có trường thông tin trống
@@ -220,7 +225,7 @@ const CheckoutDetail = () => {
     <div className="form-container">
       {/* <div className="col-6"> */}
       {showAddressForm && (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} ref={formRef}>
           <div className="titleNhanHang">
             <h1>Thông tin người đặt hàng</h1>
           </div>
@@ -303,9 +308,10 @@ const CheckoutDetail = () => {
           />
 
           <br></br>
-          <button>Giao đến địa chỉ này</button>
+          <button onClick={scrollToBottom}>Giao đến địa chỉ này</button>
+
           <br></br>
-          {submittedData && !confirmedAddress && (
+          {/* {submittedData && !confirmedAddress && (
             <div>
               <h2>Thông tin người đặt hàng:</h2>
               <table className="table table-stripped table table-bordered" style={{ width: '100%', height: 'auto' }}>
@@ -341,17 +347,18 @@ const CheckoutDetail = () => {
 
           <br></br>
 
-          <button style={{ display: submittedData ? 'block' : 'none' }}>Xác nhận địa chỉ</button>
+          <button style={{ display: submittedData ? 'block' : 'none' }}
+            onClick={scrollToBottom}
+          >Tiếp tục thanh toán</button>
           <br></br>
           {confirmedAddress && (
             <div>
               <h4>Đã xác nhận địa chỉ giao hàng thành công</h4>
             </div>
-          )}
+          )} */}
 
           {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
 
-          {/* <form className="list_product"> */}
           <div className="titleNhanHang">
             <h1>Đơn hàng</h1>
           </div>
@@ -420,11 +427,31 @@ const CheckoutDetail = () => {
             <br />
           </div>
           <br />
+          {submittedData && !confirmedAddress && (
+            <div className="voucher">
+              <h4>Địa chỉ nhận hàng:</h4>
+              <p>
+                <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Người nhận:</span> {submittedData.fullName} (+84)
+                {submittedData.phoneNumber}
+              </p>
+              <p>
+                <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ:</span> {submittedData.fullAddress}
+              </p>
+              <p>
+                <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Ghi Chú:</span> {submittedData.billNote}
+              </p>
 
-          <button className="checkOut" onClick={handleConfirmation}>
-            Đặt Hàng
-          </button>
-          {/* </form>    */}
+              <a className="updateThongTin" onClick={scrollToForm}>
+                Chỉnh sửa
+              </a>
+            </div>
+          )}
+          <br></br>
+          <div ref={bottomRef}>
+            <button className="checkOut" onClick={handleConfirmation}>
+              Đặt Hàng
+            </button>
+          </div>
         </form>
       )}
 

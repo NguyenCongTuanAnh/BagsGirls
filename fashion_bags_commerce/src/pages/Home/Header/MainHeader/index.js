@@ -95,7 +95,7 @@ function MainHeader() {
                     </li>
                     <span> / </span>
                     <li>
-                      <Link to={'/register'}>ĐĂNG KÝ</Link>
+                      <Link to={'/signup'}>ĐĂNG KÝ</Link>
                     </li>
                   </ul>
                 </div>
