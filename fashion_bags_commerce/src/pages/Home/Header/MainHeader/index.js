@@ -2,16 +2,18 @@ import { Badge } from 'antd';
 import { Link } from 'react-router-dom';
 import { SearchOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
+import cartAPI from '~/api/cartAPI';
 import fullProductAPI from '~/api/client/fullProductAPI';
 
 import styles from '../MainHeader/index.module.scss';
-import PopupProfile from '~/component/GlobalStyles/layouts/DefaultLayout/Header/PopupProfile';
 import UserProfile from './UserProfile';
+import { getCustomerIdUser } from '~/api/auth/helper/UserCurrent';
 
 function MainHeader() {
   const [cartCount, setCartCount] = useState(0); // Mặc định là 0
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Đặt mặc định là false khi chưa đăng nhập
+  const [customerId, setCustomerId] = useState(null);
 
   useEffect(() => {
     // Lấy số lượng sản phẩm trong giỏ hàng từ local storage hoặc API
@@ -33,6 +35,7 @@ function MainHeader() {
     localStorage.removeItem('customerTokenString');
     localStorage.removeItem('customerId');
     localStorage.removeItem('customerToken');
+    localStorage.removeItem('temporaryCart');
   };
 
   const handleSearch = () => {
@@ -57,7 +60,33 @@ function MainHeader() {
       handleSearch();
     }
   };
-
+  const createCartForCustomer = async (customerId) => {
+    try {
+      const response = await cartAPI.save({ customerId });
+      console.log('Created cart for the customer:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating cart:', error);
+      throw new Error('Failed to create cart');
+    }
+  };
+  
+  const handleLogin = async () => {
+    try {
+      const loggedInCustomerId = localStorage.getItem('customerId');
+  
+      if (loggedInCustomerId) {
+        setCustomerId(loggedInCustomerId);
+        await createCartForCustomer(loggedInCustomerId);
+        setIsLoggedIn(true);
+      } else {
+        // Handle the case when customerId is not available
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      // Handle the error as needed
+    }
+  };
   return (
     <div className="container-fluid" style={{ height: '100px' }}>
       <div className={styles.mainHeader}>
@@ -91,7 +120,9 @@ function MainHeader() {
                 <div className={styles.login}>
                   <ul className={styles.horizontalLogin}>
                     <li>
-                      <Link to={'/login'}>ĐĂNG NHẬP</Link>
+                      <Link to={'/login'} onClick={() => handleLogin(customerId)}>
+                        ĐĂNG NHẬP
+                      </Link>
                     </li>
                     <span> / </span>
                     <li>

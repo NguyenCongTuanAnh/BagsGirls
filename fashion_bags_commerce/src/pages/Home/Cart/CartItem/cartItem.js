@@ -1,4 +1,4 @@
-import { Table, Image, Button } from 'antd';
+import { Table, Image, Button, notification } from 'antd';
 import { useEffect, useState } from 'react';
 import styles from './tableCart.module.scss';
 import vndFormaterFunc from '~/Utilities/VNDFormaterFunc';
@@ -10,6 +10,7 @@ import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 function CartItem() {
   const [cartItems, setCartItems] = useState([]);
   const [totalQuantity, setTotalQuantity] = useState(0);
+
 
   useEffect(() => {
     const total = cartItems.reduce((totalQty, item) => {
@@ -104,6 +105,8 @@ function CartItem() {
             />
             <div className={styles.item_change2} onClick={() => handleIncrement(record)}>
               <PlusOutlined />
+
+
             </div>
           </div>
         </div>
@@ -145,11 +148,16 @@ function CartItem() {
   };
 
   const handleIncrement = (record) => {
-    const amountInDatabase = record.amountInDatabase; // Số lượng tồn kho của sản phẩm trong cơ sở dữ liệu
-
+    const amountInDatabase = record.amount;
+    console.log("so luong sp trong kho", amountInDatabase) // Số lượng tồn kho của sản phẩm trong cơ sở dữ liệu
+     
     if (record.quantity + 1 > amountInDatabase) {
       // Hiển thị thông báo khi số lượng vượt quá số lượng trong kho
-      alert('Số lượng vượt quá số lượng trong kho!');
+      notification.error({
+        message: 'Thất bại',
+        description: 'Số lượng đã đạt giới hạn ',
+        duration: 1,
+      });
     } else {
       const updatedCart = cartItems.map((item) => {
         if (item === record) {
