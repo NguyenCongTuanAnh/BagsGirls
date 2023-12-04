@@ -1,5 +1,6 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
+import fpoly.datn.ecommerce_website.entity.Mail;
 import fpoly.datn.ecommerce_website.service.IMailSendService;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +17,16 @@ public class EmailSendServiceImpl implements IMailSendService {
     @Value("${spring.mail.username}")
     private String fromEmail;
     @Override
-    public Boolean sendEmailTest(String email, String subject, String content) {
+    public Boolean notificationCreateCustomer(Mail mail) {
      try {
          MimeMessage mimeMessage = javaMailSender.createMimeMessage();
          MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false);
 
          mimeMessageHelper.setFrom(fromEmail);
-         mimeMessageHelper.setTo(email);
+         mimeMessageHelper.setTo(mail.getEmail());
 
-         mimeMessageHelper.setSubject(subject);
-         mimeMessageHelper.setText(content);
+         mimeMessageHelper.setSubject(mail.getSubject());
+         mimeMessageHelper.setText(mail.getContent());
          javaMailSender.send(mimeMessage);
      }catch (Exception e){
          throw new RuntimeException(e);

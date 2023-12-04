@@ -26,4 +26,12 @@ public final class Constants {
     public static final String JWTSECRET = "QHMBQfsViR66wU3Yx/MOdkKcHdmJeRy4JdbDbrjmZdfu35Q7yzH6b3vJCrQcNgoOEFfsGyhOeF5Pby7R+YzG0w==";
 
     public static final int JWTEXPIRATIONINMS = 604800; // 86400 is 1 day => 86400 * 7 = 604,800 (7 weeks)
+    public static final Double TOTALPRICE_TO_ADD_1POINT = 500000.0; //
+    public static final Double TOTALPRICE_TO_ADD_10POINT = 1000000.0; //
+    public static final Double TOTALPRICE_TO_ADD_20POINT = 1500000.0; //
+    public static final Integer POINTS_TO_UP_KHTN = 100; //
+    public static final Integer POINTS_TO_UP_KHTT = 500; //
+    public static final Integer POINTS_TO_UP_KHB = 1000; //
+    public static final Integer POINTS_TO_UP_KHV = 1500; //
+    public static final Integer POINTS_TO_UP_KHKC = 2000; //
 }
