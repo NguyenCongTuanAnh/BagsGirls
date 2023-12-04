@@ -116,7 +116,11 @@ const CheckoutDetail = () => {
     setBillCreateDate(currentDateTime);
     if (!fullName || !phoneNumber || !selectedProvince || !selectedDistrict || !selectedWard || !address) {
       console.log('Vui lòng điền đầy đủ thông tin');
-      return;
+      return  notification.error({
+        message: 'Thất bại',
+        description: 'Vui lòng điền đẩy đủ thông tin',
+        duration: 1,
+      });
     }
 
     const getNameFromCode = (code, list) => {
