@@ -14,8 +14,7 @@ function SalesCounter() {
           <Sidebar keyIndex="4" openKey="sub2" />
         </Sider>
         <Layout className="layoutContent">
-        <Header className="headerStyle" >
-
+          <Header className="headerStyle">
             <HeaderContent titlePage="Bán Hàng tại quầy" />
           </Header>
           <Content>

@@ -735,7 +735,6 @@ const SalesCounterForm = () => {
               ]}
             >
               <Input></Input>
-
             </Form.Item>
             <Form.Item
               label="SĐT Khách Hàng"
@@ -752,9 +751,7 @@ const SalesCounterForm = () => {
                 },
               ]}
             >
-
               <Input type="tel"></Input>
-
             </Form.Item>
             <Form.Item
               label="Email"
@@ -771,9 +768,7 @@ const SalesCounterForm = () => {
                 },
               ]}
             >
-
-              <Input width={200}></Input>
-n
+              <Input width={200}></Input>n
             </Form.Item>
           </Form>
           <Row>
@@ -1423,14 +1418,21 @@ n
     );
   }
   return (
-    <div className={styles.wrapper}>
+    <div className="contentStyle">
       {contextHolder}
       <div
         style={{
           marginBottom: 16,
         }}
       >
-        <Button onClick={add} type="primary" icon={<PlusOutlined />} shape="default" size="large">
+        <Button
+          onClick={add}
+          type="primary"
+          icon={<PlusOutlined />}
+          shape="default"
+          size="large"
+          style={{ margin: '10px 0 0 10px' }}
+        >
           Thêm Tab
         </Button>
       </div>
