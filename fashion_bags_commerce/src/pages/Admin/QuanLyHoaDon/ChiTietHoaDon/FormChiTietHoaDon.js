@@ -25,39 +25,92 @@ function FormChiTietHoaDon(props) {
 
     useEffect(() => {
         getAllByBillId();
-    }, []);
+        const total = listBillDetails.reduce((totalQty, item) => {
+            return totalQty + item.amount;
+        }, 0);
+        setTotalQuantity(total);
+    }, [visible]);
 
     const getAllByBillId = async () => {
         const response = await billDetailsAPI.getAllByBillId(props.bills.billId);
         const data = response.data;
         setListBillDetais(data);
+
     };
+    const setTenNhanVien = () => {
+        if (props.bills.staff == null) {
+            return '';
+        } else {
+            return props.bills.staff.users.fullName;
+        }
+    }
+    const setSDTNhanVien = () => {
+        if (props.bills.staff == null) {
+            return '';
+        } else {
+            return props.bills.staff.users.phoneNumber;
+        }
+    }
+    const setTenKhachHang = () => {
+        if (props.bills.customer == null && props.bills.receiverName == null) {
+            return '';
+        } else if (props.bills.customer == null) {
+            return props.bills.receiverName;
+        } else if (props.bills.customer != null) {
+            return props.bills.customer.users.fullName;
+        }
+    }
+    const setSDTKhachHang = () => {
+        if (props.bills.customer == null && props.bills.orderPhone == null) {
+            return '';
+        } else if (props.bills.customer == null) {
+            return props.bills.orderPhone;
+        } else if (props.bills.customer != null) {
+            return props.bills.customer.users.phoneNumber;
+        }
+    }
+    const setDiaChiKhachHang = () => {
+        if (props.bills.customer == null && props.bills.shippingAddress == null) {
+            return '';
+        } else if (props.bills.customer == null) {
+            return props.bills.shippingAddress;
+        } else if (props.bills.customer != null) {
+            return props.bills.customer.users.address;
+        }
+    }
+    const setRankKhachHang = () => {
+        if (props.bills.customer == null) {
+            return 'Khách hàng lẻ';
+        } else if (props.bills.customer.customerRanking === 'KH_TIEMNANG') {
+            return "Khách hàng tiềm năng";
+        } else if (props.bills.customer.customerRanking === 'KH_THANTHIET') {
+            return "Khách hàng thân thiết";
+        } else if (props.bills.customer.customerRanking === 'KH_BAC') {
+            return "Khách hàng bạc";
+        } else if (props.bills.customer.customerRanking === 'KH_VANG') {
+            return "Khách hàng vàng";
+        } else if (props.bills.customer.customerRanking === 'KH_KIMCUONG') {
+            return "Khách hàng kim cương";
+        } else {
+            return 'Chưa có hạng';
+        }
+    }
 
-    // useEffect(() => {
-    //     const storedCart = localStorage.getItem('temporaryCart');
-    //     if (storedCart) {
-    //         const parsedCart = JSON.parse(storedCart);
-    //         setCartItems(parsedCart);
-    //     }
-    // }, []);
 
-    // const calculateTotal = () => {
-    //     return cartItems.reduce((total, item) => {
-    //         return total + item.quantity * item.retailPrice;
-    //     }, 0);
-    // };
 
-    // const handleRemoveItem = (record) => {
-    //     const updatedCart = cartItems.filter((item) => item !== record);
-    //     setCartItems(updatedCart);
-    //     localStorage.setItem('temporaryCart', JSON.stringify(updatedCart));
 
-    //     if (updatedCart.length === 0) {
-    //         window.location.reload();
-    //     }
-    // };
 
     const columns = [
+        {
+            key: 'stt',
+            dataIndex: 'index',
+            title: 'STT',
+            width: 70,
+            render: (text, record, index) => {
+                return <span id={record.id}>{(index + 1)}</span>;
+            },
+            width: '6%'
+        },
         {
             title: 'Ảnh',
             dataIndex: 'imgUrl',
@@ -65,6 +118,7 @@ function FormChiTietHoaDon(props) {
             render: (text, record) => (
                 <Image style={{ width: '100px', height: '100px' }} src={record.productDetails.product.images[0].imgUrl} />
             ),
+            width: '15%'
         },
         {
             title: 'Sản phẩm',
@@ -90,20 +144,23 @@ function FormChiTietHoaDon(props) {
             key: 'productName',
         },
         {
-            title: 'Số lượng',
+            title: 'SL',
             dataIndex: 'amount',
             key: 'amount',
+            width: '7%'
         },
         {
             title: 'Giá sản phẩm',
             dataIndex: 'price',
             render: (text, record) => vndFormaterFunc(record.price),
             key: 'price',
+            width: '13%'
         },
         {
             title: 'Thành tiền',
             render: (text, record) => vndFormaterFunc(record.amount * record.price),
             key: 'calculateTotal',
+            width: '15%'
         },
 
     ];
@@ -129,10 +186,11 @@ function FormChiTietHoaDon(props) {
                 <div>
                     <Row>
                         <Col span={15} style={{ border: '1px solid #cccccc ', margin: '10px 20px 0 20px', borderRadius: '15px', height: '700px' }}>
-                            <h4 style={{ margin: '10px', }}>Danh sách sản phẩm đã mua:</h4>
+                            <h4 style={{ margin: '10px', fontWeight: 'bold' }}>Danh sách sản phẩm đã mua:</h4>
                             <Table
                                 bordered
-                                style={{ margin: 'center', width: '100%', height: '100%' }}
+                                style={{ textAlign: 'center', width: '100%', height: '650px' }}
+                                scroll={{ y: 550 }}
                                 className={styles.table_cart_item}
                                 dataSource={listBillDetails}
                                 columns={columns}
@@ -141,47 +199,79 @@ function FormChiTietHoaDon(props) {
                             />
                         </Col>
                         <Col span={8} style={{ border: '1px solid #cccccc ', margin: '10px 0 0 0', borderRadius: '15px', height: '700px' }}>
-                        </Col>
-                    </Row>
+                            <h4 style={{ margin: '10px', fontWeight: 'bold' }}>Nhân viên: </h4>
+                            <div >
+                                <ul >
+                                    <li >
+                                        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>Tên: </span>
+                                        <span style={{ color: 'red', fontSize: '20px' }}>{setTenNhanVien()} </span>
+                                    </li>
+                                    <li >
+                                        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>SĐT: </span>
+                                        <span style={{ color: 'red', fontSize: '20px' }}>{setSDTNhanVien()} </span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <hr></hr>
+                            <h4 style={{ margin: '10px', fontWeight: 'bold' }}>Khách hàng: </h4>
+                            <div>
+                                <ul >
+                                    <li >
+                                        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>Tên: </span>
+                                        <span style={{ color: 'red', fontSize: '20px' }}>{setTenKhachHang()} </span>
+                                    </li>
+                                    <li >
+                                        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>SĐT: </span>
+                                        <span style={{ color: 'red', fontSize: '20px' }}>{setSDTKhachHang()} </span>
+                                    </li>
+                                    <li >
+                                        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>Địa chỉ: </span>
+                                        <span style={{ color: 'red', fontSize: '20px' }}>{setDiaChiKhachHang()} </span>
+                                    </li>
+                                    <li >
+                                        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>Hạng khách hàng: </span>
+                                        <span style={{ color: 'red', fontSize: '20px' }}>{setRankKhachHang()} </span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <hr></hr>
 
-
-
-                    {/* <div className={styles.finalCart}>
-                        <br></br>
-                        <div className={styles.content_product_pc}>
-                            <div className={styles.group_content_product}>
-                                <div className={styles.body}>
-                                    <div className={styles.body_ct}>
-                                        <ul className="list-oppr">
-                                            <li className={styles.productDetailItem}>
-                                                <span className={styles.label}>Số lượng: </span>
-                                                <span className={styles.labelName}>
-                                                    <span style={{ color: 'red', fontSize: '30px' }}>{totalQuantity} </span>Sản phẩm
-                                                </span>
-                                            </li>
-                                            <hr></hr>
-                                            <li className={styles.productDetailItem}>
-                                                <span className={styles.label}>Giá trị hàng hóa: </span>
-                                                <span className={styles.labelName}>{vndFormaterFunc(calculateTotal())}</span>
-                                            </li>
-                                            <hr></hr>
-                                            <li className={styles.productDetailItem}>
-                                                <span className={styles.label}>Giảm tiền: </span>
-                                                <span className={styles.labelName}>chưa có</span>
-                                            </li>{' '}
-                                            <hr></hr>
-                                            <li className={styles.productDetailItem}>
-                                                <span className={styles.label}>Thành tiền: </span>
-                                                <span className={styles.labelName} style={{ color: 'red', fontWeight: 'bold', fontSize: '30px' }}>
-                                                    {vndFormaterFunc(calculateTotal())}
-                                                </span>
-                                            </li>{' '}
-                                        </ul>
+                            <div className={styles.content_product_pc}>
+                                <div className={styles.group_content_product}>
+                                    <div className={styles.body}>
+                                        <div className={styles.body_ct}>
+                                            <ul className="list-oppr">
+                                                <li className={styles.productDetailItem}>
+                                                    <span className={styles.label}>Số lượng: </span>
+                                                    <span className={styles.labelName}>
+                                                        <span style={{ color: 'red', fontSize: '30px' }}>{totalQuantity} </span>Sản phẩm
+                                                    </span>
+                                                </li>
+                                                <hr></hr>
+                                                <li className={styles.productDetailItem}>
+                                                    <span className={styles.label}>Giá trị hàng hóa: </span>
+                                                    <span className={styles.labelName} style={{ marginTop: '10px' }}>{vndFormaterFunc(props.bills.billTotalPrice)}</span>
+                                                </li>
+                                                <hr></hr>
+                                                <li className={styles.productDetailItem}>
+                                                    <span className={styles.label}>Giảm giá: </span>
+                                                    <span className={styles.labelName} style={{ marginTop: '10px' }}>{vndFormaterFunc(props.bills.billTotalPrice - props.bills.billPriceAfterVoucher)}</span>
+                                                </li>{' '}
+                                                <hr></hr>
+                                                <li className={styles.productDetailItem}>
+                                                    <span className={styles.label}>Thành tiền: </span>
+                                                    <span className={styles.labelName} style={{ color: 'red', fontWeight: 'bold', fontSize: '30px' }}>
+                                                        {vndFormaterFunc(props.bills.billPriceAfterVoucher)}
+                                                    </span>
+                                                </li>{' '}
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div> */}
+                        </Col>
+                    </Row>
+
                 </div>
             </Modal >
         </>
