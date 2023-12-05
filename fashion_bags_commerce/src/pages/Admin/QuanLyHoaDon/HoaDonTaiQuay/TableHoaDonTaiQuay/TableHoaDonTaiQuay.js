@@ -6,6 +6,7 @@ import {
   Pagination,
   Popconfirm,
   Row,
+  Select,
   Space,
   Table,
   Tabs,
@@ -16,10 +17,7 @@ import {
   CheckCircleOutlined,
   ClockCircleOutlined,
   CloseCircleOutlined,
-  DeleteOutlined,
   FilterFilled,
-  ReloadOutlined,
-  SearchOutlined,
   SyncOutlined,
   TableOutlined,
 } from '@ant-design/icons';
@@ -30,12 +28,14 @@ import styles from './index.module.scss';
 import SearchForm from '~/Utilities/FormSearch/SearchForm';
 import dayjs from 'dayjs';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
-import FormCapNhatTrangThai from '../../CapNhatHoaDon/CapNhatTrangThai';
+import productDetailsAPI from '~/api/productDetailsAPI';
+import billDetailsAPI from '~/api/BillDetailsAPI';
+import FormChiTietHoaDon from '../../ChiTietHoaDon/FormChiTietHoaDon';
 const { RangePicker } = DatePicker;
 
-function TableHoaDon() {
+function TableHoaDonTaiQuay() {
   const [data, setData] = useState([]);
-  // const [listStaff, setListStaff] = useState([]);
+  const [listStaff, setListStaff] = useState([]);
   const [totalItem, setTotalItem] = useState();
   const [loading, setLoading] = useState(true);
   const [PageNum, setPageNum] = useState(1);
@@ -44,9 +44,9 @@ function TableHoaDon() {
   const [search, setSearch] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  // const [filterStaffName, setFilterStaffName] = useState('');
+  const [filterStaffName, setFilterStaffName] = useState('');
 
-  const handleTableChange = (pagination, filters, sorter) => { };
+
   const columns = [
     {
       key: 'stt',
@@ -77,19 +77,18 @@ function TableHoaDon() {
         return <span>{formattedDate}</span>;
       },
     },
-    // {
-    //   title: 'Tên nhân viên',
-    //   dataIndex: 'staff',
-    //   key: 'staffName',
-    //   render: (staff) => {
-    //     // Kiểm tra xem 'staff' có giá trị hay không
-    //     if (staff && staff.users && staff.users.fullName) {
-    //       return staff.users.fullName;
-    //     } else {
-    //       return 'NULL';
-    //     }
-    //   },
-    // },
+    {
+      title: 'Tên nhân viên',
+      dataIndex: 'staff',
+      key: 'staffName',
+      render: (staff) => {
+        if (staff && staff.users && staff.users.fullName) {
+          return staff.users.fullName;
+        } else {
+          return 'NULL';
+        }
+      },
+    },
     {
       title: 'Tên khách hàng',
       dataIndex: 'receiverName',
@@ -106,18 +105,18 @@ function TableHoaDon() {
       title: 'Số điện thoại',
       dataIndex: 'orderPhone',
       key: 'orderPhone',
-      // render: (text, record) => {
-      //   if (record.customer == null) {
-      //     return record.orderPhone;
-      //   } else {
-      //     return record.customer.users.phoneNumber;
-      //   }
-      // },
+      render: (text, record) => {
+        if (record.customer == null) {
+          return record.orderPhone;
+        } else {
+          return record.customer.users.phoneNumber;
+        }
+      },
     },
     {
-      title: 'Tổng tiền',
-      dataIndex: 'billTotalPrice',
-      key: 'billTotalPrice',
+      title: 'Tổng thanh toán',
+      dataIndex: 'billPriceAfterVoucher',
+      key: 'billPriceAfterVoucher',
       // sorter: (a, b) => a.billTotalPrice.localeCompare(b.billTotalPrice),
       render: (price) => {
         return <span>{VNDFormaterFunc(price)}</span>;
@@ -183,10 +182,24 @@ function TableHoaDon() {
       title: 'Hành động',
       key: 'action',
       render: (text, record) => {
-        if (record.billStatus != -1) {
-          return hanhDong(record, false);
+        if (record.billStatus !== -1) {
+          return (
+            <div>
+              {hanhDong(record, false)}
+              <Space size="middle">
+                <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+              </Space>
+            </div>
+          );
         } else {
-          return hanhDong(record, true);
+          return (
+            <div>
+              {hanhDong(record, true)}
+              <Space size="middle">
+                <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+              </Space>
+            </div>
+          );
         }
       },
       width: 100,
@@ -196,7 +209,6 @@ function TableHoaDon() {
   const hanhDong = (record, button) => {
     return (
       < Space size="middle" >
-        <FormCapNhatTrangThai disabled={button} status={record} reload={() => setLoading(true)} />
         <Popconfirm
           title="Xác Nhận"
           description="Bạn có chắc chắn muốn hủy đơn hàng?"
@@ -213,8 +225,26 @@ function TableHoaDon() {
       </Space >
     )
   };
-  const deleteHandle = async (id, status, code) => {
-    const xoa = await billsAPI.updateStatus(id, status);
+
+  const updateAmount = async (billId) => {
+    const list = await billDetailsAPI.getAllByBillId(billId);
+    if (Array.isArray(list.data)) {
+      await Promise.all(
+        list.data.map(async (o) => {
+          await productDetailsAPI.updateAmount(o.productDetails.productDetailId, -o.amount);
+        }),
+      );
+    }
+
+  };
+  // const getAllByBillId = async (billId) => {
+  //   const response = await billDetailsAPI.getAllByBillId(billId);
+  //   const data = response.data;
+  //   setListBillDetais(data);
+  // };
+  const deleteHandle = async (billId, status, code) => {
+    updateAmount(billId);
+    await billsAPI.updateStatus(billId, status);
     notification.success({
       message: 'Hủy thành công',
       description: 'Đơn hàng ' + code + ' hủy thành công!',
@@ -277,7 +307,8 @@ function TableHoaDon() {
 
   const getAllPhanTrangCompartment = async (pageNum, pageSize) => {
     try {
-      const response = await billsAPI.getAllSearchPagination(
+      const response = await billsAPI.getAllBillsOffline(
+        filterStaffName,
         startDate,
         endDate,
         status,
@@ -292,22 +323,23 @@ function TableHoaDon() {
       console.error('Đã xảy ra lỗi: ', error);
     }
   };
-  // const getAllStaff = async () => {
-  //   try {
-  //     const response = await staffAPI.getAllStaff();
-  //     const list = response.data;
-  //     setListStaff(list);
-  //   } catch (error) {
-  //     console.error('Error fetching staff data:', error);
-  //   }
-  // };
+  const getAllStaff = async () => {
+    try {
+      const response = await staffAPI.getAllStaff();
+      const list = response.data;
+      setListStaff(list);
+    } catch (error) {
+      console.error('Error fetching staff data:', error);
+    }
+  };
   useEffect(() => {
+    getAllStaff();
     getAllPhanTrangCompartment(PageNum, pageSize);
     setTimeout(() => {
       setLoading(false);
     }, 500);
 
-  }, [loading, search, status, startDate, endDate]);
+  }, [loading, search, status, startDate, endDate, filterStaffName]);
   return (
     <div>
       <Card>
@@ -318,13 +350,13 @@ function TableHoaDon() {
             </h2>
           </Row>
           <Row>
-            <Col span={12}>
+            <Col span={8}>
               <div style={{ paddingTop: '10px', fontSize: '16px' }}>
                 <span style={{ fontWeight: 500 }}>Ngày tạo</span>
                 <RangePicker className={styles.filter_inputSearch} presets={rangePresets} onChange={onRangeChange} />
               </div>
             </Col>
-            {/* <Col span={6}>
+            <Col span={6}>
               <div style={{ paddingTop: '10px', fontSize: '16px' }}>
                 <span style={{ paddingTop: '20px', fontSize: '16px', fontWeight: 500 }}>
                   Nhân viên
@@ -345,9 +377,9 @@ function TableHoaDon() {
                   </Select>
                 </span>
               </div>
-            </Col> */}
+            </Col>
 
-            <Col span={12}>
+            <Col span={10}>
               <SearchForm onSubmit={handleSearchChange} style={{ width: '100%', marginBottom: '10px' }} />
             </Col>
           </Row>
@@ -363,9 +395,6 @@ function TableHoaDon() {
             onChange={(e) => onChangeBill(e)}
             items={[
               SyncOutlined,
-              ClockCircleOutlined,
-              ClockCircleOutlined,
-              ClockCircleOutlined,
               CheckCircleOutlined,
               CloseCircleOutlined,
             ].map((Icon, i) => {
@@ -377,32 +406,20 @@ function TableHoaDon() {
                     {id === '1'
                       ? 'Tất cả'
                       : id === '2'
-                        ? 'Chờ xác nhận'
+                        ? 'Thành công'
                         : id === '3'
-                          ? 'Đang đóng gói'
-                          : id === '4'
-                            ? 'Đang giao'
-                            : id === '5'
-                              ? 'Thành công'
-                              : id === '6'
-                                ? 'Đã hủy'
-                                : ''}
+                          ? 'Đã hủy'
+                          : ''}
                   </span>
                 ),
                 key:
                   id === '1'
                     ? '0'
                     : id === '2'
-                      ? '4'
+                      ? '1'
                       : id === '3'
-                        ? '3'
-                        : id === '4'
-                          ? '2'
-                          : id === '5'
-                            ? '1'
-                            : id === '6'
-                              ? '-1'
-                              : '',
+                        ? '-1'
+                        : '',
                 children: (
                   <div style={{ padding: '8px' }}>
                     <span style={{ fontWeight: 500 }}>{/* <TableOutlined /> Danh sách yêu cầu */}</span>
@@ -434,4 +451,4 @@ function TableHoaDon() {
     </div>
   );
 }
-export default TableHoaDon;
+export default TableHoaDonTaiQuay;

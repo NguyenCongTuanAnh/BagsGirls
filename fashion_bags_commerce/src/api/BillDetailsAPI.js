@@ -14,6 +14,10 @@ const billDetailsAPI = {
     const url = `api/billDetails?id=${id}`;
     return axiosClient.get(url);
   },
+  getAllByBillId(billId) {
+    const url = `api/bill-detail/getBillDetailsByBillId?billId=${billId}`;
+    return axiosClient.get(url);
+  },
   add(data) {
     const url = `api/bill-details`;
     return axiosClient.post(url, data, {
