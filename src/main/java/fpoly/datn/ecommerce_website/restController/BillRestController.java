@@ -1,6 +1,8 @@
 package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.BillsDTO;
+import fpoly.datn.ecommerce_website.entity.Bills;
+import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.service.IBillService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +40,7 @@ public class BillRestController {
     @RequestMapping(value = "/bills/pagination", method = RequestMethod.GET)
     public ResponseEntity<?> getAllPagination(
             @RequestParam(name = "page", defaultValue = "0") Integer pageNum,
-            @RequestParam(name = "size", defaultValue = "15") Integer pageSize,
+            @RequestParam(name = "size", defaultValue = "10") Integer pageSize,
             @RequestParam(name ="status", defaultValue = "") Integer status,
             @RequestParam(name ="search", defaultValue = "") String search,
             @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
@@ -53,6 +55,33 @@ public class BillRestController {
             e.printStackTrace();
             return new ResponseEntity<>("Lỗi khi chuyển đổi ngày", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @RequestMapping(value = "/bills/bill-offline", method = RequestMethod.GET)
+    public ResponseEntity<?> getAllBillsOffline(
+            @RequestParam(name = "page", defaultValue = "0") Integer pageNum,
+            @RequestParam(name = "size", defaultValue = "10") Integer pageSize,
+            @RequestParam(name ="status", defaultValue = "") Integer status,
+            @RequestParam(name ="search", defaultValue = "") String search,
+            @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
+            @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr,
+            @RequestParam(name ="filterStaffName", defaultValue = "") String filterStaffName
+    ) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date startDate = dateFormat.parse(startDateStr);
+            Date endDate = dateFormat.parse(endDateStr);
+            return new ResponseEntity<>(this.billService.getAllBillsOffline( filterStaffName, startDate, endDate, status, search, pageNum, pageSize), HttpStatus.OK);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Lỗi khi chuyển đổi ngày", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/bills/update-status", method = RequestMethod.PUT)
+    public ResponseEntity<Bills> updateStatus(@RequestParam String id, @RequestParam int status) {
+        return new ResponseEntity<>(billService.updateStatus(id, status),
+                HttpStatus.OK);
     }
 
     @RequestMapping(value = "/bills", method = RequestMethod.POST)

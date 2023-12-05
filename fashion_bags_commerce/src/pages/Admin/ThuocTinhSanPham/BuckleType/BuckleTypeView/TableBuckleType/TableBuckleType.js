@@ -9,7 +9,7 @@ function TableContent() {
   const [buckleTypeList, setBuckleTypeList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(15);
+  const [pageSize, setPageSize] = useState(10);
   const [totalItem, setTotalItem] = useState();
 
   const handleTableChange = (pagination, filters, sorter) => {};

@@ -31,6 +31,60 @@ function ShopDetailView() {
     }, 5000);
   }, []);
 
+  const renderAddToCartButton = () => {
+    if (!dataDetail) {
+      return null;
+    }
+
+    const storedCart = localStorage.getItem('temporaryCart');
+    const parsedCart = storedCart ? JSON.parse(storedCart) : [];
+    const productDetailIdToAdd = dataDetail ? dataDetail.productDetailId : null;
+
+    const isProductInCart = parsedCart.some((item) => item.productDetailId === productDetailIdToAdd);
+
+    if (!dataDetail || dataDetail.amount === 0) {
+      return (
+        <div
+          className={styles.button_buy_now_disabled}
+          style={{
+            color: 'gray',
+            fontSize: '25px',
+            background: 'lightgray',
+            borderRadius: '32px',
+            padding: '5px 10px',
+          }}
+        >
+          Hết hàng
+        </div>
+      );
+    } else {
+      if (isProductInCart) {
+        return (
+          <div
+            className={styles.button_buy_now_disabled}
+            style={{
+              color: 'gray',
+              fontSize: '25px',
+              background: 'lightgray',
+              borderRadius: '32px',
+              padding: '5px 10px',
+            }}
+          >
+            <ShoppingCartOutlined />
+            Sản phẩm đã có trong giỏ hàng
+          </div>
+        );
+      } else {
+        return (
+          <div className={styles.button_buy_now} onClick={() => addToTemporaryCart(product)}>
+            <ShoppingCartOutlined />
+            Thêm vào giỏ hàng
+          </div>
+        );
+      }
+    }
+  };
+
   const addToTemporaryCart = async (product) => {
     console.log(product);
     try {
@@ -95,7 +149,7 @@ function ShopDetailView() {
 
   const handleInputChange = (event) => {
     // Kiểm tra nếu giá trị nhập vào không phải là số, thì không thay đổi giá trị của input
-    if (/\D/g.test(event.target.value)) return "";
+    if (/\D/g.test(event.target.value)) return '';
     console.log('>>>> value', event.target.value);
 
     // Cập nhật giá trị quantity
@@ -105,7 +159,7 @@ function ShopDetailView() {
   const handleIncrement = () => {
     // Tăng giá trị quantity khi nhấn nút '+'
     const amountInDatabase = dataDetail.amount; // Số lượng tồn kho trong cơ sở dữ liệu
-
+    console.log("so luong so trongkho", amountInDatabase)
     if (quantity + 1 > amountInDatabase) {
       // Hiển thị thông báo khi số lượng vượt quá số lượng trong kho
       notification.error({
@@ -140,7 +194,7 @@ function ShopDetailView() {
         console.error('Error fetching product details:', error);
       }
     };
-  
+
     fetchProductDetail();
   }, [productId]);
 
@@ -151,10 +205,10 @@ function ShopDetailView() {
     if (product && product.productDetails) {
       const uniqueColors = [...new Set(product.productDetails.map((detail) => detail.colorName))];
       const defaultColor = uniqueColors[0]; // Lấy màu sắc đầu tiên
-  
+
       setSelectedColor(defaultColor);
       setMaterialOptions(getMaterialOptionsForColor(defaultColor));
-  
+
       // Thiết lập mặc định cho chất liệu
       const defaultMaterialOptions = getMaterialOptionsForColor(defaultColor);
       if (defaultMaterialOptions.length > 0) {
@@ -212,7 +266,7 @@ function ShopDetailView() {
     if (!selectedColor || !materialOptions.length) {
       return null;
     }
-  
+
     // Render danh sách chất liệu và tick vào checkbox chất liệu đầu tiên nếu có
     return materialOptions.map((material, index) => (
       <div key={index} className={styles.variant}>
@@ -235,7 +289,6 @@ function ShopDetailView() {
   }, [selectedColor, materialOptions]);
 
   if (!product) {
-
     return (
       <div style={{ textAlign: 'center', marginTop: '20px' }}>
         <BeatLoader color="#d64336" loading={true} size={50} />
@@ -375,13 +428,7 @@ function ShopDetailView() {
 
               <br></br>
 
-              <Link to="">
-                {/* Thêm sản phẩm vào giỏ hàng và chuyển hướng đến trang /cart */}
-                <div className={styles.button_buy_now} onClick={() => addToTemporaryCart(product)}>
-                  <ShoppingCartOutlined />
-                  Thêm vào giỏ hàng
-                </div>
-              </Link>
+              <Link to="">{renderAddToCartButton()}</Link>
               <Link to="/cart">
                 <div className={styles.button_buy_now1} onClick={() => addToTemporaryCart(product)}>
                   Mua ngay

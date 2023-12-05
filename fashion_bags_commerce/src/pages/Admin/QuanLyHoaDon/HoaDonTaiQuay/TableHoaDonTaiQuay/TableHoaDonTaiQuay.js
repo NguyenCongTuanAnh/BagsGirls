@@ -6,6 +6,7 @@ import {
   Pagination,
   Popconfirm,
   Row,
+  Select,
   Space,
   Table,
   Tabs,
@@ -20,20 +21,21 @@ import {
   SyncOutlined,
   TableOutlined,
 } from '@ant-design/icons';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import billsAPI from '~/api/BillApi';
+import staffAPI from '~/api/staffAPI';
 import styles from './index.module.scss';
 import SearchForm from '~/Utilities/FormSearch/SearchForm';
 import dayjs from 'dayjs';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
-import FormCapNhatTrangThai from '../../CapNhatHoaDon/CapNhatTrangThai';
 import productDetailsAPI from '~/api/productDetailsAPI';
 import billDetailsAPI from '~/api/BillDetailsAPI';
 import FormChiTietHoaDon from '../../ChiTietHoaDon/FormChiTietHoaDon';
 const { RangePicker } = DatePicker;
 
-function TableHoaDon() {
+function TableHoaDonTaiQuay() {
   const [data, setData] = useState([]);
+  const [listStaff, setListStaff] = useState([]);
   const [totalItem, setTotalItem] = useState();
   const [loading, setLoading] = useState(true);
   const [PageNum, setPageNum] = useState(1);
@@ -42,6 +44,7 @@ function TableHoaDon() {
   const [search, setSearch] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [filterStaffName, setFilterStaffName] = useState('');
 
 
   const columns = [
@@ -74,7 +77,18 @@ function TableHoaDon() {
         return <span>{formattedDate}</span>;
       },
     },
-
+    {
+      title: 'Tên nhân viên',
+      dataIndex: 'staff',
+      key: 'staffName',
+      render: (staff) => {
+        if (staff && staff.users && staff.users.fullName) {
+          return staff.users.fullName;
+        } else {
+          return 'NULL';
+        }
+      },
+    },
     {
       title: 'Tên khách hàng',
       dataIndex: 'receiverName',
@@ -91,12 +105,19 @@ function TableHoaDon() {
       title: 'Số điện thoại',
       dataIndex: 'orderPhone',
       key: 'orderPhone',
-
+      render: (text, record) => {
+        if (record.customer == null) {
+          return record.orderPhone;
+        } else {
+          return record.customer.users.phoneNumber;
+        }
+      },
     },
     {
       title: 'Tổng thanh toán',
       dataIndex: 'billPriceAfterVoucher',
       key: 'billPriceAfterVoucher',
+      // sorter: (a, b) => a.billTotalPrice.localeCompare(b.billTotalPrice),
       render: (price) => {
         return <span>{VNDFormaterFunc(price)}</span>;
       },
@@ -188,7 +209,6 @@ function TableHoaDon() {
   const hanhDong = (record, button) => {
     return (
       < Space size="middle" >
-        <FormCapNhatTrangThai disabled={button} status={record} reload={() => setLoading(true)} />
         <Popconfirm
           title="Xác Nhận"
           description="Bạn có chắc chắn muốn hủy đơn hàng?"
@@ -205,6 +225,7 @@ function TableHoaDon() {
       </Space >
     )
   };
+
   const updateAmount = async (billId) => {
     const list = await billDetailsAPI.getAllByBillId(billId);
     if (Array.isArray(list.data)) {
@@ -246,19 +267,19 @@ function TableHoaDon() {
   const rangePresets = [
     {
       label: 'Last 7 Days',
-      value: [dayjs().add(-7, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
+      value: [dayjs().add(-7, 'd'), dayjs().add(1, 'd')],
     },
     {
       label: 'Last 14 Days',
-      value: [dayjs().add(-14, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
+      value: [dayjs().add(-14, 'd'), dayjs().add(1, 'd')],
     },
     {
       label: 'Last 30 Days',
-      value: [dayjs().add(-30, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
+      value: [dayjs().add(-30, 'd'), dayjs().add(1, 'd')],
     },
     {
       label: 'Last 90 Days',
-      value: [dayjs().add(-90, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
+      value: [dayjs().add(-90, 'd'), dayjs().add(1, 'd')],
     },
   ];
 
@@ -286,7 +307,8 @@ function TableHoaDon() {
 
   const getAllPhanTrangCompartment = async (pageNum, pageSize) => {
     try {
-      const response = await billsAPI.getAllSearchPagination(
+      const response = await billsAPI.getAllBillsOffline(
+        filterStaffName,
         startDate,
         endDate,
         status,
@@ -301,13 +323,23 @@ function TableHoaDon() {
       console.error('Đã xảy ra lỗi: ', error);
     }
   };
+  const getAllStaff = async () => {
+    try {
+      const response = await staffAPI.getAllStaff();
+      const list = response.data;
+      setListStaff(list);
+    } catch (error) {
+      console.error('Error fetching staff data:', error);
+    }
+  };
   useEffect(() => {
+    getAllStaff();
     getAllPhanTrangCompartment(PageNum, pageSize);
     setTimeout(() => {
       setLoading(false);
     }, 500);
 
-  }, [loading, search, status, startDate, endDate]);
+  }, [loading, search, status, startDate, endDate, filterStaffName]);
   return (
     <div>
       <Card>
@@ -318,14 +350,36 @@ function TableHoaDon() {
             </h2>
           </Row>
           <Row>
-            <Col span={12}>
+            <Col span={8}>
               <div style={{ paddingTop: '10px', fontSize: '16px' }}>
                 <span style={{ fontWeight: 500 }}>Ngày tạo</span>
                 <RangePicker className={styles.filter_inputSearch} presets={rangePresets} onChange={onRangeChange} />
               </div>
             </Col>
+            <Col span={6}>
+              <div style={{ paddingTop: '10px', fontSize: '16px' }}>
+                <span style={{ paddingTop: '20px', fontSize: '16px', fontWeight: 500 }}>
+                  Nhân viên
+                  <Select
+                    bordered={false}
+                    style={{ width: '50%', borderBottom: '1px solid #ccc' }}
+                    onChange={(value) => {
+                      setFilterStaffName(value);
+                    }}
+                    defaultValue=""
+                  >
+                    <Select.Option value="">Tất cả</Select.Option>
+                    {(listStaff ?? []).map((item, index) => (
+                      <Select.Option key={index} value={item.usersFullName}>
+                        {item.usersFullName}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </span>
+              </div>
+            </Col>
 
-            <Col span={12}>
+            <Col span={10}>
               <SearchForm onSubmit={handleSearchChange} style={{ width: '100%', marginBottom: '10px' }} />
             </Col>
           </Row>
@@ -334,16 +388,13 @@ function TableHoaDon() {
       <Card>
         <section>
           <h2 style={{ marginBottom: '10px' }}>
-            <TableOutlined /> Danh sách hóa đơn online
+            <TableOutlined /> Danh sách hóa đơn tại quầy
           </h2>
           <Tabs
             defaultActiveKey={status}
             onChange={(e) => onChangeBill(e)}
             items={[
               SyncOutlined,
-              ClockCircleOutlined,
-              ClockCircleOutlined,
-              ClockCircleOutlined,
               CheckCircleOutlined,
               CloseCircleOutlined,
             ].map((Icon, i) => {
@@ -351,23 +402,24 @@ function TableHoaDon() {
               return {
                 label: (
                   <span>
-                    {React.createElement(Icon)} {/* Use React.createElement to create the icon */}
+                    <Icon />
                     {id === '1'
                       ? 'Tất cả'
                       : id === '2'
-                        ? 'Chờ xác nhận'
+                        ? 'Thành công'
                         : id === '3'
-                          ? 'Đang đóng gói'
-                          : id === '4'
-                            ? 'Đang giao'
-                            : id === '5'
-                              ? 'Thành công'
-                              : id === '6'
-                                ? 'Đã hủy'
-                                : ''}
+                          ? 'Đã hủy'
+                          : ''}
                   </span>
                 ),
-                key: id === '1' ? '0' : id === '2' ? '4' : id === '3' ? '3' : id === '4' ? '2' : id === '5' ? '1' : id === '6' ? '-1' : '',
+                key:
+                  id === '1'
+                    ? '0'
+                    : id === '2'
+                      ? '1'
+                      : id === '3'
+                        ? '-1'
+                        : '',
                 children: (
                   <div style={{ padding: '8px' }}>
                     <span style={{ fontWeight: 500 }}>{/* <TableOutlined /> Danh sách yêu cầu */}</span>
@@ -399,4 +451,4 @@ function TableHoaDon() {
     </div>
   );
 }
-export default TableHoaDon;
+export default TableHoaDonTaiQuay;

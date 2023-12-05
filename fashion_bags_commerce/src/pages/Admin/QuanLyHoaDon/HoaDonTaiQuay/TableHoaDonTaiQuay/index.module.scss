@@ -1,0 +1,51 @@
+* {
+    padding: 0;
+    margin : 0;
+}
+
+.filter {
+    min-height      : 100px;
+    height          : auto;
+    background-color: #ffffff;
+    border          : 1px solid #edf2f9;
+    padding         : 20px;
+}
+
+.filter_inputSearch {
+    border-radius: 0;
+    box-shadow   : none;
+    border       : none;
+    border-bottom: 1px solid #ccc;
+}
+
+.filter_inputSearch span:focus {
+    border: none;
+}
+
+.content {
+    padding         : 20px;
+    margin-top      : 25px;
+    min-height      : 500px;
+    height          : auto;
+    background-color: #ffffff;
+    border          : 1px solid #edf2f9;
+}
+
+.select {
+    outline: none;
+    border : none;
+}
+
+.select:focus {
+    outline: none;
+    border : none;
+}
+
+.custom-table .ant-table-thead>th {
+    background-color: #ffffff;
+}
+
+.pagination {
+    display        : flex;
+    justify-content: center;
+}

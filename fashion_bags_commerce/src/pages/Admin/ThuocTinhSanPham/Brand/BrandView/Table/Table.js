@@ -9,7 +9,7 @@ const TableContent = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pagesSize, setPagesSize] = useState(15);
+  const [pagesSize, setPagesSize] = useState(10);
   const [totalItem, setTotalItem] = useState();
 
   const onCancel = () => {};
@@ -53,19 +53,19 @@ const TableContent = () => {
       render: (text, record, index) => <span>{(currentPage - 1) * pagesSize + index + 1}</span>,
     },
     {
-      title: 'Code',
+      title: 'Mã',
       dataIndex: 'brandCode',
       sorter: (a, b) => a.brandCode.localeCompare(b.brandCode),
       width: 150,
     },
     {
-      title: 'Name Brand',
+      title: 'Tên thương hiệu',
       dataIndex: 'brandName',
       width: 150,
       sorter: (a, b) => a.brandName.localeCompare(b.brandName),
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'brandStatus',
 
       width: 150,
@@ -96,14 +96,14 @@ const TableContent = () => {
       },
     },
     {
-      title: 'Action',
+      title: 'Hành động',
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
           <FormBrandEdit brand={record} />
           <Popconfirm
             title="Xác Nhận"
-            description="Bạn Có chắc chắn muốn xóa?"
+            description="Bạn Có chắc chắn muốn xóa trạng thái?"
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
@@ -112,7 +112,7 @@ const TableContent = () => {
             }}
             onCancel={onCancel}
           >
-            <Button type="primary" danger icon={<DeleteOutlined />}></Button>
+            <Button type="default" danger icon={<DeleteOutlined />}>Xóa</Button>
           </Popconfirm>
         </Space>
       ),
@@ -123,8 +123,8 @@ const TableContent = () => {
   const deleteHandle = async (id, status) => {
     const xoa = await brandAPI.updateStatus(id, status);
     notification.info({
-      message: 'Xoa trang thai',
-      description: 'Đã hủy thành công trang thái của thương hiệu có id là :' + id,
+      message: 'Hủy trang thai',
+      description: 'Đã hủy thành công ',
     });
     getAllBrand(currentPage, pagesSize);
     console.log(xoa);

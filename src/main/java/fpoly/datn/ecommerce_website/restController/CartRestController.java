@@ -1,7 +1,10 @@
 package fpoly.datn.ecommerce_website.restController;
 
+import fpoly.datn.ecommerce_website.dto.BillDetailsDTO;
 import fpoly.datn.ecommerce_website.dto.CartDTO;
 import fpoly.datn.ecommerce_website.entity.Carts;
+import fpoly.datn.ecommerce_website.entity.Customers;
+import fpoly.datn.ecommerce_website.service.CartService;
 import fpoly.datn.ecommerce_website.service.serviceImpl.CartServiceImpl;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -14,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/manage")
+@RequestMapping("/api")
 @RestController
 public class CartRestController {
 
@@ -22,7 +25,7 @@ public class CartRestController {
     private ModelMapper modelMapper;
 
     @Autowired
-    private CartServiceImpl cartService;
+    private CartService cartService;
 
     //GetAll
     @RequestMapping(value = "/cart/", method = RequestMethod.GET)
@@ -49,10 +52,17 @@ public class CartRestController {
 //
     //Add
     @RequestMapping(value = "/cart", method = RequestMethod.POST)
-    public ResponseEntity<Carts> add(@RequestBody @Valid CartDTO cartDTO) {
-        return new ResponseEntity<>(
-                this.cartService.save(cartDTO)
-                , HttpStatus.OK);
+    public ResponseEntity<String> add(@RequestBody CartDTO cartDTO) {
+        try {
+            Carts savedCart = cartService.save(cartDTO);
+            if (savedCart != null) {
+                return new ResponseEntity<>("Cart added successfully!", HttpStatus.CREATED);
+            } else {
+                return new ResponseEntity<>("Failed to add cart", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 //
     //update

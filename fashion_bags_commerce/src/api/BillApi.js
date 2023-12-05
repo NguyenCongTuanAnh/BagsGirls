@@ -14,7 +14,6 @@ const billsAPI = {
     const url = 'api/bills/pagination';
     return axiosClient.get(url, {
       params: {
-        // filterStaffName: filterStaffName,
         startDate: startDate,
         endDate: endDate,
         search: search,
@@ -24,6 +23,22 @@ const billsAPI = {
       },
     });
   },
+
+  getAllBillsOffline(filterStaffName, startDate, endDate, status, search, pageNum, pageSize) {
+    const url = 'api/bills/bill-offline';
+    return axiosClient.get(url, {
+      params: {
+        filterStaffName: filterStaffName,
+        startDate: startDate,
+        endDate: endDate,
+        search: search,
+        status: status,
+        page: pageNum - 1,
+        size: pageSize
+      },
+    });
+  },
+
   get(id) {
     const url = `api/bills?id=${id}`;
     return axiosClient.get(url);
@@ -41,7 +56,7 @@ const billsAPI = {
     return axiosClient.put(url, data);
   },
   updateStatus(billsID, status) {
-    const url = `api/bills/update-status?billsID=${billsID}&status=${status}`;
+    const url = `api/bills/update-status?id=${billsID}&status=${status}`;
     return axiosClient.put(url, null, {
       headers: {
         'Content-Type': 'application/json',
