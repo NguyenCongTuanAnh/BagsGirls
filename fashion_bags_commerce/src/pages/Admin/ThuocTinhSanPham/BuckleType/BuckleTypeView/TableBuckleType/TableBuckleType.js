@@ -157,7 +157,7 @@ function TableContent() {
       />
       <div className={styles.pagination}>
         <Pagination
-          showSizeChanger
+          // showSizeChanger  
           onShowSizeChange={onShowSizeChange}
           onChange={onShowSizeChange}
           defaultCurrent={1}

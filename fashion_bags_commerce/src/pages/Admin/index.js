@@ -15,7 +15,9 @@ function Admin() {
           <HeaderContent titlePage="Trang quản trị" />
         </Header>
 
-        <Content className="contentStyle"></Content>
+        <Content className="contentStyle">
+          <div>Hello</div>
+        </Content>
 
         {/* <Footer style={footerStyle}>Đây là component của Footer</Footer> */}
       </Layout>
