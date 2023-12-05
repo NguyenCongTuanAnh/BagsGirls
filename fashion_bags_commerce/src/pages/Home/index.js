@@ -11,18 +11,11 @@ function Home() {
     window.scrollTo(0, 0);
   }, []);
 
-  // const [data, setData] = useState([]);
-
-  // const handleChangeData = (newData) => {
-  //   setData(newData);
-  // };
-
   return (
-    <Fragment title="BagGirls">
+    <Fragment >
       <div className="fullpage">
         <div className="header001">
           <Header
-          // handleChangeData={}
           />
         </div>
         <div className="page_content">

@@ -6,9 +6,6 @@ import { Link } from 'react-router-dom';
 import CartItem from './CartItem/cartItem';
 import { Fragment, useEffect, useState } from 'react';
 import { DoubleRightOutlined } from '@ant-design/icons';
-import AddressVietnam from '~/pages/Home/Cart/Checkout/FormCheckoutDetail/CheckoutDetail';
-
-const { Header: HeaderLayout, Footer: FooterLayout, Content: ContentLayout } = Layout;
 
 function CartView() {
   const [cartItems, setCartItems] = useState([]);
@@ -24,7 +21,7 @@ function CartView() {
   }, []);
 
   return (
-    <body>
+    <Fragment>
       <div className="fullpage">
         <div className="header001">
           <Header />
@@ -55,7 +52,7 @@ function CartView() {
           <Footer />
         </div>
       </div>
-    </body>
+    </Fragment>
   );
 }
 

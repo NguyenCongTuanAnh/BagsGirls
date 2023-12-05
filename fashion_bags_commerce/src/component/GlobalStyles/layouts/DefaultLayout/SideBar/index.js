@@ -45,8 +45,7 @@ const items = [
     ),
     getItem('Quản lý Đặt Hàng', '5'),
     getItem('Submenu', 'sub3', <AppstoreOutlined style={{ fontSize: '23px' }} />, [
-      getItem('Option 7', '7'),
-      getItem('Option 8', '8'),
+    
     ]),
   ]),
   getItem('Quản lý Hóa Đơn', 'sub4', <PaperClipOutlined style={{ fontSize: '23px' }} />, [

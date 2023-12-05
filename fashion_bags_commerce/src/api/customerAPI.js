@@ -21,11 +21,6 @@ const customerAPI = {
     });
   },
 
-  getRoles(params) {
-    const url = 'api/role/';
-    return axiosClient.get(url, { params });
-  },
-
   get(id) {
     const url = `api/customer?id=${id}`;
     return axiosClient.get(url);

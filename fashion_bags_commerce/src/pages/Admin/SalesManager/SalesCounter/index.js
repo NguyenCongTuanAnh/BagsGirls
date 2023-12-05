@@ -10,7 +10,7 @@ function SalesCounter() {
   return (
     <Fragment>
       <Layout className="layout">
-        <Sider width={260} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
+        <Sider width={300} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
           <Sidebar keyIndex="4" openKey="sub2" />
         </Sider>
         <Layout className="layoutContent">

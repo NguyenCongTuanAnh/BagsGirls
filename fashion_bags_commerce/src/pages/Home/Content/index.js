@@ -1,9 +1,8 @@
 import { Fragment } from 'react';
 import LayoutCarousel from './LayoutCarousel';
-import styles from './index.module.scss';
+import ShopView from '../Shop/ShopView/index';
 import ProductList from './ProductList/ProductList';
 import ExtendContent from './ExtendContent';
-import ShopView from '../Shop/ShopView/index';
 
 function Content() {
   return (

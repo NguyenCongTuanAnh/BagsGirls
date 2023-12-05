@@ -1,74 +1,52 @@
-import { Fragment, useEffect, useState } from 'react';
-import styles from './index.module.scss';
-import { AppstoreOutlined, HomeOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
-import SubMenu from 'antd/es/menu/SubMenu';
 import { Link, useLocation } from 'react-router-dom';
-const dataType = [
-  { id: 1, name: 'TRANG CHỦ', url: '', urlImage: '' },
-  { id: 2, name: 'TMB', url: '', urlImage: '' },
-  { id: 3, name: 'THE DREAMWEAVER', url: '', urlImage: '' },
-  { id: 4, name: 'COLLECTION', url: '', urlImage: '' },
-  { id: 5, name: 'TREND', url: '', urlImage: '' },
-  { id: 6, name: 'LUIS VUISTON', url: '', urlImage: '' },
-  { id: 7, name: 'ADIAS', url: '', urlImage: '' },
-  { id: 8, name: '', url: '', urlImage: 'https://www.vascara.com/uploads/web/900/landing-page/tmb/TMG-logo.png' },
-  { id: 9, name: 'PUMA', url: '' },
-  { id: 10, name: 'BALO OWEN', url: '', urlImage: '' },
-  { id: 11, name: 'BALO ĐỘNG LỰC', url: '', urlImage: '' },
-  { id: 12, name: 'BALO THƯỢNG ĐÌNH', url: '', urlImage: '' },
-];
-
+import styles from './index.module.scss';
+import { useEffect, useState } from 'react';
+import { setTwoToneColor } from '@ant-design/icons';
 function NavMenu() {
   const location = useLocation();
   const [selectedKeys, setSelectedKeys] = useState([]);
 
   useEffect(() => {
-    // Update selectedKeys when location changes
     setSelectedKeys([location.pathname]);
   }, [location.pathname]);
 
   const handleMenuClick = ({ key }) => {
     setSelectedKeys([key]);
   };
+
   return (
-    <Fragment>
-      <div className={styles.navContent}>
-        <div className={styles.centeredMenu}>
-          <Menu
-            className={styles.menu}
-            // style={{ backgroundColor: ' rgb(99, 240, 240)' }}
-            mode="horizontal"
-            selectedKeys={selectedKeys}
-            onClick={({ key }) => handleMenuClick(key)}
-          >
-            <Link key={1} className={styles.submenu} to={'/'}>
-              <SubMenu title="TRANG CHỦ">
-                {/* <Menu.Item key="1.1">NEW ARRIVAL</Menu.Item>
-                <Menu.Item key="1.2">COLLECTION</Menu.Item> */}
-              </SubMenu>
+    <div className={styles.navContent}>
+      <div className={styles.centeredMenu}>
+        <Menu className={styles.menu} mode="horizontal" selectedKeys={selectedKeys} onClick={handleMenuClick}>
+          <Menu.Item key="/">
+            <Link to="/" className={styles.submenu}>
+              TRANG CHỦ
             </Link>
-            <Link className={styles.submenu} to={'/gioi-thieu'}>
-              <SubMenu title="GIỚI THIỆU"></SubMenu>
+          </Menu.Item>
+          <Menu.Item key="/gioi-thieu">
+            <Link to="/gioi-thieu" className={styles.submenu}>
+              GIỚI THIỆU
             </Link>
-            <Link className={styles.submenu} to={'/shop'}>
-              <SubMenu title="SẢN PHẨM">
-                <Menu.Item key="3.1">GIRLS</Menu.Item>
-                <Menu.Item key="3.2">BOYS</Menu.Item>
-              </SubMenu>
+          </Menu.Item>
+          <Menu.Item key="/shop">
+            <Link to="/shop" className={styles.submenu}>
+              SẢN PHẨM
             </Link>
-
-            <Link className={styles.submenu} to={'/blog'}>
-              <SubMenu title="BLOG"></SubMenu>
+          </Menu.Item>
+          <Menu.Item key="/blog">
+            <Link to="/blog" className={styles.submenu}>
+              BLOG
             </Link>
-
-            <Link className={styles.submenu} to={'/'}>
-              <SubMenu title="LIÊN HỆ"></SubMenu>
+          </Menu.Item>
+          <Menu.Item key="/lien-he">
+            <Link to="/lien-he" className={styles.submenu}>
+              LIÊN HỆ
             </Link>
-          </Menu>
-        </div>
+          </Menu.Item>
+        </Menu>
       </div>
-    </Fragment>
+    </div>
   );
 }
 

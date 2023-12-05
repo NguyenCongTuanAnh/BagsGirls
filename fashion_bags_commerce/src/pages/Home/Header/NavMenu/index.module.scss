@@ -23,15 +23,16 @@
   color: GRAY;
   font-weight: 400;
   font-size: 25px;
-  // margin: 0 30px;
   padding: 10px 5px;
   margin: 0 px;
   font-family: Arial, Helvetica, sans-serif;
+
   -webkit-transition: all, 0.3s;
   transition: all, 0.3s;
 }
 .submenu:hover {
-  // background-color: rgb(99, 240, 240);
   color: black;
+  // background-color: gray;
+  padding: 10px 40px;
   border-radius: 32px;
 }
