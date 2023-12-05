@@ -205,7 +205,7 @@ function TableContent() {
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
-              handleDeleteBalo(record.productId, -1);
+              handleDeleteBalo(record.productId, 0);
               reload();
             }}
             onCancel={onCancel}

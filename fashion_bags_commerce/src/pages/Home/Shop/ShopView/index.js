@@ -94,7 +94,9 @@ function ShopView({ titleContent }) {
             <div className="row">
               <div className={styles.scrollableList}>
                 {searchedProducts.length > 0
-                  ? searchedProducts.map((product) => (
+                  ? searchedProducts
+                  .filter((product) => product.productStatus === 1)
+                  .map((product) => (
                     // Hiển thị sản phẩm từ kết quả tìm kiếm
                     <div key={product.productId} className={`${styles.scrollableList} ${columnType}`}>
                       <div className={styles.producItem}>
@@ -126,7 +128,9 @@ function ShopView({ titleContent }) {
                     </div>
                   ))
                   : // Hiển thị danh sách sản phẩm ban đầu nếu không có kết quả tìm kiếm
-                  data.map((product) => (
+                  data
+                  .filter((product) => product.productStatus === 1)
+                  .map((product) => (
                     <div key={product.productId} className={`${styles.scrollableList} ${columnType}`}>
                       <div className={styles.producItem}>
                         <div className={styles.productImage}>

@@ -88,7 +88,9 @@ function TableContent() {
             }}
             onCancel={onCancel}
           >
-            <Button type="default"  danger icon={<DeleteOutlined />}>Xóa</Button>
+            <Button type="default" danger icon={<DeleteOutlined />}>
+              Xóa
+            </Button>
           </Popconfirm>
         </Space>
       ),

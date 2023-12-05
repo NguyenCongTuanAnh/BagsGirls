@@ -35,7 +35,7 @@ const brandAPI = {
     });
   },
   updateStatus(id, status) {
-    const url = `/brand/update-status?id=${id}&status=${status}`;
+    const url = `api/brand/update-status?id=${id}&status=${status}`;
     return axiosClient.put(url, null, {
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ const brandAPI = {
     });
   },
   delete(id) {
-    const url = `/brand?id=${id}`;
+    const url = `api/brand?id=${id}`;
     return axiosClient.delete(url);
   },
 };

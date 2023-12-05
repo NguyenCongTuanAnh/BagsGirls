@@ -1,4 +1,3 @@
-
 Link {
   list-style: none;
 }
@@ -23,4 +22,22 @@ body .fullpage {
   width: 1920px;
   max-width: 100%;
   margin: 0 auto;
+}
+.active-status {
+  background-color: rgb(57, 209, 57); /* Màu xanh cho trạng thái 'Hoạt động' */
+  color: white;
+  font-size: 12pt;
+  border-radius: 32px;
+  padding: 10px 10px 10px 10px;
+}
+
+.inactive-status {
+  background-color: red; /* Màu đỏ cho trạng thái 'Không hoạt động' và mặc định */
+  color: white;
+  font-size: 12pt;
+  border-radius: 32px;
+  padding: 10px 10px 10px 10px;
+}
+.other-status {
+  background-color: red;
 }

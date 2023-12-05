@@ -107,7 +107,7 @@ const TableContent = () => {
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
-              deleteHandle(record.colorId, 0);
+              deleteHandle(record.brandId, 0);
               reload();
             }}
             onCancel={onCancel}
