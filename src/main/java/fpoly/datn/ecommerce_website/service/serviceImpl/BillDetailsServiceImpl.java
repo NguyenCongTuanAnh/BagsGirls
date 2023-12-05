@@ -2,6 +2,7 @@ package fpoly.datn.ecommerce_website.service.serviceImpl;
 
 import fpoly.datn.ecommerce_website.dto.BillDetailsDTO;
 import fpoly.datn.ecommerce_website.dto.BillDetailsQDTO;
+import fpoly.datn.ecommerce_website.dto.GetBillDetailsDTO;
 import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.repository.IBillDetailRepository;
 import fpoly.datn.ecommerce_website.service.IBillDetailsService;
@@ -23,10 +24,10 @@ public class BillDetailsServiceImpl implements IBillDetailsService {
     private ModelMapper modelMapper;
 
     @Override
-    public List<BillDetailsDTO> getAll() {
+    public List<GetBillDetailsDTO> getAll() {
         List<BillDetails> bills = this.iBillDetailRepository.findAll();
         return bills.stream()
-                .map(bill -> modelMapper.map(bill, BillDetailsDTO.class))
+                .map(bill -> modelMapper.map(bill, GetBillDetailsDTO.class))
                 .collect(Collectors.toList());
     }
 
