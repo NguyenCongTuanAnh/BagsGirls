@@ -104,10 +104,11 @@ function LoginForm(props) {
               {
                 required: true,
                 message: 'Vui lòng nhập Email!',
+                whitespace: true,
               },
               {
                 pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                message: 'Vui lòng nhập địa chỉ E hợp lệ!',
+                message: 'Vui lòng nhập địa chỉ Email hợp lệ!',
               },
             ]}
           >
@@ -121,7 +122,25 @@ function LoginForm(props) {
               {
                 required: true,
                 message: 'Vui lòng điền Password!',
+                whitespace: true,
               },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (
+                    value &&
+                    value.length >= 12 &&
+                    value.length <= 30 &&
+                    /[\W_]/.test(value) &&
+                    /[A-Z]/.test(value) &&
+                    /\d/.test(value)
+                  ) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    new Error('Mật khẩu trong khoảng 12-30 kí tự, bao gồm ký tự đặc biệt, số và chữ in hoa!'),
+                  );
+                },
+              }),
             ]}
           >
             <Input.Password />

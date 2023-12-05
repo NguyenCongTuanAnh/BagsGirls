@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import 'react-icons/md';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   AutoComplete,
@@ -24,7 +25,7 @@ import Title from 'antd/es/skeleton/Title';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 import TextArea from 'antd/es/input/TextArea';
 import baloDetailsAPI from '~/api/productDetailsAPI';
-import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { MinusOutlined, PlusOutlined, SaveTwoTone, ScanOutlined } from '@ant-design/icons';
 import userinfoAPI from '~/api/userInfoAPI';
 import userInfoAPI from '~/api/userInfoAPI';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
@@ -36,6 +37,10 @@ import productDetailsAPI from '~/api/productDetailsAPI';
 import { useForm } from 'antd/es/form/Form';
 import AuthAPI from '~/api/auth/AuthAPI';
 import MaillingAPI from '~/api/MaillingAPI';
+import voucherAPI from '~/api/voucherAPI';
+import moment from 'moment/moment';
+import Search from 'antd/es/input/Search';
+import { MdRestore } from 'react-icons/md';
 const { Option } = AutoComplete;
 
 const SalesCounterForm = () => {
@@ -102,6 +107,7 @@ const SalesCounterForm = () => {
     const [totalPrice, setTotalPrice] = useState(0);
     const [voucherPrice, setVoucherPrice] = useState(0);
     const [VAT, setVAT] = useState(0);
+    const [disCountPercent, setDiscountPercent] = useState(0);
     const [totalPayment, setTotalPayment] = useState(0);
     const [totalAmount, setTotalAmount] = useState(0);
     const [staffId, setStaffId] = useState('');
@@ -114,6 +120,10 @@ const SalesCounterForm = () => {
     const [isModalQROpen, setIsModalQROpen] = useState(false);
     const [prevCode, setPrevCode] = useState('');
     const [productCode, setProductCode] = useState(generateCustomCode('HD', 9));
+    const [voucherCode, setVoucherCode] = useState('');
+    const [voucher, setVoucher] = useState('');
+    const [rankingName, setRankingName] = useState('');
+    const [discountPercentByRankingName, setDiscountPercentByRankingName] = useState();
     let html5QrCode;
     const soundEffect = new Audio(
       'https://firebasestorage.googleapis.com/v0/b/bagsgirl-datn.appspot.com/o/sound-effect%2FA3TMECN-beep.mp3?alt=media&token=6c474e99-443f-4fbc-b5ef-231e6f742659',
@@ -130,7 +140,7 @@ const SalesCounterForm = () => {
 
     const handleSelect = (value, option) => {
       const item = options.find((item) => item.productDetailId === value);
-      console.log(item);
+
       setInputValue(item.product.productName);
       if (item.productDetailAmount <= 0) {
         notification.error({
@@ -179,16 +189,57 @@ const SalesCounterForm = () => {
       setVisible(true);
       const item = infoList.find((item) => item.customerId === value);
 
+      const customerRanking = item.customerRanking;
       setCustomer(item);
       setCustomerId(item.customerId);
       setInputUserInfo(item.users.fullName);
+      setRankingName(customerRanking);
+      console.log('====================================');
+      console.log(item);
+      console.log('====================================');
       form.setFieldsValue({
         fullName: item.users.fullName,
         phoneNumber: item.users.phoneNumber,
         address: item.users.address,
+        rankingName: item.customerRanking,
       });
     };
 
+    useEffect(() => {
+      if (rankingName === 'KH_KIMCUONG') {
+        if (totalPrice >= 4000000) {
+          setDiscountPercentByRankingName(12);
+        } else {
+          setDiscountPercentByRankingName(10);
+        }
+      } else if (rankingName === 'KH_VANG') {
+        if (totalPrice >= 3000000) {
+          setDiscountPercentByRankingName(10);
+        } else {
+          setDiscountPercentByRankingName(8);
+        }
+      } else if (rankingName === 'KH_BAC') {
+        if (totalPrice >= 2000000) {
+          setDiscountPercentByRankingName(8);
+        } else {
+          setDiscountPercentByRankingName(5);
+        }
+      } else if (rankingName === 'KH_THANTHIET') {
+        if (totalPrice >= 1000000) {
+          setDiscountPercentByRankingName(5);
+        } else {
+          setDiscountPercentByRankingName(2);
+        }
+      } else if (rankingName === 'KH_TIEMNANG') {
+        if (totalPrice >= 500000) {
+          setDiscountPercentByRankingName(2);
+        } else {
+          setDiscountPercentByRankingName(1);
+        }
+      } else {
+        setDiscountPercentByRankingName(0);
+      }
+    }, [rankingName, totalPrice]);
     const isItemAlreadyAdded = (item) => {
       return selectedItems.some((selectedItem) => selectedItem.productDetailId === item.productDetailId);
     };
@@ -253,12 +304,20 @@ const SalesCounterForm = () => {
 
         width: 100,
         sorter: (a, b) => a.retailPrice - b.retailPrice,
+        render: (text, record) => <span>{VNDFormaterFunc(text)}</span>,
       },
       {
         title: 'Số Lượng',
         dataIndex: 'cartAmount',
         width: 100,
         sorter: (a, b) => a.cartAmount - b.cartAmount,
+        render: (text, record) => (
+          <div>
+            <Button onClick={() => handleIncrease(record)} size="small" icon={<PlusOutlined />}></Button>
+            <span style={{ margin: '0 10px' }}>{text}</span>
+            <Button onClick={() => handleDecrease(record)} size="small" icon={<MinusOutlined />}></Button>
+          </div>
+        ),
         render: (text, record) => (
           <div>
             <Button onClick={() => handleIncrease(record)} size="small" icon={<PlusOutlined />}></Button>
@@ -390,10 +449,15 @@ const SalesCounterForm = () => {
         }
 
         const addedBill = await handleAddBills(addBill);
-        // if (visible) {
-        const updatePoint = await customerAPI.updatePoint(customerId, totalPrice);
-        console.log(updatePoint.data);
-        // }
+        if (visible) {
+          const updatePoint = await customerAPI.updatePoint(customerId, totalPrice);
+          console.log(updatePoint.data);
+        }
+        if (voucher) {
+          console.log('====================================');
+          console.log(voucher);
+          console.log('====================================');
+        }
         var isErr = false;
         await Promise.all(
           selectedItems.map(async (o) => {
@@ -665,10 +729,13 @@ const SalesCounterForm = () => {
                 {
                   required: true,
                   message: 'Vui lòng điền tên!',
+                  pattern: /^[A-Za-z]+$/i,
+                  whitespace: true,
                 },
               ]}
             >
-              <Input ></Input>
+              <Input></Input>
+
             </Form.Item>
             <Form.Item
               label="SĐT Khách Hàng"
@@ -677,6 +744,7 @@ const SalesCounterForm = () => {
                 {
                   required: true,
                   message: 'Vui lòng điền SĐT!',
+                  whitespace: true,
                 },
                 {
                   pattern: /^((\+|00)84|0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-6|8-9]|9\d)\d{7}$/,
@@ -684,7 +752,9 @@ const SalesCounterForm = () => {
                 },
               ]}
             >
-              <Input type="tel" ></Input>
+
+              <Input type="tel"></Input>
+
             </Form.Item>
             <Form.Item
               label="Email"
@@ -693,6 +763,7 @@ const SalesCounterForm = () => {
                 {
                   required: true,
                   message: 'Vui lòng điền Email!',
+                  whitespace: true,
                 },
                 {
                   pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
@@ -700,7 +771,9 @@ const SalesCounterForm = () => {
                 },
               ]}
             >
-              <Input width={200} ></Input>
+
+              <Input width={200}></Input>
+n
             </Form.Item>
           </Form>
           <Row>
@@ -759,8 +832,91 @@ const SalesCounterForm = () => {
       });
     };
     const handleChangeVAT = (values) => {
-      setVAT(values);
+      setVAT(values / 100);
     };
+    const handleDeleteVoucher = () => {
+      setDiscountPercent(0);
+      setVoucher('');
+      setVoucherPrice(0);
+    };
+    const handleApplyVoucherCode = async () => {
+      if (voucherCode === '') {
+        messageApi.error('Mã code không hợp lệ!!!!');
+        return;
+      }
+      try {
+        const response = await voucherAPI.findByVoucherCode(voucherCode);
+        const voucher = response.data;
+
+        if (voucher.voucherAmount <= 0) {
+          messageApi.open({
+            type: 'error',
+            content: 'Voucher đã được áp dụng hết!!!!',
+          });
+        } else {
+          const currentTime = moment();
+          const startTime = moment(voucher.voucherStartTime);
+          const endTime = moment(voucher.voucherEndTime);
+
+          if (currentTime.isBetween(startTime, endTime)) {
+            if (voucher.totalPriceToReceive <= totalPrice) {
+              setDiscountPercent(voucher.discountPercent);
+              setVoucher(voucher);
+              setVoucherPrice(totalPrice * (voucher.discountPercent / 100) || voucherPrice);
+              messageApi.open({
+                type: 'success',
+                content: `Voucher áp dụng thành công!!!!`,
+              });
+            } else {
+              if (totalPrice < voucher.totalPriceToReceive) {
+                messageApi.open({
+                  type: 'error',
+                  content: `Voucher này chỉ áp dụng với Hóa đơn trên ${VNDFormaterFunc(voucher.totalPriceToReceive)}!`,
+                });
+              } else {
+                setDiscountPercent(voucher.discountPercent);
+                setVoucher(voucher);
+                setVoucherPrice(totalPrice * (voucher.discountPercent / 100) || voucherPrice);
+                messageApi.open({
+                  type: 'success',
+                  content: `Voucher áp dụng thành công!!!!`,
+                });
+              }
+            }
+          } else {
+            messageApi.open({
+              type: 'error',
+              content: 'Voucher đã hết hạn!',
+            });
+          }
+        }
+      } catch (error) {
+        console.log(error);
+        if (error.response.status === 500) {
+          messageApi.open({
+            type: 'error',
+            content: 'Mã Voucher này không tồn tại!!!',
+          });
+        }
+      }
+    };
+    const handleKeyPress = (event) => {
+      // if (event.key === 'F8') {
+      //   finnishPayment();
+      // }
+      // if (event.key === 'F2') {
+      //   if (isModalQROpen) handleCancel();
+      // } else {
+      //   showModal();
+      // }
+    };
+    useEffect(() => {
+      window.addEventListener('keydown', handleKeyPress);
+
+      return () => {
+        window.removeEventListener('keydown', handleKeyPress);
+      };
+    }, []);
     return (
       <div className={styles.content}>
         {contextHolder}
@@ -768,7 +924,6 @@ const SalesCounterForm = () => {
           <Row>
             <Col span={6}></Col>
             <Col span={8}>
-              {' '}
               <h1 className={styles.title}>Hóa Đơn {props.tabNum}</h1>
             </Col>
           </Row>
@@ -808,6 +963,7 @@ const SalesCounterForm = () => {
                                 style={{
                                   width: 400,
                                 }}
+                                size="large"
                                 onSelect={handleSelectInfo}
                                 onChange={onSearchInfo}
                                 placeholder="Nhập từ khóa tìm kiếm"
@@ -840,7 +996,15 @@ const SalesCounterForm = () => {
                               }}
                               placement="right"
                             >
-                              <Button disabled={!visible}>Thêm Khách Hàng</Button>
+                              <Button
+                                disabled={!visible}
+                                type="primary"
+                                shape="round"
+                                size="large"
+                                icon={<PlusOutlined />}
+                              >
+                                Thêm Khách Hàng
+                              </Button>
                             </Popover>
                           </Col>
                         </Row>
@@ -877,6 +1041,22 @@ const SalesCounterForm = () => {
                         ></Select>
                       </Form.Item>
                     </Col>
+                    <Col span={12}>
+                      <Form.Item
+                        label="Nhân Viên"
+                        name="staffName"
+                        initialValue={staff.users.fullName}
+                        className={styles.item}
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please input your username!',
+                          },
+                        ]}
+                      >
+                        <Input readOnly />
+                      </Form.Item>
+                    </Col>
                   </Row>
                 </Form>
                 <Form
@@ -906,94 +1086,113 @@ const SalesCounterForm = () => {
                         <Input readOnly />
                       </Form.Item>
                     </Col>
-                    <Col span={12}>
-                      <Form.Item
-                        label="Nhân Viên"
-                        name="staffName"
-                        initialValue={staff.users.fullName}
-                        className={styles.item}
-                        rules={[
-                          {
-                            required: true,
-                            message: 'Please input your username!',
-                          },
-                        ]}
-                      >
-                        <Input readOnly />
-                      </Form.Item>
-                    </Col>
+                    {visible && (
+                      <Col span={12}>
+                        <Form.Item
+                          label="Hạng Khách Hàng"
+                          name="rankingName"
+                          className={styles.item}
+                          rules={[
+                            {
+                              required: false,
+                              message: 'Please input your username!',
+                            },
+                          ]}
+                        >
+                          <Input readOnly />
+                        </Form.Item>
+                      </Col>
+                    )}
                   </Row>
 
-                  {visible && (
-                    <div>
-                      <Row>
-                        <Col span={12}>
-                          <Form.Item label="Tên Khách Hàng" name="fullName" className={styles.item}>
-                            <Input readOnly />
-                          </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                          <Form.Item label="SĐT Khách Hàng" name="phoneNumber">
-                            <Input readOnly />
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col span={12}>
-                          <Form.Item className={styles.item} label="Địa chỉ" name="address">
-                            <TextArea readOnly rows={6} placeholder="Địa Chỉ Chi tiết" maxLength={6} />
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col span={12}>
-                          <Form.Item
-                            label="Mã Giảm Giá (nếu có)"
-                            name="disCountCode"
-                            className={styles.item}
-                            rules={[
+                  <div>
+                    {visible && (
+                      <div>
+                        <Row>
+                          <Col span={12}>
+                            <Form.Item label="Tên Khách Hàng" name="fullName" className={styles.item}>
+                              <Input readOnly />
+                            </Form.Item>
+                          </Col>
+                          <Col span={12}>
+                            <Form.Item label="SĐT Khách Hàng" name="phoneNumber">
+                              <Input readOnly />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col span={12}>
+                            <Form.Item className={styles.item} label="Địa chỉ" name="address">
+                              <TextArea readOnly rows={3} placeholder="Địa Chỉ Chi tiết" maxLength={6} />
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                      </div>
+                    )}
+                    <Row>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Mã Giảm Giá (nếu có)"
+                          name="disCountCode"
+                          className={styles.item}
+                          rules={[
+                            {
+                              required: false,
+                              message: 'Mã giảm giá không hợp lệ!',
+                              whitespace: true,
+                            },
+                          ]}
+                        >
+                          <Row>
+                            <Col span={18}>
+                              <Search
+                                onChange={(e) => {
+                                  setVoucherCode(e.target.value);
+                                }}
+                                enterButton="Search"
+                                onSearch={handleApplyVoucherCode}
+                                value={voucherCode}
+                              />
+                            </Col>
+                            <Col span={6}>
+                              <Button onClick={handleDeleteVoucher}>Hủy</Button>
+                            </Col>
+                          </Row>
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          label="Kiểu Thanh Toán"
+                          className={styles.item}
+                          name="paymentMethod"
+                          rules={[
+                            {
+                              required: false,
+                              message: 'Please input your username!',
+                            },
+                          ]}
+                        >
+                          <Select
+                            style={{
+                              width: 240,
+                            }}
+                            options={[
                               {
-                                required: false,
-                                message: 'Please input your username!',
+                                value: 1,
+                                label: 'Tiền Mặt',
+                              },
+                              {
+                                value: 0,
+                                label: 'Chuyển Khoản',
                               },
                             ]}
-                          >
-                            <Input readOnly />
-                          </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                          <Form.Item
-                            label="Kiểu Thanh Toán"
-                            className={styles.item}
-                            name="paymentMethod"
-                            rules={[
-                              {
-                                required: false,
-                                message: 'Please input your username!',
-                              },
-                            ]}
-                          >
-                            <Select
-                              style={{
-                                width: 240,
-                              }}
-                              options={[
-                                {
-                                  value: 1,
-                                  label: 'Tiền Mặt',
-                                },
-                                {
-                                  value: 0,
-                                  label: 'Chuyển Khoản',
-                                },
-                              ]}
-                              onChange={handleTonggleSelectChange}
-                            ></Select>
-                          </Form.Item>
-                        </Col>
-                      </Row>
-                    </div>
-                  )}
+                            onChange={handleTonggleSelectChange}
+                          ></Select>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </div>
+
                   <Row>
                     <Col span={24}>
                       <Form.Item
@@ -1006,60 +1205,96 @@ const SalesCounterForm = () => {
                           },
                         ]}
                       >
-                        <TextArea rows={6} placeholder="Ghi chú" maxLength={6} />
+                        <TextArea rows={3} placeholder="Ghi chú" maxLength={6} />
                       </Form.Item>
                     </Col>
                   </Row>
+                  <div>
+                    <Row>
+                      <Col span={18}>
+                        <div className={styles.item}>
+                          <h6>Tổng tiền Sản Phẩm (1)</h6>
+                        </div>
+                      </Col>
+                      <Col span={6}>
+                        <div>
+                          <h6>+ {VNDFormaterFunc(totalPrice)}</h6>
+                        </div>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col span={18}>
+                        <div className={styles.item}>
+                          <h6>
+                            Thuế VAT{' '}
+                            <span>
+                              <InputNumber width={300} size="small" min={0} onChange={handleChangeVAT}></InputNumber>
+                            </span>
+                            {' % (2)'}
+                          </h6>
+                        </div>
+                      </Col>
+                      <Col span={6}>
+                        <div>
+                          <h6>+ {VNDFormaterFunc(totalPrice * VAT)}</h6>
+                        </div>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col span={18}>
+                        <div className={styles.item}>
+                          <h6>
+                            Voucher ({voucher.voucherCode || 'nếu có'}) (giảm {voucher.discountPercent || 0} %) (3)
+                          </h6>
+                        </div>
+                      </Col>
+                      <Col span={6}>
+                        <div>
+                          <h6>- {VNDFormaterFunc(voucherPrice)}</h6>
+                        </div>
+                      </Col>
+                    </Row>
+
+                    {visible && (
+                      <Row>
+                        <Col span={18}>
+                          <div className={styles.item}>
+                            <h6>
+                              Hạng Khách Hàng ({rankingName || 'nếu có'}) (- {discountPercentByRankingName || ''} %) (4)
+                            </h6>
+                          </div>
+                        </Col>
+                        <Col span={6}>
+                          <div>
+                            <h6>- {VNDFormaterFunc(totalPrice * (discountPercentByRankingName / 100))}</h6>
+                          </div>
+                        </Col>
+                      </Row>
+                    )}
+
+                    <Row>
+                      <Col span={15}>
+                        <div className={styles.item}>
+                          <h3>Tổng Tiền (1 - 2 + 3)</h3>
+                        </div>
+                      </Col>
+                      <Col span={9}>
+                        <div>
+                          <h3>
+                            {'= '}
+                            {VNDFormaterFunc(
+                              totalPrice +
+                                totalPrice * VAT -
+                                voucherPrice -
+                                totalPrice * (discountPercentByRankingName / 100),
+                            )}
+                          </h3>
+                        </div>
+                      </Col>
+                    </Row>
+                  </div>
                   <Row>
-                    <Col span={18}>
-                      <div className={styles.item}>
-                        <h6>Tổng tiền Sản Phẩm (1)</h6>
-                      </div>
-                    </Col>
-                    <Col span={6}>
-                      <div>
-                        <h6>+ {VNDFormaterFunc(totalPrice)}</h6>
-                      </div>
-                    </Col>
-                    <Col span={18}>
-                      <div className={styles.item}>
-                        <h6>Voucher (nếu có) (2)</h6>
-                      </div>
-                    </Col>
-                    <Col span={6}>
-                      <div>
-                        <h6>- {VNDFormaterFunc(voucherPrice)}</h6>
-                      </div>
-                    </Col>
-                    <Col span={18}>
-                      <div className={styles.item}>
-                        <h6>
-                          Thuế VAT{' '}
-                          <span>
-                            <InputNumber min={0} value={VAT} onChange={handleChangeVAT}></InputNumber>
-                          </span>
-                          % (3) (~ {VNDFormaterFunc(totalPrice * VAT)})
-                        </h6>
-                      </div>
-                    </Col>
-                    <Col span={6}>
-                      <div>
-                        <h6>+ {VNDFormaterFunc(totalPrice * VAT)}</h6>
-                      </div>
-                    </Col>
-                    <Col span={15}>
-                      <div className={styles.item}>
-                        <h3>Tổng Tiền (1 - 2 + 3)</h3>
-                      </div>
-                    </Col>
-                    <Col span={9}>
-                      <div>
-                        <h3>= {VNDFormaterFunc(totalPrice + totalPrice * VAT - voucherPrice)}</h3>
-                      </div>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col span={12}>
+                    <Col span={10}>
                       <Popconfirm
                         title="Xác Nhận"
                         description="Bạn chắc chắn có muốn thêm??"
@@ -1068,11 +1303,15 @@ const SalesCounterForm = () => {
                         okText="Yes"
                         cancelText="No"
                       >
-                        <Button>Thêm Hóa Đơn</Button>
+                        <Button shape="round" icon={<SaveTwoTone size={10} />} size={'large'} type="primary">
+                          Thanh Toán
+                        </Button>
                       </Popconfirm>
                     </Col>
                     <Col span={12}>
-                      <Button onClick={handleResetScreen}>Reset</Button>
+                      <Button onClick={handleResetScreen} type="dashed" shape="round" size="large" icon={<MdRestore />}>
+                        Reset
+                      </Button>
                     </Col>
                   </Row>
                 </Form>
@@ -1099,6 +1338,7 @@ const SalesCounterForm = () => {
                         <Col span={16}>
                           <AutoComplete
                             style={{ width: 600 }}
+                            size="large"
                             onSelect={handleSelect}
                             onChange={onSearch}
                             value={inputValue}
@@ -1134,11 +1374,27 @@ const SalesCounterForm = () => {
                             >
                               {isModalQROpen ? <QRCodeScanner showScanner={showScanner}></QRCodeScanner> : ''}
                             </Modal>
-                            <Button onClick={showModal}>Mở Scan</Button>
+                            <Button
+                              onClick={showModal}
+                              shape="round"
+                              size="large"
+                              type="primary"
+                              icon={<ScanOutlined size={100} />}
+                            >
+                              Mở Scan
+                            </Button>
                           </div>
                         </Col>
-                        <Col span={4}>
-                          <Button onClick={handleSelectedItem}>Reset</Button>
+                        <Col span={3}>
+                          <Button
+                            onClick={handleSelectedItem}
+                            shape="round"
+                            icon={<MdRestore />}
+                            size="large"
+                            type="dashed"
+                          >
+                            Reset
+                          </Button>
                         </Col>
                       </Row>
                     </Form.Item>
@@ -1174,7 +1430,9 @@ const SalesCounterForm = () => {
           marginBottom: 16,
         }}
       >
-        <Button onClick={add}>Thêm Tab</Button>
+        <Button onClick={add} type="primary" icon={<PlusOutlined />} shape="default" size="large">
+          Thêm Tab
+        </Button>
       </div>
       <Tabs hideAdd onChange={onChange} activeKey={activeKey} type="editable-card" onEdit={onEdit} items={items} />
     </div>

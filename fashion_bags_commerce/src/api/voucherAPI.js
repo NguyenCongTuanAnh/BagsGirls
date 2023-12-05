@@ -14,6 +14,10 @@ const voucherAPI = {
     const url = `api/voucher?id=${id}`;
     return axiosClient.get(url);
   },
+  findByVoucherCode(voucherCode) {
+    const url = `api/voucher/findByVoucherCode?voucherCode=${voucherCode}`;
+    return axiosClient.get(url);
+  },
   add(data) {
     const url = `api/voucher`;
     return axiosClient.post(url, data, {

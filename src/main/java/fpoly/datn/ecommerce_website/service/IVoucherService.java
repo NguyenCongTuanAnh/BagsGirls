@@ -1,12 +1,12 @@
 package fpoly.datn.ecommerce_website.service;
 
+import fpoly.datn.ecommerce_website.dto.VoucherDTO;
 import fpoly.datn.ecommerce_website.entity.Vouchers;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-public interface VoucherService {
-
+public interface IVoucherService {
     Page<Vouchers> findAllPage(Integer page, Integer size);
 
     List<Vouchers> fillAll();
@@ -17,8 +17,9 @@ public interface VoucherService {
 
     Vouchers update(Vouchers voucher);
 
-
     Vouchers updateStatus(String id, int status);
 
     void delete(String id);
+
+    VoucherDTO findByVoucherCode(String voucherCode);
 }

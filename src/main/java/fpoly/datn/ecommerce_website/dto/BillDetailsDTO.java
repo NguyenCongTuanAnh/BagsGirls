@@ -1,5 +1,6 @@
 package fpoly.datn.ecommerce_website.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
 import lombok.AllArgsConstructor;
@@ -15,6 +16,7 @@ import lombok.ToString;
 @ToString
 @Setter
 @Getter
+@JsonIgnoreProperties("productDetails")
 public class BillDetailsDTO {
 
     private String billDetailId;

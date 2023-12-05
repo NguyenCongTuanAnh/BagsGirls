@@ -39,6 +39,8 @@ public class BillDetailRestController {
     @RequestMapping(value = "/bill-details", method = RequestMethod.POST)
     public ResponseEntity<?> save(
             @RequestBody BillDetailsDTO billDetailsDTO) {
+        System.out.println("billDetailsDTO.toString()");
+        System.out.println(billDetailsDTO.toString());
         return new ResponseEntity<>(this.iBillDetailsService.save(billDetailsDTO), HttpStatus.OK);
     }
 
