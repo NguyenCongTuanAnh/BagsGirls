@@ -16,7 +16,7 @@ import lombok.ToString;
 @ToString
 @Setter
 @Getter
-@JsonIgnoreProperties("productDetails")
+//@JsonIgnoreProperties("productDetails")
 public class BillDetailsDTO {
 
     private String billDetailId;

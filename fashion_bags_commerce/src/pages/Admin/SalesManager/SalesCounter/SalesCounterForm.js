@@ -411,6 +411,7 @@ const SalesCounterForm = () => {
       if (customer == null && visible === true) {
         messageApi.error('Vui lòng Chọn Khách lẻ hoặc Điền KH Thân Thiết!!!');
       } else if (selectedItems.length === 0) {
+        messageApi.error('Vui lòng thêm sản phẩm!!!');
       } else {
         notification.success({
           message: 'Thành Công',
@@ -735,7 +736,6 @@ const SalesCounterForm = () => {
               ]}
             >
               <Input></Input>
-
             </Form.Item>
             <Form.Item
               label="SĐT Khách Hàng"
@@ -752,9 +752,7 @@ const SalesCounterForm = () => {
                 },
               ]}
             >
-
               <Input type="tel"></Input>
-
             </Form.Item>
             <Form.Item
               label="Email"
@@ -771,9 +769,7 @@ const SalesCounterForm = () => {
                 },
               ]}
             >
-
-              <Input width={200}></Input>
-n
+              <Input width={200}></Input>n
             </Form.Item>
           </Form>
           <Row>

@@ -36,6 +36,7 @@ public class BillDetails {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_detail_id", referencedColumnName = "product_detail_id")
+
     private ProductDetails productDetails;
 
     @Column(name = "amount")

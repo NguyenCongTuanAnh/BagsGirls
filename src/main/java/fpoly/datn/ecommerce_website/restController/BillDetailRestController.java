@@ -40,7 +40,7 @@ public class BillDetailRestController {
     public ResponseEntity<?> save(
             @RequestBody BillDetailsDTO billDetailsDTO) {
         System.out.println("billDetailsDTO.toString()");
-        System.out.println(billDetailsDTO.toString());
+
         return new ResponseEntity<>(this.iBillDetailsService.save(billDetailsDTO), HttpStatus.OK);
     }
 

@@ -52,7 +52,6 @@ public class ProductDetails {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id" )
-
     @JsonManagedReference
     private Products product;
 
