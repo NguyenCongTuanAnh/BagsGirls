@@ -186,7 +186,7 @@ function TableHoaDonTaiQuay() {
           return (
             <div>
               {hanhDong(record, false)}
-              <Space size="middle">
+              <Space size="middle" style={{ marginTop: '10px' }}>
                 <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
               </Space>
             </div>
@@ -195,7 +195,7 @@ function TableHoaDonTaiQuay() {
           return (
             <div>
               {hanhDong(record, true)}
-              <Space size="middle">
+              <Space size="middle" style={{ marginTop: '10px' }}>
                 <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
               </Space>
             </div>
