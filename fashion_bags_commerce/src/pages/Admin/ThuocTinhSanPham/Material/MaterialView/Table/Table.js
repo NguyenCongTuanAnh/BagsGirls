@@ -149,7 +149,7 @@ const TableContent = () => {
           x: 1000,
           y: 570,
         }}
-        rowKey={(record) => record.id}
+        rowKey={(record) => record.materialId}
         columns={columns}
         dataSource={data}
         pagination={false}

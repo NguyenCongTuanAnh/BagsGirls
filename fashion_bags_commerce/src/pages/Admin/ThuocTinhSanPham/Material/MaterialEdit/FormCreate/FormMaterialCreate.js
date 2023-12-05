@@ -49,7 +49,15 @@ function FormMaterialCreate(props) {
 
   return (
     <Fragment>
-      <Button style={{ border: '1px white solid', color: 'white', background: 'green' }} onClick={showModal} icon={<PlusOutlined />}> Thêm</Button>
+      <Button
+        type="default"
+        style={{ border: '1px white solid', color: 'white', background: 'green' }}
+        onClick={showModal}
+        icon={<PlusOutlined />}
+      >
+        {' '}
+        Thêm
+      </Button>
       <Modal title="Thêm chất liệu" open={modalOpen} onCancel={handleCancel} footer={null}>
         <div>
           <Form

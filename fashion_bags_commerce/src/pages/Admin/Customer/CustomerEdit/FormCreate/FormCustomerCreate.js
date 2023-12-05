@@ -46,28 +46,28 @@ const FormCustomerCreate = () => {
     }
   };
 
-  useEffect(() => {
-    // Fetch the list of roles from your backend API
-    fetchRolesFromAPI()
-      .then((data) => {
-        setRoles(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error('Error fetching roles:', error);
-        setLoading(false);
-      });
-  }, []);
+  // useEffect(() => {
+  //   // Fetch the list of roles from your backend API
+  //   fetchRolesFromAPI()
+  //     .then((data) => {
+  //       setRoles(data);
+  //       setLoading(false);
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error fetching roles:', error);
+  //       setLoading(false);
+  //     });
+  // }, []);
 
   // Replace this function with your actual API call to fetch roles
-  const fetchRolesFromAPI = async () => {
-    try {
-      const response = await customerAPI.getRoles(); // Replace with your actual API endpoint
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
-  };
+  // const fetchRolesFromAPI = async () => {
+  //   try {
+  //     const response = await customerAPI.getRoles(); // Replace with your actual API endpoint
+  //     return response.data;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // };
 
   return (
     <Fragment>

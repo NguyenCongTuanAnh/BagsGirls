@@ -6,8 +6,8 @@ const { Header, Footer, Sider, Content } = Layout;
 
 function Admin() {
   return (
-    <Layout style={{ height: '100%', background: 'white' }}>
-      <Sider width={260} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
+    <div style={{ height: '100%', background: 'white' }}>
+      <Sider width={300} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
         <Sidebar keyIndex="sub1" openKey="sub1" />
       </Sider>
       <Layout className="layoutContent">
@@ -19,7 +19,7 @@ function Admin() {
 
         {/* <Footer style={footerStyle}>Đây là component của Footer</Footer> */}
       </Layout>
-    </Layout>
+    </div>
   );
 }
 

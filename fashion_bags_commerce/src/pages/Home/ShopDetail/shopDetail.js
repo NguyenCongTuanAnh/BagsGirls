@@ -3,13 +3,12 @@ import Header from '../Header/index';
 import Footer from '../Footer/index';
 import ShopDetailView from './ShopDetailView/index';
 import { Fragment, useEffect } from 'react';
-const { Header: HeaderLayout, Footer: FooterLayout, Content: ContentLayout } = Layout;
 function ShopDetail() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
   return (
-      <body>
+      <Fragment>
       <div className="fullpage">
           <div className="header001">
             <Header />
@@ -21,7 +20,7 @@ function ShopDetail() {
             <Footer />
           </div>
         </div>
-      </body>
+      </Fragment>
   );
 }
 

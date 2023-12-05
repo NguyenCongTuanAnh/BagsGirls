@@ -1,7 +1,7 @@
 import { Button, Pagination, Popconfirm, Space, Spin, Table, notification } from 'antd';
 
 import { DeleteOutlined, ReloadOutlined, SyncOutlined } from '@ant-design/icons';
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState, useContext, Fragment } from 'react';
 import colorAPI from '~/api/propertitesBalo/colorAPI';
 import styles from './index.module.scss';
 import FormColorEdit from '../../ColorEdit/FormEdit/FormColorEdit';
@@ -23,8 +23,6 @@ function TableContent() {
   const columns = [
     {
       title: 'STT',
-      // dataIndex: 'count+1',
-      // sorter: (a, b) => a.colorCode.localeCompare(b.colorCode),
       width: 40,
       render: (text, record, index) => <span>{(currentPage - 1) * pageSize + index + 1}</span>,
     },
@@ -151,11 +149,8 @@ function TableContent() {
       <Button icon={<ReloadOutlined />} className="" onClick={reload} loading={loading}></Button>
       <Table
         className="table table-striped"
-        scroll={{
-          x: 1000,
-          y: 570,
-        }}
-        rowKey={(record) => record.id}
+        scroll={{ x: 1000, y: 570 }}
+        rowKey={(record) => record.colorId} // Đảm bảo colorId là một giá trị duy nhất
         columns={columns}
         dataSource={list}
         onChange={handleTableChange}

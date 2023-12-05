@@ -177,7 +177,7 @@ const TableContent = () => {
           x: 700,
           y: 550,
         }}
-        rowKey={(record) => record.id}
+        rowKey={(record) => record.voucherId}
         columns={columns}
         dataSource={data}
         pagination={false}

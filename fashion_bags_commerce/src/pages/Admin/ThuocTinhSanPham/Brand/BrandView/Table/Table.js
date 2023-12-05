@@ -142,7 +142,7 @@ const TableContent = () => {
       <Table
         className="table table-striped"
         scroll={{ x: 1000, y: 570 }}
-        rowKey={(record) => record.id}
+        rowKey={(record) => record.brandId}
         columns={columns}
         dataSource={data}
         pagination={false}

@@ -3,17 +3,7 @@ import Header from '../../Header';
 import styles from './checkout.module.scss';
 import CheckoutDetail from '~/pages/Home/Cart/Checkout/FormCheckoutDetail/CheckoutDetail';
 function Checkout() {
-  // const [loginType, setLoginType] = useState(1); // Default login type
 
-  // const handleLoginTypeChange = (event) => {
-  //   setLoginType(parseInt(event.target.value)); // Parse the value to integer
-  // };
-
-  // const handleSubmit = () => {
-  //   // Handle form submission logic
-  //   // Access form data using state variables or useRef
-  //   // Implement logic for login based on the selected loginType
-  // };
 
   return (
     <div className="checkout">
