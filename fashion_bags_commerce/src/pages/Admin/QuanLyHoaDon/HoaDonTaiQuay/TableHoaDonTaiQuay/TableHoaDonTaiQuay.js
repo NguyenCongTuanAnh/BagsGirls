@@ -58,7 +58,7 @@ function TableHoaDonTaiQuay() {
       },
     },
     {
-      title: 'Mã',
+      title: 'Mã hóa đơn',
       dataIndex: 'billCode',
       key: 'code',
     },
