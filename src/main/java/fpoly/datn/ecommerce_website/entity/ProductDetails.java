@@ -49,8 +49,10 @@ public class ProductDetails {
     @Column(name = "product_detail_status")
     private Integer productDetailStatus;
 
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_id" )
+
     @JsonManagedReference
     private Products product;
 

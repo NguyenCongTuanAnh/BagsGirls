@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, useRef } from 'react';
 import axios from 'axios';
 import './styles.scss';
 import { Link } from 'react-router-dom';
@@ -8,11 +8,26 @@ import dayjs from 'dayjs';
 import { Input, Button, notification, Result } from 'antd';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
+import productDetailsAPI from '~/api/productDetailsAPI';
 
 const CheckoutDetail = () => {
   const [cartItems, setCartItems] = useState([]);
   const [confirmedAddress, setConfirmedAddress] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(true);
+
+  const bottomRef = useRef(null);
+  const scrollToBottom = () => {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  };
+
+  const formRef = useRef(null);
+  const scrollToForm = () => {
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   useEffect(() => {
     // Fetch cart items from local storage
@@ -79,11 +94,35 @@ const CheckoutDetail = () => {
       console.error('Error submitting information:', error);
     }
   };
+
+  const updateProductDetailAmount = async (productDetailId, amountToUpdate) => {
+    try {
+      const response = await productDetailsAPI.updateAmount(productDetailId, amountToUpdate);
+
+      if (response.status === 200) {
+        console.log('Product detail amount updated successfully!');
+      } else {
+        console.error('Failed to update product detail amount:', response.data);
+        // Handle failure scenario here
+      }
+    } catch (error) {
+      console.error('Error updating product detail amount:', error);
+    }
+  };
+
   const handleConfirmation = async () => {
     const currentTime = new Date();
     const currentDateTime = dayjs(currentTime).subtract(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
     setBillCreateDate(currentDateTime);
-  
+    if (!fullName || !phoneNumber || !selectedProvince || !selectedDistrict || !selectedWard || !address) {
+      console.log('Vui lòng điền đầy đủ thông tin');
+      return  notification.error({
+        message: 'Thất bại',
+        description: 'Vui lòng điền đẩy đủ thông tin',
+        duration: 1,
+      });
+    }
+
     const getNameFromCode = (code, list) => {
       const selectedItem = list.find((item) => item.code === +code);
       return selectedItem ? selectedItem.name : '';
@@ -91,9 +130,18 @@ const CheckoutDetail = () => {
     const selectedProvinceName = getNameFromCode(selectedProvince, provinces);
     const selectedDistrictName = getNameFromCode(selectedDistrict, districts);
     const selectedWardName = getNameFromCode(selectedWard, wards);
-  
+
     const fullAddress = `${address} | ${selectedWardName} | ${selectedDistrictName} | ${selectedProvinceName}`;
-  
+
+    const cartItemsTotal = cartItems.reduce(
+      (acc, item) => {
+        acc.billTotalPrice += item.retailPrice * item.quantity;
+        acc.productAmount += item.quantity;
+        return acc;
+      },
+      { billTotalPrice: 0, productAmount: 0 },
+    );
+
     try {
       const billData = {
         receiverName: fullName,
@@ -104,41 +152,47 @@ const CheckoutDetail = () => {
         billNote: billNote,
         billStatus: 4,
         billCode: generateCustomCode('Bill', 4),
+        billTotalPrice: cartItemsTotal.billTotalPrice,
+        productAmount: cartItemsTotal.productAmount,
       };
       const response = await billsAPI.add(billData);
-      console.log("Billsssss",response.data)
+      console.log('Billsssss', response.data);
 
       const billId = response.data.billId;
-      console.log("BillIDdđ",billId)
-  
+      console.log('BillIDdđ', billId);
+
       // Tạo mảng dữ liệu cho billDetails
       const billDetailsData = cartItems.map((item) => ({
-       bills :{
-            billId: billId,
+        bills: {
+          billId: billId,
         },
         productDetails: {
-          productDetailId: item.productDetailId
+          productDetailId: item.productDetailId,
         },
         amount: item.quantity,
-        price: item.retailPrice
+        price: item.retailPrice,
       }));
-      console.log("Cartssss",cartItems)
+      console.log('Cartssss', cartItems);
 
-      const responseBillDetails = await Promise.all(
-        billDetailsData.map((billDetail) => billDetailAPI.add(billDetail))
-      );
-  
+      const responseBillDetails = await Promise.all(billDetailsData.map((billDetail) => billDetailAPI.add(billDetail)));
+
       setConfirmedAddress(true);
       setShowAddressForm(false);
       setSubmittedData(responseBillDetails);
+      await Promise.all(
+        cartItems.map(async (item) => {
+          // Subtract the quantity from the product detail amount
+          await updateProductDetailAmount(item.productDetailId, item.quantity);
+        }),
+      );
       console.log('bilsssssss:', response.data);
       console.log('BilLDetails:', responseBillDetails);
 
+      localStorage.removeItem('temporaryCart');
     } catch (error) {
       console.error('Error submitting information:', error);
     }
   };
-  
 
   const addBillDetails = async () => {};
 
@@ -197,7 +251,7 @@ const CheckoutDetail = () => {
     <div className="form-container">
       {/* <div className="col-6"> */}
       {showAddressForm && (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} ref={formRef}>
           <div className="titleNhanHang">
             <h1>Thông tin người đặt hàng</h1>
           </div>
@@ -218,7 +272,8 @@ const CheckoutDetail = () => {
           />
           <input
             className="inputLabel"
-            type="tel"
+            type="number"
+            size={10}
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="Số điện thoại"
@@ -279,9 +334,10 @@ const CheckoutDetail = () => {
           />
 
           <br></br>
-          <button>Giao đến địa chỉ này</button>
+          <button onClick={scrollToBottom}>Giao đến địa chỉ này</button>
+
           <br></br>
-          {submittedData && !confirmedAddress && (
+          {/* {submittedData && !confirmedAddress && (
             <div>
               <h2>Thông tin người đặt hàng:</h2>
               <table className="table table-stripped table table-bordered" style={{ width: '100%', height: 'auto' }}>
@@ -317,17 +373,18 @@ const CheckoutDetail = () => {
 
           <br></br>
 
-          <button style={{ display: submittedData ? 'block' : 'none' }}>Xác nhận địa chỉ</button>
+          <button style={{ display: submittedData ? 'block' : 'none' }}
+            onClick={scrollToBottom}
+          >Tiếp tục thanh toán</button>
           <br></br>
           {confirmedAddress && (
             <div>
               <h4>Đã xác nhận địa chỉ giao hàng thành công</h4>
             </div>
-          )}
+          )} */}
 
           {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
 
-          {/* <form className="list_product"> */}
           <div className="titleNhanHang">
             <h1>Đơn hàng</h1>
           </div>
@@ -396,11 +453,31 @@ const CheckoutDetail = () => {
             <br />
           </div>
           <br />
+          {submittedData && !confirmedAddress && (
+            <div className="voucher">
+              <h4>Địa chỉ nhận hàng:</h4>
+              <p>
+                <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Người nhận:</span> {submittedData.fullName} (+84)
+                {submittedData.phoneNumber}
+              </p>
+              <p>
+                <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ:</span> {submittedData.fullAddress}
+              </p>
+              <p>
+                <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Ghi Chú:</span> {submittedData.billNote}
+              </p>
 
-          <button className="checkOut" onClick={handleConfirmation}>
-            Thanh toán
-          </button>
-          {/* </form>    */}
+              <a className="updateThongTin" onClick={scrollToForm}>
+                Chỉnh sửa
+              </a>
+            </div>
+          )}
+          <br></br>
+          <div ref={bottomRef}>
+            <button className="checkOut" onClick={handleConfirmation}>
+              Đặt Hàng
+            </button>
+          </div>
         </form>
       )}
 

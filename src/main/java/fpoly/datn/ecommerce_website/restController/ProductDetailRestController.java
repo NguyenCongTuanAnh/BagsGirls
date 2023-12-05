@@ -173,23 +173,23 @@ public class ProductDetailRestController {
 //    }
 //
 //
-    @RequestMapping(value = "/product-detail/update-amount", method = RequestMethod.POST)
-    public ResponseEntity<?> updateAmount(
-            @RequestParam @NotNull String productDetailId,
-            @RequestParam @NotNull Integer amount) {
-        ProductDetails productDetails = this.productDetailService.findById(productDetailId);
+        @RequestMapping(value = "/product-detail/update-amount", method = RequestMethod.POST)
+        public ResponseEntity<?> updateAmount(
+                @RequestParam @NotNull String productDetailId,
+                @RequestParam @NotNull Integer amount) {
+            ProductDetails productDetails = this.productDetailService.findById(productDetailId);
 
 
-        if(productDetails.getProductDetailAmount() < amount) {
+            if(productDetails.getProductDetailAmount() < amount) {
 
-            return  new ResponseEntity<>( "Số lượng upadte không hợp lệ!!!"
-                    , HttpStatus.CONFLICT);
+                return  new ResponseEntity<>( "Số lượng upadte không hợp lệ!!!"
+                        , HttpStatus.CONFLICT);
+            }
+            int newAmount = productDetails.getProductDetailAmount()-amount;
+            productDetails.setProductDetailAmount(newAmount);
+
+            return new ResponseEntity<>(
+                    modelMapper.map(this.productDetailService.save(modelMapper.map(productDetails, ProductDetailDTO.class)), ProductDetailDTO.class)
+                    , HttpStatus.OK);
         }
-        int newAmount = productDetails.getProductDetailAmount()-amount;
-        productDetails.setProductDetailAmount(newAmount);
-
-        return new ResponseEntity<>(
-                modelMapper.map(this.productDetailService.save(modelMapper.map(productDetails, ProductDetailDTO.class)), ProductDetailDTO.class)
-                , HttpStatus.OK);
-    }
 }

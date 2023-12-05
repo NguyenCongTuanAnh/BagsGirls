@@ -18,20 +18,54 @@ import java.util.List;
 
 @Repository
 public interface IBillRepository extends JpaRepository<Bills, String> {
-//    @Query(value = "select b from ProductDetails p join BillDetails b " +
-//            "on p.productDetailId = b.productDetails.productDetailId " +
-//            "join Bills c on b.bills.billId = c.billId where b.bills.billStatus LIKE %:status% " +
-//            "AND ( c.billCode like %:search%" +
-//            "or c.staff.users.fullName like %:search%" +
-//            "or c.customer.users.fullName like %:search%" +
-//            "or c.customer.users.phoneNumber like %:search%)")
-//    Page<BillsQDTO> findAllBills(@Param("search") String search, @Param("status") String status, Pageable pageable);
+
 
     @Query(value = "SELECT b FROM Bills b WHERE " +
             " (b.billCode LIKE %:search% " +
             " OR b.orderPhone LIKE %:search% " +
-            " OR CAST(b.billTotalPrice AS string) like %:search% OR :search IS NULL ) " +
-            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " )
+            " OR CAST(b.billTotalPrice AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " OR :search IS NULL ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND b.staff IS NOT NULL " +
+            " AND b.staff.users.fullName LIKE %:filterStaffName% " +
+            "ORDER BY b.billCreateDate DESC" )
+    Page<Bills> findAllBillsOffline(
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("search") String search,
+            @Param("filterStaffName") String filterStaffName,
+            Pageable pageable);
+
+    @Query(value = " SELECT b FROM Bills b  WHERE b.billStatus = :status " +
+            " AND ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billTotalPrice AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " OR :search IS NULL ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND b.staff IS NOT NULL " +
+            " AND b.staff.users.fullName LIKE %:filterStaffName% " +
+            "ORDER BY b.billCreateDate DESC" )
+    Page<Bills> findAllBillsOfflineStatus(
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            @Param("filterStaffName") String filterStaffName,
+            Pageable pageable);
+
+
+
+    @Query(value = "SELECT b FROM Bills b WHERE " +
+            " (b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billTotalPrice AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " OR :search IS NULL ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND b.staff IS NULL " +
+            "ORDER BY b.billCreateDate DESC" )
     Page<Bills> findAllBillsBySearch(
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -41,8 +75,12 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
     @Query(value = " SELECT b FROM Bills b WHERE b.billStatus = :status " +
             " AND ( b.billCode LIKE %:search% " +
             " OR b.orderPhone LIKE %:search% " +
-            " OR CAST(b.billTotalPrice AS string) like %:search% OR :search IS NULL ) " +
-            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " )
+            " OR CAST(b.billTotalPrice AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " OR :search IS NULL ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND b.staff IS NULL " +
+            "ORDER BY b.billCreateDate DESC" )
     Page<Bills> findAllBillsBySearchStatus(
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,

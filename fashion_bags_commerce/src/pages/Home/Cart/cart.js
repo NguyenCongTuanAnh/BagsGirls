@@ -33,7 +33,10 @@ function CartView() {
           <h1 className={styles.titleCart}>Giỏ hàng</h1>
           {cartItems.length === 0 ? (
             <div style={{ textAlign: 'center' }}>
-              <img src="https://theme.hstatic.net/1000197303/1001046599/14/empty-cart-desktop.png?v=7097"></img>
+              <img
+                src="https://theme.hstatic.net/1000197303/1001046599/14/empty-cart-desktop.png?v=7097"
+                style={{ width: '25%', height: '25%' }}
+              ></img>
 
               <h3 style={{ color: 'gray', margin: '50px 0 0 0' }}>Bạn chưa có sản phẩm nào trong giỏ hàng.. </h3>
               <Link to={'/shop'} className={styles.continue_cart}>

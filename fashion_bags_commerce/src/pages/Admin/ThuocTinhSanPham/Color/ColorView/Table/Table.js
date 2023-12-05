@@ -11,7 +11,7 @@ function TableContent() {
   const [list, setlist] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(15);
+  const [pageSize, setPageSize] = useState(10);
   const [totalItem, setTotalItem] = useState(); // Số lượng dữ liệu tổng cộng (tùy chỉnh)
 
   const handleTableChange = (pagination, filters, sorter) => {
@@ -29,19 +29,19 @@ function TableContent() {
       render: (text, record, index) => <span>{(currentPage - 1) * pageSize + index + 1}</span>,
     },
     {
-      title: 'Code',
+      title: 'Mã',
       dataIndex: 'colorCode',
       sorter: (a, b) => a.colorCode.localeCompare(b.colorCode),
       width: 100,
     },
     {
-      title: 'Name Color',
+      title: 'Tên màu sắc',
       dataIndex: 'colorName',
       width: 100,
       sorter: (a, b) => a.colorName.localeCompare(b.colorName),
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'colorStatus',
 
       width: 100,
@@ -72,14 +72,14 @@ function TableContent() {
       },
     },
     {
-      title: 'Action',
+      title: 'Hành động',
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
           <FormColorEdit color={record} />
           <Popconfirm
             title="Xác Nhận"
-            description="Bạn Có chắc chắn muốn xóa?"
+            description="Bạn Có chắc chắn muốn hủy trạng thái?"
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
@@ -88,7 +88,7 @@ function TableContent() {
             }}
             onCancel={onCancel}
           >
-            <Button type="primary" danger icon={<DeleteOutlined />}></Button>
+            <Button type="default"  danger icon={<DeleteOutlined />}>Xóa</Button>
           </Popconfirm>
         </Space>
       ),
@@ -126,8 +126,7 @@ function TableContent() {
     try {
       await colorAPI.updateStatus(id, status);
       notification.info({
-        message: 'Xóa thành Công',
-        description: 'Sản Phẩm Có ID: ' + id + ' đã được xóa thành công!!!',
+        message: 'Hủy thành công trạng thái',
         duration: 2,
       });
       getAll(currentPage, pageSize);
