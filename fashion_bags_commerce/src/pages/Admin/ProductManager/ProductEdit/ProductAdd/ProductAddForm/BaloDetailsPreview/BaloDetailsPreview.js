@@ -1,7 +1,7 @@
 import styles from './BaloDetailsPreview.module.scss';
 
 import React, { Fragment, useEffect, useState } from 'react';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import {
   Button,
   Col,
@@ -21,6 +21,7 @@ import baloAPI from '~/api/productsAPI';
 import baloDetailsAPI from '~/api/productDetailsAPI';
 import imageAPI from '~/api/ImageAPI';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
+import { MdRefresh } from 'react-icons/md';
 
 const { Option } = Select;
 function BaloDetailsPreview(props) {
@@ -30,76 +31,95 @@ function BaloDetailsPreview(props) {
   const [baloListPreview, setBaloListPreview] = useState(props.baloListPreview);
   const columns = [
     {
-      title: 'Balo Code',
+      title: 'STT',
+      dataIndex: 'stt',
+      fixed: 'left',
+      width: 100,
+      render: (text, record, index) => <span>{index + 1}</span>,
+    },
+    {
+      title: 'Mã Balo',
       dataIndex: 'productCode',
       fixed: 'left',
       width: 100,
       sorter: (a, b) => a.productCode.localeCompare(b.productCode),
     },
     {
-      title: 'Name Balo',
+      title: 'Tên Balo',
       dataIndex: 'productName',
       width: 300,
       fixed: 'left',
       sorter: (a, b) => a.productName.localeCompare(b.productName),
     },
     {
-      title: 'Color Balo',
+      title: 'Màu Sắc',
       dataIndex: 'colorName',
       width: 100,
       sorter: (a, b) => a.productColor.localeCompare(b.productColor),
     },
     {
-      title: 'Type Balo',
+      title: 'Kiểu Balo',
       dataIndex: 'typeName',
       width: 200,
       sorter: (a, b) => a.typeName.localeCompare(b.typeName),
     },
     {
-      title: 'Material Balo',
+      title: 'Chất Liệu',
       dataIndex: 'materialName',
       width: 100,
       sorter: (a, b) => a.materialName.localeCompare(b.materialName),
     },
     {
-      title: 'Size Balo',
+      title: 'Kích Thước',
       dataIndex: 'sizeName',
       width: 100,
       sorter: (a, b) => a.sizeName.localeCompare(b.sizeName),
     },
     {
-      title: 'Brand Balo',
+      title: 'Thương Hiệu',
       dataIndex: 'brandName',
       width: 100,
       sorter: (a, b) => a.brandName.localeCompare(b.brandName),
     },
     {
-      title: 'Compartment Balo',
+      title: 'Kiểu Ngăn',
       dataIndex: 'compartmentName',
       width: 100,
       sorter: (a, b) => a.compartmentName.localeCompare(b.compartmentName),
     },
     {
-      title: 'Producer Balo',
+      title: 'NSX',
       dataIndex: 'producerName',
       width: 100,
       sorter: (a, b) => a.producerName.localeCompare(b.producerName),
     },
 
     {
-      title: 'Describe',
+      title: 'Mô Tả',
       dataIndex: 'productDetailDescribe',
       width: 250,
       sorter: (a, b) => a.productDetailDescribe.localeCompare(b.productDetailDescribe),
     },
     {
-      title: 'Status',
+      title: 'Trạng Thái',
       dataIndex: 'productDetailStatus',
       width: 100,
       sorter: (a, b) => a.baloDetailStatus - b.baloDetailStatus,
+      render: (status) => {
+        switch (status) {
+          case 1:
+            return 'Hoạt động';
+          case 0:
+            return 'Không hoạt động';
+          case -1:
+            return 'Trạng thái khác';
+          default:
+            return 'Không xác định';
+        }
+      },
     },
     {
-      title: 'Import Price',
+      title: 'Giá Nhập',
       dataIndex: 'importPrice',
       fixed: 'right',
       width: 150,
@@ -117,7 +137,7 @@ function BaloDetailsPreview(props) {
       ),
     },
     {
-      title: 'Retails Price',
+      title: 'Giá Bán',
       dataIndex: 'retailPrice',
       fixed: 'right',
       width: 150,
@@ -135,7 +155,7 @@ function BaloDetailsPreview(props) {
       ),
     },
     {
-      title: 'Amount',
+      title: 'Số Lượng',
       dataIndex: 'baloDetailAmount',
       fixed: 'right',
       width: 120,
@@ -153,10 +173,11 @@ function BaloDetailsPreview(props) {
       ),
     },
     {
-      title: 'Action',
+      title: 'Hành Động',
       key: 'action',
       width: 100,
       fixed: 'right',
+      render: (text, record) => <Button>Xóa</Button>,
     },
   ];
 
@@ -311,8 +332,8 @@ function BaloDetailsPreview(props) {
         >
           <div className={styles.handleButton}>
             <div>
-              <Button type="primary" onClick={start} loading={loading}>
-                Reload
+              <Button size="large" shape="round" icon={<MdRefresh />} type="primary" onClick={start} loading={loading}>
+                Làm Mới
               </Button>
             </div>
             <div className={styles.buttonSave}>
@@ -324,7 +345,7 @@ function BaloDetailsPreview(props) {
                 onConfirm={save}
                 onCancel={start}
               >
-                <Button type="primary" loading={loading}>
+                <Button size="large" shape="round" type="primary" icon={<SaveOutlined />} loading={loading}>
                   Lưu
                 </Button>
               </Popconfirm>

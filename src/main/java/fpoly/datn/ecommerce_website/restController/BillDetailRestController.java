@@ -1,6 +1,7 @@
 package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.BillDetailsDTO;
+import fpoly.datn.ecommerce_website.dto.GetBillDetailsDTO;
 import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
 import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.service.IBillDetailsService;
@@ -49,7 +50,7 @@ public class BillDetailRestController {
         return new ResponseEntity<>(
                 this.iBillDetailsService.findAllByBillId(billId)
                         .stream()
-                        .map(billDetails -> modelMapper.map(billDetails, BillDetailsDTO.class))
+                        .map(billDetails -> modelMapper.map(billDetails, GetBillDetailsDTO.class))
                         .collect(Collectors.toList())
                 , HttpStatus.OK
         );

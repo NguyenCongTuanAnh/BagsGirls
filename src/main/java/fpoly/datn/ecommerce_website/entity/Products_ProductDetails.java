@@ -1,5 +1,6 @@
 package fpoly.datn.ecommerce_website.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,7 +19,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-
 import java.util.List;
 
 @Setter
@@ -29,7 +29,7 @@ import java.util.List;
 @Builder
 @Entity
 @Table(name = "products")
-public class Products {
+public class Products_ProductDetails {
 
     @Id
     @Column(name = "product_id")
@@ -48,13 +48,4 @@ public class Products {
     @ManyToOne
     @JoinColumn(name = "brand_id")
     private Brands brand;
-
-
-    @OneToMany(mappedBy = "products", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<Images> images;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private List<ProductDetails> productDetails;
 }

@@ -3,6 +3,7 @@ package fpoly.datn.ecommerce_website.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
+import fpoly.datn.ecommerce_website.entity.ProductDetails_BillDetails;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,14 +17,14 @@ import lombok.ToString;
 @ToString
 @Setter
 @Getter
-//@JsonIgnoreProperties("productDetails")
+
 public class BillDetailsDTO {
 
     private String billDetailId;
 
     private Bills bills;
 
-    private ProductDetails productDetails;
+    private ProductDetails_BillDetails productDetails;
 
     private Integer amount;
 

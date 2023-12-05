@@ -1,10 +1,9 @@
 package fpoly.datn.ecommerce_website.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,7 +25,7 @@ import java.math.BigDecimal;
 @Builder
 @Entity
 @Table(name = "product_details")
-public class ProductDetails {
+public class ProductDetails_BillDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -48,10 +47,10 @@ public class ProductDetails {
     @Column(name = "product_detail_status")
     private Integer productDetailStatus;
 
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    @JsonBackReference
-    private Products product;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "product_id" )
+    private Products_ProductDetails product;
 
     @ManyToOne
     @JoinColumn(name = "color_id")

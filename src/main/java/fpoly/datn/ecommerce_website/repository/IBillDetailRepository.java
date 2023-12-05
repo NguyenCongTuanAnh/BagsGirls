@@ -1,6 +1,7 @@
 package fpoly.datn.ecommerce_website.repository;
 
 import fpoly.datn.ecommerce_website.entity.BillDetails;
+import fpoly.datn.ecommerce_website.entity.BillDetails_ChiTiet;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,9 +12,9 @@ import java.util.List;
 
 @Repository
 public interface IBillDetailRepository extends JpaRepository<BillDetails, String> {
-    @Query("SELECT bd FROM  BillDetails bd " +
+    @Query("SELECT bd FROM  BillDetails_ChiTiet bd " +
             "where bd.bills.billId = :billID")
-    List<BillDetails> findAllByBillId(@Param("billID") String billID);
+    List<BillDetails_ChiTiet> findAllByBillId(@Param("billID") String billID);
 
 //    @Query("SELECT bd FROM  BillDetails bd join ProductDetails pd" +
 //            "  on bd.productDetails.productDetailId = pd.productDetailId" +

@@ -49,6 +49,7 @@ public class Bills {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "bill_create_date")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date billCreateDate;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -58,17 +59,19 @@ public class Bills {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "bill_ship_date")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date billShipDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "bill_receiver_date")
+//        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date billReceiverDate;
 
     @Column(name = "bill_total_price")
     private BigDecimal billTotalPrice;
 
     @Column(name = "product_amount")
-        private Integer productAmount;
+    private Integer productAmount;
 
     @Column(name = "bill_price_after_voucher")
     private Double billPriceAfterVoucher;

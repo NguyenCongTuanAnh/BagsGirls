@@ -49,6 +49,7 @@ import buckleTypeAPI from '~/api/propertitesBalo/buckleTypeAPI';
 import imageAPI from '~/api/ImageAPI';
 import { async } from '@firebase/util';
 import Dragger from 'antd/es/upload/Dragger';
+import { MdRefresh } from 'react-icons/md';
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -118,7 +119,7 @@ function ProductAddForm() {
       .flat();
     notification.error({
       message: 'Lỗi',
-      description: errorMessages + '/n',
+      description: errorMessages,
       duration: 2,
     });
   };
@@ -146,10 +147,7 @@ function ProductAddForm() {
     setOpen(false);
   };
   const handleAddBaloDetails = (values) => {
-    console.log('====================================');
-    console.log('values');
-    console.log(values);
-    console.log('====================================');
+    setIsFirst(true);
     const genCodeAuto = generateCustomCode('baloCode', 9);
 
     let addBalo = { ...values, productCode: genCodeAuto };
@@ -204,12 +202,20 @@ function ProductAddForm() {
     setBaloListPreview([]);
     notification.success({
       message: 'Hoàn Thành',
+      description: 'Đã xóa toàn bộ !!!!',
+      duration: 2,
+    });
+  };
+  const reFreshForm = () => {
+    form.resetFields();
+
+    notification.success({
+      message: 'Hoàn Thành',
       description: 'Đã Reset Form thành công !!!!',
       duration: 2,
     });
   };
   const onConfirm = () => {
-    setIsFirst(true);
     form.submit();
     setPopconfirmVisible(false);
   };
@@ -296,7 +302,9 @@ function ProductAddForm() {
       message.error(err);
       err = '';
     } else {
-      message.success(`Đã thêm ${fileList.length} ảnh thành công !`);
+      if (fileList.length !== 0) {
+        message.success(`Đã thêm ${fileList.length} ảnh thành công !`);
+      }
     }
   }, [fileList]);
   const addFileImg = (fileLists) => {
@@ -652,20 +660,22 @@ function ProductAddForm() {
                 ]}
               >
                 <Select
+                  onChange={(value) => {
+                    console.log(value);
+                  }}
                   size="large"
                   style={{
                     width: 200,
                   }}
                   placeholder="Màu sắc"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={color.map((item) => ({
                     value: item.colorId,
                     label: item.colorName,
                   }))}
                 ></Select>
-                <span></span>
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -695,7 +705,7 @@ function ProductAddForm() {
                   }}
                   placeholder="Kiểu Balo"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={type.map((item) => ({
                     value: item.typeId,
@@ -731,7 +741,7 @@ function ProductAddForm() {
                   }}
                   placeholder="Chất Liệu"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={material.map((item) => ({
                     value: item.materialId,
@@ -770,7 +780,7 @@ function ProductAddForm() {
                   }}
                   placeholder="Kiểu ngăn"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={compartment.map((item) => ({
                     value: item.compartmentId,
@@ -806,7 +816,7 @@ function ProductAddForm() {
                   }}
                   placeholder="Size Balo"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={size.map((item) => ({
                     value: item.sizeId,
@@ -843,7 +853,7 @@ function ProductAddForm() {
                   }}
                   placeholder="Thương hiệu"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={brand.map((item) => ({
                     value: item.brandId,
@@ -881,7 +891,7 @@ function ProductAddForm() {
                   }}
                   placeholder="NSX"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={producer.map((item) => ({
                     value: item.producerId,
@@ -917,7 +927,7 @@ function ProductAddForm() {
                   }}
                   placeholder="Kiểu khóa"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={buckleType.map((item) => ({
                     value: item.buckleTypeId,
@@ -1010,8 +1020,7 @@ function ProductAddForm() {
           }}
         >
           <Row>
-            <Col span={4}></Col>
-            <Col span={4}>
+            <Col span={8}>
               <Popconfirm
                 title="Xác Nhận"
                 description="Bạn Có chắc chắn muốn Thêm?"
@@ -1020,19 +1029,37 @@ function ProductAddForm() {
                 onConfirm={onConfirm}
                 onCancel={onCancel}
               >
-                <Button type="primary">Thêm Chi Tiết Balo</Button>
+                <Button type="primary" size="large" shape="round" icon={<PlusOutlined />}>
+                  Thêm Chi Tiết Balo
+                </Button>
               </Popconfirm>
             </Col>
             <Col span={4}>
               <Popconfirm
                 title="Xác Nhận"
-                description="Bạn Có chắc chắn muốn ResetForm và thêm Balo Khác?"
+                description="Bạn Có chắc chắn muốn ResetForm và xóa hết Chi tiết Balo?"
                 okText="Đồng ý"
                 cancelText="Không"
                 onConfirm={resetForm}
                 onCancel={onCancel}
               >
-                <Button type="primary">ResetForm</Button>
+                <Button type="primary" size="large" shape="round" icon={<MdRefresh />}>
+                  Xóa Hết
+                </Button>
+              </Popconfirm>
+            </Col>
+            <Col span={4}>
+              <Popconfirm
+                title="Xác Nhận"
+                description="Bạn Có chắc chắn muốn làm mới Form?"
+                okText="Đồng ý"
+                cancelText="Không"
+                onConfirm={reFreshForm}
+                onCancel={onCancel}
+              >
+                <Button type="primary" size="large" shape="round" icon={<MdRefresh />}>
+                  Làm mới form
+                </Button>
               </Popconfirm>
             </Col>
           </Row>

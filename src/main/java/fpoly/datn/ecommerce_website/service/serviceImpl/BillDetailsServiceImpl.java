@@ -4,6 +4,7 @@ import fpoly.datn.ecommerce_website.dto.BillDetailsDTO;
 import fpoly.datn.ecommerce_website.dto.BillDetailsQDTO;
 import fpoly.datn.ecommerce_website.dto.GetBillDetailsDTO;
 import fpoly.datn.ecommerce_website.entity.BillDetails;
+import fpoly.datn.ecommerce_website.entity.BillDetails_ChiTiet;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
 import fpoly.datn.ecommerce_website.repository.IBillDetailRepository;
 import fpoly.datn.ecommerce_website.service.IBillDetailsService;
@@ -47,7 +48,7 @@ public class BillDetailsServiceImpl implements IBillDetailsService {
     }
 
     @Override
-    public List<BillDetails> findAllByBillId(String billID) {
+    public List<BillDetails_ChiTiet> findAllByBillId(String billID) {
         return this.iBillDetailRepository.findAllByBillId(billID);
     }
 
