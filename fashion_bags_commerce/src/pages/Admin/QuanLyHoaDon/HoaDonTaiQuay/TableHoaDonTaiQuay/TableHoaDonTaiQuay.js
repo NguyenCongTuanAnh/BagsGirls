@@ -115,8 +115,8 @@ function TableHoaDonTaiQuay() {
     },
     {
       title: 'Tổng thanh toán',
-      dataIndex: 'billTotalPrice',
-      key: 'billTotalPrice',
+      dataIndex: 'billPriceAfterVoucher',
+      key: 'billPriceAfterVoucher',
       // sorter: (a, b) => a.billTotalPrice.localeCompare(b.billTotalPrice),
       render: (price) => {
         return <span>{VNDFormaterFunc(price)}</span>;

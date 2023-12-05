@@ -50,7 +50,7 @@ public class ProductDetails {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    @JsonBackReference
+    @JsonManagedReference
     private Products product;
 
     @ManyToOne

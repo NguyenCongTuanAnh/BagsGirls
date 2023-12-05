@@ -14,9 +14,10 @@ function FormChiTietHoaDon(props) {
     const [titleComponent, setTitleComponent] = useState();
     const [listBillDetails, setListBillDetais] = useState([]);
 
-
     const showModal = () => {
         setBillId(props.bills.billId);
+        getAllByBillId();
+        console.log(listBillDetails);
         setTitleComponent(props.bills.billCode);
         setVisible(true);
     };
@@ -24,11 +25,6 @@ function FormChiTietHoaDon(props) {
 
     useEffect(() => {
         getAllByBillId();
-        console.log(listBillDetails);
-        // const total = cartItems.reduce((totalQty, item) => {
-        //     return totalQty + item.quantity;
-        // }, 0);
-        // setTotalQuantity(total);
     }, []);
 
     const getAllByBillId = async () => {
@@ -64,10 +60,10 @@ function FormChiTietHoaDon(props) {
     const columns = [
         {
             title: 'Ảnh',
-            dataIndex: 'image',
-            key: 'image',
+            dataIndex: 'imgUrl',
+            key: 'imgUrl',
             render: (text, record) => (
-                <Image style={{ width: '200px', height: '200px' }} src={record.image} alt={record.productName} />
+                <Image style={{ width: '100px', height: '100px' }} src={record.productDetails.product.images[0].imgUrl} />
             ),
         },
         {
@@ -77,17 +73,16 @@ function FormChiTietHoaDon(props) {
                 <div className={styles.info_item}>
                     <div className={styles.title_product}>
                         {' '}
-                        {record.productDetails.productName}-{record.productCode}
+                        {record.productDetails.product.productName}-{record.productDetails.product.productCode}
                     </div>
                     <ul className={styles.attr}>
                         <li>
                             {' '}
-                            <span className={styles.spanTitle}>Màu sắc: </span> {record.colorName}
+                            <span className={styles.spanTitle}>Màu sắc: </span> {record.productDetails.color.colorName}
                         </li>
-
                         <li>
                             <span className={styles.spanTitle}>Chất liệu: </span>
-                            {record.materialName}
+                            {record.productDetails.material.materialName}
                         </li>
                     </ul>
                 </div>
@@ -96,25 +91,25 @@ function FormChiTietHoaDon(props) {
         },
         {
             title: 'Số lượng',
-            dataIndex: 'quantity',
-            key: 'quantity',
+            dataIndex: 'amount',
+            key: 'amount',
         },
         {
             title: 'Giá sản phẩm',
-            dataIndex: 'retailPrice',
-            render: (text, record) => vndFormaterFunc(record.retailPrice),
-            key: 'retailPrice',
+            dataIndex: 'price',
+            render: (text, record) => vndFormaterFunc(record.price),
+            key: 'price',
         },
         {
             title: 'Thành tiền',
-            render: (text, record) => vndFormaterFunc(record.quantity * record.retailPrice),
+            render: (text, record) => vndFormaterFunc(record.amount * record.price),
             key: 'calculateTotal',
         },
 
     ];
     return (
         <>
-            <Button type="primary" disabled={props.disabled} onClick={showModal} icon={<MenuFoldOutlined />}
+            <Button type="primary" onClick={showModal} icon={<MenuFoldOutlined />}
             >
                 Chi tiết
             </Button>
@@ -132,22 +127,22 @@ function FormChiTietHoaDon(props) {
                 ]}
             >
                 <div>
-                    {/* <Row>
+                    <Row>
                         <Col span={15} style={{ border: '1px solid #cccccc ', margin: '10px 20px 0 20px', borderRadius: '15px', height: '700px' }}>
                             <h4 style={{ margin: '10px', }}>Danh sách sản phẩm đã mua:</h4>
                             <Table
                                 bordered
                                 style={{ margin: 'center', width: '100%', height: '100%' }}
                                 className={styles.table_cart_item}
-                                dataSource={listBillDetails.}
+                                dataSource={listBillDetails}
                                 columns={columns}
-                                rowKey={listBillDetails.billdetailId}
-
+                                rowKey={(record) => record.billDetailId}
+                                pagination={false}
                             />
                         </Col>
                         <Col span={8} style={{ border: '1px solid #cccccc ', margin: '10px 0 0 0', borderRadius: '15px', height: '700px' }}>
                         </Col>
-                    </Row> */}
+                    </Row>
 
 
 

@@ -29,6 +29,7 @@ import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import FormCapNhatTrangThai from '../../CapNhatHoaDon/CapNhatTrangThai';
 import productDetailsAPI from '~/api/productDetailsAPI';
 import billDetailsAPI from '~/api/BillDetailsAPI';
+import FormChiTietHoaDon from '../../ChiTietHoaDon/FormChiTietHoaDon';
 const { RangePicker } = DatePicker;
 
 function TableHoaDon() {
@@ -94,8 +95,8 @@ function TableHoaDon() {
     },
     {
       title: 'Tổng thanh toán',
-      dataIndex: 'billTotalPrice',
-      key: 'billTotalPrice',
+      dataIndex: 'billPriceAfterVoucher',
+      key: 'billPriceAfterVoucher',
       render: (price) => {
         return <span>{VNDFormaterFunc(price)}</span>;
       },
@@ -161,9 +162,23 @@ function TableHoaDon() {
       key: 'action',
       render: (text, record) => {
         if (record.billStatus !== -1) {
-          return hanhDong(record, false);
+          return (
+            <div>
+              {hanhDong(record, false)}
+              <Space size="middle">
+                <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+              </Space>
+            </div>
+          );
         } else {
-          return hanhDong(record, true);
+          return (
+            <div>
+              {hanhDong(record, true)}
+              <Space size="middle">
+                <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+              </Space>
+            </div>
+          );
         }
       },
       width: 100,

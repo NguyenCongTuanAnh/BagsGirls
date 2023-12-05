@@ -1,8 +1,10 @@
 package fpoly.datn.ecommerce_website.restController.client;
 
 import fpoly.datn.ecommerce_website.dto.FullProductDTO;
+import fpoly.datn.ecommerce_website.dto.ProductDTO;
 import fpoly.datn.ecommerce_website.entity.Products;
 import fpoly.datn.ecommerce_website.repository.IProductRepository;
+import fpoly.datn.ecommerce_website.service.IProductService;
 import fpoly.datn.ecommerce_website.service.serviceImpl.FullProductServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -27,6 +29,9 @@ public class FullProductController {
     @Autowired
     private IProductRepository productRepository;
 
+    @Autowired
+    private IProductService iProductService;
+
     @GetMapping("/all-products/")
     public ResponseEntity<List<FullProductDTO>> getAllFullProducts() {
         List<FullProductDTO> fullProducts = productService.getAllFullProducts();
@@ -34,8 +39,8 @@ public class FullProductController {
     }
 
     @GetMapping("/products/getall")
-    public ResponseEntity<List<Products>> getAllProduct() {
-        List<Products> fullProducts = productRepository.findAll();
+    public ResponseEntity<List<ProductDTO>> getAllProduct() {
+        List<ProductDTO> fullProducts = this.iProductService.findAll();
         return ResponseEntity.ok(fullProducts);
     }
 

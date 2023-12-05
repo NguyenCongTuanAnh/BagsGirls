@@ -62,6 +62,7 @@ function ShopView({ titleContent }) {
     try {
       const response = await fullProductAPI.getAll();
       const data = response.data;
+      console.log(data);
       setData(data);
       // setLoadingProducts(false);
     } catch (error) {
@@ -94,69 +95,69 @@ function ShopView({ titleContent }) {
               <div className={styles.scrollableList}>
                 {searchedProducts.length > 0
                   ? searchedProducts.map((product) => (
-                      // Hiển thị sản phẩm từ kết quả tìm kiếm
-                      <div key={product.productId} className={`${styles.scrollableList} ${columnType}`}>
-                        <div className={styles.producItem}>
-                          <div className={styles.productImage}>
-                            <Link to={`/shop/detail/${product.productId}`}>
-                              <div className={styles.contentImage}>
-                                <Image
-                                  src={product.images[0] ? product.images[0].imgUrl : ''}
-                                  fallback={failesImgg}
-                                ></Image>
-                              </div>
-                            </Link>
-                          </div>
-                          <div className={styles.describer}>
-                            <span className={styles.productPrice}>
-                              <a>
-                                <span className={styles.price}>
-                                  {product.productDetails ? VNDFormaterFunc(product.productDetails[0].retailPrice) : ''}
-                                </span>
-                              </a>
-                            </span>
-                            <Link to={`/shop/detail/${product.productId}`}>
-                              <div className={styles.productTitle}>
-                                {product.productName}-{product.productCode}-{product.brand.brandName}{' '}
-                              </div>
-                            </Link>
-                          </div>
+                    // Hiển thị sản phẩm từ kết quả tìm kiếm
+                    <div key={product.productId} className={`${styles.scrollableList} ${columnType}`}>
+                      <div className={styles.producItem}>
+                        <div className={styles.productImage}>
+                          <Link to={`/shop/detail/${product.productId}`}>
+                            <div className={styles.contentImage}>
+                              <Image
+                                src={product.images[0] ? product.images[0].imgUrl : ''}
+                                fallback={failesImgg}
+                              ></Image>
+                            </div>
+                          </Link>
+                        </div>
+                        <div className={styles.describer}>
+                          <span className={styles.productPrice}>
+                            <a>
+                              <span className={styles.price}>
+                                {product.productDetails ? VNDFormaterFunc(product.productDetails[0].retailPrice) : ''}
+                              </span>
+                            </a>
+                          </span>
+                          <Link to={`/shop/detail/${product.productId}`}>
+                            <div className={styles.productTitle}>
+                              {product.productName}-{product.productCode}-{product.brand.brandName}{' '}
+                            </div>
+                          </Link>
                         </div>
                       </div>
-                    ))
+                    </div>
+                  ))
                   : // Hiển thị danh sách sản phẩm ban đầu nếu không có kết quả tìm kiếm
-                    data.map((product) => (
-                      <div key={product.productId} className={`${styles.scrollableList} ${columnType}`}>
-                        <div className={styles.producItem}>
-                          <div className={styles.productImage}>
-                            <Link to={`/shop/detail/${product.productId}`}>
-                              <div className={styles.contentImage}>
-                                <Image
-                                  src={product.images[0] ? product.images[0].imgUrl : ''}
-                                  fallback={failesImgg}
-                                ></Image>
-                              </div>
-                            </Link>
-                          </div>
-                          <div className={styles.describer}>
-                            <span className={styles.productPrice}>
-                              <a>
-                                <span className={styles.price}>
-                                  {product.productDetails[0]
-                                    ? VNDFormaterFunc(product.productDetails[0].retailPrice)
-                                    : ''}
-                                </span>
-                              </a>
-                            </span>
-                            <Link to={`/shop/detail/${product.productId}`}>
-                              <div className={styles.productTitle}>
-                                {product.productName}-{product.productCode}-{product.brand.brandName}{' '}
-                              </div>
-                            </Link>
-                          </div>
+                  data.map((product) => (
+                    <div key={product.productId} className={`${styles.scrollableList} ${columnType}`}>
+                      <div className={styles.producItem}>
+                        <div className={styles.productImage}>
+                          <Link to={`/shop/detail/${product.productId}`}>
+                            <div className={styles.contentImage}>
+                              <Image
+                                src={product.images[0] ? product.images[0].imgUrl : ''}
+                                fallback={failesImgg}
+                              ></Image>
+                            </div>
+                          </Link>
+                        </div>
+                        <div className={styles.describer}>
+                          <span className={styles.productPrice}>
+                            <a>
+                              <span className={styles.price}>
+                                {product.productDetails[0]
+                                  ? VNDFormaterFunc(product.productDetails[0].retailPrice)
+                                  : ''}
+                              </span>
+                            </a>
+                          </span>
+                          <Link to={`/shop/detail/${product.productId}`}>
+                            <div className={styles.productTitle}>
+                              {product.productName}-{product.productCode}-{product.brand.brandName}{' '}
+                            </div>
+                          </Link>
                         </div>
                       </div>
-                    ))}
+                    </div>
+                  ))}
               </div>
             </div>
           )}
