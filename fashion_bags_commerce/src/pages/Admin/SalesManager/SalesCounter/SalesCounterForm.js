@@ -1418,7 +1418,7 @@ const SalesCounterForm = () => {
     );
   }
   return (
-    <div className="contentStyle">
+    <div className="contentStyle1">
       {contextHolder}
       <div
         style={{

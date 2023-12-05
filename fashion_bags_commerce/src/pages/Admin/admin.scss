@@ -8,15 +8,26 @@
   margin: 0;
 }
 
-.contentStyle {
+.contentStyle1 {
+  margin: 0 40px 40px 40px;
+  color: black;
+  background: white;
+  background-image: url(https://i.imgur.com/fIkdNV4.png);
+  // background-color: #fff;
+  border-radius: 32px;
+  width: 95%;
+  height: 100%;
+}
+
+.contentStyle{
   margin: 0 40px 40px 40px;
   color: black;
   background: white;
   background-image: url(https://i.imgur.com/fIkdNV4.png);
   border-radius: 32px;
-  height: 100%;
+  width: 95%;
+  height: 83vh;
 }
-
 .footerStyle {
   margin: 0 10px 10px 20px;
   border-left: 270px;

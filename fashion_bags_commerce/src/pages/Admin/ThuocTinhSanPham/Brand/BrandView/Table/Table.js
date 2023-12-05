@@ -151,7 +151,7 @@ const TableContent = () => {
       />
       <div className={styles.pagination}>
         <Pagination
-         showSizeChanger
+        //  showSizeChanger
           total={totalItem}
           onChange={onChange}
           defaultCurrent={1}

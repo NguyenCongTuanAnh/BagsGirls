@@ -140,7 +140,7 @@ function TableContent() {
     getAll(current, pageSize);
   };
   return (
-    <div
+    <Fragment
       style={{
         padding: '10px',
       }}
@@ -158,14 +158,14 @@ function TableContent() {
       />
       <div className={styles.pagination}>
         <Pagination
-          showSizeChanger
+          // showSizeChanger
           onShowSizeChange={onShowSizeChange}
           onChange={onShowSizeChange}
           defaultCurrent={1}
           total={totalItem}
         />
       </div>
-    </div>
+    </Fragment>
   );
 }
 export default TableContent;

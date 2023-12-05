@@ -5,7 +5,7 @@ const colorAPI = {
     const url = 'api/color/pagination';
     return axiosClient.get(url, {
       params: {
-        page: pageNum - 1,
+        page: pageNum -1,
         size: pageSize,
       },
     });
