@@ -28,9 +28,9 @@ import styles from './index.module.scss';
 import SearchForm from '~/Utilities/FormSearch/SearchForm';
 import dayjs from 'dayjs';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
-import FormCapNhatTrangThai from '../../CapNhatHoaDon/CapNhatTrangThai';
 import productDetailsAPI from '~/api/productDetailsAPI';
 import billDetailsAPI from '~/api/BillDetailsAPI';
+import FormChiTietHoaDon from '../../ChiTietHoaDon/FormChiTietHoaDon';
 const { RangePicker } = DatePicker;
 
 function TableHoaDonTaiQuay() {
@@ -45,10 +45,8 @@ function TableHoaDonTaiQuay() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [filterStaffName, setFilterStaffName] = useState('');
-  const [listBillDetais, setListBillDetais] = useState('');
-  const [amount, setAmount] = useState('');
 
-  const handleTableChange = (pagination, filters, sorter) => { };
+
   const columns = [
     {
       key: 'stt',
@@ -116,7 +114,7 @@ function TableHoaDonTaiQuay() {
       },
     },
     {
-      title: 'Tổng tiền',
+      title: 'Tổng thanh toán',
       dataIndex: 'billTotalPrice',
       key: 'billTotalPrice',
       // sorter: (a, b) => a.billTotalPrice.localeCompare(b.billTotalPrice),
@@ -185,9 +183,23 @@ function TableHoaDonTaiQuay() {
       key: 'action',
       render: (text, record) => {
         if (record.billStatus !== -1) {
-          return hanhDong(record, false);
+          return (
+            <div>
+              {hanhDong(record, false)}
+              <Space size="middle">
+                <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+              </Space>
+            </div>
+          );
         } else {
-          return hanhDong(record, true);
+          return (
+            <div>
+              {hanhDong(record, true)}
+              <Space size="middle">
+                <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+              </Space>
+            </div>
+          );
         }
       },
       width: 100,
@@ -213,22 +225,30 @@ function TableHoaDonTaiQuay() {
       </Space >
     )
   };
-  const updateAmount = async (productDetailID, amount) => {
-    const update = await productDetailsAPI.updateAmount(productDetailID, amount);
+
+  const updateAmount = async (billId) => {
+    const list = await billDetailsAPI.getAllByBillId(billId);
+    if (Array.isArray(list.data)) {
+      await Promise.all(
+        list.data.map(async (o) => {
+          await productDetailsAPI.updateAmount(o.productDetails.productDetailId, -o.amount);
+        }),
+      );
+    }
+
   };
-  const getAllByBillId = async (billId) => {
-    const response = await billDetailsAPI.getAllByBillId(billId);
-    const data = response.data;
-    setListBillDetais(data);
-  };
-  const deleteHandle = async (id, status, code) => {
-    getAllByBillId(id);
-    console.log(listBillDetais);
-    // const xoa = await billsAPI.updateStatus(id, status);
-    // notification.success({
-    //   message: 'Hủy thành công',
-    //   description: 'Đơn hàng ' + code + ' hủy thành công!',
-    // });
+  // const getAllByBillId = async (billId) => {
+  //   const response = await billDetailsAPI.getAllByBillId(billId);
+  //   const data = response.data;
+  //   setListBillDetais(data);
+  // };
+  const deleteHandle = async (billId, status, code) => {
+    updateAmount(billId);
+    await billsAPI.updateStatus(billId, status);
+    notification.success({
+      message: 'Hủy thành công',
+      description: 'Đơn hàng ' + code + ' hủy thành công!',
+    });
   };
   const onCancel = () => { };
 

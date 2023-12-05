@@ -18,6 +18,7 @@ public interface IBillDetailsService {
 
     List<BillDetails> findAllByBillId(String billID) ;
 
+//    List<BillDetails> findAllBillProduct(String billId);
 
     BillDetailsDTO save(BillDetailsDTO billDetailsDTO);
 

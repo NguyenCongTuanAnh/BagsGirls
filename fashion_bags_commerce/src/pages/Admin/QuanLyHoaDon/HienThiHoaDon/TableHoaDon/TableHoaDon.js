@@ -20,13 +20,15 @@ import {
   SyncOutlined,
   TableOutlined,
 } from '@ant-design/icons';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import billsAPI from '~/api/BillApi';
 import styles from './index.module.scss';
 import SearchForm from '~/Utilities/FormSearch/SearchForm';
 import dayjs from 'dayjs';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import FormCapNhatTrangThai from '../../CapNhatHoaDon/CapNhatTrangThai';
+import productDetailsAPI from '~/api/productDetailsAPI';
+import billDetailsAPI from '~/api/BillDetailsAPI';
 const { RangePicker } = DatePicker;
 
 function TableHoaDon() {
@@ -40,7 +42,7 @@ function TableHoaDon() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  const handleTableChange = (pagination, filters, sorter) => { };
+
   const columns = [
     {
       key: 'stt',
@@ -91,7 +93,7 @@ function TableHoaDon() {
 
     },
     {
-      title: 'Tổng tiền',
+      title: 'Tổng thanh toán',
       dataIndex: 'billTotalPrice',
       key: 'billTotalPrice',
       render: (price) => {
@@ -188,8 +190,25 @@ function TableHoaDon() {
       </Space >
     )
   };
-  const deleteHandle = async (id, status, code) => {
-    const xoa = await billsAPI.updateStatus(id, status);
+  const updateAmount = async (billId) => {
+    const list = await billDetailsAPI.getAllByBillId(billId);
+    if (Array.isArray(list.data)) {
+      await Promise.all(
+        list.data.map(async (o) => {
+          await productDetailsAPI.updateAmount(o.productDetails.productDetailId, -o.amount);
+        }),
+      );
+    }
+
+  };
+  // const getAllByBillId = async (billId) => {
+  //   const response = await billDetailsAPI.getAllByBillId(billId);
+  //   const data = response.data;
+  //   setListBillDetais(data);
+  // };
+  const deleteHandle = async (billId, status, code) => {
+    updateAmount(billId);
+    await billsAPI.updateStatus(billId, status);
     notification.success({
       message: 'Hủy thành công',
       description: 'Đơn hàng ' + code + ' hủy thành công!',
@@ -212,19 +231,19 @@ function TableHoaDon() {
   const rangePresets = [
     {
       label: 'Last 7 Days',
-      value: [dayjs().add(-7, 'd'), dayjs().add(1, 'd')],
+      value: [dayjs().add(-7, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
     },
     {
       label: 'Last 14 Days',
-      value: [dayjs().add(-14, 'd'), dayjs().add(1, 'd')],
+      value: [dayjs().add(-14, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
     },
     {
       label: 'Last 30 Days',
-      value: [dayjs().add(-30, 'd'), dayjs().add(1, 'd')],
+      value: [dayjs().add(-30, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
     },
     {
       label: 'Last 90 Days',
-      value: [dayjs().add(-90, 'd'), dayjs().add(1, 'd')],
+      value: [dayjs().add(-90, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
     },
   ];
 
@@ -317,7 +336,7 @@ function TableHoaDon() {
               return {
                 label: (
                   <span>
-                    <Icon />
+                    {React.createElement(Icon)} {/* Use React.createElement to create the icon */}
                     {id === '1'
                       ? 'Tất cả'
                       : id === '2'
@@ -333,20 +352,7 @@ function TableHoaDon() {
                                 : ''}
                   </span>
                 ),
-                key:
-                  id === '1'
-                    ? '0'
-                    : id === '2'
-                      ? '4'
-                      : id === '3'
-                        ? '3'
-                        : id === '4'
-                          ? '2'
-                          : id === '5'
-                            ? '1'
-                            : id === '6'
-                              ? '-1'
-                              : '',
+                key: id === '1' ? '0' : id === '2' ? '4' : id === '3' ? '3' : id === '4' ? '2' : id === '5' ? '1' : id === '6' ? '-1' : '',
                 children: (
                   <div style={{ padding: '8px' }}>
                     <span style={{ fontWeight: 500 }}>{/* <TableOutlined /> Danh sách yêu cầu */}</span>

@@ -53,4 +53,16 @@ public class BillDetailRestController {
         );
 
     }
+
+//    @RequestMapping(value = "bill-detail/getBillDetailsProductsById", method = RequestMethod.GET)
+//    public ResponseEntity<?> getAllBillDetailProductsById(@RequestParam (name ="billId") String billId) {
+//        return new ResponseEntity<>(
+//                this.iBillDetailsService.findAllBillProduct(billId)
+//                        .stream()
+//                        .map(billDetails -> modelMapper.map(billDetails, BillDetailsDTO.class))
+//                        .collect(Collectors.toList())
+//                , HttpStatus.OK
+//        );
+//
+//    }
 }

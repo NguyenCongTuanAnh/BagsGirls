@@ -14,4 +14,9 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
     @Query("SELECT bd FROM  BillDetails bd " +
             "where bd.bills.billId = :billID")
     List<BillDetails> findAllByBillId(@Param("billID") String billID);
+
+//    @Query("SELECT bd FROM  BillDetails bd join ProductDetails pd" +
+//            "  on bd.productDetails.productDetailId = pd.productDetailId" +
+//            " join Products p on pd.product.productId = p.productId where bd.bills.billId = :billID")
+//    List<BillDetails> findAllBillDetailsById(@Param("billID") String billID);
 }
