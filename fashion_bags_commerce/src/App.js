@@ -44,7 +44,6 @@ import PrintTableComponent from './component/GlobalStyles/layouts/DefaultLayout/
 import AboutPage from './pages/Home/GioiThieu';
 import BlogPage from './pages/Home/Blog';
 
-
 const dynamicRoutes = [
   { path: '/product-viewer', component: <ProductViewer />, title: 'Trang sản Phẩm' },
   { path: '/', component: <Home />, title: 'Home' },
@@ -108,7 +107,7 @@ function App() {
             path="/admin"
             element={
               <StaffAuth>
-                <QRCodeScanner />
+                <Admin />
               </StaffAuth>
             }
           />

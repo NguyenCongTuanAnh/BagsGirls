@@ -139,11 +139,18 @@ function RegisterForm(props) {
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
-                    if (value && value.length >= 12 && /[\W_]/.test(value) && /[A-Z]/.test(value) && /\d/.test(value)) {
+                    if (
+                      value &&
+                      value.length >= 12 &&
+                      value.length <= 30 &&
+                      /[\W_]/.test(value) &&
+                      /[A-Z]/.test(value) &&
+                      /\d/.test(value)
+                    ) {
                       return Promise.resolve();
                     }
                     return Promise.reject(
-                      new Error('Mật khẩu cần ít nhất 12 ký tự, bao gồm ký tự đặc biệt, số và chữ in hoa!'),
+                      new Error('Mật khẩu trong khoảng 12-30 kí tự, bao gồm ký tự đặc biệt, số và chữ in hoa!'),
                     );
                   },
                 }),

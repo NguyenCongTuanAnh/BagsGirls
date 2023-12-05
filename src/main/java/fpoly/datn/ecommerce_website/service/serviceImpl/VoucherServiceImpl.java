@@ -1,8 +1,12 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
+import fpoly.datn.ecommerce_website.dto.VoucherDTO;
 import fpoly.datn.ecommerce_website.entity.Vouchers;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Message;
+import fpoly.datn.ecommerce_website.infrastructure.exception.rest.RestApiException;
 import fpoly.datn.ecommerce_website.repository.IVoucherRepository;
-import fpoly.datn.ecommerce_website.service.VoucherService;
+import fpoly.datn.ecommerce_website.service.IVoucherService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,10 +16,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class VoucherServiceImpl implements VoucherService {
+public class VoucherServiceImpl implements IVoucherService {
 
     @Autowired
     private IVoucherRepository iVoucherRepository;
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public Page<Vouchers> findAllPage(Integer page, Integer size) {
@@ -50,8 +56,19 @@ public class VoucherServiceImpl implements VoucherService {
         return iVoucherRepository.save(voucher);
     }
 
+
     @Override
     public void delete(String id) {
 
     }
+    @Override
+    public VoucherDTO findByVoucherCode(String voucherCode) {
+
+        Vouchers vouchers = this.iVoucherRepository.findByVoucherCode(voucherCode);
+        if (vouchers == null){
+            throw new RestApiException(Message.valueOf("Not Found Voucher"));
+        }
+        return modelMapper.map(vouchers, VoucherDTO.class);
+    }
+
 }

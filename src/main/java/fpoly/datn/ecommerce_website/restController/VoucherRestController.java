@@ -2,7 +2,7 @@ package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.VoucherDTO;
 import fpoly.datn.ecommerce_website.entity.Vouchers;
-import fpoly.datn.ecommerce_website.service.VoucherService;
+import fpoly.datn.ecommerce_website.service.IVoucherService;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class VoucherRestController {
 
     @Autowired
-    private VoucherService voucherService;
+    private IVoucherService voucherService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -62,7 +62,13 @@ public class VoucherRestController {
                 this.voucherService.add(voucher)
                 , HttpStatus.OK);
     }
+    @RequestMapping(value = "/voucher/findByVoucherCode", method = RequestMethod.GET)
+    public ResponseEntity<?> findByVoucherCode(@Valid @RequestParam String voucherCode) {
 
+        return new ResponseEntity<>(
+                this.voucherService.findByVoucherCode(voucherCode)
+                , HttpStatus.OK);
+    }
 
     //update
     

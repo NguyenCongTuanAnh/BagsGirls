@@ -47,6 +47,7 @@ public class BillDetailsServiceImpl implements IBillDetailsService {
     @Override
     public BillDetailsDTO save(BillDetailsDTO billDetailsDTO) {
         BillDetails billDetails = modelMapper.map(billDetailsDTO, BillDetails.class);
+        System.out.println(billDetails.toString());
         return modelMapper.map(this.iBillDetailRepository.save(billDetails), BillDetailsDTO.class);
     }
 
