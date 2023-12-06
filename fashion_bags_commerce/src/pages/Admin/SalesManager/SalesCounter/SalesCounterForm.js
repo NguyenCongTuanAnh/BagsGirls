@@ -418,6 +418,7 @@ const SalesCounterForm = () => {
           description: `Đã hoàn thành đơn hàng`,
           duration: 2,
         });
+        console.log(voucher);
         let addBill = {
           staff: {
             staffId: staff.staffId,
@@ -425,15 +426,18 @@ const SalesCounterForm = () => {
           customer: {
             customerId: customerId,
           },
-          voucher: null,
+          voucher: {
+            voucherId: voucher ? voucher.voucherId : null,
+          },
           billCode: values.billCode,
           billCreateDate: formattedDate,
           billDatePayment: formattedDate,
           billShipDate: null,
           billReceiverDate: formattedDate,
-          billTotalPrice: totalPrice + totalPrice * VAT - voucherPrice,
+          billTotalPrice: totalPrice + totalPrice * VAT,
           productAmount: handleCacuTotalAmount(),
-          billPriceAfterVoucher: totalPrice + totalPrice * VAT - voucherPrice,
+          billPriceAfterVoucher:
+            totalPrice + totalPrice * VAT - voucherPrice - totalPrice * (discountPercentByRankingName / 100),
           shippingAddress: null,
           billingAddress: null,
           receiverName: null,
@@ -448,7 +452,7 @@ const SalesCounterForm = () => {
         if (customer === null) {
           addBill.customer = null;
         }
-
+        console.log(addBill);
         const addedBill = await handleAddBills(addBill);
         if (visible) {
           const updatePoint = await customerAPI.updatePoint(customerId, totalPrice);
@@ -858,6 +862,7 @@ const SalesCounterForm = () => {
             if (voucher.totalPriceToReceive <= totalPrice) {
               setDiscountPercent(voucher.discountPercent);
               setVoucher(voucher);
+              console.log(voucher);
               setVoucherPrice(totalPrice * (voucher.discountPercent / 100) || voucherPrice);
               messageApi.open({
                 type: 'success',
