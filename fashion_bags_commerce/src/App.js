@@ -44,6 +44,7 @@ import PrintTableComponent from './component/GlobalStyles/layouts/DefaultLayout/
 import AboutPage from './pages/Home/GioiThieu';
 import BlogPage from './pages/Home/Blog';
 import HoaDonTaiQuayView from './pages/Admin/QuanLyHoaDon/HoaDonTaiQuay/indexHoaDonTaiQuayView';
+import ThongKeView from './pages/Admin/ThongKe/indexThongKe';
 
 // const dynamicRoutes = [
 //   { path: '/product-viewer', component: <ProductViewer />, title: 'Trang sản Phẩm' },
@@ -92,6 +93,7 @@ function App() {
 
           <Route path="/gioi-thieu" element={<AboutPage />} />
           <Route path="/blog" element={<BlogPage />} />
+          <Route path="/thong-ke" element={<ThongKeView />} />
 
           <Route
             path="/bill-offline-view"
