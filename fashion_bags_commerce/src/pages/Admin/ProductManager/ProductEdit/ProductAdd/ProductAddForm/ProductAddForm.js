@@ -207,7 +207,20 @@ function ProductAddForm() {
     });
   };
   const reFreshForm = () => {
-    form.resetFields();
+    form.resetFields([
+      'colorName',
+      // 'typeName',
+      // 'materialName',
+      // 'sizeName',
+      // // "brandName",
+      // 'compartmentName',
+      // 'buckleTypeName',
+      // 'producerName',
+      // 'baloDetailStatus',
+      // 'baloDetailDescribe',
+      // 'imageUrl',
+      'importPrice',
+    ]);
 
     notification.success({
       message: 'Hoàn Thành',
@@ -533,6 +546,7 @@ function ProductAddForm() {
                   {
                     required: true,
                     message: 'Vui lòng điền Tên Balo!',
+                    whitespace: true,
                   },
                 ]}
               >

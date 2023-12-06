@@ -1,5 +1,7 @@
 package fpoly.datn.ecommerce_website.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -18,7 +21,9 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 @Entity
@@ -43,7 +48,9 @@ public class Bills {
     @ManyToOne
     @JoinColumn(name = "voucher_id", referencedColumnName = "voucher_id")
     private Vouchers voucher;
-
+    @OneToMany(mappedBy = "bills", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("bills")// Ngăn việc serialize product trong ProductDetail
+    private List<BillDetails> details = new ArrayList<>();
     @Column(name = "bill_code")
     private String billCode;
 

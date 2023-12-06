@@ -1,5 +1,6 @@
 package fpoly.datn.ecommerce_website.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,6 +31,7 @@ public class BillDetails {
     private String billDetailId;
     @ManyToOne
     @JoinColumn(name = "bill_id", referencedColumnName = "bill_id")
+    @JsonIgnoreProperties("details")
     private Bills bills;
 
     @ManyToOne

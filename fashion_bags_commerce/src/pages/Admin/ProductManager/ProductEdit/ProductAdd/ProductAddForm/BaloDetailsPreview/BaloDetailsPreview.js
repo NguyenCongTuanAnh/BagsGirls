@@ -29,6 +29,7 @@ function BaloDetailsPreview(props) {
 
   const [baloList, setBaloList] = useState(props.baloList);
   const [baloListPreview, setBaloListPreview] = useState(props.baloListPreview);
+  console.log(props.baloListPreview);
   const columns = [
     {
       title: 'STT',
@@ -55,7 +56,7 @@ function BaloDetailsPreview(props) {
       title: 'Màu Sắc',
       dataIndex: 'colorName',
       width: 100,
-      sorter: (a, b) => a.productColor.localeCompare(b.productColor),
+      sorter: (a, b) => a.colorName.localeCompare(b.colorName),
     },
     {
       title: 'Kiểu Balo',
@@ -104,7 +105,7 @@ function BaloDetailsPreview(props) {
       title: 'Trạng Thái',
       dataIndex: 'productDetailStatus',
       width: 100,
-      sorter: (a, b) => a.baloDetailStatus - b.baloDetailStatus,
+      sorter: (a, b) => a.productDetailStatus - b.productDetailStatus,
       render: (status) => {
         switch (status) {
           case 1:
