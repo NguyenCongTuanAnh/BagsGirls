@@ -18,6 +18,13 @@ const StaffAuth = ({ children }) => {
   const [accessChecked, setAccessChecked] = useState(false);
   const token = getStaffToken();
   const userInfo = JSON.parse(localStorage.getItem('staffTokenString'));
+  const staffId = localStorage.getItem('staffId');
+  const staffToken = localStorage.getItem('staffToken');
+  console.log('====================================');
+  console.log(userInfo);
+  console.log(staffId);
+  console.log(staffToken);
+  console.log('====================================');
   const navigate = useNavigate();
   const validateToken = async (token) => {
     const response = await AuthAPI.validateToken(token);
@@ -28,27 +35,30 @@ const StaffAuth = ({ children }) => {
         duration: 2,
       });
       clearAuthToken();
-      navigate('/login');
+      navigate('/admin/login');
     }
   };
   useEffect(() => {
     const ischecked = async () => {
       validateToken(token);
-      if (token === null || userInfo === null) {
-        navigate('/login');
+      if (token === null || userInfo === null || staffId === null || staffToken === null) {
+        navigate('/admin/login');
+        return;
       }
-      if (userInfo === null) {
-        navigate('/login');
+      if (userInfo === null || userInfo === null || staffId === null || staffToken === null) {
+        navigate('/admin/login');
+        return;
       } else {
         if (userInfo.users.role !== 'ROLE_STAFF' && userInfo.users.role !== 'ROLE_ADMIN') {
           navigate('/unauthorized');
+          return;
         }
       }
       setAccessChecked(true);
     };
 
     ischecked();
-  }, [token, userInfo, navigate]);
+  }, [userInfo, token, staffId, staffToken]);
   if (!accessChecked) {
     return null; // Hoặc có thể return một loading indicator
   }

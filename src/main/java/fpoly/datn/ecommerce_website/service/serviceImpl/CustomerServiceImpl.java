@@ -39,6 +39,7 @@ public class CustomerServiceImpl implements ICustomerService {
         return customerRepository.findAllCustomersWithUsersRoles(pageable);
     }
 
+    @Override
     public Page<Customers> findAllSearch(String search, Integer page, Integer size){
         Pageable pageable = PageRequest.of(page, size);
         return customerRepository.findallSearch(search, pageable);
@@ -78,6 +79,7 @@ public class CustomerServiceImpl implements ICustomerService {
         if (savedUserInfo != null) {
             Customers customer = Customers.builder()
                     .consumePoints(customerDTO.getConsumePoints())
+                    .customerCode((customerDTO.getCustomerCode()))
                     .customerStatus(customerDTO.getCustomerStatus())
                     .rankingPoints(1)
                     .customerRanking(Ranking.KH_TIEMNANG)
@@ -90,6 +92,7 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
 
+    @Override
     public Customers update(String customerId, CustomerDTO1 customerDTO) {
         Customers customers = customerRepository.findById(customerId)
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
@@ -136,11 +139,13 @@ public class CustomerServiceImpl implements ICustomerService {
                 .map(c -> modelMapper.map(c, CustomerDTO.class))
                 .toList();
     }
+    @Override
     public Customers findByEmail(String mail) {
         Customers customers = this.customerRepository.findByEmail(mail);
 
         return customers;
     }
+    @Override
     public CustomerDTO updatePointByTotalPrice(String customerId, Double totalPrice) {
         Customers customers = this.customerRepository.findById(customerId).get();
 

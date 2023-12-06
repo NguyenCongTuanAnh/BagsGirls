@@ -35,6 +35,8 @@ public class Customers {
 
     @Column(name = "customer_status")
     private Integer customerStatus;
+    @Column(name = "customer_code")
+    private String customerCode;
 
     @Column(name = "consume_points")
     private Integer consumePoints;

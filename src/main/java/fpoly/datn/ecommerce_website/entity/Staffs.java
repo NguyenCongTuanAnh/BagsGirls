@@ -31,6 +31,8 @@ public class Staffs {
     @Column(name = "staff_id")
     @GeneratedValue(strategy = GenerationType.UUID)
     private String staffId;
+    @Column(name = "staff_code")
+    private String staffCode;
     @Column(name = "staff_status")
     private Integer staffStatus;
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

@@ -581,6 +581,10 @@ function ProductAddForm() {
                     message: 'Vui lòng điền Tên Balo!',
                     whitespace: true,
                   },
+                  {
+                    pattern: /^[A-Za-z0-9]+$/,
+                    message: 'Tên Balo chỉ bao gồm chữ cái và số!',
+                  },
                 ]}
               >
                 <Input disabled={isFirst} />
@@ -629,6 +633,7 @@ function ProductAddForm() {
                   {
                     required: true,
                     message: 'Vui lòng Điền giá nhập!',
+                    whitespace: true,
                   },
                 ]}
               >
@@ -650,6 +655,7 @@ function ProductAddForm() {
                   {
                     required: true,
                     message: 'Vui lòng điền giá Bán!',
+                    whitespace: true,
                   },
                 ]}
               >
@@ -670,14 +676,22 @@ function ProductAddForm() {
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng điền Số lượng!',
+                    message: 'Số lượng chỉ được chứa số không âm!',
+                    // whitespace: true,
+                    validator: (_, value) => {
+                      const regex = /^[0-9]+$/; // Chỉ chấp nhận số không âm
+                      if (!regex.test(value)) {
+                        return Promise.reject('Số lượng chỉ được chứa số không âm!');
+                      }
+                      return Promise.resolve();
+                    },
                   },
                 ]}
               >
                 <InputNumber
                   size="large"
                   style={{ width: 200 }}
-                  step={5}
+                  step={1}
                   addonAfter="Cái"
                   formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}

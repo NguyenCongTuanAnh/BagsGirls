@@ -1,9 +1,10 @@
 import React, { Fragment, useState } from 'react';
 import styles from './indexLogin.module.scss';
 import { useNavigate } from 'react-router-dom';
-import { Button, Checkbox, Form, Input, message, notification } from 'antd';
+import { Button, Checkbox, Form, Input, Select, message, notification } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import AuthAPI from '~/api/auth/AuthAPI';
+import customerAPI from '~/api/customerAPI';
 
 function RegisterForm(props) {
   const [email, setEmail] = useState('');
@@ -34,15 +35,21 @@ function RegisterForm(props) {
         content: '2 Mật Khẩu không khớp!!!',
       });
     } else {
-      const useradd = {
-        fullName: values.fullName,
-        email: values.email,
-        phoneNumber: values.phoneNumber,
-        password: values.password,
-        role: 'ROLE_CUSTOMER',
+      const cutomer = {
+        customerStatus: 1,
+        consumePoints: 1,
+        rankingPoints: 1,
+        users: {
+          account: values.fullName,
+          fullName: values.fullName,
+          email: values.email,
+          phoneNumber: values.phoneNumber,
+          password: values.password,
+          role: 'ROLE_CUSTOMER',
+        },
       };
       try {
-        const response = await AuthAPI.signup(useradd);
+        const response = await customerAPI.add(cutomer);
 
         if (response.status === 200) {
           notification.success({
@@ -70,8 +77,8 @@ function RegisterForm(props) {
   return (
     <Fragment>
       {contextHolder}
-      <div className={styles.formLoginne}>
-        <div className={styles.authFormContainer}>
+      <div className={styles.formLoginne1}>
+        <div className={styles.authFormContainer1}>
           <h2 className={styles.title}>Đăng ký</h2>
           <Form
             layout="vertical"
@@ -99,11 +106,43 @@ function RegisterForm(props) {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your email!',
+                  message: 'Tên không hợp lệ!',
+                  pattern: /^[\p{L}\d\s]+$/u,
+                  whitespace: true,
+                  validator: (rule, value) => {
+                    if (value && value.trim() !== value) {
+                      return Promise.reject('Tên không được chứa khoảng trắng ở hai đầu!');
+                    }
+                    return Promise.resolve();
+                  },
                 },
               ]}
             >
-              <Input />
+              <Input style={{ width: 400 }} size="large" />
+            </Form.Item>
+            <Form.Item
+              label="Giới Tính"
+              name="gender"
+              rules={[
+                {
+                  required: true,
+                  message: 'Vui chọn giới tính!',
+                },
+              ]}
+            >
+              <Select
+                placeholder="Giới Tính"
+                options={[
+                  {
+                    value: true,
+                    label: 'Nam',
+                  },
+                  {
+                    value: false,
+                    label: 'Nữ',
+                  },
+                ]}
+              />
             </Form.Item>
             <Form.Item
               label="Email"
@@ -111,11 +150,16 @@ function RegisterForm(props) {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your email!',
+                  message: 'Vui lòng điền Email!',
+                  whitespace: true,
+                },
+                {
+                  pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                  message: 'Vui lòng nhập địa chỉ email hợp lệ!',
                 },
               ]}
             >
-              <Input />
+              <Input style={{ width: 400 }} size="large" />
             </Form.Item>
             <Form.Item
               label="Số Điện Thoại"
@@ -123,11 +167,16 @@ function RegisterForm(props) {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your email!',
+                  message: 'Vui lòng điền SĐT!',
+                  whitespace: true,
+                },
+                {
+                  pattern: /^((\+|00)84|0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-6|8-9]|9\d)\d{7}$/,
+                  message: 'Vui lòng nhập số điện thoại hợp lệ!',
                 },
               ]}
             >
-              <Input />
+              <Input style={{ width: 400 }} size="large" />
             </Form.Item>
             <Form.Item
               label="Mật Khẩu"
@@ -135,7 +184,7 @@ function RegisterForm(props) {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your password!',
+                  message: 'Vui lòng điền mật khẩu!',
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
@@ -156,7 +205,7 @@ function RegisterForm(props) {
                 }),
               ]}
             >
-              <Input.Password />
+              <Input.Password style={{ width: 400 }} size="large" />
             </Form.Item>
             <Form.Item
               label="Nhập lại Mật Khẩu"
@@ -164,7 +213,7 @@ function RegisterForm(props) {
               rules={[
                 {
                   required: true,
-                  message: 'Please input your password!',
+                  message: 'Vui lòng nhập lại mật khẩu!',
                 },
                 ({ getFieldValue }) => ({
                   validator(_, value) {
@@ -178,7 +227,7 @@ function RegisterForm(props) {
                 }),
               ]}
             >
-              <Input.Password />
+              <Input.Password style={{ width: 400 }} size="large" />
             </Form.Item>
             <Form.Item
               wrapperCol={{
@@ -186,12 +235,12 @@ function RegisterForm(props) {
                 span: 16,
               }}
             >
-              <Button type="primary" htmlType="submit">
+              <Button size="large" shape="round" type="primary" htmlType="submit">
                 Đăng kí
               </Button>
             </Form.Item>
           </Form>
-          <Button className={styles.linkBtn} onClick={() => navigate('/login')}>
+          <Button type="link" className={styles.linkBtn} onClick={() => navigate('/login')}>
             Bạn đã có tài khoản? Đăng nhập ở đây!!!
           </Button>
         </div>
