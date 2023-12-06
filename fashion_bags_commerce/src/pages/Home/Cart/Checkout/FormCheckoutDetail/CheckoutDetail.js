@@ -9,11 +9,13 @@ import { Input, Button, notification, Result } from 'antd';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import productDetailsAPI from '~/api/productDetailsAPI';
+import BeatLoader from 'react-spinners/ClipLoader';
 
 const CheckoutDetail = () => {
   const [cartItems, setCartItems] = useState([]);
   const [confirmedAddress, setConfirmedAddress] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(true);
+  const [loadingPayment, setLoadingPayment] = useState(false); // State for payment loading
 
   const bottomRef = useRef(null);
   const scrollToBottom = () => {
@@ -111,90 +113,98 @@ const CheckoutDetail = () => {
   };
 
   const handleConfirmation = async () => {
-    const currentTime = new Date();
-    const currentDateTime = dayjs(currentTime).subtract(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
-    setBillCreateDate(currentDateTime);
-    if (!fullName || !phoneNumber || !selectedProvince || !selectedDistrict || !selectedWard || !address) {
-      console.log('Vui lòng điền đầy đủ thông tin');
-      return  notification.error({
-        message: 'Thất bại',
-        description: 'Vui lòng điền đẩy đủ thông tin',
-        duration: 1,
-      });
-    }
+    setLoadingPayment(true);
+    setTimeout(async () => {
+      const currentTime = new Date();
+      const currentDateTime = dayjs(currentTime).subtract(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
+      setBillCreateDate(currentDateTime);
+      if (!fullName || !phoneNumber || !selectedProvince || !selectedDistrict || !selectedWard || !address) {
+        console.log('Vui lòng điền đầy đủ thông tin');
+        setLoadingPayment(false);
+        return notification.error({
+          message: 'Thất bại',
+          description: 'Vui lòng điền đẩy đủ thông tin',
+          duration: 1,
+        });
+      } else {
+        setLoadingPayment(true);
+      }
 
-    const getNameFromCode = (code, list) => {
-      const selectedItem = list.find((item) => item.code === +code);
-      return selectedItem ? selectedItem.name : '';
-    };
-    const selectedProvinceName = getNameFromCode(selectedProvince, provinces);
-    const selectedDistrictName = getNameFromCode(selectedDistrict, districts);
-    const selectedWardName = getNameFromCode(selectedWard, wards);
-
-    const fullAddress = `${address} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`;
-
-    const cartItemsTotal = cartItems.reduce(
-      (acc, item) => {
-        acc.billTotalPrice += item.retailPrice * item.quantity;
-        acc.productAmount += item.quantity;
-        return acc;
-      },
-      { billTotalPrice: 0, productAmount: 0 },
-    );
-
-    try {
-      const billData = {
-        receiverName: fullName,
-        orderPhone: phoneNumber,
-        orderEmail: email,
-        shippingAddress: fullAddress,
-        billCreateDate: currentDateTime,
-        billNote: billNote,
-        billStatus: 4,
-        billCode: generateCustomCode('Bill', 4),
-        billTotalPrice: cartItemsTotal.billTotalPrice,
-        productAmount: cartItemsTotal.productAmount,
+      const getNameFromCode = (code, list) => {
+        const selectedItem = list.find((item) => item.code === +code);
+        return selectedItem ? selectedItem.name : '';
       };
-      const response = await billsAPI.add(billData);
-      console.log('Billsssss', response.data);
+      const selectedProvinceName = getNameFromCode(selectedProvince, provinces);
+      const selectedDistrictName = getNameFromCode(selectedDistrict, districts);
+      const selectedWardName = getNameFromCode(selectedWard, wards);
 
-      const billId = response.data.billId;
-      console.log('BillIDdđ', billId);
+      const fullAddress = `${address} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`;
 
-      // Tạo mảng dữ liệu cho billDetails
-      const billDetailsData = cartItems.map((item) => ({
-        bills: {
-          billId: billId,
+      const cartItemsTotal = cartItems.reduce(
+        (acc, item) => {
+          acc.billTotalPrice += item.retailPrice * item.quantity;
+          acc.productAmount += item.quantity;
+          return acc;
         },
-        productDetails: {
-          productDetailId: item.productDetailId,
-        },
-        amount: item.quantity,
-        price: item.retailPrice,
-      }));
-      console.log('Cartssss', cartItems);
-
-      const responseBillDetails = await Promise.all(billDetailsData.map((billDetail) => billDetailAPI.add(billDetail)));
-
-      setConfirmedAddress(true);
-      setShowAddressForm(false);
-      setSubmittedData(responseBillDetails);
-      await Promise.all(
-        cartItems.map(async (item) => {
-          // Subtract the quantity from the product detail amount
-          await updateProductDetailAmount(item.productDetailId, item.quantity);
-        }),
+        { billTotalPrice: 0, productAmount: 0 },
       );
-      console.log('bilsssssss:', response.data);
-      console.log('BilLDetails:', responseBillDetails);
 
-      localStorage.removeItem('temporaryCart');
-    } catch (error) {
-      console.error('Error submitting information:', error);
-    }
+      try {
+        const billData = {
+          receiverName: fullName,
+          orderPhone: phoneNumber,
+          orderEmail: email,
+          shippingAddress: fullAddress,
+          billCreateDate: currentDateTime,
+          billNote: billNote,
+          billStatus: 4,
+          billCode: generateCustomCode('Bill', 4),
+          billTotalPrice: cartItemsTotal.billTotalPrice,
+          productAmount: cartItemsTotal.productAmount,
+        };
+        const response = await billsAPI.add(billData);
+        console.log('Billsssss', response.data);
+
+        const billId = response.data.billId;
+        console.log('BillIDdđ', billId);
+
+        // Tạo mảng dữ liệu cho billDetails
+        const billDetailsData = cartItems.map((item) => ({
+          bills: {
+            billId: billId,
+          },
+          productDetails: {
+            productDetailId: item.productDetailId,
+          },
+          amount: item.quantity,
+          price: item.retailPrice,
+        }));
+        console.log('Cartssss', cartItems);
+
+        const responseBillDetails = await Promise.all(
+          billDetailsData.map((billDetail) => billDetailAPI.add(billDetail)),
+        );
+
+        setConfirmedAddress(true);
+        setShowAddressForm(false);
+        setSubmittedData(responseBillDetails);
+        await Promise.all(
+          cartItems.map(async (item) => {
+            // Subtract the quantity from the product detail amount
+            await updateProductDetailAmount(item.productDetailId, item.quantity);
+          }),
+        );
+        console.log('bilsssssss:', response.data);
+        console.log('BilLDetails:', responseBillDetails);
+
+        localStorage.removeItem('temporaryCart');
+      } catch (error) {
+        setLoadingPayment(false);
+        console.error('Error submitting information:', error);
+      }
+      setLoadingPayment(false);
+    }, 1500);
   };
-
-  const addBillDetails = async () => {};
 
   useEffect(() => {
     axios
@@ -337,53 +347,6 @@ const CheckoutDetail = () => {
           <button onClick={scrollToBottom}>Giao đến địa chỉ này</button>
 
           <br></br>
-          {/* {submittedData && !confirmedAddress && (
-            <div>
-              <h2>Thông tin người đặt hàng:</h2>
-              <table className="table table-stripped table table-bordered" style={{ width: '100%', height: 'auto' }}>
-                <tbody>
-                  <tr>
-                    <th>Họ và tên:</th>
-                    <td>{submittedData.fullName}</td>
-                  </tr>
-                  <tr>
-                    <th>Số điện thoại:</th>
-                    <td>{submittedData.phoneNumber}</td>
-                  </tr>
-                  <tr>
-                    <th>Email:</th>
-                    <td>{submittedData.email}</td>
-                  </tr>
-                  <tr>
-                    <th>Địa chỉ:</th>
-                    <td style={{ maxHeight: '100px', maxWidth: '300px', overflowY: 'auto' }}>
-                      {submittedData.fullAddress}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Ghi chú:</th>
-                    <td style={{ maxHeight: '100px', maxWidth: '300px', overflowY: 'auto' }}>
-                      {submittedData.billNote}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          <br></br>
-
-          <button style={{ display: submittedData ? 'block' : 'none' }}
-            onClick={scrollToBottom}
-          >Tiếp tục thanh toán</button>
-          <br></br>
-          {confirmedAddress && (
-            <div>
-              <h4>Đã xác nhận địa chỉ giao hàng thành công</h4>
-            </div>
-          )} */}
-
-          {/* ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
 
           <div className="titleNhanHang">
             <h1>Đơn hàng</h1>
@@ -474,9 +437,16 @@ const CheckoutDetail = () => {
           )}
           <br></br>
           <div ref={bottomRef}>
-            <button className="checkOut" onClick={handleConfirmation}>
-              Đặt Hàng
-            </button>
+            {loadingPayment ? (
+              <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <BeatLoader color="#d64336" loading={true} size={50} />
+                <p>Vui lòng chờ...</p>
+              </div>
+            ) : (
+              <button className="checkOut" onClick={handleConfirmation}>
+                Đặt Hàng
+              </button>
+            )}
           </div>
         </form>
       )}
