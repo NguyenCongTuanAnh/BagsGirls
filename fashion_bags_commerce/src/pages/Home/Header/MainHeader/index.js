@@ -88,7 +88,7 @@ function MainHeader() {
     }
   };
   return (
-    <div className="container-fluid" style={{ height: '100px' }}>
+    <div  style={{ height: '100px' }}>
       <div className={styles.mainHeader}>
         <Link to={'/'}>
           <img className={styles.image} alt="img" src="https://i.imgur.com/e1Tfbn5.png"></img>

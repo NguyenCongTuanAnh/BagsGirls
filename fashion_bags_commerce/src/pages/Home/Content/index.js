@@ -1,8 +1,8 @@
 import { Fragment } from 'react';
 import LayoutCarousel from './LayoutCarousel';
 import ShopView from '../Shop/ShopView/index';
-import ProductList from './ProductList/ProductList';
 import ExtendContent from './ExtendContent';
+import ProductList from './ProductList/ProductList';
 
 function Content() {
   return (
