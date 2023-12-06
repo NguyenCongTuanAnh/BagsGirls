@@ -52,15 +52,11 @@ public class BillDetailsServiceImpl implements IBillDetailsService {
         return this.iBillDetailRepository.findAllByBillId(billID);
     }
 
-//    @Override
-//    public List<BillDetails> findAllBillProduct(String billId) {
-//        return this.iBillDetailRepository.findAllBillDetailsById(billId);
-//    }
 
     @Override
     public BillDetailsDTO save(BillDetailsDTO billDetailsDTO) {
         BillDetails billDetails = modelMapper.map(billDetailsDTO, BillDetails.class);
-        System.out.println(billDetails.toString());
+
         return modelMapper.map(this.iBillDetailRepository.save(billDetails), BillDetailsDTO.class);
     }
 

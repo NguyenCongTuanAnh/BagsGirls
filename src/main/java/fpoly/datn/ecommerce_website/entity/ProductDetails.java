@@ -2,10 +2,10 @@ package fpoly.datn.ecommerce_website.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -49,11 +49,10 @@ public class ProductDetails {
     @Column(name = "product_detail_status")
     private Integer productDetailStatus;
 
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id" )
-
-    @JsonManagedReference
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+//    @JsonBackReference
+    @JsonIgnoreProperties("productDetails")
     private Products product;
 
     @ManyToOne

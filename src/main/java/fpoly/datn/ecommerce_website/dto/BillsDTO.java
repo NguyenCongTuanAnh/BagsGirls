@@ -1,6 +1,7 @@
 package fpoly.datn.ecommerce_website.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Staffs;
 import fpoly.datn.ecommerce_website.entity.Vouchers;
@@ -12,7 +13,9 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,6 +32,8 @@ public class BillsDTO {
     private Customers customer;
     //
     private Vouchers voucher;
+
+    private List<BillDetails> details = new ArrayList<>();
 
     private String billCode;
 

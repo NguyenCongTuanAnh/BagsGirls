@@ -29,15 +29,7 @@ public class ImageRestController {
         return ResponseEntity.ok(imageService.findAll());
     }
 
-//    //GetOne
-//    @RequestMapping(value = "/image", method = RequestMethod.GET)
-//    public ResponseEntity<?> getOne(@RequestParam String id) {
-//        if (imageService.findById(id) != null) {
-//            return ResponseEntity.ok(imageService.findById(id));
-//        } else {
-//            return ResponseEntity.ok("Không tìm thấy ID !!!");
-//        }
-//    }
+//
 
     //Add
     @RequestMapping(value = "/image", method = RequestMethod.POST)

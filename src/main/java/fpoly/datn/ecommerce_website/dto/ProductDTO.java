@@ -19,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @Builder
+
 public class ProductDTO {
 
     private String productId;
