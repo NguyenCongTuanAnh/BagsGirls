@@ -62,7 +62,7 @@ function ShopView({ titleContent }) {
     try {
       const response = await fullProductAPI.getAll();
       const data = response.data;
-      console.log(data);
+      // console.log(data);
       setData(data);
       // setLoadingProducts(false);
     } catch (error) {

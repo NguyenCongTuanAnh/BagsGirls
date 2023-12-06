@@ -6,6 +6,7 @@ import fpoly.datn.ecommerce_website.entity.Compartments;
 import fpoly.datn.ecommerce_website.entity.Materials;
 import fpoly.datn.ecommerce_website.entity.Producers;
 import fpoly.datn.ecommerce_website.entity.Products;
+import fpoly.datn.ecommerce_website.entity.Products_ProductDetails;
 import fpoly.datn.ecommerce_website.entity.Sizes;
 import fpoly.datn.ecommerce_website.entity.Types;
 import lombok.Getter;

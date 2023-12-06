@@ -1,32 +1,13 @@
 import { Layout } from 'antd';
-import Footer from '../Footer/index';
-import Header from '../Header/index';
 import ShopView from './ShopView/index';
 
-import styles from './index.module.scss';
-import { Link } from 'react-router-dom';
-import { Fragment, useEffect } from 'react';
-import AddressVietnam from '~/pages/Home/Cart/Checkout/FormCheckoutDetail/CheckoutDetail';
-import CartItem from '../Cart/CartItem/cartItem';
+import MainLayout from '../MainLayout';
 
 function Shop() {
-  // useEffect(() => {
-  //   window.scrollTo(0, 0);
-  // }, []);
   return (
-    <Fragment>
-      <div className="fullpage">
-        <div className="header001">
-          <Header />
-        </div>
-        <div className="page_content">
-          <ShopView />
-        </div>
-        <div className="footer_client">
-          <Footer />
-        </div>
-      </div>
-    </Fragment>
+    <MainLayout>
+      <ShopView />
+    </MainLayout>
   );
 }
 
