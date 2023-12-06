@@ -411,6 +411,7 @@ const SalesCounterForm = () => {
       if (customer == null && visible === true) {
         messageApi.error('Vui lòng Chọn Khách lẻ hoặc Điền KH Thân Thiết!!!');
       } else if (selectedItems.length === 0) {
+        messageApi.error('Vui lòng thêm sản phẩm!!!');
       } else {
         notification.success({
           message: 'Thành Công',
@@ -1418,21 +1419,14 @@ const SalesCounterForm = () => {
     );
   }
   return (
-    <div className="contentStyle1">
+    <div >
       {contextHolder}
       <div
         style={{
           marginBottom: 16,
         }}
       >
-        <Button
-          onClick={add}
-          type="primary"
-          icon={<PlusOutlined />}
-          shape="default"
-          size="large"
-          style={{ margin: '10px 0 0 10px' }}
-        >
+        <Button onClick={add} type="primary" icon={<PlusOutlined />} shape="default" size="large">
           Thêm Tab
         </Button>
       </div>
