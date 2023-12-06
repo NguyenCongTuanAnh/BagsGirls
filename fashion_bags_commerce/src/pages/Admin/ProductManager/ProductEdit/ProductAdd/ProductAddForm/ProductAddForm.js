@@ -129,10 +129,10 @@ function ProductAddForm() {
   };
   const handleresetForm = () => {
     form.resetFields([
-      'colorName',
-      'typeName',
-      'materialName',
-      'sizeName',
+      'colorId',
+      'typeId',
+      'materialId',
+      // 'sizeName',
       'brandName',
       'compartmentName',
       'buckleTypeName',
@@ -182,10 +182,6 @@ function ProductAddForm() {
       producerName: producerSelectedName,
       buckleTypeName: buckleTypeSelectedName,
     };
-    console.log('====================================');
-    console.log([...baloListPreview, tempBalo]);
-    console.log([...baloList, addBalo]);
-    console.log('====================================');
     setBaloListPreview([...baloListPreview, tempBalo]);
 
     notification.success({
@@ -208,20 +204,22 @@ function ProductAddForm() {
   };
   const reFreshForm = () => {
     form.resetFields([
-      'colorName',
-      // 'typeName',
-      // 'materialName',
-      // 'sizeName',
-      // // "brandName",
-      // 'compartmentName',
-      // 'buckleTypeName',
-      // 'producerName',
-      // 'baloDetailStatus',
-      // 'baloDetailDescribe',
+      'colorId',
+      'typeId',
+      'materialId',
+      'sizeId',
+      // "brandId",
+      'compartmentId',
+      'buckleTypeId',
+      'producerId',
+      'productDetailStatus',
+      'productDetailDescribe',
       // 'imageUrl',
       'importPrice',
+      'reatilsPrice',
+      'baloDetailAmount',
     ]);
-
+    setFileList([]);
     notification.success({
       message: 'Hoàn Thành',
       description: 'Đã Reset Form thành công !!!!',
@@ -492,6 +490,40 @@ function ProductAddForm() {
       ),
     });
 
+  const handleDelete = (product) => {
+    const keyProduct =
+      product.buckleTypeId +
+      product.colorId +
+      product.compartmentId +
+      product.materialId +
+      product.producerId +
+      product.typeId +
+      product.sizeId +
+      product.brandId;
+    const indexBaloListPreview = baloListPreview.findIndex((item) => item === product);
+
+    const indexBaloList = baloList.findIndex(
+      (item) =>
+        item.brandId === product.brandId &&
+        item.sizeId === product.sizeId &&
+        item.typeId === product.typeId &&
+        item.producerId === product.producerId &&
+        item.materialId === product.materialId &&
+        item.compartmentId === product.compartmentId &&
+        item.colorId === product.colorId &&
+        item.buckleTypeId === product.buckleTypeId,
+    );
+    // if (indexBaloListPreview !== -1) {
+    //   baloListPreview.splice(indexBaloListPreview, 1);
+    // }
+    // if (indexBaloList !== -1) {
+    //   baloList.splice(indexBaloList, 1);
+    // }
+    console.log(indexBaloList);
+    console.log(indexBaloListPreview);
+    console.log();
+    console.log(product);
+  };
   return (
     <Fragment>
       <div>
@@ -500,6 +532,7 @@ function ProductAddForm() {
           baloListPreview={baloListPreview}
           testCase={testCase}
           handleSendUpload={handleSendUpload}
+          handleDelete={handleDelete}
         />
       </div>
       <div>

@@ -29,7 +29,13 @@ function BaloDetailsPreview(props) {
 
   const [baloList, setBaloList] = useState(props.baloList);
   const [baloListPreview, setBaloListPreview] = useState(props.baloListPreview);
-  console.log(props.baloListPreview);
+  const [tableParams, setTableParams] = useState({
+    pagination: {
+      current: 1,
+      pageSize: 4,
+    },
+  });
+  // console.log(props.baloListPreview);
   const columns = [
     {
       title: 'STT',
@@ -178,7 +184,7 @@ function BaloDetailsPreview(props) {
       key: 'action',
       width: 100,
       fixed: 'right',
-      render: (text, record) => <Button>Xóa</Button>,
+      render: (text, record) => <Button onClick={() => props.handleDelete(record)}>Xóa</Button>,
     },
   ];
 
@@ -264,18 +270,22 @@ function BaloDetailsPreview(props) {
         const response = await baloAPI.add(baloAdd);
         const id = response.data.productId;
         const result = await props.handleSendUpload();
-        for (const obj of result) {
-          const uploadedImage = obj;
-          const imageAdd = {
-            imgCode: uploadedImage.imgCode,
-            imgName: uploadedImage.imgName,
-            imgUrl: uploadedImage.imgUrl,
-            isPrimary: true,
-            products: {
-              productId: id,
-            },
-          };
-          const response = await imageAPI.upload(imageAdd);
+        if (result !== undefined) {
+          for (const obj of result) {
+            const uploadedImage = obj;
+            const imageAdd = {
+              imgCode: uploadedImage.imgCode,
+              imgName: uploadedImage.imgName,
+              imgUrl: uploadedImage.imgUrl,
+              isPrimary: true,
+              products: {
+                productId: id,
+              },
+            };
+            const response = await imageAPI.upload(imageAdd);
+          }
+        } else {
+          return;
         }
 
         baloDetails.forEach((element) => {
@@ -299,7 +309,7 @@ function BaloDetailsPreview(props) {
         console.log(error);
         notification.error({
           message: 'Lỗi',
-          description: 'Vui lòng xác nhận',
+          description: 'Đã có lỗi vui lòng thử lại!',
           duration: 2,
         });
       }
@@ -323,6 +333,11 @@ function BaloDetailsPreview(props) {
     setBaloList(props.baloList);
     setBaloListPreview(props.baloListPreview);
   }, [props.baloList, props.baloListPreview]);
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+    });
+  };
   return (
     <Fragment>
       <div>
@@ -364,7 +379,8 @@ function BaloDetailsPreview(props) {
           loading={loading}
           columns={columns}
           dataSource={baloListPreview}
-          pagination={false}
+          pagination={tableParams.pagination}
+          onChange={handleTableChange}
           scroll={{
             x: 1500,
             y: 600,

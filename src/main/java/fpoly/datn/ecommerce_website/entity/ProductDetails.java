@@ -2,6 +2,7 @@ package fpoly.datn.ecommerce_website.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,7 +51,8 @@ public class ProductDetails {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    @JsonBackReference
+//    @JsonBackReference
+    @JsonIgnoreProperties("productDetails")
     private Products product;
 
     @ManyToOne

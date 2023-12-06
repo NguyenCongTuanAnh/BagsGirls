@@ -36,6 +36,7 @@ public class BillDetails {
 
     @ManyToOne
     @JoinColumn(name = "product_detail_id", referencedColumnName = "product_detail_id")
+    @JsonIgnoreProperties("productDetails")
     private ProductDetails productDetails;
 
     @Column(name = "amount")

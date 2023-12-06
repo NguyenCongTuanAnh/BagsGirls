@@ -1,5 +1,6 @@
 package fpoly.datn.ecommerce_website.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -55,6 +56,7 @@ public class Products {
     private List<Images> images;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    @JsonManagedReference
+//    @JsonManagedReference
+    @JsonIgnoreProperties("product")
     private List<ProductDetails> productDetails;
 }
