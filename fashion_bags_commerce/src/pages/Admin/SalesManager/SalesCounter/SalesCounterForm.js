@@ -41,6 +41,7 @@ import voucherAPI from '~/api/voucherAPI';
 import moment from 'moment/moment';
 import Search from 'antd/es/input/Search';
 import { MdRestore } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 const { Option } = AutoComplete;
 
 const SalesCounterForm = () => {
@@ -124,6 +125,8 @@ const SalesCounterForm = () => {
     const [voucher, setVoucher] = useState('');
     const [rankingName, setRankingName] = useState('');
     const [discountPercentByRankingName, setDiscountPercentByRankingName] = useState();
+    const navigate = useNavigate();
+
     let html5QrCode;
     const soundEffect = new Audio(
       'https://firebasestorage.googleapis.com/v0/b/bagsgirl-datn.appspot.com/o/sound-effect%2FA3TMECN-beep.mp3?alt=media&token=6c474e99-443f-4fbc-b5ef-231e6f742659',
@@ -137,7 +140,11 @@ const SalesCounterForm = () => {
       setTotalAmount(total);
       return total;
     };
-
+    useEffect(() => {
+      if (!staff) {
+        navigate('/admin/login');
+      }
+    }, []);
     const handleSelect = (value, option) => {
       const item = options.find((item) => item.productDetailId === value);
 
@@ -733,9 +740,15 @@ const SalesCounterForm = () => {
               rules={[
                 {
                   required: true,
-                  message: 'Vui lòng điền tên!',
-                  pattern: /^[A-Za-z]+$/i,
+                  message: 'Tên không hợp lệ!',
+                  pattern: /^[\p{L}\d\s]+$/u,
                   whitespace: true,
+                  validator: (rule, value) => {
+                    if (value && value.trim() !== value) {
+                      return Promise.reject('Tên không được chứa khoảng trắng ở hai đầu!');
+                    }
+                    return Promise.resolve();
+                  },
                 },
               ]}
             >
@@ -773,7 +786,7 @@ const SalesCounterForm = () => {
                 },
               ]}
             >
-              <Input width={200}></Input>n
+              <Input width={200}></Input>
             </Form.Item>
           </Form>
           <Row>
@@ -1046,7 +1059,7 @@ const SalesCounterForm = () => {
                       <Form.Item
                         label="Nhân Viên"
                         name="staffName"
-                        initialValue={staff.users.fullName}
+                        initialValue={staff !== null ? staff.users.fullName : ''}
                         className={styles.item}
                         rules={[
                           {
@@ -1065,7 +1078,7 @@ const SalesCounterForm = () => {
                   form={form}
                   onFinish={onHandleAddBill}
                   initialValues={{
-                    staffName: staff.fullName,
+                    staffName: staff !== null ? staff.users.fullName : '',
                     paymentMethod: 1,
                     billNote: '',
                   }}

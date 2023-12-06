@@ -10,7 +10,7 @@ import axios from 'axios';
 import AuthAPI from '~/api/auth/AuthAPI';
 import customerAPI from '~/api/customerAPI';
 import staffAPI from '~/api/staffAPI';
-function LoginForm(props) {
+function LoginFormStaff(props) {
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ function LoginForm(props) {
     const userLogin = {
       email: values.email,
       password: values.password,
-      role: 'ROLE_CUSTOMER',
+      role: 'ROLE_STAFF',
     };
     try {
       console.log(userLogin);
@@ -34,7 +34,7 @@ function LoginForm(props) {
 
         localStorage.setItem('customerToken', response.data.data.token);
         localStorage.setItem('customerId', customer.data.customerId);
-        const userToken = await AuthAPI.getCustomerToken('ROLE_CUSTOMER');
+        const userToken = await AuthAPI.getCustomerToken();
         console.log('====================================');
         console.log('kh');
         console.log(userToken);
@@ -52,7 +52,7 @@ function LoginForm(props) {
 
         localStorage.setItem('staffToken', response.data.data.token);
         localStorage.setItem('staffId', staff.data.staffId);
-        const userToken = await AuthAPI.getStaffToken('ROLE_STAFF');
+        const userToken = await AuthAPI.getStaffToken();
         localStorage.setItem('staffTokenString', JSON.stringify(userToken.data));
         notification.success({
           message: 'Đăng nhập thành công!!!',
@@ -177,4 +177,4 @@ function LoginForm(props) {
     </div>
   );
 }
-export default LoginForm;
+export default LoginFormStaff;

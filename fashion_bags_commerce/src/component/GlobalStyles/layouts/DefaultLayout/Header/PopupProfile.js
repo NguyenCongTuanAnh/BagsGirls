@@ -27,7 +27,7 @@ function PopupProfile() {
         localStorage.removeItem('staffTokenString');
         localStorage.removeItem('staffId');
         localStorage.removeItem('token');
-        navigate('/');
+        navigate('/admin/login');
         window.location.reload();
       }, 1000);
     }, 1000);

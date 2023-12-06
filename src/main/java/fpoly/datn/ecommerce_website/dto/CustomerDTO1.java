@@ -19,6 +19,7 @@ import lombok.ToString;
 public class CustomerDTO1 {
 
     private String customerId;
+    private String staffCode;
 
     private Integer customerStatus;
 

@@ -44,6 +44,7 @@ import PrintTableComponent from './component/GlobalStyles/layouts/DefaultLayout/
 import AboutPage from './pages/Home/GioiThieu';
 import BlogPage from './pages/Home/Blog';
 import HoaDonTaiQuayView from './pages/Admin/QuanLyHoaDon/HoaDonTaiQuay/indexHoaDonTaiQuayView';
+import LoginFormStaff from './pages/Login/FormLogin/FormLoginStaff/LoginFormStaff';
 
 // const dynamicRoutes = [
 //   { path: '/product-viewer', component: <ProductViewer />, title: 'Trang sản Phẩm' },
@@ -80,6 +81,7 @@ function App() {
     <Fragment>
       <Router>
         <Routes>
+          <Route path="/admin/login" element={<LoginFormStaff />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/signup" element={<RegisterForm />} />
           <Route path="/" element={<Home />} />

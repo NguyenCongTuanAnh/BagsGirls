@@ -16,7 +16,7 @@ import lombok.ToString;
 public class StaffDTO {
 
     private String staffId;
-
+    private String staffCode;
     private Integer staffStatus;
     private String fullName;
     private String account;
