@@ -131,7 +131,8 @@ function TableContent() {
   const onShowSizeChange = (current, pageSize) => {
     setPageSize(pageSize);
     setCurrentPage(current);
-    getAllPhanTrangBuckleType(current, pageSize);
+    // getAllPhanTrangBuckleType(current, pageSize);
+    setLoading(true);
   };
   return (
     <div
@@ -157,11 +158,13 @@ function TableContent() {
       />
       <div className={styles.pagination}>
         <Pagination
-          // showSizeChanger  
-          onShowSizeChange={onShowSizeChange}
+          className={styles.pagination}
+          showSizeChanger
+          total={totalItem}
           onChange={onShowSizeChange}
           defaultCurrent={1}
-          total={totalItem}
+          current={currentPage}
+          defaultPageSize={pageSize}
         />
       </div>
     </div>

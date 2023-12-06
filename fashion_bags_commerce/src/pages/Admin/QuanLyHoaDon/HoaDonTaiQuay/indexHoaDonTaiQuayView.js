@@ -6,20 +6,20 @@ import TableHoaDonTaiQuay from './TableHoaDonTaiQuay/TableHoaDonTaiQuay';
 const { Header, Footer, Sider, Content } = Layout;
 
 function HoaDonTaiQuayView() {
-    return (
-        <Layout style={{ height: '100%', background: '#f4f3f4' }}>
-            <Sider width={300} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
-                <Sidebar keyIndex="7" openKey="sub4" />
-            </Sider>
-            <Layout className="layoutContent">
-                <Header className="headerStyle">
-                    <HeaderContent titlePage="Danh Sách Hóa Đơn" />
-                </Header>
-                <Content className="contentStyle">
-                    <TableHoaDonTaiQuay style={{ boder: 'black solid 1px' }} />
-                </Content>
-            </Layout>
-        </Layout>
-    );
+  return (
+    <Layout style={{ height: '100%', background: '#f4f3f4' }}>
+      <Sider width={260} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
+        <Sidebar keyIndex="7" openKey="sub4" />
+      </Sider>
+      <Layout className="layoutContent">
+        <Header className="headerStyle">
+          <HeaderContent titlePage="Danh Sách Hóa Đơn" />
+        </Header>
+        <Content className="contentStyle">
+          <TableHoaDonTaiQuay style={{ boder: 'black solid 1px' }} />
+        </Content>
+      </Layout>
+    </Layout>
+  );
 }
 export default HoaDonTaiQuayView;
