@@ -137,10 +137,10 @@ function TableContent() {
   const onShowSizeChange = (current, pageSize) => {
     setPageSize(pageSize);
     setCurrentPage(current);
-    getAll(current, pageSize);
+    setLoading(true)
   };
   return (
-    <Fragment
+    <div
       style={{
         padding: '10px',
       }}
@@ -149,7 +149,7 @@ function TableContent() {
       <Button icon={<ReloadOutlined />} className="" onClick={reload} loading={loading}></Button>
       <Table
         className="table table-striped"
-        scroll={{ x: 1000, y: 570 }}
+        scroll={{ x: 1000, y: 680 }}
         rowKey={(record) => record.colorId} // Đảm bảo colorId là một giá trị duy nhất
         columns={columns}
         dataSource={list}
@@ -157,15 +157,17 @@ function TableContent() {
         pagination={false}
       />
       <div className={styles.pagination}>
-        <Pagination
-          // showSizeChanger
-          onShowSizeChange={onShowSizeChange}
+      <Pagination
+          className={styles.pagination}
+          showSizeChanger
+          total={totalItem}
           onChange={onShowSizeChange}
           defaultCurrent={1}
-          total={totalItem}
+          current={currentPage}
+          defaultPageSize={pageSize}
         />
       </div>
-    </Fragment>
+    </div>
   );
 }
 export default TableContent;

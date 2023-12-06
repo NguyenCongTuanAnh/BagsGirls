@@ -15,7 +15,7 @@ function ColorView() {
         <Header className="headerStyle">
           <HeaderContent titlePage="Danh Sách Màu Sắc" />
         </Header>
-        <Content className="contentStyle">
+        <Content className="contentStyle1">
           <TableContent />
         </Content>
       </Layout>

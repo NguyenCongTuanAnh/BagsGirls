@@ -28,11 +28,9 @@ const TableContent = () => {
   }, []); // Update data when page or page size changes
 
   const onChange = (current, pageSize) => {
-    console.log(current);
-    console.log(pageSize);
     setCurrentPage(current);
     setPagesSize(pageSize);
-    getAllBrand(current, pageSize);
+    setLoading(true);
   };
 
   const getAllBrand = async (current, pageSize) => {
@@ -112,7 +110,9 @@ const TableContent = () => {
             }}
             onCancel={onCancel}
           >
-            <Button type="default" danger icon={<DeleteOutlined />}>Xóa</Button>
+            <Button type="default" danger icon={<DeleteOutlined />}>
+              Xóa
+            </Button>
           </Popconfirm>
         </Space>
       ),
@@ -151,10 +151,12 @@ const TableContent = () => {
       />
       <div className={styles.pagination}>
         <Pagination
-        //  showSizeChanger
+          className={styles.pagination}
+          showSizeChanger
           total={totalItem}
           onChange={onChange}
           defaultCurrent={1}
+          current={currentPage}
           defaultPageSize={pagesSize}
         />
       </div>
