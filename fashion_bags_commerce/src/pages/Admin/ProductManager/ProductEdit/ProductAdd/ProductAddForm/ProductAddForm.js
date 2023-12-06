@@ -472,7 +472,7 @@ function ProductAddForm() {
     });
 
   return (
-    <Fragment>
+    <div className='contentStyle1'>
       <div>
         <BaloDetailsPreview
           baloList={baloList}
@@ -1038,7 +1038,7 @@ function ProductAddForm() {
           </Row>
         </Form.Item>
       </Form>
-    </Fragment>
+    </div>
   );
 }
 export default ProductAddForm;
