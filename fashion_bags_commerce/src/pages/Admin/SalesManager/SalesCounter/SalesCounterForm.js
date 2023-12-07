@@ -646,7 +646,7 @@ const SalesCounterForm = () => {
       const [addCusomter] = Form.useForm();
 
       const onFinish = async (values) => {
-        const password = generateCustomCode('kh', 4);
+        const password = generateCustomCode('CamOnQuyKh@ch', 4);
         messageApi.open({
           type: 'loading',
           content: 'Đang tạo Khách Hàng..',
@@ -672,14 +672,20 @@ const SalesCounterForm = () => {
             messageApi.destroy();
           } else {
             const useradd = {
-              fullName: values.fullName,
-              email: values.email,
-              phoneNumber: values.phoneNumber,
-              password: password,
-              role: 'ROLE_CUSTOMER',
+              customerStatus: 1,
+              consumePoints: 0,
+              rankingPoints: 0,
+              users: {
+                account: values.fullName,
+                fullName: values.fullName,
+                email: values.email,
+                phoneNumber: values.phoneNumber,
+                password: password,
+                role: 'ROLE_CUSTOMER',
+              },
             };
             try {
-              const response = await AuthAPI.signup(useradd);
+              const response = await customerAPI.add(useradd);
               const mail = {
                 email: values.email,
                 subject: 'Đăng kí tại khoản Thành Công',
@@ -696,7 +702,7 @@ const SalesCounterForm = () => {
                 });
                 messageApi.destroy();
 
-                const customer = await (await customerAPI.findByEmail(response.data.data.email)).data;
+                const customer = await (await customerAPI.findByEmail(response.data.users.email)).data;
 
                 form.setFieldsValue({
                   fullName: customer.users.fullName,
@@ -1437,7 +1443,7 @@ const SalesCounterForm = () => {
     );
   }
   return (
-    <div >
+    <div>
       {contextHolder}
       <div
         style={{

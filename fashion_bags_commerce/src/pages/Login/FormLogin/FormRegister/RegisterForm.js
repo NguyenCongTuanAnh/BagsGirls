@@ -49,17 +49,36 @@ function RegisterForm(props) {
         },
       };
       try {
-        const response = await customerAPI.add(cutomer);
+        const isExistPhoneNumberRespone = await customerAPI.findByPhoneNumber(values.phoneNumber);
+        const isExistEmailRespone = await customerAPI.findByEmail(values.email);
 
-        if (response.status === 200) {
-          notification.success({
-            message: 'Thành Công',
-            description: 'Tạo taì khoản thành công!!!',
+        if (isExistPhoneNumberRespone.data !== '') {
+          notification.warning({
+            message: 'Thông Báo',
+            description: 'Số Điện thoại này đã được đăng kí!!',
             duration: 2,
           });
-          setTimeout(() => {
-            navigate('/login');
-          }, 100);
+          messageApi.destroy();
+        } else if (isExistEmailRespone.data !== '') {
+          notification.warning({
+            message: 'Thông Báo',
+            description: 'Email này đã được đăng kí!!',
+            duration: 2,
+          });
+          messageApi.destroy();
+        } else {
+          const response = await customerAPI.add(cutomer);
+
+          if (response.status === 200) {
+            notification.success({
+              message: 'Thành Công',
+              description: 'Tạo taì khoản thành công!!!',
+              duration: 2,
+            });
+            setTimeout(() => {
+              navigate('/login');
+            }, 100);
+          }
         }
       } catch (error) {
         if (error.response.status === 400) {

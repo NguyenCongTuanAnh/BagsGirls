@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RequestMapping("/api")
 @RestController
@@ -41,13 +44,27 @@ public class ProductRestController {
     @RequestMapping(value = "/product", method = RequestMethod.GET)
     public ResponseEntity<?> getAll(
             @RequestParam(name = "page", required = false) Integer pageNum,
-            @RequestParam(name = "size", required = false) Integer pageSize
+            @RequestParam(name = "size", required = false) Integer pageSize,
+            @RequestParam(name = "productName", required = false, defaultValue = "") String productName,
+            @RequestParam(name = "productCode", required = false, defaultValue = "") String productCode,
+            @RequestParam(name = "brandName", required = false, defaultValue = "") String brandName,
+            @RequestParam(name = "productStatus", required = false, defaultValue = "") Integer productStatus,
+            @RequestParam(defaultValue = "") List<String> sortList,
+            @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder
     ) {
         if (pageNum == null || pageSize == null) {
             return new ResponseEntity<>
                     (this.productService.findAll(), HttpStatus.OK);
         }
-        Page<ProductDTO> productPage = productService.findAllPagination(pageNum, pageSize);
+        Page<ProductDTO> productPage = productService.findAllPagination(
+                pageNum,
+                pageSize,
+                productName,
+                productCode,
+                brandName,
+                productStatus,
+                sortList,
+                sortOrder.toString());
         return new ResponseEntity<>
                 (productPage, HttpStatus.OK);
     }
