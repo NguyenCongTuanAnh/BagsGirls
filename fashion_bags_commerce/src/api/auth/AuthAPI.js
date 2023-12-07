@@ -21,13 +21,13 @@ const AuthAPI = {
       },
     });
   },
-  getCustomerToken() {
-    const url = '/api/authentication/getUserToken';
+  getCustomerToken(role) {
+    const url = `/api/authentication/getUserToken?role=ROLE_CUSTOMER`;
 
     return axiosCustomerAuth.get(url);
   },
-  getStaffToken() {
-    const url = '/api/authentication/getUserToken';
+  getStaffToken(role) {
+    const url = `/api/authentication/getUserToken?role=ROLE_STAFF`;
 
     return axiosClient.get(url);
   },

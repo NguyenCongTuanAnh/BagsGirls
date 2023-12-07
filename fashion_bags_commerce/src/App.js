@@ -47,41 +47,16 @@ import HoaDonTaiQuayView from './pages/Admin/QuanLyHoaDon/HoaDonTaiQuay/indexHoa
 import SearchPage from './pages/Home/Shop/ShopView/SearchPage';
 import Header from './pages/Home/Header';
 
-// const dynamicRoutes = [
-//   { path: '/product-viewer', component: <ProductViewer />, title: 'Trang sản Phẩm' },
-//   { path: '/', component: <Home />, title: 'Home' },
-//   { path: '/unauthor', component: <UnAuthorPage />, title: 'Unauthor' },
-//   { path: '/product-add', component: <ProductAdd />, title: 'Trang thêm sản phẩm', requiredRoles: ['ROLE_ADMIN'] },
-//   { path: '/type-view', component: <TypeView />, title: 'Trang kiểu sản phẩm', requiredRoles: ['ROLE_ADMIN'] },
-//   {
-//     path: '/compartment-view',
-//     component: <CompartmentView />,
-//     title: 'Trang kiểu ngăn',
-//     requiredRoles: ['ROLE_ADMIN'],
-//   },
-//   { path: '/producer-view', component: <ProducerView />, title: 'Trang nhà sản xuất', requiredRoles: ['ROLE_ADMIN'] },
-//   { path: '/voucher-view', component: <VoucherView />, title: 'Trang khuyến mại', requiredRoles: ['ROLE_ADMIN'] },
-//   { path: '/staff-view', component: <StaffView />, title: 'Trang nhân viên', requiredRoles: ['ROLE_ADMIN'] },
-//   { path: '/customer-view', component: <CustomerView />, title: 'Trang khách hàng', requiredRoles: ['ROLE_ADMIN'] },
-//   {
-//     path: '/sales-counter',
-//     component: <SalesCounter />,
-//     title: 'Trang bán hàng',
-//     requiredRoles: ['ROLE_ADMIN', 'ROLE_STAFF'],
-//   },
-//   {
-//     path: '/bill-view',
-//     component: <HoaDonOnlineView />,
-//     title: 'Trang hóa đơn',
-//     requiredRoles: ['ROLE_ADMIN', 'ROLE_STAFF'],
-//   },
-// ];
+import ThongKeView from './pages/Admin/ThongKe/indexThongKe';
+import LoginFormStaff from './pages/Login/FormLogin/FormLoginStaff/LoginFormStaff';
+
 
 function App() {
   return (
     <Fragment>
       <Router>
         <Routes>
+          <Route path="/admin/login" element={<LoginFormStaff />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/signup" element={<RegisterForm />} />
           <Route path="/" element={<Home />} />
@@ -95,6 +70,7 @@ function App() {
 
           <Route path="/gioi-thieu" element={<AboutPage />} />
           <Route path="/blog" element={<BlogPage />} />
+          <Route path="/thong-ke" element={<ThongKeView />} />
 
           <Route
             path="/bill-offline-view"

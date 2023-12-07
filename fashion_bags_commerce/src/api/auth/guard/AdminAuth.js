@@ -14,6 +14,13 @@ const AdminAuth = ({ children }) => {
   const [accessChecked, setAccessChecked] = useState(false);
   const token = getStaffToken();
   const userInfo = JSON.parse(localStorage.getItem('staffTokenString'));
+  const staffId = localStorage.getItem('staffId');
+  const staffToken = localStorage.getItem('staffToken');
+  console.log('====================================');
+  console.log(userInfo);
+  console.log(staffId);
+  console.log(staffToken);
+  console.log('====================================');
   const navigate = useNavigate();
   const validateToken = async (token) => {
     const response = await AuthAPI.validateToken(token);
@@ -24,7 +31,7 @@ const AdminAuth = ({ children }) => {
         duration: 2,
       });
       clearAuthToken();
-      navigate('/login');
+      navigate('/admin/login');
     }
   };
   useEffect(() => {
@@ -32,10 +39,10 @@ const AdminAuth = ({ children }) => {
 
     const ischecked = async () => {
       if (token === null) {
-        navigate('/login');
+        navigate('/admin/login');
       }
       if (userInfo === null) {
-        navigate('/login');
+        navigate('/admin/login');
       } else {
         if (userInfo.users.role !== 'ROLE_ADMIN') {
           navigate('/unauthorized');
@@ -44,7 +51,7 @@ const AdminAuth = ({ children }) => {
       setAccessChecked(true);
     };
     ischecked();
-  }, []);
+  }, [userInfo, token, staffId, staffToken]);
   if (!accessChecked) {
     return null; // Hoặc có thể return một loading indicator
   }

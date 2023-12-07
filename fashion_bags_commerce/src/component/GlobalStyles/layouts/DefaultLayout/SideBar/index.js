@@ -44,6 +44,7 @@ const items = [
       '4',
     ),
     getItem('Quản lý Đặt Hàng', '5'),
+
     getItem('Submenu', 'sub3', <AppstoreOutlined style={{ fontSize: '23px' }} />, []),
   ]),
   getItem('Quản lý Hóa Đơn', 'sub4', <PaperClipOutlined style={{ fontSize: '23px' }} />, [
@@ -157,6 +158,14 @@ const items = [
     'sub8',
     <TeamOutlined style={{ fontSize: '23px' }} />,
   ),
+  getItem(
+    <Link style={{ textDecoration: 'none' }} to={'/thong-ke'}>
+      Thống kê
+    </Link>,
+    'sub9',
+    <BarChartOutlined style={{ fontSize: '23px' }} />
+
+  ),
   getItem('Giao Ca', 'sub10', <ContactsOutlined style={{ fontSize: '23px' }} />, [
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/shift-view'}>
@@ -168,12 +177,7 @@ const items = [
     getItem('Option 11', '36'),
     getItem('Option 12', '37'),
   ]),
-  getItem('Thống Kê ', 'sub9', <BarChartOutlined style={{ fontSize: '23px' }} />, [
-    getItem('Option 9', '38'),
-    getItem('Option 10', '39'),
-    getItem('Option 11', '40'),
-    getItem('Option 12', '41'),
-  ]),
+
 ];
 const rootSubmenuKeys = ['sub1', 'sub2', 'sub4', 'sub5', 'sub6', 'sub7', 'sub8', 'sub9', 'sub10', 'sub11', 'sub999'];
 function Sidebar(props) {

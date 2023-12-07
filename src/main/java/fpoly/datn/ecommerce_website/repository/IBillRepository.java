@@ -22,7 +22,7 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
     @Query(value = "SELECT b FROM Bills b WHERE " +
             " (b.billCode LIKE %:search% " +
             " OR b.orderPhone LIKE %:search% " +
-            " OR CAST(b.billTotalPrice AS string) like %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
             " OR b.receiverName LIKE %:search% " +
             " OR :search IS NULL ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
@@ -39,7 +39,7 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
     @Query(value = "SELECT b FROM Bills b WHERE b.billStatus = :status " +
             " AND (b.billCode LIKE %:search% " +
             " OR b.orderPhone LIKE %:search% " +
-            " OR CAST(b.billTotalPrice AS string) like %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
             " OR b.receiverName LIKE %:search% " +
             " OR :search IS NULL ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
@@ -57,7 +57,7 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
     @Query(value = "SELECT b FROM Bills b WHERE " +
             " (b.billCode LIKE %:search% " +
             " OR b.orderPhone LIKE %:search% " +
-            " OR CAST(b.billTotalPrice AS string) like %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
             " OR b.receiverName LIKE %:search% " +
             " OR b.customer IS NULL " +
             " OR (b.customer IS NOT NULL AND b.customer.users.fullName LIKE %:search%) " +
@@ -79,7 +79,7 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
     @Query(value = " SELECT b FROM Bills b  WHERE b.billStatus = :status " +
             " AND ( b.billCode LIKE %:search% " +
             " OR b.orderPhone LIKE %:search% " +
-            " OR CAST(b.billTotalPrice AS string) like %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
             " OR b.receiverName LIKE %:search% " +
             " OR b.customer IS NULL " +
             " OR (b.customer IS NOT NULL AND b.customer.users.fullName LIKE %:search%) " +
@@ -102,7 +102,7 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
     @Query(value = "SELECT b FROM Bills b WHERE " +
             " (b.billCode LIKE %:search% " +
             " OR b.orderPhone LIKE %:search% " +
-            " OR CAST(b.billTotalPrice AS string) like %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
             " OR b.receiverName LIKE %:search% " +
             " OR :search IS NULL ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
@@ -117,7 +117,7 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
     @Query(value = " SELECT b FROM Bills b WHERE b.billStatus = :status " +
             " AND ( b.billCode LIKE %:search% " +
             " OR b.orderPhone LIKE %:search% " +
-            " OR CAST(b.billTotalPrice AS string) like %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
             " OR b.receiverName LIKE %:search% " +
             " OR :search IS NULL ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
