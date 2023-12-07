@@ -55,7 +55,7 @@ function TableHoaDonTaiQuay() {
       key: 'stt',
       dataIndex: 'index',
       title: 'STT',
-      width: 70,
+      width: '3%',
       render: (text, record, index) => {
         return <span id={record.id}>{(PageNum - 1) * pageSize + (index + 1)}</span>;
       },
@@ -64,11 +64,12 @@ function TableHoaDonTaiQuay() {
       title: 'Mã hóa đơn',
       dataIndex: 'billCode',
       key: 'code',
+      width: '10%',
     },
     {
       title: 'Ngày tạo',
       dataIndex: 'billCreateDate',
-      width: 100,
+      width: '15%',
       sorter: (a, b) => a.billCreateDate.localeCompare(b.billCreateDate),
       render: (date) => {
         const formattedDate = dayjs(date).add(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
@@ -79,6 +80,7 @@ function TableHoaDonTaiQuay() {
       title: 'Tên nhân viên',
       dataIndex: 'staff',
       key: 'staffName',
+      width: '15%',
       render: (staff) => {
         if (staff && staff.users && staff.users.fullName) {
           return staff.users.fullName;
@@ -91,6 +93,7 @@ function TableHoaDonTaiQuay() {
       title: 'Tên khách hàng',
       dataIndex: 'receiverName',
       key: 'receiverName',
+      width: '15%',
       render: (text, record) => {
         if (record.customer == null) {
           return record.receiverName;
@@ -103,6 +106,7 @@ function TableHoaDonTaiQuay() {
       title: 'Số điện thoại',
       dataIndex: 'orderPhone',
       key: 'orderPhone',
+      width: '10%',
       render: (text, record) => {
         if (record.customer == null) {
           return record.orderPhone;
@@ -115,6 +119,7 @@ function TableHoaDonTaiQuay() {
       title: 'Tổng thanh toán',
       dataIndex: 'billPriceAfterVoucher',
       key: 'billPriceAfterVoucher',
+      width: '15%',
       // sorter: (a, b) => a.billTotalPrice.localeCompare(b.billTotalPrice),
       render: (price) => {
         return <span>{VNDFormaterFunc(price)}</span>;
@@ -125,6 +130,7 @@ function TableHoaDonTaiQuay() {
       title: 'Trạng thái',
       dataIndex: 'billStatus',
       key: 'status',
+      width: '15%',
       render: (status) => {
         let statusText;
         let statusClass;

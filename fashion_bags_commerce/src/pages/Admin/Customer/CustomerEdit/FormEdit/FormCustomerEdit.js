@@ -98,7 +98,7 @@ function FormCustomerEdit(props) {
           </Space>
         }
       >
-        <Form layout="vertical" hideRequiredMark initialValues={data}>
+        <Form layout="vertical" initialValues={data}>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item

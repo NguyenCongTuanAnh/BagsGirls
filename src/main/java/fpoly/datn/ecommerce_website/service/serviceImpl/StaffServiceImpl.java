@@ -87,6 +87,7 @@ public class StaffServiceImpl implements IStaffService {
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
         modelMapper.map(staffDTO, staffs);
         Users userInfo = modelMapper.map(staffDTO, Users.class);
+        userInfo.setPassword(passwordEncoder.encode(staffDTO.getUsersPassword()));
         Users savedUserInfo = userInfoRepository.save(userInfo);
         if (savedUserInfo != null) {
             return staffRepository.save(staffs);
