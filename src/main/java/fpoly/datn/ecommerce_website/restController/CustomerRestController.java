@@ -74,7 +74,6 @@ public class CustomerRestController {
 
     @RequestMapping(value = "/customer", method = RequestMethod.POST)
     public ResponseEntity<?> add(@RequestBody CustomerDTO customerDTO) {
-
         return new ResponseEntity<>(this.customerService.save(customerDTO), HttpStatus.OK);
 
     }

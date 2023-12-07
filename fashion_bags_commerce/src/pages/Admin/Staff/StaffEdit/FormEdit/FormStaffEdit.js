@@ -96,14 +96,6 @@ function FormStaffEdit(props) {
             paddingBottom: 80,
           },
         }}
-        footer={
-          <Space>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button onClick={() => updateFunction(data.staffId, data)} htmlType="submit">
-              Cập nhật
-            </Button>
-          </Space>
-        }
       >
         <Form layout="vertical" initialValues={{
           staffId: data.staffId,
@@ -309,11 +301,18 @@ function FormStaffEdit(props) {
                   },
                 ]}
               >
-                <Input.TextArea rows={4} placeholder="please enter url description" name="usersUserNote" onChange={updateData} />
+                <Input.TextArea rows={4} placeholder="Vui lòng điền ghi chú!" name="usersUserNote" onChange={updateData} />
               </Form.Item>
             </Col>
           </Row>
-
+          <div>
+            <Space>
+              <Button onClick={onClose}>Cancel</Button>
+              <Button onClick={() => updateFunction(data.staffId, data)} htmlType="submit" type="primary" className="btn btn-warning">
+                Lưu
+              </Button>
+            </Space>
+          </div>
         </Form>
       </Drawer>
     </Fragment>

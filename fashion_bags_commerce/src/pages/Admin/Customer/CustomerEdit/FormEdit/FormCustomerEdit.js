@@ -89,14 +89,7 @@ function FormCustomerEdit(props) {
             paddingBottom: 80,
           },
         }}
-        footer={
-          <Space>
-            <Button onClick={onClose}>Thoát</Button>
-            <Button onClick={() => updateFunction(data.customerId, data)} type="primary" className="btn btn-warning">
-              Lưu
-            </Button>
-          </Space>
-        }
+
       >
         <Form layout="vertical" initialValues={data}>
           <Row gutter={16}>
@@ -280,6 +273,15 @@ function FormCustomerEdit(props) {
               </Form.Item>
             </Col>
           </Row>
+          <div>
+            <Space>
+              <Button onClick={onClose}>Thoát</Button>
+              <Button onClick={() => updateFunction(data.customerId, data)} type="primary" className="btn btn-warning">
+                Lưu
+              </Button>
+            </Space>
+          </div>
+
         </Form>
       </Drawer>
     </Fragment>

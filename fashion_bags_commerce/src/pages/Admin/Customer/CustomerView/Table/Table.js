@@ -16,7 +16,7 @@ const TableContent = () => {
   const [totalItem, setTotalItem] = useState();
   const [search, setSearch] = useState('');
 
-  const onCancel = () => {};
+  const onCancel = () => { };
   const reload = () => {
     setLoading(true);
     getAll(search, currentPage, pagesSize);
@@ -38,7 +38,7 @@ const TableContent = () => {
   const onChange = (current, pageSize) => {
     setCurrentPage(current);
     setPagesSize(pageSize);
-    getAll(search, current, pageSize);
+    setLoading(true);
   };
 
   const handleSearchChange = (newFilter) => {
@@ -59,80 +59,98 @@ const TableContent = () => {
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
       setData(data);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   // Define your table columns
   const columns = [
     {
       title: 'STT',
-      width: 50,
+      width: '4%',
       render: (text, record, index) => <span>{(currentPage - 1) * pagesSize + index + 1}</span>,
+    },
+    {
+      title: 'Mã khách hàng',
+      dataIndex: 'customerCode',
+      sorter: (a, b) => a.staffCode.localeCompare(b.staffCode),
+      width: '7%',
     },
     {
       title: 'Họ và tên',
       dataIndex: ['users', 'fullName'],
       sorter: (a, b) => a.users.fullName.localeCompare(b.users.fullName),
-      width: 100,
+      width: '12%',
     },
     {
       title: 'Email',
       dataIndex: ['users', 'email'],
       sorter: (a, b) => a.users.usersEmail.localeCompare(b.users.usersEmail),
-      width: 100,
+      width: '15%',
     },
-    // {
-    //   title: 'Mật khẩu',
-    //   dataIndex: ['users', 'password'],
-    //   sorter: (a, b) => a.users.password.localeCompare(b.users.password),
-    //   width: 100,
-    // },
+
     {
       title: 'SĐT',
       dataIndex: ['users', 'phoneNumber'],
       sorter: (a, b) => a.users.phoneNumber.localeCompare(b.users.phoneNumber),
-      width: 100,
+      width: '8%',
     },
     {
       title: 'Giới tính',
       dataIndex: ['users', 'gender'],
-      width: 100,
+      width: '5%',
       render: (gender) => {
         return gender ? 'Nam' : 'Nữ';
       },
     },
-
-    {
-      title: 'Chức vụ',
-      dataIndex: ['users', 'role'],
-      sorter: (a, b) => a.users.role.localeCompare(b.users.role),
-      width: 100,
-    },
-
     {
       title: 'Địa chỉ',
       dataIndex: ['users', 'address'],
       sorter: (a, b) => a.users.address.localeCompare(b.users.address),
-      width: 100,
+      width: '15%',
     },
     {
       title: 'Điểm',
       dataIndex: 'customerPoint',
       sorter: (a, b) => a.customerPoint.localeCompare(b.customerPoint),
-      width: 100,
+      width: '5%',
     },
     {
-      title: 'Ghi chú',
-      dataIndex: ['users', 'userNote'],
-      sorter: (a, b) => a.users.userNote.localeCompare(b.users.userNote),
-      width: 100,
+      title: 'Hạng khách hàng',
+      dataIndex: 'customerRanking',
+      // sorter: (a, b) => a.users.userNote.localeCompare(b.users.userNote),
+      width: '10%',
+      render: (status) => {
+        let statusText;
+
+        switch (status) {
+          case 0:
+            statusText = 'Tiềm năng';
+            break;
+          case 1:
+            statusText = 'Thân thiết';
+            break;
+          case 2:
+            statusText = 'Bạc';
+            break;
+          case 3:
+            statusText = 'Vàng';
+            break;
+          case 4:
+            statusText = 'Kim cương';
+            break;
+          default:
+            statusText = 'Tiềm năng';
+        }
+
+        return <span>{statusText}</span>;
+      },
     },
 
     {
       title: 'Trạng thái',
       dataIndex: 'customerStatus',
 
-      width: 150,
+      width: '8%',
       render: (status) => {
         let statusText;
         let statusClass;
@@ -140,15 +158,11 @@ const TableContent = () => {
         switch (status) {
           case 1:
             statusText = 'Hoạt động';
-            statusClass = 'styles.active-status';
-            break;
-          case 0:
-            statusText = 'Không hoạt động';
-            statusClass = 'inactive-status';
+            statusClass = 'active-status';
             break;
           case -1:
             statusText = 'Ngừng hoạt động';
-            statusClass = 'other-status';
+            statusClass = 'inactive-status';
             break;
           default:
             statusText = 'Không hoạt động';
@@ -208,7 +222,7 @@ const TableContent = () => {
       }}
     >
       <SearchForm onSubmit={handleSearchChange} />
-      <FormCustomerCreate />
+      <FormCustomerCreate reload={() => setLoading(true)} />
       <Button icon={<ReloadOutlined />} className="" onClick={reload} loading={loading}></Button>
 
       <Table
@@ -220,10 +234,11 @@ const TableContent = () => {
         columns={columns}
         dataSource={data}
         pagination={false}
-        // onChange={handlePageChange} // Handle page changes
+      // onChange={handlePageChange} // Handle page changes
       />
 
       <Pagination
+        style={{ margin: '20px' }}
         className={styles.pagination}
         showSizeChanger
         total={totalItem}

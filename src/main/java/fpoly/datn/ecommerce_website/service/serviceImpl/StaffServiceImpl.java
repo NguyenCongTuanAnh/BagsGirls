@@ -37,16 +37,16 @@ public class StaffServiceImpl implements IStaffService {
     }
 
     @Override
-    public Page<Staffs> findAllPage(Integer page, Integer size) {
+    public Page<Staffs> findAllPage(String search, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        return staffRepository.getAllPage(pageable);
+        return staffRepository.getAllPage(search, pageable);
     }
 
-    @Override
-    public Page<Staffs> findAllSearch(String search, Integer page, Integer size){
-        Pageable pageable = PageRequest.of(page, size);
-        return staffRepository.findallSearch(search, pageable);
-    }
+//    @Override
+//    public Page<Staffs> findAllSearch(String search, Boolean gender, Integer role, Integer status, Integer page, Integer size){
+//        Pageable pageable = PageRequest.of(page, size);
+//        return staffRepository.findallSearch(search, gender, role, status, pageable);
+//    }
 
 
 

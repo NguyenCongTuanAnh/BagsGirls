@@ -2,14 +2,13 @@ import React, { Fragment, useState, useEffect, initialValue } from 'react';
 import { EyeFilled, EyeInvisibleOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Col, Drawer, Form, Input, Row, Select, Space, Radio, notification } from 'antd';
 import customerAPI from '~/api/customerAPI';
+import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 
 const { Option } = Select;
-const FormCustomerCreate = () => {
+const FormCustomerCreate = (props) => {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(true);
-  const [form] = Form.useForm();
-  const [roles, setRoles] = useState([]);
-  const [loading, setLoading] = useState(true);
+
 
   const showDrawer = () => {
     setOpen(true);
@@ -19,18 +18,18 @@ const FormCustomerCreate = () => {
   };
 
   const addFunc = async (values) => {
-    console.log(values);
     setError(false);
     if (!error) {
-      let add = { ...values };
+      let add = { ...values, customerCode: generateCustomCode("KH", 7) };
+      console.log(add);
       try {
         const response = await customerAPI.add(add);
         notification.success({
-          message: 'Add thành công',
-          description: 'Dữ liệu đã được thêm thành công',
+          message: 'Thêm thành công',
+          description: 'Khách hàng đã được thêm thành công',
           duration: 2,
         });
-
+        props.reload();
         onClose();
 
         // Đóng Modal sau khi thêm thành công
@@ -45,29 +44,6 @@ const FormCustomerCreate = () => {
       }
     }
   };
-
-  // useEffect(() => {
-  //   // Fetch the list of roles from your backend API
-  //   fetchRolesFromAPI()
-  //     .then((data) => {
-  //       setRoles(data);
-  //       setLoading(false);
-  //     })
-  //     .catch((error) => {
-  //       console.error('Error fetching roles:', error);
-  //       setLoading(false);
-  //     });
-  // }, []);
-
-  // Replace this function with your actual API call to fetch roles
-  // const fetchRolesFromAPI = async () => {
-  //   try {
-  //     const response = await customerAPI.getRoles(); // Replace with your actual API endpoint
-  //     return response.data;
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
 
   return (
     <Fragment>
@@ -94,20 +70,39 @@ const FormCustomerCreate = () => {
           </Space>
         }
       >
-        <Form layout="vertical" hideRequiredMark initialValues={initialValue} onFinish={addFunc}>
+        <Form layout="vertical" hideRequiredMark initialValues={{
+          users: { gender: true, role: 'ROLE_CUSTOMER' },
+          // users: {}
+          // customerRanking: 0,
+          rankingPoints: 0
+        }} onFinish={addFunc}>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="usersFullName"
+                name={['user', 'fullName']}
                 label="Họ và tên"
                 rules={[
                   {
                     required: true,
-                    message: 'Please enter user name',
+                    message: 'Vui lòng điền họ và tên!',
+                    pattern: /^[\p{L}\d\s]+$/u,
+                    whitespace: true,
+                    validator: (rule, value) => {
+                      if (value && value.trim() !== value) {
+                        return Promise.reject('Tên không được chứa khoảng trắng ở hai đầu!');
+                      }
+                      //  else if (value) {
+                      //   return Promise.reject('');
+                      // }
+                      // else if (true) {
+                      //   return Promise.reject('Vui lòng điền họ và tên!');
+                      // }
+                      return Promise.resolve();
+                    },
                   },
                 ]}
               >
-                <Input />
+                <Input placeholder="Vui lòng điền họ và tên!" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -117,13 +112,12 @@ const FormCustomerCreate = () => {
                 rules={[
                   {
                     required: true,
-                    message: 'Please choose the type',
+                    message: 'Vui lòng chọn trạng thái!',
                   },
                 ]}
               >
-                <Select placeholder="Chọn trạng thái">
+                <Select placeholder="Vui lòng chọn trạng thái!">
                   <Option value="1">Hoạt động</Option>
-                  <Option value="0">Không Hoạt động</Option>
                   <Option value="-1">Ngừng Hoạt động</Option>
                 </Select>
               </Form.Item>
@@ -132,27 +126,50 @@ const FormCustomerCreate = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="usersEmail"
+                name={['user', 'email']}
                 label="Email"
                 rules={[
                   {
                     required: true,
-                    message: 'Please enter account',
+                    message: 'Vui lòng điền Email!',
+                    whitespace: true,
+                  },
+                  {
+                    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    message: 'Vui lòng nhập địa chỉ email hợp lệ!',
                   },
                 ]}
               >
-                <Input />
+                <Input placeholder="Vui lòng điền email!" />
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item
                 label="Password"
-                name="usersPassword"
+                name={['user', 'password']}
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng điền thông tin!',
+                    message: 'Vui lòng điền Password!',
+                    whitespace: true,
                   },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (
+                        value &&
+                        value.length >= 12 &&
+                        value.length <= 30 &&
+                        /[\W_]/.test(value) &&
+                        /[A-Z]/.test(value) &&
+                        /\d/.test(value)
+                      ) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error('Mật khẩu trong khoảng 12-30 kí tự, bao gồm ký tự đặc biệt, số và chữ in hoa!'),
+                      );
+                    },
+                  }),
                 ]}
               >
                 <Input.Password iconRender={(visible) => (visible ? <EyeInvisibleOutlined /> : <EyeFilled />)} />
@@ -160,52 +177,43 @@ const FormCustomerCreate = () => {
             </Col>
           </Row>
           <Row gutter={16}>
-            {/* <Col span={12}>
-              <Form.Item
-                name="usersEmail"
-                label="Email"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please enter email',
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-            </Col> */}
             <Col span={12}>
               <Form.Item
-                name="usersPhoneNumber"
+                name={['user', 'phoneNumber']}
                 label="SĐT"
                 rules={[
                   {
                     required: true,
-                    message: 'Please enter number phone',
+                    message: 'Vui lòng điền SĐT!',
+                    whitespace: true,
+                  },
+                  {
+                    pattern: /^((\+|00)84|0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-6|8-9]|9\d)\d{7}$/,
+                    message: 'Vui lòng nhập số điện thoại hợp lệ!',
                   },
                 ]}
               >
-                <Input type="number" />
+                <Input placeholder="Vui lòng điền số điện thoại!" />
               </Form.Item>
             </Col>
           </Row>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="usersAddress"
+                name={['user', 'address']}
                 label="Địa chỉ"
                 rules={[
                   {
                     required: true,
-                    message: 'Please enter địa chỉ',
+                    message: 'Vui lòng điền địa chỉ!',
                   },
                 ]}
               >
-                <Input />
+                <Input placeholder="Vui lòng điền địa chỉ!" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Giới tính" name="usersGender">
+              <Form.Item label="Giới tính" name={['user', 'gender']}>
                 <Radio.Group>
                   <Radio value={true}>Nam</Radio>
                   <Radio value={false}>Nữ</Radio>
@@ -213,52 +221,26 @@ const FormCustomerCreate = () => {
               </Form.Item>
             </Col>
           </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item label="Role" name="role" initialValue={initialValue}>
-                <Select placeholder="Chức vụ" loading={loading}>
-                  {roles.map((role) => (
-                    <Select.Option key={role} value={role}>
-                      {role}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                name="customerPoint"
-                label="Điểm"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please enter điểm',
-                  },
-                ]}
-              >
-                <Input type="number" />
-              </Form.Item>
-            </Col>
-          </Row>
+
           <Row gutter={16}>
             <Col span={24}>
               <Form.Item
-                name="usersUserNote"
-                label="Note"
+                name={['user', 'userNote']}
+                label="Ghi chú"
                 rules={[
                   {
                     required: true,
-                    message: 'please enter url description',
+                    message: 'Vui lòng điền ghi chú!',
                   },
                 ]}
               >
-                <Input.TextArea rows={4} />
+                <Input.TextArea rows={4} placeholder='Vui lòng điền ghi chú!' />
               </Form.Item>
             </Col>
           </Row>
           <div>
-            <Button type="default" danger htmlType="submit" icon={<PlusOutlined />}>
-              Thêm
+            <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
+              Thêm mới
             </Button>
           </div>
         </Form>

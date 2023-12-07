@@ -9,8 +9,6 @@ const { Option } = Select;
 const FormStaffCreate = (props) => {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(false);
-  const [roles, setRoles] = useState('');
-  // const [loading, setLoading] = useState(true);
 
   const showDrawer = () => {
     setOpen(true);
@@ -28,7 +26,7 @@ const FormStaffCreate = (props) => {
       try {
         const response = await staffAPI.add(add);
         notification.success({
-          message: 'Add thành công',
+          message: 'Thêm thành công',
           description: 'Dữ liệu đã được thêm thành công',
           duration: 2,
         });
@@ -274,13 +272,13 @@ const FormStaffCreate = (props) => {
                   },
                 ]}
               >
-                <Input.TextArea rows={4} placeholder="please enter url description" />
+                <Input.TextArea rows={4} placeholder='Vui lòng điền ghi chú!' />
               </Form.Item>
             </Col>
           </Row>
           <div>
             <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
-              Submit
+              Thêm mới
             </Button>
           </div>
         </Form>

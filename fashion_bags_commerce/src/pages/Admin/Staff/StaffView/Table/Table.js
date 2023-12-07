@@ -38,18 +38,16 @@ const TableContent = () => {
 
   };
 
-
-
   useEffect(() => {
     getAll(currentPage, pagesSize);
     setTimeout(() => {
       setLoading(false);
     }, 500);
-  }, [loading]);
+  }, [loading, search]);
 
   const getAll = async (current, pageSize) => {
     try {
-      const response = await staffAPI.getAllStaff(current, pageSize);
+      const response = await staffAPI.getAllStaff(search, current, pageSize);
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
       setData(data);
@@ -78,7 +76,6 @@ const TableContent = () => {
     {
       title: 'Email',
       dataIndex: ['users', 'email'],
-      // sorter: (a, b) => a.users.address.localeCompare(b.users.address),
       width: '15%',
     },
 
@@ -217,6 +214,8 @@ const TableContent = () => {
       />
 
       <Pagination
+        style={{ margin: '20px' }}
+
         className={styles.pagination}
         showSizeChanger
         total={totalItem}
