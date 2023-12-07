@@ -161,6 +161,7 @@ const CheckoutDetail = () => {
           billCode: generateCustomCode('Bill', 4),
           billTotalPrice: cartItemsTotal.billTotalPrice,
           productAmount: cartItemsTotal.productAmount,
+          billPriceAfterVoucher: cartItemsTotal.productAmount,
         };
         const response = await billsAPI.add(billData);
         console.log('Billsssss', response.data);

@@ -1,4 +1,4 @@
-import { Table, Image, Button, notification } from 'antd';
+import { Table, Image, Button, notification, message, Input, Form } from 'antd';
 import { useEffect, useState } from 'react';
 import styles from './tableCart.module.scss';
 import vndFormaterFunc from '~/Utilities/VNDFormaterFunc';
@@ -6,11 +6,72 @@ import { DeleteFilled, DeleteOutlined, DoubleRightOutlined, MinusOutlined, PlusO
 import { Link } from 'react-router-dom';
 import { Tab } from 'bootstrap';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
+import voucherAPI from '~/api/voucherAPI';
+import moment from 'moment/moment';
+import Search from 'antd/es/input/Search';
 
 function CartItem() {
   const [cartItems, setCartItems] = useState([]);
   const [totalQuantity, setTotalQuantity] = useState(0);
+  const [voucherCode, setVoucherCode] = useState('');
+  const [voucher, setVoucher] = useState('');
+  const [messageApi, contextHolder] = message.useMessage();
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [voucherPrice, setVoucherPrice] = useState(0);
+  const [disCountPercent, setDiscountPercent] = useState(0);
+  const [form] = Form.useForm();
 
+  const handleApplyVoucherCode = async () => {
+
+    console.log(voucherCode);
+    if (voucherCode === '') {
+      messageApi.error('Mã code không hợp lệ!!!!');
+      return;
+    }
+    try {
+      const response = await voucherAPI.findByVoucherCode(voucherCode);
+      const voucher = response.data;
+
+      if (voucher.voucherAmount <= 0) {
+        messageApi.open({
+          type: 'error',
+          content: 'Voucher đã được áp dụng hết!!!!',
+        });
+      } else {
+        const currentTime = moment();
+        const startTime = moment(voucher.voucherStartTime);
+        const endTime = moment(voucher.voucherEndTime);
+
+        if (currentTime.isBetween(startTime, endTime)) {
+          if (voucher.totalPriceToReceive <= totalPrice) {
+            setDiscountPercent(voucher.discountPercent);
+            setVoucher(voucher);
+            setVoucherPrice(totalPrice * (voucher.discountPercent / 100) || voucherPrice);
+            setTotalPrice(calculateTotal() - totalPrice * (voucher.discountPercent / 100));
+            messageApi.open({
+              type: 'success',
+              content: `Voucher áp dụng thành công!!!!`,
+            });
+          } else {
+          
+          }
+        } else {
+          messageApi.open({
+            type: 'error',
+            content: 'Voucher đã hết hạn!',
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      if (error.response.status === 500) {
+        messageApi.open({
+          type: 'error',
+          content: 'Mã Voucher này không tồn tại!!!',
+        });
+      }
+    }
+  };
 
   useEffect(() => {
     const total = cartItems.reduce((totalQty, item) => {
@@ -105,8 +166,6 @@ function CartItem() {
             />
             <div className={styles.item_change2} onClick={() => handleIncrement(record)}>
               <PlusOutlined />
-
-
             </div>
           </div>
         </div>
@@ -149,8 +208,8 @@ function CartItem() {
 
   const handleIncrement = (record) => {
     const amountInDatabase = record.amount;
-    console.log("so luong sp trong kho", amountInDatabase) // Số lượng tồn kho của sản phẩm trong cơ sở dữ liệu
-     
+    console.log('so luong sp trong kho', amountInDatabase); // Số lượng tồn kho của sản phẩm trong cơ sở dữ liệu
+
     if (record.quantity + 1 > amountInDatabase) {
       // Hiển thị thông báo khi số lượng vượt quá số lượng trong kho
       notification.error({
@@ -185,6 +244,7 @@ function CartItem() {
   };
   return (
     <div className="container-fluid" style={{ padding: '0 5% 0 5%' }}>
+       {contextHolder}
       <div>
         <Link to={'/shop'} className={styles.continue_cart}>
           Tiếp tục mua sắm <DoubleRightOutlined />
@@ -199,7 +259,9 @@ function CartItem() {
           footer={() => (
             <div>
               <h3>
-                Tổng tiền: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
+                <span>
+                  Tổng tiền: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
+                </span>
               </h3>
             </div>
           )}
@@ -226,9 +288,38 @@ function CartItem() {
                   </li>
                   <hr></hr>
                   <li className={styles.productDetailItem}>
-                    <span className={styles.label}>Giảm tiền: </span>
-                    <span className={styles.labelName}>chưa có</span>
+                    <span className={styles.label}>Mã giảm giá: </span>
+
+                    <Form layout="vertical">
+                      <Form.Item>
+                        {/* <Input style={{ width: '150px' }} />
+                        <Button htmlType="submit">Áp dụng</Button> */}
+                        <Search
+                          onChange={(e) => {
+                            setVoucherCode(e.target.value);
+                          }}
+                          enterButton="Áp dụng"
+                          onSearch={handleApplyVoucherCode}
+                          value={voucherCode}
+                        />
+                      </Form.Item>
+                    </Form>
                   </li>{' '}
+                  <hr></hr>
+                  <li className={styles.productDetailItem}>
+                    <span className={styles.label}>Giảm tiền: </span>
+                    <span className={styles.labelName}>
+                        <div className={styles.item}>
+                          <h6>
+                            Voucher ({voucher.voucherCode || 'nếu có'}) (giảm {voucher.discountPercent || 0} %) (3)
+                          </h6>
+                        </div>
+                        <div>
+                          <h6>- {VNDFormaterFunc(voucherPrice)}</h6>
+                        </div>
+
+                    </span>
+                  </li>
                   <hr></hr>
                   <li className={styles.productDetailItem}>
                     <span className={styles.label}>Thành tiền: </span>
