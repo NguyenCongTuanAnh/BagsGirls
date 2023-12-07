@@ -15,7 +15,7 @@ function HoaDonOnlineView() {
         <Header className="headerStyle">
           <HeaderContent titlePage="Danh Sách Hóa Đơn" />
         </Header>
-        <Content className="contentStyle">
+        <Content className="contentStyle1">
           <TableHoaDon style={{ boder: 'black solid 1px' }} />
         </Content>
       </Layout>

@@ -245,19 +245,19 @@ function TableHoaDon() {
 
   const rangePresets = [
     {
-      label: 'Last 7 Days',
+      label: '7 ngày qua',
       value: [dayjs().add(-7, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
     },
     {
-      label: 'Last 14 Days',
+      label: '14 ngày qua',
       value: [dayjs().add(-14, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
     },
     {
-      label: 'Last 30 Days',
+      label: '30 ngày qua',
       value: [dayjs().add(-30, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
     },
     {
-      label: 'Last 90 Days',
+      label: '90 ngày qua',
       value: [dayjs().add(-90, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
     },
   ];
