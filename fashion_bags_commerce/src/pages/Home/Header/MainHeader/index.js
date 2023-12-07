@@ -61,7 +61,7 @@ function MainHeader() {
   const handleEnterKeyPress = (event) => {
     if (event.key === 'Enter') {
       // event.preventDefault();
-      // handleSearch();
+      handleSearch();
       if (location?.pathname !== '/search') {
         console.log('111111111111111');
         navigate('/search', {
