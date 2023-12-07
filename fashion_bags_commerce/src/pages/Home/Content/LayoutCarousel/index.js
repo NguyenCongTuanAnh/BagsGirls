@@ -10,6 +10,13 @@ function LayoutCarousel() {
         <Carousel autoplay={true} autoplaySpeed={2000} draggable={true}>
           <div>
             <img
+              src="https://i.imgur.com/gbFfVVc.jpg"
+              alt="TEACHER'S DAY 2023"
+              // className="d-block w-100"
+            />
+          </div>
+          <div>
+            <img
               src="https://i.imgur.com/rtHttD2.png"
               alt="TEACHER'S DAY 2023"
               // className="d-block w-100"

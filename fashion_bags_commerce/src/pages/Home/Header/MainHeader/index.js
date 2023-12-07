@@ -1,5 +1,5 @@
 import { Badge } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { SearchOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import cartAPI from '~/api/cartAPI';
@@ -14,6 +14,10 @@ function MainHeader() {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Đặt mặc định là false khi chưa đăng nhập
   const [customerId, setCustomerId] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  console.log('>>> location: ', location);
 
   useEffect(() => {
     // Lấy số lượng sản phẩm trong giỏ hàng từ local storage hoặc API
@@ -56,8 +60,16 @@ function MainHeader() {
 
   const handleEnterKeyPress = (event) => {
     if (event.key === 'Enter') {
-      event.preventDefault();
-      handleSearch();
+      // event.preventDefault();
+      // handleSearch();
+      if (location?.pathname !== '/search') {
+        console.log('111111111111111');
+        navigate('/search', {
+          state: {
+            keyword: searchKeyword,
+          },
+        });
+      }
     }
   };
   const createCartForCustomer = async (customerId) => {
@@ -70,11 +82,11 @@ function MainHeader() {
       throw new Error('Failed to create cart');
     }
   };
-  
+
   const handleLogin = async () => {
     try {
       const loggedInCustomerId = localStorage.getItem('customerId');
-  
+
       if (loggedInCustomerId) {
         setCustomerId(loggedInCustomerId);
         await createCartForCustomer(loggedInCustomerId);
@@ -88,7 +100,7 @@ function MainHeader() {
     }
   };
   return (
-    <div  style={{ height: '100px' }}>
+    <div style={{ height: '100px' }}>
       <div className={styles.mainHeader}>
         <Link to={'/'}>
           <img className={styles.image} alt="img" src="https://i.imgur.com/e1Tfbn5.png"></img>
