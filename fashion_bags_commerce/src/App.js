@@ -132,6 +132,14 @@ function App() {
               </StaffAuth>
             }
           />
+          <Route
+            path="/staff-view"
+            element={
+              <AdminAuth>
+                <StaffView />
+              </AdminAuth>
+            }
+          />
 
           <Route
             path="/customer-view"
