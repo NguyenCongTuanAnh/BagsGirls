@@ -79,7 +79,7 @@ function ProductAddForm() {
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
-
+  const [messageApi, contextHolder] = message.useMessage();
   const viewBaloProps = async () => {
     try {
       const brandData = await brandAPI.getAll();
@@ -147,6 +147,58 @@ function ProductAddForm() {
     setOpen(false);
   };
   const handleAddBaloDetails = (values) => {
+    if (values.retailPrice < values.importPrice) {
+      messageApi.open({
+        type: 'error',
+        content: 'Giá bán không thể nhỏ hơn Giá nhập!!!',
+      });
+      return;
+    }
+    const keyProduct =
+      values.buckleTypeId +
+      values.colorId +
+      values.compartmentId +
+      values.materialId +
+      values.producerId +
+      values.typeId +
+      values.sizeId +
+      values.brandId;
+    const indexBaloListPreview = baloListPreview.findIndex(
+      (item) =>
+        item.buckleTypeId +
+          item.colorId +
+          item.compartmentId +
+          item.materialId +
+          item.producerId +
+          item.typeId +
+          item.sizeId +
+          item.brandId ===
+        keyProduct,
+    );
+
+    const indexBaloList = baloList.findIndex(
+      (item) =>
+        item.buckleTypeId +
+          item.colorId +
+          item.compartmentId +
+          item.materialId +
+          item.producerId +
+          item.typeId +
+          item.sizeId +
+          item.brandId ===
+        keyProduct,
+    );
+    console.log('====================================');
+    console.log(indexBaloList);
+    console.log(indexBaloListPreview);
+    console.log('====================================');
+    if (indexBaloList !== -1 || indexBaloListPreview !== -1) {
+      messageApi.open({
+        type: 'error',
+        content: 'Các trường thuộc tính này Bạn đa đã thêm trước đó, vui lòng chọn khác!!!',
+      });
+      return;
+    }
     setIsFirst(true);
     const genCodeAuto = generateCustomCode('baloCode', 9);
 
@@ -478,7 +530,11 @@ function ProductAddForm() {
               rules={[
                 {
                   required: true,
-                  message: 'Vui lòng điền!',
+                  message: 'Vui lòng điền giá trị Thuộc tính!',
+                },
+                {
+                  pattern: /^[A-Za-z0-9]+$/,
+                  message: 'Tên chỉ bao gồm chữ cái và số!',
                 },
               ]}
             >
@@ -500,32 +556,54 @@ function ProductAddForm() {
       product.typeId +
       product.sizeId +
       product.brandId;
-    const indexBaloListPreview = baloListPreview.findIndex((item) => item === product);
+
+    const indexBaloListPreview = baloListPreview.findIndex(
+      (item) =>
+        item.buckleTypeId +
+          item.colorId +
+          item.compartmentId +
+          item.materialId +
+          item.producerId +
+          item.typeId +
+          item.sizeId +
+          item.brandId ===
+        keyProduct,
+    );
 
     const indexBaloList = baloList.findIndex(
       (item) =>
-        item.brandId === product.brandId &&
-        item.sizeId === product.sizeId &&
-        item.typeId === product.typeId &&
-        item.producerId === product.producerId &&
-        item.materialId === product.materialId &&
-        item.compartmentId === product.compartmentId &&
-        item.colorId === product.colorId &&
-        item.buckleTypeId === product.buckleTypeId,
+        item.buckleTypeId +
+          item.colorId +
+          item.compartmentId +
+          item.materialId +
+          item.producerId +
+          item.typeId +
+          item.sizeId +
+          item.brandId ===
+        keyProduct,
     );
-    // if (indexBaloListPreview !== -1) {
-    //   baloListPreview.splice(indexBaloListPreview, 1);
-    // }
-    // if (indexBaloList !== -1) {
-    //   baloList.splice(indexBaloList, 1);
-    // }
-    console.log(indexBaloList);
-    console.log(indexBaloListPreview);
-    console.log();
-    console.log(product);
+
+    if (indexBaloListPreview !== -1) {
+      const updatedBaloListPreview = [...baloListPreview];
+      updatedBaloListPreview.splice(indexBaloListPreview, 1);
+      setBaloListPreview(updatedBaloListPreview);
+    }
+
+    if (indexBaloList !== -1) {
+      const updatedBaloList = [...baloList];
+      updatedBaloList.splice(indexBaloList, 1);
+      setBaloList(updatedBaloList);
+
+      messageApi.open({
+        type: 'error',
+        content: 'Xóa thành công!!!',
+      });
+    }
   };
+
   return (
-    <div className='contentStyle1'>
+    <div className="contentStyle1">
+      {contextHolder}
       <div>
         <BaloDetailsPreview
           baloList={baloList}
@@ -633,7 +711,6 @@ function ProductAddForm() {
                   {
                     required: true,
                     message: 'Vui lòng Điền giá nhập!',
-                    whitespace: true,
                   },
                 ]}
               >
@@ -641,6 +718,7 @@ function ProductAddForm() {
                   size="large"
                   style={{ width: 200 }}
                   step={1000}
+                  min={0}
                   addonAfter="VND"
                   formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
@@ -655,7 +733,6 @@ function ProductAddForm() {
                   {
                     required: true,
                     message: 'Vui lòng điền giá Bán!',
-                    whitespace: true,
                   },
                 ]}
               >
@@ -663,6 +740,7 @@ function ProductAddForm() {
                   size="large"
                   style={{ width: 200 }}
                   step={1000}
+                  min={0}
                   addonAfter="VND"
                   formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
@@ -692,6 +770,7 @@ function ProductAddForm() {
                   size="large"
                   style={{ width: 200 }}
                   step={1}
+                  min={0}
                   addonAfter="Cái"
                   formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
