@@ -1,13 +1,19 @@
 import axiosClient from './axiosClient';
 
 const productAPI = {
-  getAll(pageNum, pageSize) {
+  getAll(pageNum, pageSize, productName, productCode, brandName, productStatus, sortList, sortOrder) {
     const url = 'api/product';
 
     return axiosClient.get(url, {
       params: {
         page: pageNum - 1,
         size: pageSize,
+        productName: productName,
+        productCode: productCode,
+        brandName: brandName,
+        productStatus: productStatus,
+        sortList: sortList,
+        sortOrder: sortOrder,
       },
     });
   },

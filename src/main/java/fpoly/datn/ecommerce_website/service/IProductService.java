@@ -11,7 +11,17 @@ public interface IProductService {
 
     String GetproductStatusString(int productStatus);
 
-    Page<ProductDTO> findAllPagination(int pageNum, int PageSize);
+
+    Page<ProductDTO> findAllPagination(
+            int pageNum,
+            int PageSize,
+            String productName,
+            String productCode,
+            String brandName,
+            Integer productStatus,
+            List<String> sortList,
+            String sortOrder
+    );
 
     List<ProductDTO> findAll();
 

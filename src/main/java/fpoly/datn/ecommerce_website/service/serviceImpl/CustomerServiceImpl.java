@@ -81,7 +81,7 @@ public class CustomerServiceImpl implements ICustomerService {
                     .consumePoints(customerDTO.getConsumePoints())
                     .customerCode((customerDTO.getCustomerCode()))
                     .customerStatus(customerDTO.getCustomerStatus())
-                    .rankingPoints(1)
+                    .rankingPoints(0)
                     .customerRanking(Ranking.KH_TIEMNANG)
                     .users(savedUserInfo)
                     .build();
