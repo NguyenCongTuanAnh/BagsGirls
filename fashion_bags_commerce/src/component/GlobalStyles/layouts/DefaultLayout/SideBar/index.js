@@ -44,9 +44,8 @@ const items = [
       '4',
     ),
     getItem('Quản lý Đặt Hàng', '5'),
-    getItem('Submenu', 'sub3', <AppstoreOutlined style={{ fontSize: '23px' }} />, [
 
-    ]),
+    getItem('Submenu', 'sub3', <AppstoreOutlined style={{ fontSize: '23px' }} />, []),
   ]),
   getItem('Quản lý Hóa Đơn', 'sub4', <PaperClipOutlined style={{ fontSize: '23px' }} />, [
     getItem(
@@ -55,10 +54,12 @@ const items = [
       </Link>,
       '6',
     ),
-    getItem(<Link style={{ textDecoration: 'none' }} to={'/bill-offline-view'}>
-      Hóa đơn tại quầy
-    </Link>,
-      '7',),
+    getItem(
+      <Link style={{ textDecoration: 'none' }} to={'/bill-offline-view'}>
+        Hóa đơn tại quầy
+      </Link>,
+      '7',
+    ),
   ]),
 
   getItem('Quản lý Sản Phẩm', 'sub999', <CalendarOutlined style={{ fontSize: '23px' }} />, [

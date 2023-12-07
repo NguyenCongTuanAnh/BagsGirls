@@ -131,7 +131,7 @@ const CheckoutDetail = () => {
     const selectedDistrictName = getNameFromCode(selectedDistrict, districts);
     const selectedWardName = getNameFromCode(selectedWard, wards);
 
-    const fullAddress = `${address} | ${selectedWardName} | ${selectedDistrictName} | ${selectedProvinceName}`;
+    const fullAddress = `${address} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`;
 
     const cartItemsTotal = cartItems.reduce(
       (acc, item) => {

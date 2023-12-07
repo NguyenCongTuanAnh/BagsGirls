@@ -49,6 +49,7 @@ import buckleTypeAPI from '~/api/propertitesBalo/buckleTypeAPI';
 import imageAPI from '~/api/ImageAPI';
 import { async } from '@firebase/util';
 import Dragger from 'antd/es/upload/Dragger';
+import { MdRefresh } from 'react-icons/md';
 
 const getBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -78,7 +79,7 @@ function ProductAddForm() {
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
-
+  const [messageApi, contextHolder] = message.useMessage();
   const viewBaloProps = async () => {
     try {
       const brandData = await brandAPI.getAll();
@@ -118,7 +119,7 @@ function ProductAddForm() {
       .flat();
     notification.error({
       message: 'Lỗi',
-      description: errorMessages + '/n',
+      description: errorMessages,
       duration: 2,
     });
   };
@@ -128,10 +129,10 @@ function ProductAddForm() {
   };
   const handleresetForm = () => {
     form.resetFields([
-      'colorName',
-      'typeName',
-      'materialName',
-      'sizeName',
+      'colorId',
+      'typeId',
+      'materialId',
+      // 'sizeName',
       'brandName',
       'compartmentName',
       'buckleTypeName',
@@ -146,10 +147,59 @@ function ProductAddForm() {
     setOpen(false);
   };
   const handleAddBaloDetails = (values) => {
+    if (values.retailPrice < values.importPrice) {
+      messageApi.open({
+        type: 'error',
+        content: 'Giá bán không thể nhỏ hơn Giá nhập!!!',
+      });
+      return;
+    }
+    const keyProduct =
+      values.buckleTypeId +
+      values.colorId +
+      values.compartmentId +
+      values.materialId +
+      values.producerId +
+      values.typeId +
+      values.sizeId +
+      values.brandId;
+    const indexBaloListPreview = baloListPreview.findIndex(
+      (item) =>
+        item.buckleTypeId +
+          item.colorId +
+          item.compartmentId +
+          item.materialId +
+          item.producerId +
+          item.typeId +
+          item.sizeId +
+          item.brandId ===
+        keyProduct,
+    );
+
+    const indexBaloList = baloList.findIndex(
+      (item) =>
+        item.buckleTypeId +
+          item.colorId +
+          item.compartmentId +
+          item.materialId +
+          item.producerId +
+          item.typeId +
+          item.sizeId +
+          item.brandId ===
+        keyProduct,
+    );
     console.log('====================================');
-    console.log('values');
-    console.log(values);
+    console.log(indexBaloList);
+    console.log(indexBaloListPreview);
     console.log('====================================');
+    if (indexBaloList !== -1 || indexBaloListPreview !== -1) {
+      messageApi.open({
+        type: 'error',
+        content: 'Các trường thuộc tính này Bạn đa đã thêm trước đó, vui lòng chọn khác!!!',
+      });
+      return;
+    }
+    setIsFirst(true);
     const genCodeAuto = generateCustomCode('baloCode', 9);
 
     let addBalo = { ...values, productCode: genCodeAuto };
@@ -184,10 +234,6 @@ function ProductAddForm() {
       producerName: producerSelectedName,
       buckleTypeName: buckleTypeSelectedName,
     };
-    console.log('====================================');
-    console.log([...baloListPreview, tempBalo]);
-    console.log([...baloList, addBalo]);
-    console.log('====================================');
     setBaloListPreview([...baloListPreview, tempBalo]);
 
     notification.success({
@@ -204,12 +250,35 @@ function ProductAddForm() {
     setBaloListPreview([]);
     notification.success({
       message: 'Hoàn Thành',
+      description: 'Đã xóa toàn bộ !!!!',
+      duration: 2,
+    });
+  };
+  const reFreshForm = () => {
+    form.resetFields([
+      'colorId',
+      'typeId',
+      'materialId',
+      'sizeId',
+      // "brandId",
+      'compartmentId',
+      'buckleTypeId',
+      'producerId',
+      'productDetailStatus',
+      'productDetailDescribe',
+      // 'imageUrl',
+      'importPrice',
+      'reatilsPrice',
+      'baloDetailAmount',
+    ]);
+    setFileList([]);
+    notification.success({
+      message: 'Hoàn Thành',
       description: 'Đã Reset Form thành công !!!!',
       duration: 2,
     });
   };
   const onConfirm = () => {
-    setIsFirst(true);
     form.submit();
     setPopconfirmVisible(false);
   };
@@ -296,7 +365,9 @@ function ProductAddForm() {
       message.error(err);
       err = '';
     } else {
-      message.success(`Đã thêm ${fileList.length} ảnh thành công !`);
+      if (fileList.length !== 0) {
+        message.success(`Đã thêm ${fileList.length} ảnh thành công !`);
+      }
     }
   }, [fileList]);
   const addFileImg = (fileLists) => {
@@ -459,7 +530,11 @@ function ProductAddForm() {
               rules={[
                 {
                   required: true,
-                  message: 'Vui lòng điền!',
+                  message: 'Vui lòng điền giá trị Thuộc tính!',
+                },
+                {
+                  pattern: /^[A-Za-z0-9]+$/,
+                  message: 'Tên chỉ bao gồm chữ cái và số!',
                 },
               ]}
             >
@@ -471,14 +546,71 @@ function ProductAddForm() {
       ),
     });
 
+  const handleDelete = (product) => {
+    const keyProduct =
+      product.buckleTypeId +
+      product.colorId +
+      product.compartmentId +
+      product.materialId +
+      product.producerId +
+      product.typeId +
+      product.sizeId +
+      product.brandId;
+
+    const indexBaloListPreview = baloListPreview.findIndex(
+      (item) =>
+        item.buckleTypeId +
+          item.colorId +
+          item.compartmentId +
+          item.materialId +
+          item.producerId +
+          item.typeId +
+          item.sizeId +
+          item.brandId ===
+        keyProduct,
+    );
+
+    const indexBaloList = baloList.findIndex(
+      (item) =>
+        item.buckleTypeId +
+          item.colorId +
+          item.compartmentId +
+          item.materialId +
+          item.producerId +
+          item.typeId +
+          item.sizeId +
+          item.brandId ===
+        keyProduct,
+    );
+
+    if (indexBaloListPreview !== -1) {
+      const updatedBaloListPreview = [...baloListPreview];
+      updatedBaloListPreview.splice(indexBaloListPreview, 1);
+      setBaloListPreview(updatedBaloListPreview);
+    }
+
+    if (indexBaloList !== -1) {
+      const updatedBaloList = [...baloList];
+      updatedBaloList.splice(indexBaloList, 1);
+      setBaloList(updatedBaloList);
+
+      messageApi.open({
+        type: 'error',
+        content: 'Xóa thành công!!!',
+      });
+    }
+  };
+
   return (
-    <Fragment>
+    <div className="contentStyle1">
+      {contextHolder}
       <div>
         <BaloDetailsPreview
           baloList={baloList}
           baloListPreview={baloListPreview}
           testCase={testCase}
           handleSendUpload={handleSendUpload}
+          handleDelete={handleDelete}
         />
       </div>
       <div>
@@ -525,6 +657,11 @@ function ProductAddForm() {
                   {
                     required: true,
                     message: 'Vui lòng điền Tên Balo!',
+                    whitespace: true,
+                  },
+                  {
+                    pattern: /^[A-Za-z0-9]+$/,
+                    message: 'Tên Balo chỉ bao gồm chữ cái và số!',
                   },
                 ]}
               >
@@ -581,6 +718,7 @@ function ProductAddForm() {
                   size="large"
                   style={{ width: 200 }}
                   step={1000}
+                  min={0}
                   addonAfter="VND"
                   formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
@@ -602,6 +740,7 @@ function ProductAddForm() {
                   size="large"
                   style={{ width: 200 }}
                   step={1000}
+                  min={0}
                   addonAfter="VND"
                   formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
@@ -615,14 +754,23 @@ function ProductAddForm() {
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng điền Số lượng!',
+                    message: 'Số lượng chỉ được chứa số không âm!',
+                    // whitespace: true,
+                    validator: (_, value) => {
+                      const regex = /^[0-9]+$/; // Chỉ chấp nhận số không âm
+                      if (!regex.test(value)) {
+                        return Promise.reject('Số lượng chỉ được chứa số không âm!');
+                      }
+                      return Promise.resolve();
+                    },
                   },
                 ]}
               >
                 <InputNumber
                   size="large"
                   style={{ width: 200 }}
-                  step={5}
+                  step={1}
+                  min={0}
                   addonAfter="Cái"
                   formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
@@ -652,20 +800,22 @@ function ProductAddForm() {
                 ]}
               >
                 <Select
+                  onChange={(value) => {
+                    console.log(value);
+                  }}
                   size="large"
                   style={{
                     width: 200,
                   }}
                   placeholder="Màu sắc"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={color.map((item) => ({
                     value: item.colorId,
                     label: item.colorName,
                   }))}
                 ></Select>
-                <span></span>
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -695,7 +845,7 @@ function ProductAddForm() {
                   }}
                   placeholder="Kiểu Balo"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={type.map((item) => ({
                     value: item.typeId,
@@ -731,7 +881,7 @@ function ProductAddForm() {
                   }}
                   placeholder="Chất Liệu"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={material.map((item) => ({
                     value: item.materialId,
@@ -770,7 +920,7 @@ function ProductAddForm() {
                   }}
                   placeholder="Kiểu ngăn"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={compartment.map((item) => ({
                     value: item.compartmentId,
@@ -806,7 +956,7 @@ function ProductAddForm() {
                   }}
                   placeholder="Size Balo"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={size.map((item) => ({
                     value: item.sizeId,
@@ -843,7 +993,7 @@ function ProductAddForm() {
                   }}
                   placeholder="Thương hiệu"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={brand.map((item) => ({
                     value: item.brandId,
@@ -881,7 +1031,7 @@ function ProductAddForm() {
                   }}
                   placeholder="NSX"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={producer.map((item) => ({
                     value: item.producerId,
@@ -917,7 +1067,7 @@ function ProductAddForm() {
                   }}
                   placeholder="Kiểu khóa"
                   showSearch
-                  optionFilterProp="children"
+                  optionFilterProp="label"
                   filterOption={filterOption}
                   options={buckleType.map((item) => ({
                     value: item.buckleTypeId,
@@ -1010,8 +1160,7 @@ function ProductAddForm() {
           }}
         >
           <Row>
-            <Col span={4}></Col>
-            <Col span={4}>
+            <Col span={8}>
               <Popconfirm
                 title="Xác Nhận"
                 description="Bạn Có chắc chắn muốn Thêm?"
@@ -1020,25 +1169,43 @@ function ProductAddForm() {
                 onConfirm={onConfirm}
                 onCancel={onCancel}
               >
-                <Button type="primary">Thêm Chi Tiết Balo</Button>
+                <Button type="primary" size="large" shape="round" icon={<PlusOutlined />}>
+                  Thêm Chi Tiết Balo
+                </Button>
               </Popconfirm>
             </Col>
             <Col span={4}>
               <Popconfirm
                 title="Xác Nhận"
-                description="Bạn Có chắc chắn muốn ResetForm và thêm Balo Khác?"
+                description="Bạn Có chắc chắn muốn ResetForm và xóa hết Chi tiết Balo?"
                 okText="Đồng ý"
                 cancelText="Không"
                 onConfirm={resetForm}
                 onCancel={onCancel}
               >
-                <Button type="primary">ResetForm</Button>
+                <Button type="primary" size="large" shape="round" icon={<MdRefresh />}>
+                  Xóa Hết
+                </Button>
+              </Popconfirm>
+            </Col>
+            <Col span={4}>
+              <Popconfirm
+                title="Xác Nhận"
+                description="Bạn Có chắc chắn muốn làm mới Form?"
+                okText="Đồng ý"
+                cancelText="Không"
+                onConfirm={reFreshForm}
+                onCancel={onCancel}
+              >
+                <Button type="primary" size="large" shape="round" icon={<MdRefresh />}>
+                  Làm mới form
+                </Button>
               </Popconfirm>
             </Col>
           </Row>
         </Form.Item>
       </Form>
-    </Fragment>
+    </div>
   );
 }
 export default ProductAddForm;

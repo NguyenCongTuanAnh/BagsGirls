@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -13,8 +14,19 @@ import java.util.List;
 @Repository
 public interface IProductRepository extends JpaRepository<Products, String> {
 
-    @Query("SELECT b from Products b where b.productStatus <> -1")
-    public Page<Products> getAllWithoutDelete(Pageable pageable);
+    @Query("SELECT b from Products b " +
+            " where ( :productStatus IS NULL OR b.productStatus = :productStatus ) " +
+            "and ( :productName IS NULL OR  upper(b.productName) like '%'+upper(:productName)+'%') " +
+            "and ( :productCode IS NULL OR  upper(b.productCode) like '%'+upper(:productCode)+'%') " +
+            "and ( :brandName IS NULL OR upper(b.brand.brandName) like '%'+upper(:brandName)+'%' ) " )
+
+    public Page<Products> getAllWithoutDelete(
+            Pageable pageable,
+            @Param("productName") String productName,
+            @Param("productCode") String productCode,
+            @Param("brandName") String brandName,
+            @Param("productStatus") Integer productStatus
+            );
 
     @Query("SELECT p FROM Products p " +
             "LEFT JOIN p.productDetails pd " +

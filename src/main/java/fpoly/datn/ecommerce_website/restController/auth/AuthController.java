@@ -14,6 +14,8 @@ import fpoly.datn.ecommerce_website.repository.ICustomerRepository;
 import fpoly.datn.ecommerce_website.repository.IStaffRepository;
 import fpoly.datn.ecommerce_website.repository.IUserRepository;
 import fpoly.datn.ecommerce_website.service.AuthService;
+import fpoly.datn.ecommerce_website.service.ICustomerService;
+import fpoly.datn.ecommerce_website.service.IStaffService;
 import fpoly.datn.ecommerce_website.service.IUserService;
 import fpoly.datn.ecommerce_website.service.UserService;
 import io.jsonwebtoken.Jwts;
@@ -47,11 +49,15 @@ public class AuthController {
     @Autowired
     private IStaffRepository staffRepository;
     @Autowired
+    private ICustomerService customerService;
+    @Autowired
+    private IStaffService staffService;
+    @Autowired
     private ICustomerRepository customerRepository;
 
 
     @GetMapping("/getUserToken")
-    public ResponseEntity<?> getUserToken(HttpServletRequest request) {
+    public ResponseEntity<?> getUserToken(HttpServletRequest request, @RequestParam Role role) {
         String authorizationHeader = request.getHeader("Authorization");
 
         String token = null;
@@ -63,14 +69,17 @@ public class AuthController {
                     .getBody()
                     .getSubject();
             System.out.println("email: " + email);
-            Users users = this.userRepository.findByEmail(email);
-            if (users.getRole() == Role.ROLE_CUSTOMER) {
-                Customers customers = this.customerRepository.findByEmail(email);
+            if (role.equals(Role.ROLE_CUSTOMER)){
+                Customers customers = this.customerService.findByEmail(email);
                 return ResponseEntity.ok(customers);
-            }else{
+            }
+        else{
+
                 Staffs staffs = this.staffRepository.findByEmail(email);
                 return ResponseEntity.ok(staffs);
             }
+
+
         }
         return ResponseEntity.notFound().build();
     }
@@ -81,8 +90,7 @@ public class AuthController {
 
     @PostMapping("/login-basic")
     public ResponseObject loginBasic(@RequestBody LoginRequest request) {
-        System.out.println(request.getEmail());
-        System.out.println(request.getPassword());
+
         return new ResponseObject(authService.loginBasic(request));
     }
 

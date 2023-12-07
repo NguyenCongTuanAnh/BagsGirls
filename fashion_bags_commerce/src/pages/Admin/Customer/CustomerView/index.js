@@ -11,7 +11,7 @@ const { Header, Footer, Sider, Content } = Layout;
 function CustomerView() {
   return (
     <Layout style={{ height: '100%', background: '#f4f3f4' }}>
-      <Sider width={300} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
+      <Sider width={260} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
         <Sidebar keyIndex="sub8" openKey="sub8" />
       </Sider>
       <Layout className="layoutContent">

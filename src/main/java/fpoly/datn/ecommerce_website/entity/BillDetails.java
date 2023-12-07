@@ -1,9 +1,8 @@
 package fpoly.datn.ecommerce_website.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,11 +31,13 @@ public class BillDetails {
     private String billDetailId;
     @ManyToOne
     @JoinColumn(name = "bill_id", referencedColumnName = "bill_id")
+    @JsonIgnoreProperties("details")
     private Bills bills;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "product_detail_id", referencedColumnName = "product_detail_id")
-    private ProductDetails_BillDetails productDetails;
+    @JsonIgnoreProperties("productDetails")
+    private ProductDetails productDetails;
 
     @Column(name = "amount")
     private Integer amount;

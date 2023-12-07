@@ -41,6 +41,7 @@ import voucherAPI from '~/api/voucherAPI';
 import moment from 'moment/moment';
 import Search from 'antd/es/input/Search';
 import { MdRestore } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 const { Option } = AutoComplete;
 
 const SalesCounterForm = () => {
@@ -124,6 +125,8 @@ const SalesCounterForm = () => {
     const [voucher, setVoucher] = useState('');
     const [rankingName, setRankingName] = useState('');
     const [discountPercentByRankingName, setDiscountPercentByRankingName] = useState();
+    const navigate = useNavigate();
+
     let html5QrCode;
     const soundEffect = new Audio(
       'https://firebasestorage.googleapis.com/v0/b/bagsgirl-datn.appspot.com/o/sound-effect%2FA3TMECN-beep.mp3?alt=media&token=6c474e99-443f-4fbc-b5ef-231e6f742659',
@@ -137,7 +140,11 @@ const SalesCounterForm = () => {
       setTotalAmount(total);
       return total;
     };
-
+    useEffect(() => {
+      if (!staff) {
+        navigate('/admin/login');
+      }
+    }, []);
     const handleSelect = (value, option) => {
       const item = options.find((item) => item.productDetailId === value);
 
@@ -411,12 +418,14 @@ const SalesCounterForm = () => {
       if (customer == null && visible === true) {
         messageApi.error('Vui lòng Chọn Khách lẻ hoặc Điền KH Thân Thiết!!!');
       } else if (selectedItems.length === 0) {
+        messageApi.error('Vui lòng thêm sản phẩm!!!');
       } else {
         notification.success({
           message: 'Thành Công',
           description: `Đã hoàn thành đơn hàng`,
           duration: 2,
         });
+        console.log(voucher);
         let addBill = {
           staff: {
             staffId: staff.staffId,
@@ -424,15 +433,18 @@ const SalesCounterForm = () => {
           customer: {
             customerId: customerId,
           },
-          voucher: null,
+          voucher: {
+            voucherId: voucher ? voucher.voucherId : null,
+          },
           billCode: values.billCode,
           billCreateDate: formattedDate,
           billDatePayment: formattedDate,
           billShipDate: null,
           billReceiverDate: formattedDate,
-          billTotalPrice: totalPrice + totalPrice * VAT - voucherPrice,
+          billTotalPrice: totalPrice + totalPrice * VAT,
           productAmount: handleCacuTotalAmount(),
-          billPriceAfterVoucher: totalPrice + totalPrice * VAT - voucherPrice,
+          billPriceAfterVoucher:
+            totalPrice + totalPrice * VAT - voucherPrice - totalPrice * (discountPercentByRankingName / 100),
           shippingAddress: null,
           billingAddress: null,
           receiverName: null,
@@ -447,7 +459,7 @@ const SalesCounterForm = () => {
         if (customer === null) {
           addBill.customer = null;
         }
-
+        console.log(addBill);
         const addedBill = await handleAddBills(addBill);
         if (visible) {
           const updatePoint = await customerAPI.updatePoint(customerId, totalPrice);
@@ -634,7 +646,7 @@ const SalesCounterForm = () => {
       const [addCusomter] = Form.useForm();
 
       const onFinish = async (values) => {
-        const password = generateCustomCode('kh', 4);
+        const password = generateCustomCode('CamOnQuyKh@ch', 4);
         messageApi.open({
           type: 'loading',
           content: 'Đang tạo Khách Hàng..',
@@ -660,14 +672,20 @@ const SalesCounterForm = () => {
             messageApi.destroy();
           } else {
             const useradd = {
-              fullName: values.fullName,
-              email: values.email,
-              phoneNumber: values.phoneNumber,
-              password: password,
-              role: 'ROLE_CUSTOMER',
+              customerStatus: 1,
+              consumePoints: 0,
+              rankingPoints: 0,
+              users: {
+                account: values.fullName,
+                fullName: values.fullName,
+                email: values.email,
+                phoneNumber: values.phoneNumber,
+                password: password,
+                role: 'ROLE_CUSTOMER',
+              },
             };
             try {
-              const response = await AuthAPI.signup(useradd);
+              const response = await customerAPI.add(useradd);
               const mail = {
                 email: values.email,
                 subject: 'Đăng kí tại khoản Thành Công',
@@ -684,7 +702,7 @@ const SalesCounterForm = () => {
                 });
                 messageApi.destroy();
 
-                const customer = await (await customerAPI.findByEmail(response.data.data.email)).data;
+                const customer = await (await customerAPI.findByEmail(response.data.users.email)).data;
 
                 form.setFieldsValue({
                   fullName: customer.users.fullName,
@@ -728,9 +746,15 @@ const SalesCounterForm = () => {
               rules={[
                 {
                   required: true,
-                  message: 'Vui lòng điền tên!',
-                  pattern: /^[A-Za-z]+$/i,
+                  message: 'Tên không hợp lệ!',
+                  pattern: /^[\p{L}\d\s]+$/u,
                   whitespace: true,
+                  validator: (rule, value) => {
+                    if (value && value.trim() !== value) {
+                      return Promise.reject('Tên không được chứa khoảng trắng ở hai đầu!');
+                    }
+                    return Promise.resolve();
+                  },
                 },
               ]}
             >
@@ -768,7 +792,7 @@ const SalesCounterForm = () => {
                 },
               ]}
             >
-              <Input width={200}></Input>n
+              <Input width={200}></Input>
             </Form.Item>
           </Form>
           <Row>
@@ -857,6 +881,7 @@ const SalesCounterForm = () => {
             if (voucher.totalPriceToReceive <= totalPrice) {
               setDiscountPercent(voucher.discountPercent);
               setVoucher(voucher);
+              console.log(voucher);
               setVoucherPrice(totalPrice * (voucher.discountPercent / 100) || voucherPrice);
               messageApi.open({
                 type: 'success',
@@ -1040,7 +1065,7 @@ const SalesCounterForm = () => {
                       <Form.Item
                         label="Nhân Viên"
                         name="staffName"
-                        initialValue={staff.users.fullName}
+                        initialValue={staff !== null ? staff.users.fullName : ''}
                         className={styles.item}
                         rules={[
                           {
@@ -1059,7 +1084,7 @@ const SalesCounterForm = () => {
                   form={form}
                   onFinish={onHandleAddBill}
                   initialValues={{
-                    staffName: staff.fullName,
+                    staffName: staff !== null ? staff.users.fullName : '',
                     paymentMethod: 1,
                     billNote: '',
                   }}
@@ -1418,21 +1443,14 @@ const SalesCounterForm = () => {
     );
   }
   return (
-    <div className="contentStyle1">
+    <div>
       {contextHolder}
       <div
         style={{
           marginBottom: 16,
         }}
       >
-        <Button
-          onClick={add}
-          type="primary"
-          icon={<PlusOutlined />}
-          shape="default"
-          size="large"
-          style={{ margin: '10px 0 0 10px' }}
-        >
+        <Button onClick={add} type="primary" icon={<PlusOutlined />} shape="default" size="large">
           Thêm Tab
         </Button>
       </div>

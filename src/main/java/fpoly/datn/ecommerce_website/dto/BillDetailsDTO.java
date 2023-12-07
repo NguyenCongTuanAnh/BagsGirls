@@ -17,6 +17,7 @@ import lombok.ToString;
 @ToString
 @Setter
 @Getter
+
 public class BillDetailsDTO {
 
     private String billDetailId;

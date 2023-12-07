@@ -1,7 +1,6 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
 import fpoly.datn.ecommerce_website.dto.ProductDTO;
-import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
 import fpoly.datn.ecommerce_website.dto.Product_BrandDTO;
 import fpoly.datn.ecommerce_website.entity.Products;
 import fpoly.datn.ecommerce_website.repository.IProductRepository;
@@ -11,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,19 @@ public class ProductServiceImpl implements IProductService {
         this.modelMapper = modelMapper;
     }
 
+    private List<Sort.Order> createSortOrder(List<String> sortList, String sortDirection) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        Sort.Direction direction;
+        for (String sort : sortList) {
+            if (sortDirection != null) {
+                direction = Sort.Direction.fromString(sortDirection);
+            } else {
+                direction = Sort.Direction.DESC;
+            }
+            sorts.add(new Sort.Order(direction, sort));
+        }
+        return sorts;
+    }
 
     @Override
     public String GetproductStatusString(int productStatus) {
@@ -43,9 +57,23 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public Page<ProductDTO> findAllPagination(int pageNum, int PageSize) {
-        PageRequest pageRequest = PageRequest.of(pageNum, PageSize);
-        Page<Products> productPage = this.iproductRepository.getAllWithoutDelete(pageRequest);
+    public Page<ProductDTO> findAllPagination(
+            int pageNum,
+            int PageSize,
+            String productName,
+            String productCode,
+            String brandName,
+            Integer productStatus,
+            List<String> sortList,
+            String sortOrder
+    ) {
+        PageRequest pageRequest = PageRequest.of(pageNum, PageSize, Sort.by(createSortOrder(sortList,sortOrder)));
+        Page<Products> productPage = this.iproductRepository.getAllWithoutDelete(
+                pageRequest,
+                productName,
+                productCode,
+                brandName,
+                productStatus);
 
         List<ProductDTO> productDTOList = productPage.getContent()
                 .stream().map(product -> modelMapper.map(product, ProductDTO.class))
