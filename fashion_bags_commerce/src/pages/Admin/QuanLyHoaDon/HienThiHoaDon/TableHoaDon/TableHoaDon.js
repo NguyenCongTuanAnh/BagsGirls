@@ -63,7 +63,7 @@ function TableHoaDon() {
       title: 'Mã hóa đơn',
       dataIndex: 'billCode',
       key: 'code',
-      width: '5%'
+      width: '10%'
     },
     {
       title: 'Ngày tạo',
@@ -167,18 +167,18 @@ function TableHoaDon() {
         if (record.billStatus !== -1) {
           return (
             <div>
-              {hanhDong(record, false)}
               <Space size="middle" style={{ marginTop: '10px' }}>
                 <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+                {hanhDong(record, false)}
               </Space>
             </div>
           );
         } else {
           return (
             <div>
-              {hanhDong(record, true)}
               <Space size="middle" style={{ marginTop: '10px' }}>
                 <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+                {hanhDong(record, true)}
               </Space>
             </div>
           );
