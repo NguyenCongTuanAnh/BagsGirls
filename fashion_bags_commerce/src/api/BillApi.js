@@ -10,7 +10,7 @@ const billsAPI = {
       },
     });
   },
-  getAllSearchPagination(startDate, endDate, status, search, pageNum, pageSize) {
+  getAllSearchPagination(startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder, sortListPlaceHolder) {
     const url = 'api/bills/pagination';
     return axiosClient.get(url, {
       params: {
@@ -19,12 +19,15 @@ const billsAPI = {
         search: search,
         status: status,
         page: pageNum - 1,
-        size: pageSize
+        size: pageSize,
+        sortList: sortList,
+        sortOrder: sortOrder,
+        sortListPlaceHolder: sortListPlaceHolder
       },
     });
   },
 
-  getAllBillsOffline(filterStaffName, startDate, endDate, status, search, pageNum, pageSize) {
+  getAllBillsOffline(filterStaffName, startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder, sortListPlaceHolder) {
     const url = 'api/bills/bill-offline';
     return axiosClient.get(url, {
       params: {
@@ -34,7 +37,10 @@ const billsAPI = {
         search: search,
         status: status,
         page: pageNum - 1,
-        size: pageSize
+        size: pageSize,
+        sortList: sortList,
+        sortOrder: sortOrder,
+        sortListPlaceHolder: sortListPlaceHolder
       },
     });
   },

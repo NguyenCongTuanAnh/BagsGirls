@@ -27,8 +27,8 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " OR :search IS NULL ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND b.staff IS NOT NULL " +
-            " AND b.staff.users.fullName LIKE %:filterStaffName% " +
-            "ORDER BY b.billCreateDate DESC" )
+            " AND b.staff.users.fullName LIKE %:filterStaffName% "
+            )
     Page<Bills> findAllBillOffNotSearch(
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -44,8 +44,8 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " OR :search IS NULL ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND b.staff IS NOT NULL " +
-            " AND b.staff.users.fullName LIKE %:filterStaffName% " +
-            "ORDER BY b.billCreateDate DESC" )
+            " AND b.staff.users.fullName LIKE %:filterStaffName% "
+            )
     Page<Bills> findAllBillOffStatusNotSearch(
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -65,8 +65,8 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " OR :search IS NULL ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND b.staff IS NOT NULL " +
-            " AND b.staff.users.fullName LIKE %:filterStaffName% " +
-            "ORDER BY b.billCreateDate DESC" )
+            " AND b.staff.users.fullName LIKE %:filterStaffName% "
+             )
     Page<Bills> findAllBillsOffline(
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -87,8 +87,8 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " OR :search IS NULL ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND b.staff IS NOT NULL " +
-            " AND b.staff.users.fullName LIKE %:filterStaffName% " +
-            "ORDER BY b.billCreateDate DESC" )
+            " AND b.staff.users.fullName LIKE %:filterStaffName% "
+             )
     Page<Bills> findAllBillsOfflineStatus(
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -106,8 +106,8 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " OR b.receiverName LIKE %:search% " +
             " OR :search IS NULL ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-            " AND b.staff IS NULL " +
-            "ORDER BY b.billCreateDate DESC" )
+            " AND b.staff IS NULL "
+             )
     Page<Bills> findAllBillsBySearch(
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -121,8 +121,8 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " OR b.receiverName LIKE %:search% " +
             " OR :search IS NULL ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-            " AND b.staff IS NULL " +
-            "ORDER BY b.billCreateDate DESC" )
+            " AND b.staff IS NULL "
+             )
     Page<Bills> findAllBillsBySearchStatus(
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
