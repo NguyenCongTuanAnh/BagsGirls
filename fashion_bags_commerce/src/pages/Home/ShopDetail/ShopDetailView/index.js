@@ -148,12 +148,13 @@ function ShopDetailView() {
   };
 
   const handleInputChange = (event) => {
-    // Kiểm tra nếu giá trị nhập vào không phải là số, thì không thay đổi giá trị của input
-    if (/\D/g.test(event.target.value)) return '';
-    console.log('>>>> value', event.target.value);
-
-    // Cập nhật giá trị quantity
-    setQuantity(parseInt(event.target.value, 10));
+    let newValue = event.target.value.replace(/\D/g, ''); 
+    if (newValue === '' || parseInt(newValue, 10) === 0) {
+      newValue = '1';
+    }
+    console.log('>>>> value', newValue);
+  
+    setQuantity(parseInt(newValue, 10));
   };
 
   const handleIncrement = () => {
