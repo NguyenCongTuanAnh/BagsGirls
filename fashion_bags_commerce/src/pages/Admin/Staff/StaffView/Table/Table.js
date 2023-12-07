@@ -72,16 +72,16 @@ const TableContent = () => {
     },
     {
       title: 'Họ và tên',
-      dataIndex: 'usersFullName',
+      dataIndex: ['users', 'fullName'],
       sorter: (a, b) => a.users.fullName.localeCompare(b.users.fullName),
       width: 100,
     },
-    {
-      title: 'Tài khoản',
-      dataIndex: ['users', 'account'],
-      sorter: (a, b) => a.users.account.localeCompare(b.users.account),
-      width: 100,
-    },
+    // {
+    //   title: 'Tài khoản',
+    //   dataIndex: ['users', 'account'],
+    //   sorter: (a, b) => a.users.account.localeCompare(b.users.account),
+    //   width: 100,
+    // },
     {
       title: 'SĐT',
       dataIndex: ['users', 'phoneNumber'],

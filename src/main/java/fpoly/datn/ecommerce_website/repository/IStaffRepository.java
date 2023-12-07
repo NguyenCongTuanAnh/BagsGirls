@@ -14,13 +14,15 @@ public interface IStaffRepository extends JpaRepository<Staffs, String> {
     @Query(value = "select s from Staffs s")
     Page<Staffs> getAllPage(Pageable pageable);
 
-    @Query(value = "SELECT c FROM Customers c join Users i on c.users.userId = i.userId " +
-            "where i.account like %:keyword% " +
-            "or i.address like %:keyword% " +
-            " or i.fullName like %:keyword% " +
-            "or i.phoneNumber like %:keyword%"
+    @Query(value = " SELECT c FROM Customers c " +
+            " where c.users.account like %:keyword% " +
+            " or c.users.address like %:keyword% " +
+            " or c.users.fullName like %:keyword% " +
+            " or c.users.phoneNumber like %:keyword% " +
+            " or c.users.address like %:keyword% "
     )
     Page<Staffs> findallSearch(@Param("keyword") String keyword, Pageable pageable);
+
     @Query("SELECT s, u FROM Staffs s join Users u on s.users.userId = u.userId " +
             "where u.email = :email ")
     Staffs findByEmail(@Param("email") String email);
