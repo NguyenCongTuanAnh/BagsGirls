@@ -135,7 +135,7 @@ function ShopView({ titleContent }) {
                 showSizeChanger
                 total={totalItem} // Tổng số sản phẩm
                 onChange={handlePageChange} // Hàm xử lý khi thay đổi trang
-                showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`} // Hiển thị thông tin số sản phẩm
+                showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} sản phẩm`} // Hiển thị thông tin số sản phẩm
                 className={styles.pagination} // Class CSS tùy chỉnh cho phân trang
                 current={currentPage}
                 defaultPageSize={pagesSize}
