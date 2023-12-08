@@ -178,6 +178,24 @@ function FormvoucherEdit(props) {
               </Form.Item>
             </Col>
           </Row>
+
+
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="voucherAmount"
+                label="Số lượng"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng nhập số lượng',
+                  },
+                ]}
+              >
+                <Input type="number" name="voucherAmount" value={data.voucherAmount} onChange={updateData} />
+              </Form.Item>
+            </Col>
+          </Row>
           <Row gutter={16}>
             <Col span={24}>
               <Form.Item

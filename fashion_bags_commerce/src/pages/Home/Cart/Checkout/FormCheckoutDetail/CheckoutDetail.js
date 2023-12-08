@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import billsAPI from '~/api/BillApi';
 import billDetailAPI from '~/api/BillDetailsAPI';
 import dayjs from 'dayjs';
-import { Input, Button, notification, Result } from 'antd';
+import { Input, Button, notification, Result, message } from 'antd';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import productDetailsAPI from '~/api/productDetailsAPI';
@@ -13,9 +13,11 @@ import BeatLoader from 'react-spinners/ClipLoader';
 
 const CheckoutDetail = () => {
   const [cartItems, setCartItems] = useState([]);
+  const [cart, setCart] = useState([]);
   const [confirmedAddress, setConfirmedAddress] = useState(false);
   const [showAddressForm, setShowAddressForm] = useState(true);
   const [loadingPayment, setLoadingPayment] = useState(false); // State for payment loading
+  const [messageApi, contextHolder] = message.useMessage();
 
   const bottomRef = useRef(null);
   const scrollToBottom = () => {
@@ -31,19 +33,24 @@ const CheckoutDetail = () => {
     }
   };
 
-  useEffect(() => {
-    // Fetch cart items from local storage
-    const storedCart = localStorage.getItem('temporaryCart');
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart));
-    }
-  }, []);
-
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
       return total + item.quantity * item.retailPrice;
     }, 0);
   };
+  const tongGiaKhiApVoucher = cart.map((item) => {
+    const ao = item.calculateTotal() - item.voucherPrice;
+    setCart(ao);
+
+    return ao;
+  });
+
+  useEffect(() => {
+    const storedCart = localStorage.getItem('temporaryCart');
+    if (storedCart) {
+      setCartItems(JSON.parse(storedCart));
+    }
+  }, []);
 
   const [submittedData, setSubmittedData] = useState(null);
 
@@ -121,10 +128,9 @@ const CheckoutDetail = () => {
       if (!fullName || !phoneNumber || !selectedProvince || !selectedDistrict || !selectedWard || !address) {
         console.log('Vui lòng điền đầy đủ thông tin');
         setLoadingPayment(false);
-        return notification.error({
-          message: 'Thất bại',
-          description: 'Vui lòng điền đẩy đủ thông tin',
-          duration: 1,
+        return messageApi.open({
+          type: 'error',
+          content: 'Vui lòng chọn Xác nhận địa chỉ',
         });
       } else {
         setLoadingPayment(true);
@@ -189,6 +195,7 @@ const CheckoutDetail = () => {
         setConfirmedAddress(true);
         setShowAddressForm(false);
         setSubmittedData(responseBillDetails);
+       
         await Promise.all(
           cartItems.map(async (item) => {
             // Subtract the quantity from the product detail amount
@@ -199,12 +206,17 @@ const CheckoutDetail = () => {
         console.log('BilLDetails:', responseBillDetails);
 
         localStorage.removeItem('temporaryCart');
+        messageApi.open({
+          type: 'success',
+          content: 'Thanh toán thành công',
+        });
       } catch (error) {
         setLoadingPayment(false);
+        setTimeout(() => setLoadingPayment(true), 200);
         console.error('Error submitting information:', error);
       }
       setLoadingPayment(false);
-    }, 1500);
+    }, 500);
   };
 
   useEffect(() => {
@@ -260,9 +272,9 @@ const CheckoutDetail = () => {
 
   return (
     <div className="form-container">
-      {/* <div className="col-6"> */}
       {showAddressForm && (
         <form onSubmit={handleSubmit} ref={formRef}>
+          {contextHolder}
           <div className="titleNhanHang">
             <h1>Thông tin người đặt hàng</h1>
           </div>
@@ -283,22 +295,28 @@ const CheckoutDetail = () => {
           />
           <input
             className="inputLabel"
-            type="number"
-            size={10}
+            type="text"
+            // size={10}
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="Số điện thoại"
+            pattern="(?:\+84|0)(?:\d){9,10}$"
+            title="vui lòng nhập số điện thoại hợp lệ"
             required
           />
           <input
             className="inputLabel"
-            type="text"
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email ( Nếu có ) "
-            // required
+            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+            // pattern="(?:\+84|0)(?:\d){9,10}$"
+
+            title="vui lòng nhập email hợp lệ"
+            required
           />
-          <select value={selectedProvince} id="selectedProvince" onChange={handleProvinceChange}>
+          <select value={selectedProvince} id="selectedProvince" onChange={handleProvinceChange} required>
             <option disabled value="">
               Chọn Tỉnh/Thành phố
             </option>
@@ -308,7 +326,7 @@ const CheckoutDetail = () => {
               </option>
             ))}
           </select>
-          <select value={selectedDistrict} id="selectedDistrict" onChange={handleDistrictChange}>
+          <select value={selectedDistrict} id="selectedDistrict" onChange={handleDistrictChange} required>
             <option disabled value="">
               Chọn Quận/Huyện
             </option>
@@ -318,7 +336,7 @@ const CheckoutDetail = () => {
               </option>
             ))}
           </select>
-          <select value={selectedWard} id="selectedWard" onChange={handleWardChange}>
+          <select value={selectedWard} id="selectedWard" onChange={handleWardChange} required>
             <option disabled value="">
               Chọn Phường/Xã
             </option>
@@ -345,10 +363,38 @@ const CheckoutDetail = () => {
           />
 
           <br></br>
-          <button onClick={scrollToBottom}>Giao đến địa chỉ này</button>
+          <button onClick={scrollToBottom}>Xác nhận địa chỉ</button>
 
           <br></br>
+          {submittedData && !confirmedAddress && (
+            <div>
+              <div className="titleNhanHang">
+                <h1>Địa chỉ</h1>
+              </div>
+              <div className="voucher">
+                <h4>Thông tin nhận hàng:</h4>
+                <p>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Người nhận:</span> {submittedData.fullName}{' '}
+                  (+84)
+                  {submittedData.phoneNumber}
+                </p>
+                <p>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ:</span> {submittedData.fullAddress}
+                </p>
+                <p>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Email:</span> {submittedData.email}
+                </p>
+                <p>
+                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Ghi Chú:</span> {submittedData.billNote}
+                </p>
 
+                <a className="updateThongTin" onClick={scrollToForm}>
+                  Chỉnh sửa
+                </a>
+              </div>
+            </div>
+          )}
+          <br></br>
           <div className="titleNhanHang">
             <h1>Đơn hàng</h1>
           </div>
@@ -385,15 +431,15 @@ const CheckoutDetail = () => {
           </div>
 
           <hr />
-          <div className="voucher">
-            <h4>Voucher:</h4>
-          </div>
+          {/* <div className="voucher">
+            <h4>Voucher: </h4>
+          </div> */}
 
-          <div className="pay">
+          {/* <div className="pay">
             <h3>Phương thức thanh toán:</h3>
             <br></br>
             <label className="labelCK">
-              <input className="inputCk" name="radioPay" type="radio" value={''} />
+              <input className="inputCk" name="radioPay" type="radio" value={''} checked={true} />
               Thanh toán khi nhận hàng
             </label>
             <br></br>
@@ -407,37 +453,19 @@ const CheckoutDetail = () => {
               <input className="inputCk" name="radioPay" type="radio" value={''} />
               Ví điện tử
             </label>
-          </div>
+          </div> */}
           <br></br>
           <div className="totalCheckout">
             <br />
             <h4>
-              Tổng thanh toán: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
+              Tổng thanh toán: <span style={{ color: 'red' }}> {VNDFormaterFunc(tongGiaKhiApVoucher)}</span>
             </h4>
             <br />
           </div>
           <br />
-          {submittedData && !confirmedAddress && (
-            <div className="voucher">
-              <h4>Địa chỉ nhận hàng:</h4>
-              <p>
-                <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Người nhận:</span> {submittedData.fullName} (+84)
-                {submittedData.phoneNumber}
-              </p>
-              <p>
-                <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ:</span> {submittedData.fullAddress}
-              </p>
-              <p>
-                <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Ghi Chú:</span> {submittedData.billNote}
-              </p>
 
-              <a className="updateThongTin" onClick={scrollToForm}>
-                Chỉnh sửa
-              </a>
-            </div>
-          )}
           <br></br>
-          <div ref={bottomRef}>
+          <div>
             {loadingPayment ? (
               <div style={{ textAlign: 'center', marginTop: '20px' }}>
                 <BeatLoader color="#d64336" loading={true} size={50} />

@@ -22,7 +22,6 @@ function CartItem() {
   const [form] = Form.useForm();
 
   const handleApplyVoucherCode = async () => {
-
     console.log(voucherCode);
     if (voucherCode === '') {
       messageApi.error('Mã code không hợp lệ!!!!');
@@ -31,7 +30,8 @@ function CartItem() {
     try {
       const response = await voucherAPI.findByVoucherCode(voucherCode);
       const voucher = response.data;
-
+      console.log('voucherss', voucher);
+      setVoucher(voucher);
       if (voucher.voucherAmount <= 0) {
         messageApi.open({
           type: 'error',
@@ -43,17 +43,27 @@ function CartItem() {
         const endTime = moment(voucher.voucherEndTime);
 
         if (currentTime.isBetween(startTime, endTime)) {
-          if (voucher.totalPriceToReceive <= totalPrice) {
+          console.log(currentTime.isBetween(startTime, endTime));
+          console.log('gia toi thieu', voucher.totalPriceToReceive);
+          console.log('tong gia bill', calculateTotal());
+
+          if (voucher.totalPriceToReceive <= calculateTotal()) {
             setDiscountPercent(voucher.discountPercent);
-            setVoucher(voucher);
-            setVoucherPrice(totalPrice * (voucher.discountPercent / 100) || voucherPrice);
-            setTotalPrice(calculateTotal() - totalPrice * (voucher.discountPercent / 100));
+            const calculatedVoucherPrice = calculateTotal() * (voucher.discountPercent / 100) || voucherPrice;
+            setVoucherPrice(calculatedVoucherPrice);
+            const discountedTotalPrice = calculateTotal() - calculatedVoucherPrice;
+            setTotalPrice(discountedTotalPrice);
+            console.log('tong bill khi ap dung voucher', discountedTotalPrice);
+
             messageApi.open({
               type: 'success',
               content: `Voucher áp dụng thành công!!!!`,
             });
           } else {
-          
+            messageApi.open({
+              type: 'error',
+              content: 'Đơn hàng không đủ điều kiên để áp dụng voucher',
+            });
           }
         } else {
           messageApi.open({
@@ -244,7 +254,7 @@ function CartItem() {
   };
   return (
     <div className="container-fluid" style={{ padding: '0 5% 0 5%' }}>
-       {contextHolder}
+      {contextHolder}
       <div>
         <Link to={'/shop'} className={styles.continue_cart}>
           Tiếp tục mua sắm <DoubleRightOutlined />
@@ -269,7 +279,7 @@ function CartItem() {
       </div>
       {/* tien hanh thanh toan */}
       <div className={styles.finalCart}>
-        <br></br>
+        <br />
         <div className={styles.content_product_pc}>
           <div className={styles.group_content_product}>
             <div className={styles.body}>
@@ -278,22 +288,19 @@ function CartItem() {
                   <li className={styles.productDetailItem}>
                     <span className={styles.label}>Số lượng: </span>
                     <span className={styles.labelName}>
-                      <span style={{ color: 'red', fontSize: '30px' }}>{totalQuantity} </span>Sản phẩm
+                      <span style={{ color: 'red', fontSize: '30px' }}>{totalQuantity}</span> Sản phẩm
                     </span>
                   </li>
-                  <hr></hr>
+                  <hr />
                   <li className={styles.productDetailItem}>
                     <span className={styles.label}>Giá trị hàng hóa: </span>
                     <span className={styles.labelName}>{vndFormaterFunc(calculateTotal())}</span>
                   </li>
-                  <hr></hr>
+                  <hr />
                   <li className={styles.productDetailItem}>
                     <span className={styles.label}>Mã giảm giá: </span>
-
                     <Form layout="vertical">
                       <Form.Item>
-                        {/* <Input style={{ width: '150px' }} />
-                        <Button htmlType="submit">Áp dụng</Button> */}
                         <Search
                           onChange={(e) => {
                             setVoucherCode(e.target.value);
@@ -301,43 +308,38 @@ function CartItem() {
                           enterButton="Áp dụng"
                           onSearch={handleApplyVoucherCode}
                           value={voucherCode}
+                          placeholder="(Nếu có)"
                         />
                       </Form.Item>
                     </Form>
-                  </li>{' '}
-                  <hr></hr>
+                  </li>
+                  <hr />
                   <li className={styles.productDetailItem}>
                     <span className={styles.label}>Giảm tiền: </span>
                     <span className={styles.labelName}>
-                        <div className={styles.item}>
-                          <h6>
-                            Voucher ({voucher.voucherCode || 'nếu có'}) (giảm {voucher.discountPercent || 0} %) (3)
-                          </h6>
-                        </div>
-                        <div>
-                          <h6>- {VNDFormaterFunc(voucherPrice)}</h6>
-                        </div>
-
+                      <div className={styles.item}>
+                        <h6>- {VNDFormaterFunc(voucherPrice)}</h6>
+                      </div>
                     </span>
                   </li>
-                  <hr></hr>
+                  <hr />
                   <li className={styles.productDetailItem}>
                     <span className={styles.label}>Thành tiền: </span>
                     <span className={styles.labelName} style={{ color: 'red', fontWeight: 'bold', fontSize: '30px' }}>
-                      {vndFormaterFunc(calculateTotal())}
+                      {vndFormaterFunc(calculateTotal() - voucherPrice)}
                     </span>
-                  </li>{' '}
+                  </li>
                 </ul>
               </div>
             </div>
           </div>
         </div>
-
         <Link to={'/cart/checkout'}>
-          <br></br>
+          <br />
           <button className={styles.buttonThanhToan}>Tiến hành thanh toán</button>
         </Link>
       </div>
+
       <br></br>
     </div>
   );
