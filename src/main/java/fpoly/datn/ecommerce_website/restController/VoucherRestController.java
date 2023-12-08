@@ -1,6 +1,9 @@
 package fpoly.datn.ecommerce_website.restController;
 
+import com.nimbusds.openid.connect.sdk.assurance.evidences.Voucher;
+import fpoly.datn.ecommerce_website.dto.SizeDTO;
 import fpoly.datn.ecommerce_website.dto.VoucherDTO;
+import fpoly.datn.ecommerce_website.entity.Sizes;
 import fpoly.datn.ecommerce_website.entity.Vouchers;
 import fpoly.datn.ecommerce_website.service.IVoucherService;
 import jakarta.validation.Valid;
@@ -62,6 +65,9 @@ public class VoucherRestController {
                 this.voucherService.add(voucher)
                 , HttpStatus.OK);
     }
+
+
+
     @RequestMapping(value = "/voucher/findByVoucherCode", method = RequestMethod.GET)
     public ResponseEntity<?> findByVoucherCode(@Valid @RequestParam String voucherCode) {
 
@@ -71,6 +77,14 @@ public class VoucherRestController {
     }
 
     //update
+    @RequestMapping(value = "/voucher", method = RequestMethod.PUT)
+    public ResponseEntity<?> update(@RequestBody VoucherDTO voucherDTO) {
+        Vouchers vouchers = modelMapper.map(voucherDTO, Vouchers.class);
+        return new ResponseEntity<>(
+                this.voucherService.update(vouchers)
+                , HttpStatus.OK
+        );
+    }
     
     
     //update status

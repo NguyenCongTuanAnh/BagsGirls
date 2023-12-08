@@ -1,5 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, notification, Modal, Popconfirm, Input, Select, DatePicker } from 'antd';
+import { Button, Form, notification, Modal, Popconfirm, Input, Select, DatePicker, InputNumber } from 'antd';
+import TextArea from 'antd/es/input/TextArea';
 import { timers } from 'jquery';
 import React, { Component, Fragment, useState } from 'react';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
@@ -26,8 +27,12 @@ function FormVoucherCreate(props) {
     setError(false);
     if (!error) {
       let add = { ...values, voucherCode: generateCustomCode('vc', 3) };
+      console.log(add);
+
       try {
         const response = await voucherAPI.add(add);
+
+        console.log(response);
         notification.success({
           message: 'Add thành công',
           description: 'Dữ liệu đã được thêm thành công',
@@ -82,7 +87,7 @@ function FormVoucherCreate(props) {
 
             <Form.Item
               label="Giảm giá"
-              name="discountPrice"
+              name="discountPercent"
               rules={[
                 {
                   required: true,
@@ -90,7 +95,7 @@ function FormVoucherCreate(props) {
                 },
               ]}
             >
-              <Input />
+              <InputNumber />
             </Form.Item>
 
             <Form.Item label="Ngày tạo" name="voucherCreateDate">
@@ -111,11 +116,11 @@ function FormVoucherCreate(props) {
                 placeholder="Vui lòng chọn trạng thái"
                 options={[
                   {
-                    value: 'giam truc tiep',
+                    value: '1',
                     label: 'Giảm trực tiếp',
                   },
                   {
-                    value: 'giam online',
+                    value: '0',
                     label: 'Giảm online',
                   },
                 ]}
@@ -123,8 +128,8 @@ function FormVoucherCreate(props) {
             </Form.Item>
 
             <Form.Item
-              label="Điểm tối thiểu"
-              name="pointsToReceive"
+              label="Giá tối thiểu"
+              name="totalPriceToReceive"
               rules={[
                 {
                   required: true,
@@ -132,7 +137,20 @@ function FormVoucherCreate(props) {
                 },
               ]}
             >
-              <Input />
+              <InputNumber />
+            </Form.Item>
+
+            <Form.Item
+              label="Voucher Note"
+              name="voucherNote"
+              rules={[
+                {
+                  required: true,
+                  message: 'Vui lòng điền thông tin!',
+                },
+              ]}
+            >
+              <TextArea />
             </Form.Item>
 
             <Form.Item

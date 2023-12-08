@@ -26,8 +26,8 @@ const voucherAPI = {
       },
     });
   },
-  update(data) {
-    const url = `api/voucher?id=${data.id}`;
+  update(id, data) {
+    const url = `api/voucher?id=${id}`;
     return axiosClient.put(url, data);
   },
   updateStatus(id, status) {

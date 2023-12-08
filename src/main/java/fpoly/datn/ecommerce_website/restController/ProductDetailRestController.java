@@ -106,6 +106,9 @@ public class ProductDetailRestController {
         return new ResponseEntity<>
                 (productPage, HttpStatus.OK);
     }
+
+
+
     //add
     @RequestMapping(value = "/product-details", method = RequestMethod.POST)
     public ResponseEntity<?> save(@Valid @RequestBody ProductDetailDTO productDetailDTO) {

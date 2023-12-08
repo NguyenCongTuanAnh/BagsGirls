@@ -22,6 +22,7 @@ const SearchPage = (props) => {
   const handleColumnChange = (type) => {
     setColumnType(type);
   };
+
   const handleSearch = async () => {
     try {
       const response = await fullProductAPI.searchByKeyword(keyword);
@@ -35,8 +36,6 @@ const SearchPage = (props) => {
     handleSearch();
   }, [keyword]);
 
-  console.log('>>> data', data);
-
   return (
     <MainLayout>
       <div className={styles.listSanPham}>
@@ -45,13 +44,12 @@ const SearchPage = (props) => {
             {data
               .filter((product) => product.productStatus === 1)
               .map((product) => (
-                // Hiển thị sản phẩm từ kết quả tìm kiếm
                 <div key={product.productId} className={`${styles.scrollableList} ${columnType}`}>
                   <div className={styles.producItem}>
                     <div className={styles.productImage}>
                       <Link to={`/shop/detail/${product.productId}`}>
                         <div className={styles.contentImage}>
-                          <Image src={product.images[0] ? product.images[0].imgUrl : ''} fallback={failesImgg}></Image>
+                          <Image src={product.images[0] ? product.images[0].imgUrl : ''} fallback={failesImgg} />
                         </div>
                       </Link>
                     </div>
@@ -65,7 +63,7 @@ const SearchPage = (props) => {
                       </span>
                       <Link to={`/shop/detail/${product.productId}`}>
                         <div className={styles.productTitle}>
-                          {product.productName}-{product.productCode}-{product.brand.brandName}{' '}
+                          {`${product.productName}-${product.productCode}-${product.brand.brandName}`}{' '}
                         </div>
                       </Link>
                     </div>
