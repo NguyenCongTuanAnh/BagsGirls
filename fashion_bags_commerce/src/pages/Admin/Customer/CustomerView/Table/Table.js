@@ -10,30 +10,22 @@ import FormCustomerCreate from '../../CustomerEdit/FormCreate/FormCustomerCreate
 
 const TableContent = () => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pagesSize, setPagesSize] = useState(10);
   const [totalItem, setTotalItem] = useState();
   const [search, setSearch] = useState('');
 
   const onCancel = () => { };
-  const reload = () => {
-    setLoading(true);
-    getAll(search, currentPage, pagesSize);
+
+  useEffect(() => {
+    getAll(currentPage, pagesSize);
     setTimeout(() => {
       setLoading(false);
     }, 500);
-  };
+  }, [loading, search]);
 
-  useEffect(() => {
-    reload();
-  }, []);
 
-  useEffect(() => {
-    if (loading) {
-      reload();
-    }
-  }, [loading]);
 
   const onChange = (current, pageSize) => {
     setCurrentPage(current);
@@ -53,9 +45,9 @@ const TableContent = () => {
     }
   };
 
-  const getAll = async (keyword, page, size) => {
+  const getAll = async (page, size) => {
     try {
-      const response = await customerAPI.getSearchPagination(keyword, page, size);
+      const response = await customerAPI.getSearchPagination(search, page, size);
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
       setData(data);
@@ -72,7 +64,7 @@ const TableContent = () => {
     {
       title: 'Mã khách hàng',
       dataIndex: 'customerCode',
-      sorter: (a, b) => a.staffCode.localeCompare(b.staffCode),
+      // sorter: (a, b) => a.staffCode.localeCompare(b.staffCode),
       width: '7%',
     },
     {
@@ -105,37 +97,37 @@ const TableContent = () => {
     {
       title: 'Địa chỉ',
       dataIndex: ['users', 'address'],
-      sorter: (a, b) => a.users.address.localeCompare(b.users.address),
+      // sorter: (a, b) => a.users.address.localeCompare(b.users.address),
       width: '15%',
     },
     {
       title: 'Điểm',
-      dataIndex: 'customerPoint',
-      sorter: (a, b) => a.customerPoint.localeCompare(b.customerPoint),
+      dataIndex: 'rankingPoints',
+      sorter: (a, b) => a.rankingPoints.localeCompare(b.rankingPoints),
       width: '5%',
     },
     {
       title: 'Hạng khách hàng',
       dataIndex: 'customerRanking',
       // sorter: (a, b) => a.users.userNote.localeCompare(b.users.userNote),
-      width: '10%',
-      render: (status) => {
+      width: '9%',
+      render: (text, record) => {
         let statusText;
 
-        switch (status) {
-          case 0:
+        switch (record.customerRanking) {
+          case 'KH_TIEMNANG':
             statusText = 'Tiềm năng';
             break;
-          case 1:
+          case 'KH_THANTHIET':
             statusText = 'Thân thiết';
             break;
-          case 2:
+          case 'KH_BAC':
             statusText = 'Bạc';
             break;
-          case 3:
+          case 'KH_VANG':
             statusText = 'Vàng';
             break;
-          case 4:
+          case 'KH_KIMCUONG':
             statusText = 'Kim cương';
             break;
           default:
@@ -150,7 +142,7 @@ const TableContent = () => {
       title: 'Trạng thái',
       dataIndex: 'customerStatus',
 
-      width: '8%',
+      width: '11%',
       render: (status) => {
         let statusText;
         let statusClass;
@@ -190,8 +182,8 @@ const TableContent = () => {
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
-              deleteHandle(record.customerId, 0);
-              reload();
+              deleteHandle(record.customerId, -1);
+              setLoading(true);
             }}
             onCancel={onCancel}
           >
@@ -210,9 +202,9 @@ const TableContent = () => {
     const xoa = await customerAPI.updateStatus(id, status);
     notification.info({
       message: 'Thông báo',
-      description: 'Đã hủy thành công trạng thái nhân viên có id là :' + id,
+      description: 'Đã xóa thành công khách khàng',
     });
-    reload();
+    setLoading(true);
   };
 
   return (
@@ -223,17 +215,19 @@ const TableContent = () => {
     >
       <SearchForm onSubmit={handleSearchChange} />
       <FormCustomerCreate reload={() => setLoading(true)} />
-      <Button icon={<ReloadOutlined />} className="" onClick={reload} loading={loading}></Button>
+      <Button icon={<ReloadOutlined />} style={{ marginLeft: '10px' }} onClick={() => setLoading(true)} loading={loading}></Button>
 
       <Table
-        scroll={{
-          x: 550,
-          y: 570,
-        }}
+        // scroll={{
+        //   x: 550,
+        //   y: 570,
+        // }}
+        style={{ marginTop: '10px' }}
         rowKey={(record) => record.customerId}
         columns={columns}
         dataSource={data}
         pagination={false}
+        loading={loading}
       // onChange={handlePageChange} // Handle page changes
       />
 

@@ -2,6 +2,7 @@ package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.StaffDTO;
 import fpoly.datn.ecommerce_website.dto.StaffDTO1;
+import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Staffs;
 import fpoly.datn.ecommerce_website.entity.Users;
 import fpoly.datn.ecommerce_website.repository.IStaffRepository;
@@ -100,6 +101,23 @@ public class StaffRestController {
     public ResponseEntity<String> delete(@RequestParam String id) {
         this.staffService.delete(id);
         return new ResponseEntity<>("Delete Successfully", HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/staff/findByEmail", method = RequestMethod.GET)
+    public ResponseEntity<?> findCustomerByEmail(
+            @RequestParam(name = "email") String email
+    ) {
+        return new ResponseEntity<>
+                (this.staffRepository.findByEmail(email), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/staff/findByPhoneNumber", method = RequestMethod.GET)
+    public ResponseEntity<?> findByPhoneNumber(
+            @RequestParam(name = "phoneNumber") String phoneNumber
+    ) {
+        Staffs customers = this.staffRepository.findByPhoneNumber(phoneNumber);
+        return new ResponseEntity<>
+                (customers, HttpStatus.OK);
     }
 
 //    @RequestMapping(value = "/staff/getAllPagination", method = RequestMethod.GET)

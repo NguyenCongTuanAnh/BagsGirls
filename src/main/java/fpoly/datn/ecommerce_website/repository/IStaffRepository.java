@@ -45,6 +45,11 @@ public interface IStaffRepository extends JpaRepository<Staffs, String> {
     @Query("SELECT s, u FROM Staffs s join Users u on s.users.userId = u.userId " +
             "where u.email = :email ")
     Staffs findByEmail(@Param("email") String email);
+
+    @Query("SELECT c, u FROM Staffs c join Users u on c.users.userId = u.userId " +
+            "where u.phoneNumber = :phoneNumber ")
+    Staffs findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
     @Query("SELECT s, u FROM Staffs s join Users u on s.users.userId = u.userId " +
             "where u.userId = :userId ")
     Staffs findByUsersId(@Param("userId") String userId);

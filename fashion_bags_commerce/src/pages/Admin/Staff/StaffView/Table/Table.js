@@ -197,7 +197,7 @@ const TableContent = () => {
     <div>
       <SearchForm onSubmit={handleSearchChange} />
       <FormStaffCreate reload={() => setLoading(true)} />
-      <Button icon={<ReloadOutlined />} style={{ marginLeft: '10px' }} loading={loading}></Button>
+      <Button icon={<ReloadOutlined />} onClick={() => setLoading(true)} style={{ marginLeft: '10px' }} loading={loading}></Button>
 
       <Table
         style={{ margin: '10px' }}
@@ -210,6 +210,7 @@ const TableContent = () => {
         columns={columns}
         dataSource={data}
         pagination={false}
+        loading={loading}
       // onChange={handlePageChange} // Handle page changes
       />
 

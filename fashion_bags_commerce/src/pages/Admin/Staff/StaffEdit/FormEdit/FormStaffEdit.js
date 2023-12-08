@@ -7,8 +7,10 @@ import { Option } from 'antd/es/mentions';
 function FormStaffEdit(props) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(false);
-  const [stringStatus, setStringStatus] = useState('');
+  const [getEmail, setEmail] = useState('');
+  const [getSDT, setSDT] = useState('');
   const [data, setData] = useState({
+    usersId: props.staffData.users.userId,
     staffId: props.staffData.staffId,
     staffCode: props.staffData.staffCode,
     staffStatus: props.staffData.staffStatus,
@@ -24,8 +26,10 @@ function FormStaffEdit(props) {
   });
 
   const showDrawer = () => {
+    console.log(props.staffData)
     setOpen(true);
-    // setData({ ...data, staffStatus: findStatus(props.staffData.staffStatus) });
+    setEmail(props.staffData.users.email);
+    setSDT(props.staffData.users.phoneNumber);
 
   };
   const onClose = () => {
@@ -50,12 +54,38 @@ function FormStaffEdit(props) {
 
   const updateFunction = async (staffId, values) => {
     setError(false);
-    if (!error) {
+    let returnEmail = true;
+    let returnSDT = true;
+    if (getEmail !== values.usersEmail) {
+      const checkEmail = await staffAPI.findByEmail(values.usersEmail);
+      if (checkEmail.data !== '') {
+        notification.error({
+          message: 'Cập nhật thất bại',
+          description: 'Email đã tồn tại!',
+          duration: 2,
+        });
+        returnEmail = false;
+      }
+    }
+    if (getSDT !== values.usersPhoneNumber) {
+      const checkSDT = await staffAPI.findByPhoneNumber(values.usersPhoneNumber);
+      if (checkSDT.data !== '') {
+        notification.error({
+          message: 'Cập nhật thất bại',
+          description: 'Số điện thoại đã tồn tại!',
+          duration: 2,
+        });
+        returnSDT = false;
+      }
+    }
+    if (returnEmail === true && returnSDT === true) {
       let update = { ...values };
+      console.log(staffId, update);
+      console.log(values);
       try {
         await staffAPI.update(staffId, update);
         notification.success({
-          message: 'Update thành công',
+          message: 'Cập nhật thành công',
           description: 'Dữ liệu đã được thêm thành công',
           duration: 2,
         });
@@ -73,6 +103,8 @@ function FormStaffEdit(props) {
         console.log(error);
       }
     }
+
+
   };
 
   return (
@@ -158,54 +190,6 @@ function FormStaffEdit(props) {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="usersAccount"
-                label="Tài khoản"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng điền tài khoản!',
-                  },
-                ]}
-              >
-                <Input placeholder="Vui lòng điền tài khoản!" name="usersAccount" onChange={updateData} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Password"
-                name="usersPassword"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng điền Password!',
-                    whitespace: true,
-                  },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (
-                        value &&
-                        value.length >= 12 &&
-                        value.length <= 30 &&
-                        /[\W_]/.test(value) &&
-                        /[A-Z]/.test(value) &&
-                        /\d/.test(value)
-                      ) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error('Mật khẩu trong khoảng 12-30 kí tự, bao gồm ký tự đặc biệt, số và chữ in hoa!'),
-                      );
-                    },
-                  }),
-                ]}
-              >
-                <Input.Password iconRender={(visible) => (visible ? <EyeInvisibleOutlined /> : <EyeFilled />)} name="usersPassword" onChange={updateData} />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
                 name="usersEmail"
                 label="Email"
                 rules={[
@@ -220,9 +204,59 @@ function FormStaffEdit(props) {
                   },
                 ]}
               >
-                <Input placeholder="Vui lòng điền email!" onChange={updateData} />
+                <Input placeholder="Vui lòng điền email!" name="usersEmail" onChange={updateData} />
               </Form.Item>
             </Col>
+
+            {/* <Col span={12}>
+              <Form.Item
+                name="usersAccount"
+                label="Tài khoản"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng điền tài khoản!',
+                  },
+                ]}
+              >
+                <Input placeholder="Vui lòng điền tài khoản!" name="usersAccount" onChange={updateData} />
+              </Form.Item>
+            </Col> */}
+            <Col span={12}>
+              <Form.Item
+                label="Password"
+                name="usersPassword"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Vui lòng điền Password!',
+              //     whitespace: true,
+              //   },
+              //   ({ getFieldValue }) => ({
+              //     validator(_, value) {
+              //       if (
+              //         value &&
+              //         value.length >= 12 &&
+              //         value.length <= 30 &&
+              //         /[\W_]/.test(value) &&
+              //         /[A-Z]/.test(value) &&
+              //         /\d/.test(value)
+              //       ) {
+              //         return Promise.resolve();
+              //       }
+              //       return Promise.reject(
+              //         new Error('Mật khẩu trong khoảng 12-30 kí tự, bao gồm ký tự đặc biệt, số và chữ in hoa!'),
+              //       );
+              //     },
+              //   }),
+              // ]}
+              >
+                <Input.Password iconRender={(visible) => (visible ? <EyeInvisibleOutlined /> : <EyeFilled />)} name="usersPassword" onChange={updateData} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+
             <Col span={12}>
               <Form.Item
                 name="usersPhoneNumber"
@@ -239,11 +273,9 @@ function FormStaffEdit(props) {
                   },
                 ]}
               >
-                <Input placeholder="Vui lòng điền số điện thoại!" name="usersEmail" onChange={updateData} />
+                <Input placeholder="Vui lòng điền số điện thoại!" name="usersPhoneNumber" onChange={updateData} />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 name="usersAddress"
@@ -256,14 +288,6 @@ function FormStaffEdit(props) {
                 ]}
               >
                 <Input placeholder="Vui lòng điền địa chỉ!" name="usersAddress" onChange={updateData} />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item label="Giới tính" name="usersGender" >
-                <Radio.Group name="usersGender" onChange={(e) => updateGender(JSON.parse(e.target.value))}>
-                  <Radio value={true}>Nam</Radio>
-                  <Radio value={false}>Nữ</Radio>
-                </Radio.Group>
               </Form.Item>
             </Col>
           </Row>
@@ -288,7 +312,17 @@ function FormStaffEdit(props) {
                 </Select>
               </Form.Item>
             </Col>
+            <Col span={12}>
+              <Form.Item label="Giới tính" name="usersGender" >
+                <Radio.Group name="usersGender" onChange={(e) => updateGender(JSON.parse(e.target.value))}>
+                  <Radio value={true}>Nam</Radio>
+                  <Radio value={false}>Nữ</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </Col>
+
           </Row>
+
           <Row gutter={16}>
             <Col span={24}>
               <Form.Item

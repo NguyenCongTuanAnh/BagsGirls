@@ -1,27 +1,56 @@
-import React, { Fragment, useState, useEffect, initialValue } from 'react';
+import React, { Fragment, useState } from 'react';
 import { EyeFilled, EyeInvisibleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Col, Drawer, Form, Input, Row, Select, Space, Radio, notification } from 'antd';
+import { Button, Col, Drawer, Form, Input, Row, Select, Radio, notification } from 'antd';
 import customerAPI from '~/api/customerAPI';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 
 const { Option } = Select;
 const FormCustomerCreate = (props) => {
   const [open, setOpen] = useState(false);
-  const [error, setError] = useState(true);
+  const [error, setError] = useState(false);
+  const [form] = Form.useForm();
+  const [emailDaTonTai, setEmailDaTonTai] = useState('');
+
 
 
   const showDrawer = () => {
     setOpen(true);
+
   };
   const onClose = () => {
     setOpen(false);
   };
 
+
   const addFunc = async (values) => {
     setError(false);
-    if (!error) {
-      let add = { ...values, customerCode: generateCustomCode("KH", 7) };
-      console.log(add);
+    const checkEmail = await customerAPI.findByEmail(values.users.email);
+    const checkSDT = await customerAPI.findByPhoneNumber(values.users.phoneNumber);
+    if (checkEmail.data !== '') {
+      notification.error({
+        message: 'Thêm thất bại',
+        description: 'Email đã tồn tại!',
+        duration: 2,
+      });
+    }
+    if (checkSDT.data !== '') {
+      notification.error({
+        message: 'Thêm thất bại',
+        description: 'Số điện thoại đã tồn tại!',
+        duration: 2,
+      });
+    }
+    if (checkEmail.data === '' && checkSDT.data === '') {
+      let add = {
+        ...values,
+        customerCode: generateCustomCode("KH", 7),
+        rankingPoints: 0,
+        consumePoints: 0,
+        users: {
+          ...values.users,
+          role: 'ROLE_CUSTOMER'
+        }
+      };
       try {
         const response = await customerAPI.add(add);
         notification.success({
@@ -52,7 +81,7 @@ const FormCustomerCreate = (props) => {
         Thêm khách hàng
       </Button>
       <Drawer
-        title="Tạo mới tài khoản khách hàng"
+        title="Tạo mới khách hàng"
         width={720}
         onClose={onClose}
         open={open}
@@ -61,25 +90,19 @@ const FormCustomerCreate = (props) => {
             paddingBottom: 80,
           },
         }}
-        footer={
-          <Space>
-            {/* <Button onClick={onClose}>Cancel</Button>
-            <Button onClick={addFunc} htmlType="submit">
-              Submit
-            </Button> */}
-          </Space>
-        }
       >
-        <Form layout="vertical" hideRequiredMark initialValues={{
-          users: { gender: true, role: 'ROLE_CUSTOMER' },
+        <Form layout="vertical" initialValues={{
+          users: { gender: true },
           // users: {}
           // customerRanking: 0,
           rankingPoints: 0
-        }} onFinish={addFunc}>
+        }} onFinish={addFunc}
+          form={form}
+        >
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name={['user', 'fullName']}
+                name={['users', 'fullName']}
                 label="Họ và tên"
                 rules={[
                   {
@@ -91,12 +114,6 @@ const FormCustomerCreate = (props) => {
                       if (value && value.trim() !== value) {
                         return Promise.reject('Tên không được chứa khoảng trắng ở hai đầu!');
                       }
-                      //  else if (value) {
-                      //   return Promise.reject('');
-                      // }
-                      // else if (true) {
-                      //   return Promise.reject('Vui lòng điền họ và tên!');
-                      // }
                       return Promise.resolve();
                     },
                   },
@@ -126,7 +143,7 @@ const FormCustomerCreate = (props) => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name={['user', 'email']}
+                name={['users', 'email']}
                 label="Email"
                 rules={[
                   {
@@ -146,7 +163,7 @@ const FormCustomerCreate = (props) => {
             <Col span={12}>
               <Form.Item
                 label="Password"
-                name={['user', 'password']}
+                name={['users', 'password']}
                 rules={[
                   {
                     required: true,
@@ -179,7 +196,7 @@ const FormCustomerCreate = (props) => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name={['user', 'phoneNumber']}
+                name={['users', 'phoneNumber']}
                 label="SĐT"
                 rules={[
                   {
@@ -200,7 +217,7 @@ const FormCustomerCreate = (props) => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name={['user', 'address']}
+                name={['users', 'address']}
                 label="Địa chỉ"
                 rules={[
                   {
@@ -213,7 +230,7 @@ const FormCustomerCreate = (props) => {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Giới tính" name={['user', 'gender']}>
+              <Form.Item label="Giới tính" name={['users', 'gender']}>
                 <Radio.Group>
                   <Radio value={true}>Nam</Radio>
                   <Radio value={false}>Nữ</Radio>
@@ -225,7 +242,7 @@ const FormCustomerCreate = (props) => {
           <Row gutter={16}>
             <Col span={24}>
               <Form.Item
-                name={['user', 'userNote']}
+                name={['users', 'userNote']}
                 label="Ghi chú"
                 rules={[
                   {
@@ -239,7 +256,7 @@ const FormCustomerCreate = (props) => {
             </Col>
           </Row>
           <div>
-            <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
+            <Button type="primary" onClick={() => { form.submit() }} icon={<PlusOutlined />}>
               Thêm mới
             </Button>
           </div>

@@ -1,8 +1,7 @@
-import React, { Fragment, useState, useEffect, initialValue } from 'react';
+import React, { Fragment, useState } from 'react';
 import { EyeFilled, EyeInvisibleOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Col, Drawer, Form, Input, Row, Select, Space, Radio, notification, Tooltip } from 'antd';
+import { Button, Col, Drawer, Form, Input, Row, Select, Radio, notification } from 'antd';
 import staffAPI from '~/api/staffAPI';
-import { data } from 'jquery';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 
 const { Option } = Select;
@@ -18,9 +17,24 @@ const FormStaffCreate = (props) => {
   };
 
   const addFunc = async (values) => {
-
     setError(false);
-    if (!error) {
+    const checkEmail = await staffAPI.findByEmail(values.usersEmail);
+    const checkSDT = await staffAPI.findByPhoneNumber(values.usersPhoneNumber);
+    if (checkEmail.data !== '') {
+      notification.error({
+        message: 'Thêm thất bại',
+        description: 'Email đã tồn tại!',
+        duration: 2,
+      });
+    }
+    if (checkSDT.data !== '') {
+      notification.error({
+        message: 'Thêm thất bại',
+        description: 'Số điện thoại đã tồn tại!',
+        duration: 2,
+      });
+    }
+    if (checkEmail.data === '' && checkSDT.data === '') {
       let add = { ...values, staffCode: generateCustomCode("NV", 5) };
       console.log(add);
       try {
@@ -63,16 +77,8 @@ const FormStaffCreate = (props) => {
             paddingBottom: 80,
           },
         }}
-        footer={
-          <Space>
-            {/* <Button onClick={onClose}>Cancel</Button>
-            <Button onClick={addFunc} htmlType="submit">
-              Submit
-            </Button> */}
-          </Space>
-        }
       >
-        <Form layout="vertical" hideRequiredMark initialValues={{ 'usersGender': true }} onFinish={addFunc}>
+        <Form layout="vertical" initialValues={{ 'usersGender': true }} onFinish={addFunc}>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item

@@ -20,7 +20,6 @@ const staffAPI = {
       },
     });
   },
-
   getSearchPagination(key, pageNum, pageSize) {
     const url = 'api/staff/search';
     return axiosClient.get(url, {
@@ -30,6 +29,14 @@ const staffAPI = {
         size: pageSize,
       },
     });
+  },
+  findByEmail(email) {
+    const url = `api/staff/findByEmail?email=${email}`;
+    return axiosClient.get(url);
+  },
+  findByPhoneNumber(phoneNumber) {
+    const url = `api/staff/findByPhoneNumber?phoneNumber=${phoneNumber}`;
+    return axiosClient.get(url);
   },
 
   getRoles(params) {
