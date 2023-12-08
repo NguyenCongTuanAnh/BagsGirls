@@ -92,20 +92,26 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
 
+
     @Override
-    public Customers update(String customerId, CustomerDTO1 customerDTO) {
-        Customers customers = customerRepository.findById(customerId)
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
-        modelMapper.map(customerDTO, customers);
-        Users userInfo = modelMapper.map(customerDTO, Users.class);
+    public Customers update(CustomerDTO customerDTO) {
+        Customers customers = modelMapper.map(customerDTO, Customers.class);
+        Users userInfo = modelMapper.map(customerDTO.getUsers(), Users.class);
+        userInfo.setRole(customerDTO.getUsers().getRole());
+//        userInfo.setPassword(customerDTO.getUsers().getPassword());
         Users savedUserInfo = userInfoRepository.save(userInfo);
         if (savedUserInfo != null) {
+            customers.setUsers(savedUserInfo);
             return customerRepository.save(customers);
         } else {
             throw new IllegalStateException("Failed to save UserInfo");
-
         }
+    }
 
+    public Customers forgetPassword(String customerId, String password) {
+        Customers customer = customerRepository.findById(customerId).get();
+        customer.getUsers().setPassword(passwordEncoder.encode(password));
+            return customerRepository.save(customer);
     }
 
 

@@ -45,6 +45,9 @@ function TableHoaDonTaiQuay() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [filterStaffName, setFilterStaffName] = useState('');
+  const [sortList, setSortList] = useState('billCreateDate');
+  const [sortOrder, setSortOrder] = useState('DESC');
+  const [sortListPlaceHolder, setSortListPlaceHolder] = useState('timeDESC');
 
 
   const columns = [
@@ -52,7 +55,7 @@ function TableHoaDonTaiQuay() {
       key: 'stt',
       dataIndex: 'index',
       title: 'STT',
-      width: 70,
+      width: '3%',
       render: (text, record, index) => {
         return <span id={record.id}>{(PageNum - 1) * pageSize + (index + 1)}</span>;
       },
@@ -61,19 +64,15 @@ function TableHoaDonTaiQuay() {
       title: 'Mã hóa đơn',
       dataIndex: 'billCode',
       key: 'code',
+      width: '10%',
     },
     {
       title: 'Ngày tạo',
       dataIndex: 'billCreateDate',
-      width: 100,
+      width: '15%',
       sorter: (a, b) => a.billCreateDate.localeCompare(b.billCreateDate),
       render: (date) => {
-        const formattedDate = new Date(date).toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        });
-
+        const formattedDate = dayjs(date).add(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
         return <span>{formattedDate}</span>;
       },
     },
@@ -81,6 +80,7 @@ function TableHoaDonTaiQuay() {
       title: 'Tên nhân viên',
       dataIndex: 'staff',
       key: 'staffName',
+      width: '15%',
       render: (staff) => {
         if (staff && staff.users && staff.users.fullName) {
           return staff.users.fullName;
@@ -93,6 +93,7 @@ function TableHoaDonTaiQuay() {
       title: 'Tên khách hàng',
       dataIndex: 'receiverName',
       key: 'receiverName',
+      width: '15%',
       render: (text, record) => {
         if (record.customer == null) {
           return record.receiverName;
@@ -105,6 +106,7 @@ function TableHoaDonTaiQuay() {
       title: 'Số điện thoại',
       dataIndex: 'orderPhone',
       key: 'orderPhone',
+      width: '10%',
       render: (text, record) => {
         if (record.customer == null) {
           return record.orderPhone;
@@ -117,6 +119,7 @@ function TableHoaDonTaiQuay() {
       title: 'Tổng thanh toán',
       dataIndex: 'billPriceAfterVoucher',
       key: 'billPriceAfterVoucher',
+      width: '15%',
       // sorter: (a, b) => a.billTotalPrice.localeCompare(b.billTotalPrice),
       render: (price) => {
         return <span>{VNDFormaterFunc(price)}</span>;
@@ -127,6 +130,7 @@ function TableHoaDonTaiQuay() {
       title: 'Trạng thái',
       dataIndex: 'billStatus',
       key: 'status',
+      width: '15%',
       render: (status) => {
         let statusText;
         let statusClass;
@@ -185,18 +189,20 @@ function TableHoaDonTaiQuay() {
         if (record.billStatus !== -1) {
           return (
             <div>
-              {hanhDong(record, false)}
+
               <Space size="middle" style={{ marginTop: '10px' }}>
                 <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+                {hanhDong(record, false)}
               </Space>
             </div>
           );
         } else {
           return (
             <div>
-              {hanhDong(record, true)}
+
               <Space size="middle" style={{ marginTop: '10px' }}>
                 <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+                {hanhDong(record, true)}
               </Space>
             </div>
           );
@@ -314,7 +320,10 @@ function TableHoaDonTaiQuay() {
         status,
         search,
         pageNum,
-        pageSize
+        pageSize,
+        sortList,
+        sortOrder,
+        sortListPlaceHolder
       );
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
@@ -339,7 +348,7 @@ function TableHoaDonTaiQuay() {
       setLoading(false);
     }, 500);
 
-  }, [loading, search, status, startDate, endDate, filterStaffName]);
+  }, [loading, search, status, startDate, endDate, filterStaffName, sortList, sortOrder, sortListPlaceHolder]);
   return (
     <div>
       <Card>
@@ -350,19 +359,19 @@ function TableHoaDonTaiQuay() {
             </h2>
           </Row>
           <Row>
-            <Col span={8}>
+            <Col span={6}>
               <div style={{ paddingTop: '10px', fontSize: '16px' }}>
                 <span style={{ fontWeight: 500 }}>Ngày tạo</span>
-                <RangePicker className={styles.filter_inputSearch} presets={rangePresets} onChange={onRangeChange} />
+                <RangePicker className={styles.filter_inputSearch} style={{ marginLeft: '10px' }} presets={rangePresets} onChange={onRangeChange} />
               </div>
             </Col>
-            <Col span={6}>
+            <Col span={5}>
               <div style={{ paddingTop: '10px', fontSize: '16px' }}>
                 <span style={{ paddingTop: '20px', fontSize: '16px', fontWeight: 500 }}>
                   Nhân viên
                   <Select
                     bordered={false}
-                    style={{ width: '50%', borderBottom: '1px solid #ccc' }}
+                    style={{ width: '65%', borderBottom: '1px solid #ccc', marginLeft: '10px' }}
                     onChange={(value) => {
                       setFilterStaffName(value);
                     }}
@@ -378,8 +387,63 @@ function TableHoaDonTaiQuay() {
                 </span>
               </div>
             </Col>
+            <Col span={6}>
+              <div style={{ paddingTop: '10px', fontSize: '16px' }}>
+                <span style={{ paddingTop: '20px', fontSize: '16px', fontWeight: 500 }}>
+                  Sắp xếp
+                  <Select
+                    allowClear
+                    value={sortListPlaceHolder}
+                    placeholder={'Sắp xếp theo...'}
+                    size="large"
+                    style={{
+                      width: 250, marginLeft: '10px'
+                    }}
+                    onChange={(value) => {
+                      if (value === 'priceASC') {
+                        setSortOrder('ASC');
+                        setSortList('billPriceAfterVoucher');
+                        setSortListPlaceHolder('Tổng thanh toán tăng dần');
+                      } else if (value === 'priceDESC') {
+                        setSortOrder('DESC');
+                        setSortList('billPriceAfterVoucher');
+                        setSortListPlaceHolder('Tổng thanh toán giảm dần');
+                      } else if (value === 'timeASC') {
+                        setSortOrder('ASC');
+                        setSortList('billCreateDate');
+                        setSortListPlaceHolder('Thời gian tăng dần');
+                      } else if (value === 'timeDESC') {
+                        setSortOrder('DESC');
+                        setSortList('billCreateDate');
+                        setSortListPlaceHolder('Thời gian giảm dần');
+                      } else {
+                        setSortOrder(null);
+                        setSortList(null);
+                        setSortListPlaceHolder('Không');
+                      }
+                    }}
+                  >
+                    <Select.Option key={'0'} value={'0'}>
+                      Không
+                    </Select.Option>
+                    <Select.Option key={'1'} value={'priceASC'}>
+                      Tổng thanh toán tăng dần
+                    </Select.Option>
+                    <Select.Option key={'2'} value={'priceDESC'}>
+                      Tổng thanh toán giảm dần
+                    </Select.Option>
+                    <Select.Option key={'3'} value={'timeASC'}>
+                      Thời gian tăng dần
+                    </Select.Option>
+                    <Select.Option key={'4'} value={'timeDESC'}>
+                      Thời gian giảm dần
+                    </Select.Option>
+                  </Select>
+                </span>
+              </div>
+            </Col>
 
-            <Col span={10}>
+            <Col span={7}>
               <SearchForm onSubmit={handleSearchChange} style={{ width: '100%', marginBottom: '10px' }} />
             </Col>
           </Row>

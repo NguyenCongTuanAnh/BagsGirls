@@ -37,16 +37,16 @@ public class StaffServiceImpl implements IStaffService {
     }
 
     @Override
-    public Page<Staffs> findAllPage(Integer page, Integer size) {
+    public Page<Staffs> findAllPage(String search, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        return staffRepository.getAllPage(pageable);
+        return staffRepository.getAllPage(search, pageable);
     }
 
-    @Override
-    public Page<Staffs> findAllSearch(String search, Integer page, Integer size){
-        Pageable pageable = PageRequest.of(page, size);
-        return staffRepository.findallSearch(search, pageable);
-    }
+//    @Override
+//    public Page<Staffs> findAllSearch(String search, Boolean gender, Integer role, Integer status, Integer page, Integer size){
+//        Pageable pageable = PageRequest.of(page, size);
+//        return staffRepository.findallSearch(search, gender, role, status, pageable);
+//    }
 
 
 
@@ -67,7 +67,6 @@ public class StaffServiceImpl implements IStaffService {
         Users savedUserInfo = userInfoRepository.save(userInfo);
         if (savedUserInfo != null) {
             staff.setUsers(savedUserInfo);
-
             return staffRepository.save(staff);
         } else {
             throw new IllegalStateException("Failed to save UserInfo");
@@ -85,8 +84,20 @@ public class StaffServiceImpl implements IStaffService {
     public Staffs update(String staffId, StaffDTO1 staffDTO) {
         Staffs staffs = staffRepository.findById(staffId)
                 .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
-        modelMapper.map(staffDTO, staffs);
-        Users userInfo = modelMapper.map(staffDTO, Users.class);
+        modelMapper.map(staffDTO, Staffs.class);
+        System.out.println(staffDTO);
+        Users userInfo = userInfoRepository.findById(staffDTO.getUsersId())
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+        modelMapper.map(staffDTO, Users.class);
+        System.out.println(userInfo);
+        userInfo.setPassword(passwordEncoder.encode(staffDTO.getUsersPassword()));
+        userInfo.setAccount(staffDTO.getUsersAccount());
+        userInfo.setAddress(staffDTO.getUsersAddress());
+        userInfo.setEmail(staffDTO.getUsersEmail());
+        userInfo.setPhoneNumber(staffDTO.getUsersPhoneNumber());
+        userInfo.setRole(staffDTO.getUsersRolesRoleName());
+        userInfo.setAccount(staffDTO.getUsersAccount());
+        userInfo.setUserNote(staffDTO.getUsersUserNote());
         Users savedUserInfo = userInfoRepository.save(userInfo);
         if (savedUserInfo != null) {
             return staffRepository.save(staffs);

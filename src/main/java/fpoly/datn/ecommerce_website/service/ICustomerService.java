@@ -19,7 +19,7 @@ public interface ICustomerService {
 
     Customers save(CustomerDTO customerDTO);
 
-    Customers update(String customerId, CustomerDTO1 customerDTO);
+    Customers update( CustomerDTO customerDTO);
 
     Customers updateStatus(String id, Integer status);
 

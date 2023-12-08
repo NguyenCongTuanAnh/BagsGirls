@@ -45,8 +45,8 @@ const customerAPI = {
       },
     });
   },
-  update(id, data) {
-    const url = `api/customer?id=${id}`;
+  update(data) {
+    const url = `api/customer`;
     return axiosClient.put(url, data, {
       headers: {
         'Content-Type': 'application/json',
