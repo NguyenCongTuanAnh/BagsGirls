@@ -12,9 +12,9 @@ public interface IStaffService {
 
     List<Staffs> findAll();
 
-    Page<Staffs> findAllPage(Integer page, Integer size);
+    Page<Staffs> findAllPage(String search, Integer page, Integer size);
 
-    Page<Staffs> findAllSearch(String search, Integer page, Integer size);
+//    Page<Staffs> findAllSearch(String search, Boolean gender, Integer role, Integer status, Integer page, Integer size);
 
     Staffs findById(String id);
 

@@ -38,14 +38,14 @@ const layoutContent = {
 function StaffView() {
   return (
     <Layout style={{ height: '100%', background: '#f4f3f4' }}>
-      <Sider width={300} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
+      <Sider width={260} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
         <Sidebar keyIndex="sub7" openKey="sub7" />
       </Sider>
-      <Layout style={layoutContent}>
-        <Header style={headerStyle}>
+      <Layout className="layoutContent">
+        <Header className="headerStyle">
           <HeaderContent titlePage="Danh Sách Nhân Viên" />
         </Header>
-        <Content style={contentStyle}>
+        <Content className="contentStyle1">
           <TableContent style={{ boder: 'black solid 1px' }} />
         </Content>
 

@@ -63,7 +63,7 @@ function TableHoaDon() {
       title: 'Mã hóa đơn',
       dataIndex: 'billCode',
       key: 'code',
-      width: '5%'
+      width: '10%'
     },
     {
       title: 'Ngày tạo',
@@ -141,7 +141,7 @@ function TableHoaDon() {
             backgroundColor = '#ff3333';
             break;
           default:
-            statusText = 'Đã hủy';
+            statusText = 'Không xác định';
             statusClass = 'other-status';
             backgroundColor = '#ff3333';
         }
@@ -164,21 +164,31 @@ function TableHoaDon() {
       title: 'Hành động',
       key: 'action',
       render: (text, record) => {
-        if (record.billStatus !== -1) {
+        if (record.billStatus === 1) {
           return (
             <div>
-              {hanhDong(record, false)}
               <Space size="middle" style={{ marginTop: '10px' }}>
                 <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+                {hanhDong(record, true, true)}
+              </Space>
+            </div>
+          );
+        } else if (record.billStatus !== -1) {
+          return (
+            <div>
+              <Space size="middle" style={{ marginTop: '10px' }}>
+                <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+                {hanhDong(record, false, false)}
               </Space>
             </div>
           );
         } else {
           return (
             <div>
-              {hanhDong(record, true)}
+
               <Space size="middle" style={{ marginTop: '10px' }}>
                 <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+                {hanhDong(record, true, true)}
               </Space>
             </div>
           );
@@ -188,10 +198,10 @@ function TableHoaDon() {
     },
   ];
 
-  const hanhDong = (record, button) => {
+  const hanhDong = (record, capNhat, xoa) => {
     return (
       < Space size="middle" >
-        <FormCapNhatTrangThai disabled={button} status={record} reload={() => setLoading(true)} />
+        <FormCapNhatTrangThai disabled={capNhat} status={record} reload={() => setLoading(true)} />
         <Popconfirm
           title="Xác Nhận"
           description="Bạn có chắc chắn muốn hủy đơn hàng?"
@@ -203,7 +213,7 @@ function TableHoaDon() {
           }}
           onCancel={onCancel}
         >
-          <Button disabled={button} type="primary" danger icon={<CloseCircleOutlined />}>Hủy</Button>
+          <Button disabled={xoa} type="primary" danger icon={<CloseCircleOutlined />}>Hủy</Button>
         </Popconfirm>
       </Space >
     )

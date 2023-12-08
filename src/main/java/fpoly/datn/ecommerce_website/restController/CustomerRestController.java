@@ -74,14 +74,12 @@ public class CustomerRestController {
 
     @RequestMapping(value = "/customer", method = RequestMethod.POST)
     public ResponseEntity<?> add(@RequestBody CustomerDTO customerDTO) {
-
         return new ResponseEntity<>(this.customerService.save(customerDTO), HttpStatus.OK);
-
     }
 
     @RequestMapping(value = "/customer", method = RequestMethod.PUT)
-    public ResponseEntity<?> update(@Valid @RequestParam String id, @RequestBody CustomerDTO1 customerDTO1) {
-        return new ResponseEntity<>(customerService.update(id,customerDTO1),
+    public ResponseEntity<?> update( @RequestBody CustomerDTO customerDTO) {
+        return new ResponseEntity<>(customerService.update(customerDTO),
                 HttpStatus.OK);
     }
 
@@ -94,6 +92,15 @@ public class CustomerRestController {
     @RequestMapping(value = "/customer", method = RequestMethod.DELETE)
     public ResponseEntity<String> delete(@RequestParam String id) {
         return new ResponseEntity<>(this.customerService.delete(id), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/customer/forget-password", method = RequestMethod.PUT)
+    public ResponseEntity<?> forgetPassword(
+            @RequestParam(name = "customerId") String customerId,
+            @RequestParam(name = "password") String password
+    ) {
+        return new ResponseEntity<>
+                (customerService.forgetPassword(customerId, password), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/customer/search", method = RequestMethod.GET)
@@ -126,10 +133,6 @@ public class CustomerRestController {
             @RequestParam(name = "phoneNumber") String phoneNumber
     ) {
         Customers customers = this.customerRepository.findByPhoneNumber(phoneNumber);
-//        if (customers == null) {
-//            return new ResponseEntity<>
-//                    ("Không tìm thấy users", HttpStatus.NOT_FOUND);
-//        }
         return new ResponseEntity<>
                 (customers, HttpStatus.OK);
     }
