@@ -94,5 +94,11 @@ public class VoucherRestController {
                 HttpStatus.OK);
 
     }
+    @RequestMapping(value = "/voucher/update-amount", method = RequestMethod.PUT)
+    public ResponseEntity<Vouchers> updateAmount(@Valid @RequestParam String voucherId, @RequestParam int amount) {
+        return new ResponseEntity<>(voucherService.updateAmountBeforeAplied(voucherId, amount),
+                HttpStatus.OK);
+
+    }
 
 }

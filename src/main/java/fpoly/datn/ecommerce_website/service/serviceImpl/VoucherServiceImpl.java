@@ -58,6 +58,12 @@ public class VoucherServiceImpl implements IVoucherService {
 
 
     @Override
+    public Vouchers updateAmountBeforeAplied(String voucherId, int amount) {
+        Vouchers voucher = iVoucherRepository.findById(voucherId).get();
+        voucher.setVoucherAmount(voucher.getVoucherAmount() - amount);
+        return iVoucherRepository.save(voucher);
+    }
+    @Override
     public void delete(String id) {
 
     }

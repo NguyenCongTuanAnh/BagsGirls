@@ -48,7 +48,7 @@ const SalesCounterForm = () => {
   const defaultPanes = new Array(2).fill(null).map((_, index) => {
     const id = String(index + 1);
     return {
-      label: `HĐ ${id}`,
+      label: `Hóa Đơn ${id}`,
       children: <Content tabNum={id} />,
       key: id,
     };
@@ -128,9 +128,7 @@ const SalesCounterForm = () => {
     const navigate = useNavigate();
 
     let html5QrCode;
-    const soundEffect = new Audio(
-      'https://firebasestorage.googleapis.com/v0/b/bagsgirl-datn.appspot.com/o/sound-effect%2FA3TMECN-beep.mp3?alt=media&token=6c474e99-443f-4fbc-b5ef-231e6f742659',
-    );
+    const soundEffect = new Audio(`/audio/beep.mp3`);
 
     const [messageApi, contextHolder] = message.useMessage();
 
@@ -414,7 +412,7 @@ const SalesCounterForm = () => {
     };
     const onHandleAddBill = async (values) => {
       var currentDate = new Date();
-      var formattedDate = dayjs(currentDate).format('YYYY-MM-DD HH:mm:ss');
+      var formattedDate = dayjs(currentDate).subtract(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
       if (customer == null && visible === true) {
         messageApi.error('Vui lòng Chọn Khách lẻ hoặc Điền KH Thân Thiết!!!');
       } else if (selectedItems.length === 0) {
@@ -434,14 +432,14 @@ const SalesCounterForm = () => {
             customerId: customerId,
           },
           voucher: {
-            voucherId: voucher ? voucher.voucherId : null,
+            voucherId: voucher.voucherId,
           },
           billCode: values.billCode,
           billCreateDate: formattedDate,
           billDatePayment: formattedDate,
           billShipDate: null,
           billReceiverDate: formattedDate,
-          billTotalPrice: totalPrice + totalPrice * VAT,
+          billTotalPrice: totalPrice,
           productAmount: handleCacuTotalAmount(),
           billPriceAfterVoucher:
             totalPrice + totalPrice * VAT - voucherPrice - totalPrice * (discountPercentByRankingName / 100),
@@ -458,6 +456,9 @@ const SalesCounterForm = () => {
 
         if (customer === null) {
           addBill.customer = null;
+        }
+        if (voucher === '') {
+          addBill.voucher = null;
         }
         console.log(addBill);
         const addedBill = await handleAddBills(addBill);
@@ -486,7 +487,14 @@ const SalesCounterForm = () => {
 
             const billDetails = await handleAddBillDetails(billDetail);
             const produtcAmount = await productDetailsAPI.updateAmount(o.productDetailId, o.cartAmount);
-            if (billDetails.status === 200 && produtcAmount.status === 200) {
+            let isuUpdateAmountSucess = false;
+            if (voucher !== '') {
+              const voucherBeforeAplied = await voucherAPI.updateAmountBeforeAplied(voucher.voucherId, 1);
+              if (voucherBeforeAplied.status === 200) {
+                isuUpdateAmountSucess = true;
+              }
+            }
+            if (billDetails.status === 200 && produtcAmount.status === 200 && isuUpdateAmountSucess === true) {
               isErr = true;
             }
           }),
@@ -531,7 +539,6 @@ const SalesCounterForm = () => {
             if (response.status === 200) {
               messageApi.success(`Mã hợp lệ`);
 
-              soundEffect.play();
               const item = response.data;
               if (item.productDetailAmount <= 0) {
                 notification.error({
@@ -568,7 +575,7 @@ const SalesCounterForm = () => {
                   setSelectedItems(selectedItems.concat(newItem));
                   setTotalPrice(calculateTotalPrice(selectedItems.concat(newItem)));
                   setInputValue(item.productCode);
-
+                  soundEffect.play();
                   notification.success({
                     message: 'Thành Công',
                     description: 'Sản Phẩm đã được thêm!!!!',
@@ -753,6 +760,9 @@ const SalesCounterForm = () => {
                     if (value && value.trim() !== value) {
                       return Promise.reject('Tên không được chứa khoảng trắng ở hai đầu!');
                     }
+                    // if (value.length === 0) {
+                    //   return Promise.reject('Tên không hợp lệ!');
+                    // }
                     return Promise.resolve();
                   },
                 },
@@ -1365,6 +1375,7 @@ const SalesCounterForm = () => {
                             placeholder="Nhập từ khóa tìm kiếm"
                             onFocus={onFocusInput}
                             ref={searchInputRef}
+                            allowClear
                           >
                             {options.map((option) => (
                               <Option key={option.productDetailId} value={option.productDetailId}>
@@ -1448,6 +1459,7 @@ const SalesCounterForm = () => {
       <div
         style={{
           marginBottom: 16,
+          padding: '10px',
         }}
       >
         <Button onClick={add} type="primary" icon={<PlusOutlined />} shape="default" size="large">
