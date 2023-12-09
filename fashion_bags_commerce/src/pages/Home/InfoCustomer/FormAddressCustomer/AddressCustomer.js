@@ -4,7 +4,6 @@ import axios from 'axios';
 
 function AddressCustomer() {
   const [customerInfo, setCustomerInfo] = useState(null); // Lưu thông tin khách hàng
-  const customerId = localStorage.getItem('customerId');
   const host = 'https://provinces.open-api.vn/api/';
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -12,27 +11,30 @@ function AddressCustomer() {
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [selectedWard, setSelectedWard] = useState('');
-  const [fullName, setFullName] = useState('');
+  //   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   const [email, setEmail] = useState('');
 
-  useEffect(() => {
-    const customerId = localStorage.getItem('customerId');
-    customerAPI
-      .getOne(customerId)
-      .then((response) => {
-        const { fullName, phoneNumber, email, address } = response.data;
-        // Lưu dữ liệu từ API vào state
-        setFullName(fullName);
-        setPhoneNumber(phoneNumber);
-        setEmail(email);
-        setAddress(address);
-      })
-      .catch((error) => {
-        console.error('Lỗi khi lấy thông tin khách hàng:', error);
-      });
-  }, []);
+  const customerId = localStorage.getItem('customerId');
+
+  //   useEffect(() => {
+  //     const customerId = localStorage.getItem('customerId');
+  //     customerAPI
+  //       .getOne(customerId)
+  //       .then((response) => {
+  //         const data = response.data;
+  //         // Lưu dữ liệu từ API vào state
+  //         setCustomerData({
+  //           fullName: data.fullName || '',
+  //           phoneNumber: data.phoneNumber || '',
+  //           address: data.address || '',
+  //         });
+  //       })
+  //       .catch((error) => {
+  //         console.error('Lỗi khi lấy thông tin khách hàng:', error);
+  //       });
+  //   }, []);
 
   const handleConfirmation = async () => {
     const getNameFromCode = (code, list) => {
@@ -127,11 +129,11 @@ function AddressCustomer() {
               Họ và tên<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
             </label>
             <input
-          type="text"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          placeholder="Họ và tên"
-        />
+              type="text"
+              //   value={fullName}
+              //   onChange={(e) => setFullName(e.target.value)}
+              placeholder="Họ và tên"
+            />
           </div>
           <div className="customInput">
             <label>
