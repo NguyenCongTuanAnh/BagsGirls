@@ -1,27 +1,52 @@
-
-
 import React from 'react';
 import { Avatar, Badge, Button, Card, Popconfirm, Popover } from 'antd';
 import { LogoutOutlined } from '@ant-design/icons';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const { Meta } = Card;
 
 function UserProfile(props) {
   const { changeLoggedIn } = props;
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const customerTokenString = localStorage.getItem('customerTokenString');
+  const customerId = localStorage.getItem('customerId');
+  const customerToken = localStorage.getItem('customerToken');
 
   const handleLgOut = () => {
     changeLoggedIn();
   };
+
+  // Trích xuất fullName từ location.state
+  const fullName = (location?.state && location?.state?.fullName) || '';
+  localStorage.setItem('fullName', fullName);
+  const storedFullName = localStorage.getItem('fullName') || '';
+
   const PopupProContent = (
     <Card
       style={{
         width: 300,
       }}
       actions={[
-        <Button key="logout" onClick={handleLgOut}>
-      Đăng Xuất
+        <Button
+          onClick={() => {
+            navigate('/profile', {
+              state: {
+                customerId: customerId,
+                customerTokenString: customerTokenString,
+                customerToken: customerToken,
+                fullName: fullName,
+                storedFullName: storedFullName,
+              },
+            });
+          }}
+        >
+          Thông tin cá nhân
         </Button>,
-        <Button key="profile">Thông tin cá nhân</Button>,
+        <Button key="logout" onClick={handleLgOut}>
+          Đăng Xuất
+        </Button>,
       ]}
     >
       <Meta
@@ -31,8 +56,8 @@ function UserProfile(props) {
             alt="User Avatar"
           />
         }
-        title="Thông tin cá nhân"
-        description="Xin chào Phùng Văn Huỳnh"
+        title={`Xin chào, ${storedFullName}`}
+        description="Chúc bạn 1 ngày tốt lành"
       />
     </Card>
   );

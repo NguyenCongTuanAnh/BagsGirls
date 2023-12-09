@@ -2,7 +2,6 @@
   padding: 20px;
   border-radius: 8px;
   background-color: white;
-  // display: flex;
   flex-wrap: wrap;
   width: 1920px;
   margin: 0 auto;
@@ -30,7 +29,7 @@
     button {
       padding: 10px 15px;
       border: none;
-      border-radius: 32px;
+      border-radius: 8px;
       background-color: rgb(73, 139, 211);
 
       color: white;
@@ -54,7 +53,7 @@
   .titleNhanHang h1 {
     font-size: 40px;
     position: relative;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: Arial, Helvetica, sans-serif;
     padding-left: 20px; /* Khoảng cách giữa tiêu đề và thanh dọc */
   }
 
@@ -123,6 +122,7 @@
   .price_sale {
     font-size: 20px;
     font-size: 1.1em;
+    text-decoration: none;
   }
 
   .price {
@@ -135,6 +135,7 @@
     margin-top: 20px;
     padding: 20px;
     border: 1px solid #ccc;
+    border-radius: 8px;
   }
   .voucher h4 {
     margin-bottom: 10px;
@@ -162,7 +163,9 @@
     height: 14px;
   }
   .totalCheckout {
-    background-color: rgb(209, 207, 207);
+    // background-color: rgb(209, 207, 207);
+    border: 1px solid gray;
+    border-radius: 6px;
     padding: 20px;
   }
   .checkOut {
@@ -218,4 +221,21 @@
   flex-direction: column;
   gap: 4px;
   width: 100%;
+}
+
+.breadcrumb {
+  margin: -10px 0px 14px 0px;
+  font-size: 20px;
+  color: #333;
+  margin-left: 10%;
+  justify-content: left;
+}
+
+.breadcrumb span {
+  cursor: default;
+}
+
+.breadcrumb span:hover {
+  text-decoration: none;
+  cursor: pointer;
 }

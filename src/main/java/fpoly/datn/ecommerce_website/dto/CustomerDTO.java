@@ -22,9 +22,7 @@ public class CustomerDTO {
 
     private String customerId;
     private String customerCode;
-
     private Integer customerStatus;
-
     private Integer consumePoints;
     private Integer rankingPoints;
     private Ranking customerRanking;

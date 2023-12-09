@@ -34,7 +34,7 @@ const customerAPI = {
     return axiosClient.get(url);
   },
   getOne(id) {
-    const url = `api/customer?id=${id}`;
+    const url = `api/customer?customerId=${id}`;
     return axiosClient.get(url, { id });
   },
   add(data) {

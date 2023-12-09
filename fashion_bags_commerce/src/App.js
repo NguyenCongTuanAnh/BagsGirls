@@ -49,7 +49,9 @@ import Header from './pages/Home/Header';
 
 import ThongKeView from './pages/Admin/ThongKe/indexThongKe';
 import LoginFormStaff from './pages/Login/FormLogin/FormLoginStaff/LoginFormStaff';
-
+import CustomerProfile from './pages/Home/InfoCustomer/index';
+import AddressCustomer from './pages/Home/InfoCustomer/FormAddressCustomer/AddressCustomer';
+import CustomerGuard from './api/auth/guard/CustomerGuard';
 
 function App() {
   return (
@@ -71,6 +73,22 @@ function App() {
           <Route path="/gioi-thieu" element={<AboutPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/thong-ke" element={<ThongKeView />} />
+          <Route
+            path="/profile"
+            element={
+              <CustomerGuard>
+                <CustomerProfile />
+              </CustomerGuard>
+            }
+          />
+          <Route
+            path="/profile/address"
+            element={
+              <CustomerGuard>
+                <AddressCustomer />
+              </CustomerGuard>
+            }
+          />
 
           <Route
             path="/bill-offline-view"

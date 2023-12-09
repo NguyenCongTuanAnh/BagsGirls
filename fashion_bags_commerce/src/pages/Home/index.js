@@ -1,7 +1,5 @@
 import { Layout } from 'antd';
 import Content from './Content';
-import Footer from './Footer/index';
-import Header from './Header/index';
 
 import { Fragment, useEffect, useState } from 'react';
 import MainLayout from './MainLayout';

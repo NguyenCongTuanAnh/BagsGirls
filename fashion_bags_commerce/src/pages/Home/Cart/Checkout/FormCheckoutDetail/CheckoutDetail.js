@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, useRef } from 'react';
+import React, { useState, useEffect, Fragment, useRef } from 'react'; 
 import axios from 'axios';
 import './styles.scss';
 import { Link, useLocation } from 'react-router-dom';
@@ -11,6 +11,7 @@ import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import productDetailsAPI from '~/api/productDetailsAPI';
 import BeatLoader from 'react-spinners/ClipLoader';
 import { faL } from '@fortawesome/free-solid-svg-icons';
+import { RightOutlined } from '@ant-design/icons';
 
 const CheckoutDetail = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -25,6 +26,26 @@ const CheckoutDetail = () => {
   const [displayAddress, setDisplayAddress] = useState(false);
   const [displayOrder, setDisplayOrder] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+
+  const Breadcrumb = ({ steps }) => {
+    return (
+      <div className="breadcrumb">
+        {steps.map((step, index) => (
+          <Fragment key={index}>
+            <span>{step}</span>
+            {index !== steps.length - 1 && (
+              <span>
+                {' '}
+                <RightOutlined style={{ fontSize: '14px' }} />{' '}
+              </span>
+            )}
+          </Fragment>
+        ))}
+      </div>
+    );
+  };
+
+  const steps = ['Thông tin người đặt hàng', 'Địa chỉ', 'Thanh toán'];
 
   useEffect(() => {
     setBillPriceAfterVoucher(location?.state?.totalPrice);
@@ -276,12 +297,20 @@ const CheckoutDetail = () => {
 
   return (
     <div className="form-container">
+      <Breadcrumb steps={steps} />
+
       {!orderSuccess && (
         <form onSubmit={handleSubmit}>
           {contextHolder}
           <div
             className="titleNhanHang"
-            style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              color: displayInformation ? 'black' : 'gray',
+            }}
           >
             <h1>Thông tin người đặt hàng</h1>
             {!displayInformation && (
@@ -299,8 +328,6 @@ const CheckoutDetail = () => {
               </div>
             )}
           </div>
-
-          <hr />
 
           {displayInformation && (
             <div>
@@ -333,7 +360,6 @@ const CheckoutDetail = () => {
                   <input
                     className="inputLabel"
                     type="text"
-                    // size={10}
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     placeholder="Số điện thoại"
@@ -352,10 +378,8 @@ const CheckoutDetail = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Email ( Nếu có ) "
                     pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                    // pattern="(?:\+84|0)(?:\d){9,10}$"
-
                     title="vui lòng nhập email hợp lệ"
-                    required
+                    // required
                     style={{ flex: 1 }}
                   />
                 </div>
@@ -459,12 +483,21 @@ const CheckoutDetail = () => {
           )}
 
           <br></br>
+          <hr />
 
           <div>
-            <div className="titleNhanHang">
+            <div
+              className="titleNhanHang"
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                color: displayAddress ? 'black' : 'gray',
+              }}
+            >
               <h1>Địa chỉ</h1>
             </div>
-            <hr></hr>
             {displayAddress && (
               <div>
                 <div className="voucher">
@@ -501,41 +534,57 @@ const CheckoutDetail = () => {
               </div>
             )}
           </div>
+          <hr></hr>
 
           <br></br>
           {true && (
             <div>
-              <div className="titleNhanHang">
-                <h1>Đơn hàng</h1>
+              <div
+                className="titleNhanHang"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  color: displayOrder ? 'black' : 'gray',
+                }}
+              >
+                <h1>Thanh toán</h1>
               </div>
               <br />
               {displayOrder && (
                 <div>
-                  {cartItems.map((item, index) => (
-                    <div className={item} key={index}>
-                      {/* Render each item as needed */}
-                      <div className="avatar">
-                        <img src={item.image} className="image" alt={item.productName} />
-                        <div className="info">
-                          <div className="productTitle">{item.productName}</div>
-                          <div className="titleChild">
-                            <i>{`Color: ${item.colorName}`}</i>
-                            <br />
-                            <i> {`Material: ${item.materialName}`}</i>
+                  <div className="voucher">
+                    <h3>Đơn hàng:</h3>
+                    {cartItems.map((item, index) => (
+                      <div className={item} key={index}>
+                        <div className="avatar">
+                          <img src={item.image} className="image" alt={item.productName} />
+                          <div className="info">
+                            <div className="productTitle">{item.productName}</div>
+                            <div className="titleChild">
+                              <a>{`Màu: ${item.colorName}`}</a>
+                              <br />
+                              <a> {`Chất liệu: ${item.materialName}`}</a>
+                            </div>
+                            <div className="number">{`Quantity: ${item.quantity}`}</div>
+                            <span className="price_sale">
+                              Giá:{' '}
+                              <a>
+                                <span className="price">{VNDFormaterFunc(item.retailPrice)}</span>
+                              </a>
+                            </span>
+                            <span className="price_sale">
+                              Tổng:{' '}
+                              <a>
+                                <span className="price">{VNDFormaterFunc(item.retailPrice * item.quantity)}</span>
+                              </a>
+                            </span>
                           </div>
-                          <div className="number">{`Quantity: ${item.quantity}`}</div>
-                          <span className="price_sale">
-                            Price:{' '}
-                            <ins>
-                              <span className="price">{VNDFormaterFunc(item.retailPrice)}</span>
-                            </ins>
-                          </span>
                         </div>
                       </div>
-                    </div>
-                  ))}
-
-                  <div></div>
+                    ))}
+                  </div>
 
                   <div className="pay">
                     <h3>Phương thức thanh toán:</h3>
@@ -557,11 +606,30 @@ const CheckoutDetail = () => {
                     </label>
                   </div>
                   <br></br>
-                  <div className="totalCheckout">
-                    <br />
-                    <h4>
-                      Tổng thanh toán: <span style={{ color: 'red' }}> {location?.state?.totalPrice || 0}</span>
-                    </h4>
+                  <div className="totalCheckout" style={{ fontSize: '20px' }}>
+                    (1) Tổng số lượng:{' '}
+                    <span style={{ color: 'darkred', fontSize: '20px' }}> {location?.state?.totalQuantity || 0}</span>
+                    <br></br>
+                    (2) Tạm tính:{' '}
+                    <span style={{ color: 'darkred', fontSize: '20px' }}> {VNDFormaterFunc(calculateTotal())}</span>
+                    <br></br>
+                    (3) Voucher (%):{' '}
+                    <span style={{ color: 'darkred', fontSize: '20px' }}>
+                      {' '}
+                      {location?.state?.disCountPercent || 0} %
+                    </span>
+                    <br></br>
+                    (4) Giảm tiền:{' '}
+                    <span style={{ color: 'darkred', fontSize: '20px' }}>
+                      {' '}
+                      - {VNDFormaterFunc(location?.state?.voucherPrice || 0)}
+                    </span>
+                    <br></br>
+                    Tổng thanh toán (2) + (4):{' '}
+                    <span style={{ color: 'red', fontWeight: 'bold', fontSize: '25px' }}>
+                      {' '}
+                      {location?.state?.totalPrice || 0}
+                    </span>
                     <br />
                   </div>
                   <br />

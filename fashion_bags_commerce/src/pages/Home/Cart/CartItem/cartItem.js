@@ -345,7 +345,14 @@ function CartItem() {
         <button
           className={styles.buttonThanhToan}
           onClick={() => {
-            navigate('/cart/checkout', { state: { totalPrice: calculateTotalAfterVoucher() } });
+            navigate('/cart/checkout', {
+              state: {
+                totalPrice: calculateTotalAfterVoucher(),
+                voucherPrice: voucherPrice,
+                disCountPercent:voucher.discountPercent,
+                totalQuantity:totalQuantity
+              },
+            });
           }}
         >
           Tiến hành thanh toán

@@ -46,7 +46,11 @@ function LoginForm(props) {
           description: `Welcome back to ${response.data.data.users.fullName}`,
           duration: 2,
         });
-        navigate('/');
+        navigate('/', {
+          state: {
+            fullName: response.data.data.users.fullName,
+          },
+        });
       }
       if (response.data.data.users.role === 'ROLE_STAFF' || response.data.data.users.role === 'ROLE_ADMIN') {
         const staff = await staffAPI.findByUserId(response.data.data.users.userId);

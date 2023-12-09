@@ -1,4 +1,4 @@
-import { Badge } from 'antd';
+import { Badge, message, notification } from 'antd';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { SearchOutlined, ShoppingCartOutlined, UserOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
@@ -16,6 +16,8 @@ function MainHeader() {
   const [customerId, setCustomerId] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const [messageApi, contextHolder] = message.useMessage();
+
 
   console.log('>>> location: ', location);
 
@@ -26,20 +28,27 @@ function MainHeader() {
     const totalCount = parsedCart.reduce((acc, item) => acc + item.quantity, 0);
     setCartCount(totalCount);
 
-    const userToken = localStorage.getItem('customerTokenString');
-    const userToken1 = localStorage.getItem('customerId');
-    const userToken2 = localStorage.getItem('customerToken');
-    if (userToken && userToken1 && userToken2) {
+    const customerTokenString = localStorage.getItem('customerTokenString');
+    const customerId = localStorage.getItem('customerId');
+    const customerToken = localStorage.getItem('customerToken');
+    if (customerTokenString && customerId && customerToken) {
       setIsLoggedIn(true);
     }
   }, []);
 
-  const changeLoggedIn = () => {
+  const   changeLoggedIn = () => {
     setIsLoggedIn(false);
     localStorage.removeItem('customerTokenString');
     localStorage.removeItem('customerId');
     localStorage.removeItem('customerToken');
     localStorage.removeItem('temporaryCart');
+    localStorage.removeItem('fullName');
+    navigate('/')
+    messageApi.open({
+      type: 'success',
+      content: 'Đăng xuất thành công',
+    });
+
   };
 
   const handleSearch = () => {
@@ -101,6 +110,7 @@ function MainHeader() {
   };
   return (
     <div style={{ height: '100px' }}>
+      {contextHolder}
       <div className={styles.mainHeader}>
         <Link to={'/'}>
           <img className={styles.image} alt="img" src="https://i.imgur.com/e1Tfbn5.png"></img>

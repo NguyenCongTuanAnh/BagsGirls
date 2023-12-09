@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import Header from '../Header';
 import Footer from '../Footer';
 import './blog.scss';
+import { RightOutlined } from '@ant-design/icons';
 
 const BlogPage = () => {
   // Danh sách bài viết mẫu
@@ -25,37 +26,34 @@ const BlogPage = () => {
       image: 'https://i.imgur.com/hqYOxox.jpg',
     },
   ];
+  const Breadcrumb = ({ steps }) => {
+    return (
+      <div className="breadcrumb">
+        {steps.map((step, index) => (
+          <Fragment key={index}>
+            <span>{step}</span>
+            {index !== steps.length - 1 && (
+              <span>
+                {' '}
+                <RightOutlined style={{ fontSize: '14px' }} />{' '}
+              </span>
+            )}
+          </Fragment>
+        ))}
+      </div>
+    );
+  };
+
+  const steps = ['Trang chủ', 'Blog'];
 
   return (
     <Fragment>
-      {/* <div className="fullpage">
-        <div className="header001">
-          <Header />
-        </div>
-        <div className="page_content">
-          <div className="blog-container">
-            <div className="blog-posts">
-              {blogPosts.map((post) => (
-                <div key={post.id} className="blog-post">
-                  <img src={post.image} alt={post.title} className="blog-image" />
-                  <div className="blog-content">
-                    <h2>{post.title}</h2>
-                    <p>{post.content}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="footer_client">
-          <Footer />
-        </div>
-      </div> */}
-
       <div className="header001">
         <Header />
       </div>
       <div className="blog-container">
+        <Breadcrumb steps={steps} />
+
         <div className="blog-posts">
           {blogPosts.map((post) => (
             <div key={post.id} className="blog-post">

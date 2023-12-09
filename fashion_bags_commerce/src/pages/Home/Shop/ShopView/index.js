@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { Image, Pagination } from 'antd';
 import fullProductAPI from '~/api/client/fullProductAPI';
-import { FullscreenExitOutlined, FullscreenOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { FullscreenExitOutlined, FullscreenOutlined, RightOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -73,20 +73,38 @@ function ShopView({ titleContent }) {
     }
   };
 
+  const Breadcrumb = ({ steps }) => {
+    return (
+      <div className="breadcrumb">
+        {steps.map((step, index) => (
+          <Fragment key={index}>
+            <span>{step}</span>
+            {index !== steps.length - 1 && (
+              <span>
+                {' '}
+                <RightOutlined style={{ fontSize: '14px' }} />{' '}
+              </span>
+            )}
+          </Fragment>
+        ))}
+      </div>
+    );
+  };
+
+  const steps = ['Trang chủ', 'Sản phẩm'];
   return (
     <Fragment>
       <div>
+        <br></br> <Breadcrumb steps={steps} />
         <h3 className={styles.sortTitle}>
-          Tuỳ chọn sắp xếp
+          Tuỳ chọn hiển thị
           <button className={styles.line_col} onClick={() => handleColumnChange('col-4')}>
             <FullscreenOutlined />
           </button>
-        
           <button className={styles.line_col} onClick={() => handleColumnChange('col-3')}>
             <FullscreenExitOutlined />
           </button>
         </h3>
-
         <div className={styles.listSanPham}>
           {loadingProducts ? (
             <div style={{ textAlign: 'center', marginTop: '20px' }}>
