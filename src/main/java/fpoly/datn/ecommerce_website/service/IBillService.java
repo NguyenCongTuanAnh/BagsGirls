@@ -19,9 +19,11 @@ public interface IBillService {
 
     Page<BillsDTO> getPagination(int pageNum, int pageSize);
 
-    Page<BillsDTO> getAllBillsPagination( Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize);
+    Page<BillsDTO> getAllBillsPagination( Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize,List<String> sortList,
+                                          String sortOrder);
 
-    Page<BillsDTO> getAllBillsOffline( String filterStaffName, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize);
+    Page<BillsDTO> getAllBillsOffline( String filterStaffName, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize,List<String> sortList,
+                                       String sortOrder);
 
 
     Bills updateStatus(String id, Integer status);

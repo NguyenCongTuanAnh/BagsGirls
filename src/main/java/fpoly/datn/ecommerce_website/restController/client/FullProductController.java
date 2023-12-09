@@ -38,7 +38,7 @@ public class FullProductController {
         return ResponseEntity.ok(fullProducts);
     }
 
-    @GetMapping("/products/getall")
+    @GetMapping("/products/getall/pagination")
     public ResponseEntity<List<ProductDTO>> getAllProduct() {
         List<ProductDTO> fullProducts = this.iProductService.findAll();
         return ResponseEntity.ok(fullProducts);

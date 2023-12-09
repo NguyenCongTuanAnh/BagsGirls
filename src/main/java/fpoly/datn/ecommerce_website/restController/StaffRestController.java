@@ -2,6 +2,7 @@ package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.StaffDTO;
 import fpoly.datn.ecommerce_website.dto.StaffDTO1;
+import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Staffs;
 import fpoly.datn.ecommerce_website.entity.Users;
 import fpoly.datn.ecommerce_website.repository.IStaffRepository;
@@ -51,9 +52,10 @@ public class StaffRestController {
     // GetAllPage
     @RequestMapping(value = "/staff/pagination", method = RequestMethod.GET)
     public ResponseEntity<?> getAll(
+            @RequestParam(name = "search", defaultValue = "") String search,
             @RequestParam(name = "page", defaultValue = "0") int pageNum,
             @RequestParam(name = "size", defaultValue = "10") int pageSize) {
-        Page<Staffs> staffPage = staffService.findAllPage(pageNum, pageSize);
+        Page<Staffs> staffPage = staffService.findAllPage(search, pageNum, pageSize);
         return new ResponseEntity<>(staffPage, HttpStatus.OK);
     }
 
@@ -101,13 +103,33 @@ public class StaffRestController {
         return new ResponseEntity<>("Delete Successfully", HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/staff/search", method = RequestMethod.GET)
-    public ResponseEntity<?> getAllSearch(
-            @RequestParam(name = "page", defaultValue = "0") int pageNum,
-            @RequestParam(name = "size", defaultValue = "10") int pageSize,
-            @RequestParam(name = "keyword", defaultValue = "") String keyword) {
-        Page<Staffs> staffSearch = staffService.findAllSearch(keyword, pageNum, pageSize);
-        return new ResponseEntity<>(staffSearch, HttpStatus.OK);
+    @RequestMapping(value = "/staff/findByEmail", method = RequestMethod.GET)
+    public ResponseEntity<?> findCustomerByEmail(
+            @RequestParam(name = "email") String email
+    ) {
+        return new ResponseEntity<>
+                (this.staffRepository.findByEmail(email), HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/staff/findByPhoneNumber", method = RequestMethod.GET)
+    public ResponseEntity<?> findByPhoneNumber(
+            @RequestParam(name = "phoneNumber") String phoneNumber
+    ) {
+        Staffs customers = this.staffRepository.findByPhoneNumber(phoneNumber);
+        return new ResponseEntity<>
+                (customers, HttpStatus.OK);
+    }
+
+//    @RequestMapping(value = "/staff/getAllPagination", method = RequestMethod.GET)
+//    public ResponseEntity<?> getAllSearch(
+//            @RequestParam(name = "page", defaultValue = "0") int pageNum,
+//            @RequestParam(name = "size", defaultValue = "10") int pageSize,
+//            @RequestParam(name = "search", defaultValue = "") String search,
+//            @RequestParam(name = "gender", required = false) Boolean gender,
+//            @RequestParam(name = "role", required = false) Integer role,
+//            @RequestParam(name = "status", required = false) Integer status) {
+//        Page<Staffs> staffSearch = staffService.findAllSearch(search, gender, role, status, pageNum, pageSize);
+//        return new ResponseEntity<>(staffSearch, HttpStatus.OK);
+//    }
 
 }

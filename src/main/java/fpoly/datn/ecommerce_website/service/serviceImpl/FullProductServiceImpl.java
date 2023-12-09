@@ -26,10 +26,6 @@ public class FullProductServiceImpl {
     @Autowired
     private IProductRepository productRepository;
 
-    @Autowired
-    private IProductDetailRepository productDetailRepository;
-    @Autowired
-    private IImageRepository imageRepository;
 
     @Autowired
     private ModelMapper modelMapper;

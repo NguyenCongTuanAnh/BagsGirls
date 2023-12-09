@@ -6,6 +6,7 @@ import {
   Pagination,
   Popconfirm,
   Row,
+  Select,
   Space,
   Table,
   Tabs,
@@ -42,6 +43,10 @@ function TableHoaDon() {
   const [search, setSearch] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [sortList, setSortList] = useState('billCreateDate');
+  const [sortOrder, setSortOrder] = useState('DESC');
+  const [sortListPlaceHolder, setSortListPlaceHolder] = useState('timeDESC');
+
 
 
   const columns = [
@@ -49,7 +54,7 @@ function TableHoaDon() {
       key: 'stt',
       dataIndex: 'index',
       title: 'STT',
-      width: 70,
+      width: '3%',
       render: (text, record, index) => {
         return <span id={record.id}>{(PageNum - 1) * pageSize + (index + 1)}</span>;
       },
@@ -58,19 +63,15 @@ function TableHoaDon() {
       title: 'Mã hóa đơn',
       dataIndex: 'billCode',
       key: 'code',
+      width: '10%'
     },
     {
       title: 'Ngày tạo',
       dataIndex: 'billCreateDate',
-      width: 100,
+      width: '12%',
       sorter: (a, b) => a.billCreateDate.localeCompare(b.billCreateDate),
       render: (date) => {
-        const formattedDate = new Date(date).toLocaleDateString('en-GB', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-        });
-
+        const formattedDate = dayjs(date).add(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
         return <span>{formattedDate}</span>;
       },
     },
@@ -79,6 +80,7 @@ function TableHoaDon() {
       title: 'Tên khách hàng',
       dataIndex: 'receiverName',
       key: 'receiverName',
+      width: '15%',
       render: (text, record) => {
         if (record.customer == null) {
           return record.receiverName;
@@ -91,7 +93,7 @@ function TableHoaDon() {
       title: 'Số điện thoại',
       dataIndex: 'orderPhone',
       key: 'orderPhone',
-
+      width: '10%',
     },
     {
       title: 'Tổng thanh toán',
@@ -100,6 +102,7 @@ function TableHoaDon() {
       render: (price) => {
         return <span>{VNDFormaterFunc(price)}</span>;
       },
+      width: '15%',
     },
 
     {
@@ -138,7 +141,7 @@ function TableHoaDon() {
             backgroundColor = '#ff3333';
             break;
           default:
-            statusText = 'Đã hủy';
+            statusText = 'Không xác định';
             statusClass = 'other-status';
             backgroundColor = '#ff3333';
         }
@@ -161,21 +164,31 @@ function TableHoaDon() {
       title: 'Hành động',
       key: 'action',
       render: (text, record) => {
-        if (record.billStatus !== -1) {
+        if (record.billStatus === 1) {
           return (
             <div>
-              {hanhDong(record, false)}
               <Space size="middle" style={{ marginTop: '10px' }}>
                 <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+                {hanhDong(record, true, true)}
+              </Space>
+            </div>
+          );
+        } else if (record.billStatus !== -1) {
+          return (
+            <div>
+              <Space size="middle" style={{ marginTop: '10px' }}>
+                <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+                {hanhDong(record, false, false)}
               </Space>
             </div>
           );
         } else {
           return (
             <div>
-              {hanhDong(record, true)}
+
               <Space size="middle" style={{ marginTop: '10px' }}>
                 <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+                {hanhDong(record, true, true)}
               </Space>
             </div>
           );
@@ -185,10 +198,10 @@ function TableHoaDon() {
     },
   ];
 
-  const hanhDong = (record, button) => {
+  const hanhDong = (record, capNhat, xoa) => {
     return (
       < Space size="middle" >
-        <FormCapNhatTrangThai disabled={button} status={record} reload={() => setLoading(true)} />
+        <FormCapNhatTrangThai disabled={capNhat} status={record} reload={() => setLoading(true)} />
         <Popconfirm
           title="Xác Nhận"
           description="Bạn có chắc chắn muốn hủy đơn hàng?"
@@ -200,7 +213,7 @@ function TableHoaDon() {
           }}
           onCancel={onCancel}
         >
-          <Button disabled={button} type="primary" danger icon={<CloseCircleOutlined />}>Hủy</Button>
+          <Button disabled={xoa} type="primary" danger icon={<CloseCircleOutlined />}>Hủy</Button>
         </Popconfirm>
       </Space >
     )
@@ -244,6 +257,7 @@ function TableHoaDon() {
   };
 
   const rangePresets = [
+
     {
       label: '7 ngày qua',
       value: [dayjs().add(-7, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
@@ -292,7 +306,10 @@ function TableHoaDon() {
         status,
         search,
         pageNum,
-        pageSize
+        pageSize,
+        sortList,
+        sortOrder,
+        sortListPlaceHolder
       );
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
@@ -307,7 +324,7 @@ function TableHoaDon() {
       setLoading(false);
     }, 500);
 
-  }, [loading, search, status, startDate, endDate]);
+  }, [loading, search, status, startDate, endDate, sortList, sortOrder, sortListPlaceHolder]);
   return (
     <div>
       <Card>
@@ -318,14 +335,70 @@ function TableHoaDon() {
             </h2>
           </Row>
           <Row>
-            <Col span={12}>
+            <Col span={7}>
               <div style={{ paddingTop: '10px', fontSize: '16px' }}>
-                <span style={{ fontWeight: 500 }}>Ngày tạo</span>
-                <RangePicker className={styles.filter_inputSearch} presets={rangePresets} onChange={onRangeChange} />
+                <span style={{ fontWeight: 500 }}>Khoảng ngày</span>
+                <RangePicker className={styles.filter_inputSearch} style={{ marginLeft: '10px' }} presets={rangePresets} onChange={onRangeChange} />
+              </div>
+            </Col>
+            <Col span={7}>
+              <div style={{ paddingTop: '10px', fontSize: '16px' }}>
+                <span style={{ paddingTop: '20px', fontSize: '16px', fontWeight: 500 }}>
+                  Sắp xếp
+                  <Select
+                    allowClear
+                    value={sortListPlaceHolder}
+                    placeholder={'Sắp xếp theo...'}
+                    size="large"
+                    style={{
+                      width: 250, marginLeft: '10px'
+                    }}
+                    onChange={(value) => {
+                      if (value === 'priceASC') {
+                        setSortOrder('ASC');
+                        setSortList('billPriceAfterVoucher');
+                        setSortListPlaceHolder('Tổng thanh toán tăng dần');
+                      } else if (value === 'priceDESC') {
+                        setSortOrder('DESC');
+                        setSortList('billPriceAfterVoucher');
+                        setSortListPlaceHolder('Tổng thanh toán giảm dần');
+                      } else if (value === 'timeASC') {
+                        setSortOrder('ASC');
+                        setSortList('billCreateDate');
+                        setSortListPlaceHolder('Thời gian tăng dần');
+                      } else if (value === 'timeDESC') {
+                        setSortOrder('DESC');
+                        setSortList('billCreateDate');
+                        setSortListPlaceHolder('Thời gian giảm dần');
+                      } else {
+                        setSortOrder(null);
+                        setSortList(null);
+                        setSortListPlaceHolder('Không');
+                      }
+                    }}
+                  >
+                    <Select.Option key={'0'} value={'0'}>
+                      Không
+                    </Select.Option>
+                    <Select.Option key={'1'} value={'priceASC'}>
+                      Tổng thanh toán tăng dần
+                    </Select.Option>
+                    <Select.Option key={'2'} value={'priceDESC'}>
+                      Tổng thanh toán giảm dần
+                    </Select.Option>
+                    <Select.Option key={'3'} value={'timeASC'}>
+                      Thời gian tăng dần
+                    </Select.Option>
+                    <Select.Option key={'4'} value={'timeDESC'}>
+                      Thời gian giảm dần
+                    </Select.Option>
+                  </Select>
+                </span>
               </div>
             </Col>
 
-            <Col span={12}>
+
+            <Col span={10}>
               <SearchForm onSubmit={handleSearchChange} style={{ width: '100%', marginBottom: '10px' }} />
             </Col>
           </Row>

@@ -11,19 +11,45 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface IStaffRepository extends JpaRepository<Staffs, String> {
-    @Query(value = "select s from Staffs s")
-    Page<Staffs> getAllPage(Pageable pageable);
 
-    @Query(value = "SELECT c FROM Customers c join Users i on c.users.userId = i.userId " +
-            "where i.account like %:keyword% " +
-            "or i.address like %:keyword% " +
-            " or i.fullName like %:keyword% " +
-            "or i.phoneNumber like %:keyword%"
+    @Query(value = " SELECT c FROM Staffs c " +
+            " where ( c.users.account like %:search% " +
+//            " or c.users.address like %:search% " +
+            " or c.users.fullName like %:search% " +
+            " or c.users.phoneNumber like %:search% " +
+            " or c.users.email like %:search% " +
+            " OR c.staffCode like %:search% " +
+            " or :search IS NULL ) "
     )
-    Page<Staffs> findallSearch(@Param("keyword") String keyword, Pageable pageable);
+    Page<Staffs> getAllPage(@Param("search")  String search,
+                               Pageable pageable);
+
+//    @Query(value = " SELECT c FROM Staffs c " +
+//            " where ( c.users.account like %:search% " +
+//            " or c.users.address like %:search% " +
+//            " or c.users.fullName like %:search% " +
+//            " or c.users.phoneNumber like %:search% " +
+//            " or c.users.address like %:search% " +
+//            " OR c.staffCode like %:search% " +
+//            " or :search IS NULL ) " +
+//            " AND ( :status IS NULL OR c.staffStatus = :status ) " +
+//            " AND ( :gender IS NULL OR c.users.gender = :gender ) " +
+//            " AND ( :role IS NULL OR c.users.role like %:role% ) "
+//    )
+//    Page<Staffs> findallSearch(@Param("search")  String search,
+//                               @Param("gender")  Boolean gender,
+//                               @Param("role")  String role,
+//                               @Param("status")  Integer status,
+//                               Pageable pageable);
+
     @Query("SELECT s, u FROM Staffs s join Users u on s.users.userId = u.userId " +
             "where u.email = :email ")
     Staffs findByEmail(@Param("email") String email);
+
+    @Query("SELECT c, u FROM Staffs c join Users u on c.users.userId = u.userId " +
+            "where u.phoneNumber = :phoneNumber ")
+    Staffs findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
     @Query("SELECT s, u FROM Staffs s join Users u on s.users.userId = u.userId " +
             "where u.userId = :userId ")
     Staffs findByUsersId(@Param("userId") String userId);

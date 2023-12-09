@@ -46,7 +46,7 @@ public class VoucherServiceImpl implements IVoucherService {
 
     @Override
     public Vouchers update(Vouchers voucher) {
-        return null;
+        return  iVoucherRepository.save(voucher);
     }
 
     @Override

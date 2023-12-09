@@ -10,6 +10,13 @@ function LayoutCarousel() {
         <Carousel autoplay={true} autoplaySpeed={2000} draggable={true}>
           <div>
             <img
+              src="https://i.imgur.com/gbFfVVc.jpg"
+              alt="TEACHER'S DAY 2023"
+              // className="d-block w-100"
+            />
+          </div>
+          <div>
+            <img
               src="https://i.imgur.com/rtHttD2.png"
               alt="TEACHER'S DAY 2023"
               // className="d-block w-100"
@@ -32,7 +39,7 @@ function LayoutCarousel() {
         </Carousel>
       </div>
 
-      <div className={styles.block}>
+      {/* <div className={styles.block}>
         <div className="container">
           <div className="row">
             <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-xs-12 item-banner">
@@ -57,7 +64,7 @@ function LayoutCarousel() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </Fragment>
   );
 }

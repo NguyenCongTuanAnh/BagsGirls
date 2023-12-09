@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,6 +26,20 @@ public class BillServiceImpl implements IBillService {
     private IBillRepository iBillRepository;
     @Autowired
     private ModelMapper modelMapper;
+
+    private List<Sort.Order> createSortOrder(List<String> sortList, String sortDirection) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        Sort.Direction direction;
+        for (String sort : sortList) {
+            if (sortDirection != null) {
+                direction = Sort.Direction.fromString(sortDirection);
+            } else {
+                direction = Sort.Direction.DESC;
+            }
+            sorts.add(new Sort.Order(direction, sort));
+        }
+        return sorts;
+    }
 
     @Override
     public List<BillsDTO> getAll() {
@@ -43,8 +59,9 @@ public class BillServiceImpl implements IBillService {
     }
 
     @Override
-    public Page<BillsDTO> getAllBillsPagination( Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNum, pageSize);
+    public Page<BillsDTO> getAllBillsPagination( Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize,List<String> sortList,
+                                                 String sortOrder) {
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, Sort.by(createSortOrder(sortList, sortOrder)));
         if(status == 0){
             Page<Bills> bills = this.iBillRepository.findAllBillsBySearch(startDate, endDate, search, pageable);
 
@@ -57,8 +74,9 @@ public class BillServiceImpl implements IBillService {
     }
 
     @Override
-    public Page<BillsDTO> getAllBillsOffline(String filterStaffName, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNum, pageSize);
+    public Page<BillsDTO> getAllBillsOffline(String filterStaffName, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize, List<String> sortList,
+                                             String sortOrder) {
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, Sort.by(createSortOrder(sortList, sortOrder)));
         if(status == 0){
             if(search.trim().length()==0){
                 Page<Bills> bills = this.iBillRepository.findAllBillOffNotSearch( startDate, endDate, search, filterStaffName, pageable);

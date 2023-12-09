@@ -9,25 +9,19 @@ import SearchForm from './FormSearch/SearchForm';
 import FormStaffCreate from '../../StaffEdit/FormCreate/FormStaffCreate';
 const TableContent = () => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [pagesSize, setPagesSize] = useState(10);
   const [totalItem, setTotalItem] = useState();
   const [search, setSearch] = useState('');
 
-  const onCancel = () => {};
-  const reload = () => {
-    setLoading(true);
-    getAll(search, currentPage, pagesSize);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-  };
+  const onCancel = () => { };
+
 
   const onChange = (current, pageSize) => {
     setCurrentPage(current);
     setPagesSize(pageSize);
-    getAll(search, current, pageSize);
+    setLoading(true);
   };
 
   const handleSearchChange = (newFilter) => {
@@ -45,102 +39,112 @@ const TableContent = () => {
   };
 
   useEffect(() => {
-    reload();
-  }, []);
+    getAll(currentPage, pagesSize);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  }, [loading, search]);
 
-  useEffect(() => {
-    if (loading) {
-      reload();
-    }
-  }, [loading]);
-
-  const getAll = async (keyword, current, pageSize) => {
+  const getAll = async (current, pageSize) => {
     try {
-      const response = await staffAPI.getSearchPagination(keyword, current, pageSize);
+      const response = await staffAPI.getAllStaff(search, current, pageSize);
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
       setData(data);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   // Define your table columns
   const columns = [
     {
       title: 'STT',
-      width: 40,
+      width: '4%',
       render: (text, record, index) => <span>{(currentPage - 1) * pagesSize + index + 1}</span>,
+    },
+    {
+      title: 'Mã nhân viên',
+      dataIndex: 'staffCode',
+      sorter: (a, b) => a.staffCode.localeCompare(b.staffCode),
+      width: '7%',
     },
     {
       title: 'Họ và tên',
       dataIndex: ['users', 'fullName'],
       sorter: (a, b) => a.users.fullName.localeCompare(b.users.fullName),
-      width: 100,
+      width: '13%',
     },
     {
-      title: 'Tài khoản',
-      dataIndex: ['users', 'account'],
-      sorter: (a, b) => a.users.account.localeCompare(b.users.account),
-      width: 100,
+      title: 'Email',
+      dataIndex: ['users', 'email'],
+      width: '15%',
     },
+
     {
       title: 'SĐT',
       dataIndex: ['users', 'phoneNumber'],
       sorter: (a, b) => a.users.phoneNumber.localeCompare(b.users.phoneNumber),
-      width: 100,
+      width: '10%',
     },
     {
       title: 'Giới tính',
       dataIndex: ['users', 'gender'],
-      width: 100,
+      width: '5%',
       render: (gender) => {
         return gender ? 'Nam' : 'Nữ';
       },
     },
-
-    {
-      title: 'Địa chỉ',
-      dataIndex: ['users', 'address'],
-      sorter: (a, b) => a.users.address.localeCompare(b.users.address),
-      width: 100,
-    },
-
     {
       title: 'Chức vụ',
-      dataIndex: ['users', 'roles', 'roleName'],
-      sorter: (a, b) => a.users.roles.roleName.localeCompare(b.users.roles.roleName),
-      width: 100,
+      dataIndex: ['users', 'role'],
+      width: '8%',
+      render: (text, record) => {
+        let statusText;
+        let statusClass;
+
+        switch (record.users.role) {
+          case 'ROLE_ADMIN':
+            statusText = 'Admin';
+            break;
+          case 'ROLE_STAFF':
+            statusText = 'Nhân viên';
+            break;
+          default:
+            statusText = 'Null';
+            statusClass = 'inactive-status';
+        }
+        return <span className={statusClass}>{statusText}</span>;
+      },
     },
     {
       title: 'Ghi chú',
       dataIndex: ['users', 'userNote'],
-      sorter: (a, b) => a.users.userNote.localeCompare(b.users.userNote),
-      width: 100,
+      // sorter: (a, b) => a.users.userNote.localeCompare(b.users.userNote),
+      width: '12%',
     },
 
     {
       title: 'Trạng thái',
       dataIndex: 'staffStatus',
-
-      width: 100,
-      render: (status) => {
+      width: '12%',
+      render: (text, record) => {
         let statusText;
         let statusClass;
 
-        switch (status) {
+        switch (record.staffStatus) {
           case 1:
-            statusText = 'Hoạt động';
+            statusText = 'Đang làm';
             statusClass = 'active-status';
             break;
           case 0:
-            statusText = 'Không hoạt động';
-            statusClass = 'inactive-status';
+            statusText = 'Tạm dừng';
+            statusClass = 'other_status';
             break;
           case -1:
-            statusText = 'Trạng thái khác';
-            statusClass = 'other-status';
+            statusText = 'Nghỉ làm';
+            statusClass = 'inactive-status';
             break;
           default:
-            statusText = 'Không hoạt động';
+            statusText = 'Nghỉ làm';
             statusClass = 'inactive-status';
         }
 
@@ -158,20 +162,20 @@ const TableContent = () => {
               setLoading(true);
             }}
           />
-          {/* <FormStaffViewDetails id={record.id} /> */}
-
           <Popconfirm
-            title="Xác Nhận"
-            description="Bạn Có chắc chắn muốn xóa?"
+            title="Xác nhận"
+            description="Bạn có chắc chắn muốn cho nhân viên nghỉ làm?"
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
-              deleteHandle(record.staffId, 0);
-              reload();
+              deleteHandle(record.staffId, -1, record.staffCode);
+              setLoading(true);
             }}
             onCancel={onCancel}
           >
-            <Button type="primary" danger icon={<DeleteOutlined />}></Button>
+            <Button type="default" danger icon={<DeleteOutlined />}>
+              Nghỉ làm
+            </Button>
           </Popconfirm>
         </Space>
       ),
@@ -180,26 +184,23 @@ const TableContent = () => {
     },
   ];
 
-  const deleteHandle = async (id, status) => {
+  const deleteHandle = async (id, status, code) => {
     const xoa = await staffAPI.updateStatus(id, status);
-    notification.info({
-      message: 'Thông báo',
-      description: 'Đã hủy thành công trạng thái nhân viên có id là :' + id,
+    notification.success({
+      message: 'Thành công',
+      description: 'Cập nhật nhân viên có mã: ' + code + ' là: nghỉ làm!',
     });
-    reload();
+    setLoading(true);
   };
 
   return (
-    <div
-      style={{
-        padding: '10px',
-      }}
-    >
+    <div>
       <SearchForm onSubmit={handleSearchChange} />
-      <FormStaffCreate />
-      <Button icon={<ReloadOutlined />} className="" onClick={reload} loading={loading}></Button>
+      <FormStaffCreate reload={() => setLoading(true)} />
+      <Button icon={<ReloadOutlined />} onClick={() => setLoading(true)} style={{ marginLeft: '10px' }} loading={loading}></Button>
 
       <Table
+        style={{ margin: '10px' }}
         className="table table-striped"
         scroll={{
           x: 1000,
@@ -209,10 +210,13 @@ const TableContent = () => {
         columns={columns}
         dataSource={data}
         pagination={false}
-        // onChange={handlePageChange} // Handle page changes
+        loading={loading}
+      // onChange={handlePageChange} // Handle page changes
       />
 
       <Pagination
+        style={{ margin: '20px' }}
+
         className={styles.pagination}
         showSizeChanger
         total={totalItem}

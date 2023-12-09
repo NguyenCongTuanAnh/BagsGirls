@@ -2,11 +2,11 @@ import { Layout } from 'antd';
 import Header from './Header';
 import Footer from './Footer';
 import './index.scss';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 
 const MainLayout = ({ children }) => {
   return (
-    <Layout className="fullpages">
+    <Fragment className="fullpages">
       <div className="header001">
         <Header />
       </div>
@@ -14,7 +14,7 @@ const MainLayout = ({ children }) => {
       <div className="footer_client">
         <Footer />
       </div>
-    </Layout>
+    </Fragment>
   );
 };
 

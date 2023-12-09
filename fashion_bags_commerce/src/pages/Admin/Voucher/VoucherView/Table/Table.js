@@ -3,8 +3,8 @@ import { Button, Pagination, Popconfirm, Space, Spin, Table, notification } from
 import voucherAPI from '~/api/voucherAPI';
 import { DeleteOutlined, ReloadOutlined, SyncOutlined } from '@ant-design/icons';
 import styles from './index.module.scss';
+import FormvoucherEdit from '../../VoucherEdit/FormVoucherEdit';
 import FormVoucherCreate from '../../VoucherEdit/FormrCreate/FormVoucherCreate';
-// import FormvoucherEdit from '../../voucherEdit/FormEdit/FormvoucherEdit';
 const TableContent = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -49,57 +49,58 @@ const TableContent = () => {
   const columns = [
     {
       title: 'STT',
-      width: 50,
+      width: 80,
+      fixed: 'left',
       render: (text, record, index) => <span>{(currentPage - 1) * pagesSize + index + 1}</span>,
     },
     {
       title: 'Mã',
       dataIndex: 'voucherCode',
-      sorter: (a, b) => a.voucherCode.localeCompare(b.voucherCode),
       width: 100,
+      fixed: 'left',
     },
     {
       title: 'Tên khuyến mãi',
       dataIndex: 'voucherName',
-      width: 100,
-      sorter: (a, b) => a.voucherName.localeCompare(b.voucherName),
+      width: 200,
+      fixed: 'left',
     },
     {
-      title: 'Giảm giá',
-      dataIndex: 'discountPrice',
-      width: 100,
-      sorter: (a, b) => a.voucherName.localeCompare(b.voucherName),
+      title: 'Giảm giá (%)',
+      dataIndex: 'discountPercent',
+      width: 200,
     },
     {
-      title: 'Kiểu voucher',
-      dataIndex: 'voucherType',
-      width: 100,
-      sorter: (a, b) => a.voucherName.localeCompare(b.voucherName),
-    },
-    {
-      title: 'Điểm tối thiểu',
-      dataIndex: 'pointsToReceive',
-      width: 100,
-      sorter: (a, b) => a.voucherName.localeCompare(b.voucherName),
+      title: 'Giá tối thiểu',
+      dataIndex: 'totalPriceToReceive',
+      width: 200,
     },
     {
       title: 'Thời gian bắt đầu',
       dataIndex: 'voucherStartTime',
-      width: 150,
-      sorter: (a, b) => a.voucherName.localeCompare(b.voucherName),
+      width: 200,
     },
     {
       title: 'Thời gian kết thúc',
       dataIndex: 'voucherEndTime',
-      width: 150,
-      sorter: (a, b) => a.voucherName.localeCompare(b.voucherName),
+      width: 200,
+    },
+    {
+      title: 'Số lượng',
+      dataIndex: 'voucherAmount',
+      width: 200,
+    },
+    {
+      title: 'Voucher note',
+      dataIndex: 'voucherNote',
+      width: 200,
     },
     {
       title: 'Trạng thái',
       dataIndex: 'voucherStatus',
+      fixed: 'right',
 
-      width: 150,
-      sorter: (a, b) => a.voucherStatus.localeCompare(b.voucherStatus),
+      width: 200,
       render: (status) => {
         let statusText;
         let statusClass;
@@ -128,16 +129,17 @@ const TableContent = () => {
     {
       title: 'Hành động',
       key: 'action',
+      fixed: 'right',
       render: (_, record) => (
         <Space size="middle">
-          {/* <FormvoucherEdit voucher={record} /> */}
+          <FormvoucherEdit voucher={record} />
           <Popconfirm
             title="Xác Nhận"
-            description="Bạn Có chắc chắn muốn xóa?"
+            description="Bạn Có chắc chắn muốn hủy trạng thái?"
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
-              deleteHandle(record.id, 0);
+              deleteHandle(record.voucherId, 0);
               reload();
             }}
             onCancel={onCancel}
@@ -149,7 +151,7 @@ const TableContent = () => {
         </Space>
       ),
 
-      width: 100,
+      width: 200,
     },
   ];
 

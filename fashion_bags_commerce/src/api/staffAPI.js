@@ -10,11 +10,16 @@ const staffAPI = {
       },
     });
   },
-  getAllStaff() {
-    const url = 'api/staff/get-all';
-    return axiosClient.get(url, null);
+  getAllStaff(search, pageNum, pageSize) {
+    const url = 'api/staff/pagination';
+    return axiosClient.get(url, {
+      params: {
+        search: search,
+        page: pageNum - 1,
+        size: pageSize,
+      },
+    });
   },
-
   getSearchPagination(key, pageNum, pageSize) {
     const url = 'api/staff/search';
     return axiosClient.get(url, {
@@ -24,6 +29,14 @@ const staffAPI = {
         size: pageSize,
       },
     });
+  },
+  findByEmail(email) {
+    const url = `api/staff/findByEmail?email=${email}`;
+    return axiosClient.get(url);
+  },
+  findByPhoneNumber(phoneNumber) {
+    const url = `api/staff/findByPhoneNumber?phoneNumber=${phoneNumber}`;
+    return axiosClient.get(url);
   },
 
   getRoles(params) {

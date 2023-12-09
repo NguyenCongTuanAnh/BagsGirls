@@ -29,7 +29,7 @@ public class ColorRestController {
     private ColorServiceImpl colorService;
 
 
-    @RequestMapping(value = "/color/pagination", method = RequestMethod.GET)
+        @RequestMapping(value = "/color/pagination", method = RequestMethod.GET)
     public ResponseEntity<?> getAllPaginantion(
             @RequestParam(name = "page", defaultValue = "0") int pageNum,
             @RequestParam(name = "size", defaultValue = "15") int pageSize
