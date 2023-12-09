@@ -166,6 +166,7 @@ public class CustomerServiceImpl implements ICustomerService {
            addPoint = 1;
        }
        customers.setRankingPoints(addPoint + customers.getRankingPoints());
+       customers.setConsumePoints(addPoint + customers.getConsumePoints());
 
         if ( customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHKC){
          customers.setCustomerRanking(Ranking.KH_KIMCUONG);
@@ -175,7 +176,7 @@ public class CustomerServiceImpl implements ICustomerService {
           customers.setCustomerRanking(Ranking.KH_BAC);
         }else if ( customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHTT){
           customers.setCustomerRanking(Ranking.KH_THANTHIET);
-        }else{
+        }else if(customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHTN){
             customers.setCustomerRanking(Ranking.KH_TIEMNANG);
         }
 

@@ -40,6 +40,7 @@ function LoginFormStaff(props) {
         console.log(userToken);
         console.log('====================================');
         localStorage.setItem('customerTokenString', JSON.stringify(userToken.data));
+        localStorage.setItem('customerTokenStringDecode', JSON.stringify(btoa(userToken.data)));
         notification.success({
           message: 'Đăng nhập thành công!!!',
           description: `Welcome back to ${response.data.data.users.fullName}`,
@@ -53,7 +54,10 @@ function LoginFormStaff(props) {
         localStorage.setItem('staffToken', response.data.data.token);
         localStorage.setItem('staffId', staff.data.staffId);
         const userToken = await AuthAPI.getStaffToken();
-        localStorage.setItem('staffTokenString', JSON.stringify(userToken.data));
+        const userString = JSON.stringify(userToken.data);
+        const decodeUserString = btoa(userString);
+        localStorage.setItem('staffTokenString', userString);
+        localStorage.setItem('customerTokenStringDecode', decodeUserString);
         notification.success({
           message: 'Đăng nhập thành công!!!',
           description: `Welcome back to ${response.data.data.users.fullName}`,

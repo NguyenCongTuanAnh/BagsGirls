@@ -19,6 +19,9 @@ public interface IVoucherService {
 
     Vouchers updateStatus(String id, int status);
 
+
+    Vouchers updateAmountBeforeAplied(String voucherId, int amount);
+
     void delete(String id);
 
     VoucherDTO findByVoucherCode(String voucherCode);

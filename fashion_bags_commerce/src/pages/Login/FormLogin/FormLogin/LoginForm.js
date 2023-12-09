@@ -40,6 +40,7 @@ function LoginForm(props) {
         console.log(userToken);
         console.log('====================================');
         localStorage.setItem('customerTokenString', JSON.stringify(userToken.data));
+        localStorage.setItem('customerTokenStringDecode', JSON.stringify(btoa(userToken.data)));
         notification.success({
           message: 'Đăng nhập thành công!!!',
           description: `Welcome back to ${response.data.data.users.fullName}`,

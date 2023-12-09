@@ -1,24 +1,39 @@
 package fpoly.datn.ecommerce_website.restController;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import fpoly.datn.ecommerce_website.dto.BillsDTO;
 import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.service.IBillService;
+import jakarta.persistence.TemporalType;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.data.jpa.repository.Temporal;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import org.springframework.data.domain.Sort;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
+
+import java.util.Map;
+
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api")
@@ -95,4 +110,29 @@ public class BillRestController {
             @RequestBody BillsDTO billsDTO) {
         return new ResponseEntity<>(this.billService.save(billsDTO), HttpStatus.OK);
     }
+    @GetMapping("/bills/total")
+    public ResponseEntity<BigDecimal> getTotalSalesByTimePeriod(
+            @RequestParam("start_date") String startDateString,
+            @RequestParam("end_date") String endDateString) {
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date startDate = formatter.parse(startDateString);
+            Date endDate = formatter.parse(endDateString);
+
+            BigDecimal totalSales = this.billService.calculateTotalSalesByTimePeriod(startDate, endDate);
+            return ResponseEntity.ok(totalSales);
+        } catch (ParseException e) {
+
+            e.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/last30days")
+    public ResponseEntity<Map<LocalDate, BigDecimal>> getSalesForLast30Days() {
+        Map<LocalDate, BigDecimal> salesByDay = this.billService.getSalesForLast30Days();
+        return ResponseEntity.ok(salesByDay);
+    }
+
 }
