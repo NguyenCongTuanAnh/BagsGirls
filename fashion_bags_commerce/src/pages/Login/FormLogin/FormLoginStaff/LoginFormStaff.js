@@ -57,7 +57,7 @@ function LoginFormStaff(props) {
         const userString = JSON.stringify(userToken.data);
         const decodeUserString = btoa(userString);
         localStorage.setItem('staffTokenString', userString);
-        localStorage.setItem('customerTokenStringDecode', decodeUserString);
+        localStorage.setItem('staffTokenStringDecode', decodeUserString);
         notification.success({
           message: 'Đăng nhập thành công!!!',
           description: `Welcome back to ${response.data.data.users.fullName}`,

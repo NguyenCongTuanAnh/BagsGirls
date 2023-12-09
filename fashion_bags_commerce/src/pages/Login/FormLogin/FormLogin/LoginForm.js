@@ -55,6 +55,9 @@ function LoginForm(props) {
         localStorage.setItem('staffId', staff.data.staffId);
         const userToken = await AuthAPI.getStaffToken('ROLE_STAFF');
         localStorage.setItem('staffTokenString', JSON.stringify(userToken.data));
+        const decodeUserString = btoa(userToken.data);
+        localStorage.setItem('staffTokenStringDecode', decodeUserString);
+
         notification.success({
           message: 'Đăng nhập thành công!!!',
           description: `Welcome back to ${response.data.data.users.fullName}`,

@@ -6,7 +6,7 @@ const { Meta } = Card;
 
 function PopupProfile() {
   const [messageApi, contextHolder] = message.useMessage();
-  const [staff, setStaff] = useState(JSON.parse(atob(localStorage.getItem('customerTokenStringDecode'))));
+  const [staff, setStaff] = useState(JSON.parse(atob(localStorage.getItem('staffTokenStringDecode'))));
   console.log(staff);
   const key = 'updatable';
   const navigate = useNavigate();
