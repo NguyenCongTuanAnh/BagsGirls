@@ -2,7 +2,8 @@ import { Card } from 'antd';
 import Meta from 'antd/es/card/Meta';
 import { useState } from 'react';
 function Avartar() {
-  const [staff, setStaff] = useState(JSON.parse(atob(localStorage.getItem('customerTokenStringDecode'))));
+  console.log(atob(localStorage.getItem('staffTokenStringDecode')));
+  const [staff, setStaff] = useState(JSON.parse(atob(localStorage.getItem('staffTokenStringDecode'))));
 
   return (
     <div style={{ padding: '0px 0px 60px 0px' }}>
