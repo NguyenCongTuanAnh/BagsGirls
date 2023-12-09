@@ -118,16 +118,15 @@ li {
 }
 .group_content_product {
   border: 1px solid rgb(230, 226, 226);
-  width: 700px;
+  // width: 700px;
+  margin: 0 30%;
   border-radius: 32px;
 }
 
 .body_ct ul li {
   list-style: none;
 }
-.finalCart {
-  padding-left: 55%;
-}
+
 .productDetailItem {
   display: flex;
   justify-content: space-between;

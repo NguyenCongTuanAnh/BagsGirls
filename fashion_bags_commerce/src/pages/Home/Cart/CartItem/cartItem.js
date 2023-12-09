@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import styles from './tableCart.module.scss';
 import vndFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import { DeleteFilled, DeleteOutlined, DoubleRightOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Tab } from 'bootstrap';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import voucherAPI from '~/api/voucherAPI';
@@ -20,6 +20,7 @@ function CartItem() {
   const [voucherPrice, setVoucherPrice] = useState(0);
   const [disCountPercent, setDiscountPercent] = useState(0);
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   const handleApplyVoucherCode = async () => {
     console.log(voucherCode);
@@ -102,6 +103,11 @@ function CartItem() {
     return cartItems.reduce((total, item) => {
       return total + item.quantity * item.retailPrice;
     }, 0);
+  };
+
+  const calculateTotalAfterVoucher = () => {
+    const totalBeforeVoucher = calculateTotal();
+    return vndFormaterFunc(totalBeforeVoucher - voucherPrice);
   };
 
   const handleRemoveItem = (record) => {
@@ -253,7 +259,7 @@ function CartItem() {
     }
   };
   return (
-    <div className="container-fluid" style={{ padding: '0 5% 0 5%' }}>
+    <div className="" style={{ padding: '0 5% 0 5%' }}>
       {contextHolder}
       <div>
         <Link to={'/shop'} className={styles.continue_cart}>
@@ -326,7 +332,7 @@ function CartItem() {
                   <li className={styles.productDetailItem}>
                     <span className={styles.label}>Thành tiền: </span>
                     <span className={styles.labelName} style={{ color: 'red', fontWeight: 'bold', fontSize: '30px' }}>
-                      {vndFormaterFunc(calculateTotal() - voucherPrice)}
+                      {calculateTotalAfterVoucher()}
                     </span>
                   </li>
                 </ul>
@@ -334,10 +340,16 @@ function CartItem() {
             </div>
           </div>
         </div>
-        <Link to={'/cart/checkout'}>
-          <br />
-          <button className={styles.buttonThanhToan}>Tiến hành thanh toán</button>
-        </Link>
+
+        <br />
+        <button
+          className={styles.buttonThanhToan}
+          onClick={() => {
+            navigate('/cart/checkout', { state: { totalPrice: calculateTotalAfterVoucher() } });
+          }}
+        >
+          Tiến hành thanh toán
+        </button>
       </div>
 
       <br></br>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment, useRef } from 'react';
 import axios from 'axios';
 import './styles.scss';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import billsAPI from '~/api/BillApi';
 import billDetailAPI from '~/api/BillDetailsAPI';
 import dayjs from 'dayjs';
@@ -10,15 +10,25 @@ import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import productDetailsAPI from '~/api/productDetailsAPI';
 import BeatLoader from 'react-spinners/ClipLoader';
+import { faL } from '@fortawesome/free-solid-svg-icons';
 
 const CheckoutDetail = () => {
   const [cartItems, setCartItems] = useState([]);
   const [cart, setCart] = useState([]);
-  const [confirmedAddress, setConfirmedAddress] = useState(false);
-  const [showAddressForm, setShowAddressForm] = useState(true);
+
   const [loadingPayment, setLoadingPayment] = useState(false); // State for payment loading
   const [messageApi, contextHolder] = message.useMessage();
+  const [billPriceAfterVoucher, setBillPriceAfterVoucher] = useState(0);
+  const location = useLocation();
 
+  const [displayInformation, setDisplayInformation] = useState(true);
+  const [displayAddress, setDisplayAddress] = useState(false);
+  const [displayOrder, setDisplayOrder] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+
+  useEffect(() => {
+    setBillPriceAfterVoucher(location?.state?.totalPrice);
+  }, [location]);
   const bottomRef = useRef(null);
   const scrollToBottom = () => {
     if (bottomRef.current) {
@@ -38,12 +48,6 @@ const CheckoutDetail = () => {
       return total + item.quantity * item.retailPrice;
     }, 0);
   };
-  const tongGiaKhiApVoucher = cart.map((item) => {
-    const ao = item.calculateTotal() - item.voucherPrice;
-    setCart(ao);
-
-    return ao;
-  });
 
   useEffect(() => {
     const storedCart = localStorage.getItem('temporaryCart');
@@ -93,7 +97,8 @@ const CheckoutDetail = () => {
         selectedWard,
         fullAddress,
       };
-
+      setDisplayAddress(true);
+      setDisplayInformation(false);
       setSubmittedData(data);
       console.log('dia chi', data);
       console.log('tinh', selectedProvinceName);
@@ -154,7 +159,7 @@ const CheckoutDetail = () => {
         },
         { billTotalPrice: 0, productAmount: 0 },
       );
-
+      console.log('gia tong thanh toan', billPriceAfterVoucher);
       try {
         const billData = {
           receiverName: fullName,
@@ -167,8 +172,9 @@ const CheckoutDetail = () => {
           billCode: generateCustomCode('Bill', 4),
           billTotalPrice: cartItemsTotal.billTotalPrice,
           productAmount: cartItemsTotal.productAmount,
-          billPriceAfterVoucher: cartItemsTotal.productAmount,
+          billPriceAfterVoucher: parseInt(billPriceAfterVoucher.replace(/\./g, '')),
         };
+        console.log('11111111111111111', billData);
         const response = await billsAPI.add(billData);
         console.log('Billsssss', response.data);
 
@@ -192,10 +198,8 @@ const CheckoutDetail = () => {
           billDetailsData.map((billDetail) => billDetailAPI.add(billDetail)),
         );
 
-        setConfirmedAddress(true);
-        setShowAddressForm(false);
         setSubmittedData(responseBillDetails);
-       
+
         await Promise.all(
           cartItems.map(async (item) => {
             // Subtract the quantity from the product detail amount
@@ -204,7 +208,7 @@ const CheckoutDetail = () => {
         );
         console.log('bilsssssss:', response.data);
         console.log('BilLDetails:', responseBillDetails);
-
+        setOrderSuccess(true);
         localStorage.removeItem('temporaryCart');
         messageApi.open({
           type: 'success',
@@ -272,219 +276,321 @@ const CheckoutDetail = () => {
 
   return (
     <div className="form-container">
-      {showAddressForm && (
-        <form onSubmit={handleSubmit} ref={formRef}>
+      {!orderSuccess && (
+        <form onSubmit={handleSubmit}>
           {contextHolder}
-          <div className="titleNhanHang">
+          <div
+            className="titleNhanHang"
+            style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+          >
             <h1>Thông tin người đặt hàng</h1>
-          </div>
-          <p>
-            Bạn đã có tài khoản?{' '}
-            <span>
-              <Link to={'/login'}>Đăng nhập</Link>
-            </span>
-          </p>
-          <br></br>
-          <input
-            className="inputLabel"
-            type="text"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            placeholder="Họ và tên"
-            required
-          />
-          <input
-            className="inputLabel"
-            type="text"
-            // size={10}
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            placeholder="Số điện thoại"
-            pattern="(?:\+84|0)(?:\d){9,10}$"
-            title="vui lòng nhập số điện thoại hợp lệ"
-            required
-          />
-          <input
-            className="inputLabel"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email ( Nếu có ) "
-            pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-            // pattern="(?:\+84|0)(?:\d){9,10}$"
-
-            title="vui lòng nhập email hợp lệ"
-            required
-          />
-          <select value={selectedProvince} id="selectedProvince" onChange={handleProvinceChange} required>
-            <option disabled value="">
-              Chọn Tỉnh/Thành phố
-            </option>
-            {provinces.map((province) => (
-              <option key={province.code} value={province.code}>
-                {province.name}
-              </option>
-            ))}
-          </select>
-          <select value={selectedDistrict} id="selectedDistrict" onChange={handleDistrictChange} required>
-            <option disabled value="">
-              Chọn Quận/Huyện
-            </option>
-            {districts.map((district) => (
-              <option key={district.code} value={district.code}>
-                {district.name}
-              </option>
-            ))}
-          </select>
-          <select value={selectedWard} id="selectedWard" onChange={handleWardChange} required>
-            <option disabled value="">
-              Chọn Phường/Xã
-            </option>
-            {wards.map((ward) => (
-              <option key={ward.code} value={ward.code}>
-                {ward.name}
-              </option>
-            ))}
-          </select>
-          <input
-            className="inputLabel"
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="Điền rõ thông tin số nhà, tên đường"
-            required
-          />
-          <textarea
-            className="textarea"
-            rows={5}
-            value={billNote}
-            onChange={(e) => setBillNote(e.target.value)}
-            placeholder="Ghi chú của khách hàng"
-          />
-
-          <br></br>
-          <button onClick={scrollToBottom}>Xác nhận địa chỉ</button>
-
-          <br></br>
-          {submittedData && !confirmedAddress && (
-            <div>
-              <div className="titleNhanHang">
-                <h1>Địa chỉ</h1>
-              </div>
-              <div className="voucher">
-                <h4>Thông tin nhận hàng:</h4>
-                <p>
-                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Người nhận:</span> {submittedData.fullName}{' '}
-                  (+84)
-                  {submittedData.phoneNumber}
-                </p>
-                <p>
-                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ:</span> {submittedData.fullAddress}
-                </p>
-                <p>
-                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Email:</span> {submittedData.email}
-                </p>
-                <p>
-                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Ghi Chú:</span> {submittedData.billNote}
-                </p>
-
-                <a className="updateThongTin" onClick={scrollToForm}>
-                  Chỉnh sửa
-                </a>
-              </div>
-            </div>
-          )}
-          <br></br>
-          <div className="titleNhanHang">
-            <h1>Đơn hàng</h1>
-          </div>
-          <br />
-
-          {cartItems.map((item, index) => (
-            <div className={item} key={index}>
-              {/* Render each item as needed */}
-              <div className="avatar">
-                <img src={item.image} className="image" alt={item.productName} />
-                <div className="info">
-                  <div className="productTitle">{item.productName}</div>
-                  <div className="titleChild">
-                    <i>{`Color: ${item.colorName}`}</i>
-                    <br />
-                    <i> {`Material: ${item.materialName}`}</i>
-                  </div>
-                  <div className="number">{`Quantity: ${item.quantity}`}</div>
-                  <span className="price_sale">
-                    Price:{' '}
-                    <ins>
-                      <span className="price">{VNDFormaterFunc(item.retailPrice)}</span>
-                    </ins>
-                  </span>
+            {!displayInformation && (
+              <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'end' }}>
+                <div
+                  onClick={() => {
+                    setDisplayInformation(true);
+                    setDisplayAddress(false);
+                    setDisplayOrder(false);
+                  }}
+                  className="changleAddress"
+                >
+                  Thay đổi
                 </div>
               </div>
-            </div>
-          ))}
-          <hr />
-          <div>
-            <h3>
-              Tổng tiền: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
-            </h3>
-          </div>
-
-          <hr />
-          {/* <div className="voucher">
-            <h4>Voucher: </h4>
-          </div> */}
-
-          {/* <div className="pay">
-            <h3>Phương thức thanh toán:</h3>
-            <br></br>
-            <label className="labelCK">
-              <input className="inputCk" name="radioPay" type="radio" value={''} checked={true} />
-              Thanh toán khi nhận hàng
-            </label>
-            <br></br>
-            <label className="labelCK">
-              <input className="inputCk" name="radioPay" type="radio" value={''} />
-              Chuyển khoản ngân hàng
-            </label>
-            <br></br>
-
-            <label className="labelCK">
-              <input className="inputCk" name="radioPay" type="radio" value={''} />
-              Ví điện tử
-            </label>
-          </div> */}
-          <br></br>
-          <div className="totalCheckout">
-            <br />
-            <h4>
-              Tổng thanh toán: <span style={{ color: 'red' }}> {VNDFormaterFunc(tongGiaKhiApVoucher)}</span>
-            </h4>
-            <br />
-          </div>
-          <br />
-
-          <br></br>
-          <div>
-            {loadingPayment ? (
-              <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                <BeatLoader color="#d64336" loading={true} size={50} />
-                <p>Vui lòng chờ...</p>
-              </div>
-            ) : (
-              <button className="checkOut" onClick={handleConfirmation}>
-                Đặt Hàng
-              </button>
             )}
           </div>
+
+          <hr />
+
+          {displayInformation && (
+            <div>
+              <p>
+                Bạn đã có tài khoản?{' '}
+                <span>
+                  <Link to={'/login'}>Đăng nhập</Link>
+                </span>
+              </p>
+              <br></br>
+              <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
+                <div className="customInput">
+                  <label>
+                    Họ và tên<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                  </label>
+                  <input
+                    className="inputLabel"
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Họ và tên"
+                    required
+                    style={{ flex: 1 }}
+                  />
+                </div>
+                <div className="customInput">
+                  <label>
+                    Số điện thoại<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                  </label>
+                  <input
+                    className="inputLabel"
+                    type="text"
+                    // size={10}
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    placeholder="Số điện thoại"
+                    pattern="(?:\+84|0)(?:\d){9,10}$"
+                    title="vui lòng nhập số điện thoại hợp lệ"
+                    required
+                    style={{ flex: 1 }}
+                  />
+                </div>
+                <div className="customInput">
+                  <label>Email</label>
+                  <input
+                    className="inputLabel"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Email ( Nếu có ) "
+                    pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                    // pattern="(?:\+84|0)(?:\d){9,10}$"
+
+                    title="vui lòng nhập email hợp lệ"
+                    required
+                    style={{ flex: 1 }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
+                <div className="customInput">
+                  <label>
+                    Tỉnh/ Thành phố<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                  </label>
+                  <select
+                    value={selectedProvince}
+                    id="selectedProvince"
+                    onChange={handleProvinceChange}
+                    required
+                    style={{ flex: 1 }}
+                    className="inputLabel"
+                  >
+                    <option disabled value="">
+                      Tỉnh/ Thành phố
+                    </option>
+                    {provinces.map((province) => (
+                      <option key={province.code} value={province.code}>
+                        {province.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="customInput">
+                  <label>
+                    Quận/ Huyện<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                  </label>
+                  <select
+                    value={selectedDistrict}
+                    id="selectedDistrict"
+                    className="inputLabel"
+                    onChange={handleDistrictChange}
+                    required
+                    style={{ flex: 1 }}
+                  >
+                    <option disabled value="">
+                      Quận/ Huyện
+                    </option>
+                    {districts.map((district) => (
+                      <option key={district.code} value={district.code}>
+                        {district.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="customInput">
+                  <label>
+                    Phường/ Xã/ Thị trấn<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                  </label>
+                  <select
+                    value={selectedWard}
+                    id="selectedWard"
+                    onChange={handleWardChange}
+                    required
+                    style={{ flex: 1 }}
+                    className="inputLabel"
+                  >
+                    <option disabled value="">
+                      Phường/ Xã/ Thị trấn
+                    </option>
+                    {wards.map((ward) => (
+                      <option key={ward.code} value={ward.code}>
+                        {ward.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="customInput">
+                <label>
+                  Địa chỉ<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                </label>
+                <input
+                  className="inputLabel"
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Điền rõ thông tin số nhà, tên đường"
+                  required
+                />
+              </div>
+              <div className="customInput">
+                <label>Ghi chú</label>
+                <textarea
+                  className="textarea"
+                  rows={3}
+                  value={billNote}
+                  onChange={(e) => setBillNote(e.target.value)}
+                  placeholder="Ghi chú của khách hàng"
+                />
+              </div>
+
+              <br></br>
+              <button>Xác nhận địa chỉ</button>
+            </div>
+          )}
+
+          <br></br>
+
+          <div>
+            <div className="titleNhanHang">
+              <h1>Địa chỉ</h1>
+            </div>
+            <hr></hr>
+            {displayAddress && (
+              <div>
+                <div className="voucher">
+                  <h4>Thông tin nhận hàng:</h4>
+                  <p>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Người nhận:</span>{' '}
+                    {submittedData?.fullName || ''}
+                  </p>
+                  <p>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Số điện thoại:</span>{' '}
+                    {submittedData?.phoneNumber || ''}
+                  </p>
+                  <p>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ:</span>{' '}
+                    {submittedData?.fullAddress || ''}
+                  </p>
+                  <p>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Email:</span> {submittedData?.email || ''}
+                  </p>
+                  <p>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Ghi Chú:</span>{' '}
+                    {submittedData?.billNote || ''}
+                  </p>
+                </div>
+                <br></br>
+                <button
+                  onClick={() => {
+                    setDisplayAddress(false);
+                    setDisplayOrder(true);
+                  }}
+                >
+                  Tiếp tục
+                </button>
+              </div>
+            )}
+          </div>
+
+          <br></br>
+          {true && (
+            <div>
+              <div className="titleNhanHang">
+                <h1>Đơn hàng</h1>
+              </div>
+              <br />
+              {displayOrder && (
+                <div>
+                  {cartItems.map((item, index) => (
+                    <div className={item} key={index}>
+                      {/* Render each item as needed */}
+                      <div className="avatar">
+                        <img src={item.image} className="image" alt={item.productName} />
+                        <div className="info">
+                          <div className="productTitle">{item.productName}</div>
+                          <div className="titleChild">
+                            <i>{`Color: ${item.colorName}`}</i>
+                            <br />
+                            <i> {`Material: ${item.materialName}`}</i>
+                          </div>
+                          <div className="number">{`Quantity: ${item.quantity}`}</div>
+                          <span className="price_sale">
+                            Price:{' '}
+                            <ins>
+                              <span className="price">{VNDFormaterFunc(item.retailPrice)}</span>
+                            </ins>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  <div></div>
+
+                  <div className="pay">
+                    <h3>Phương thức thanh toán:</h3>
+                    <br></br>
+                    <label className="labelCK">
+                      <input className="inputCk" name="radioPay" checked type="radio" value={''} />
+                      Thanh toán khi nhận hàng
+                    </label>
+                    <br></br>
+                    <label className="labelCK">
+                      <input className="inputCk" name="radioPay" type="radio" value={''} />
+                      Chuyển khoản ngân hàng
+                    </label>
+                    <br></br>
+
+                    <label className="labelCK">
+                      <input className="inputCk" name="radioPay" type="radio" value={''} />
+                      Ví điện tử
+                    </label>
+                  </div>
+                  <br></br>
+                  <div className="totalCheckout">
+                    <br />
+                    <h4>
+                      Tổng thanh toán: <span style={{ color: 'red' }}> {location?.state?.totalPrice || 0}</span>
+                    </h4>
+                    <br />
+                  </div>
+                  <br />
+
+                  <br></br>
+                  <div>
+                    {loadingPayment ? (
+                      <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                        <BeatLoader color="#d64336" loading={true} size={50} />
+                        <p>Vui lòng chờ...</p>
+                      </div>
+                    ) : (
+                      <button className="checkOut" onClick={handleConfirmation}>
+                        Đặt Hàng
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </form>
       )}
 
-      {!showAddressForm && confirmedAddress && (
+      {orderSuccess && (
         <Result
           status="success"
           title="Bạn đã đặt hàng thành công. Chúc bạn 1 ngày tốt lành"
-          subTitle={submittedData.fullAddress} // Giả sử submittedData chứa thông tin fullAddress
+          subTitle={submittedData?.fullAddress} // Giả sử submittedData chứa thông tin fullAddress
           extra={[
             <h3 key="continuePayment">
               <Link className="btn btn-primary" to={'/'}>

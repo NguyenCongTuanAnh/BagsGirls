@@ -18,11 +18,11 @@
     input[type='number'],
     input[type='email'],
     select {
-      margin-bottom: 35px;
-      padding: 10px;
+      margin-bottom: 20px;
+      padding: 8px;
       border-radius: 4px;
       border: 1px solid #ccc;
-      border-radius: 32px;
+      border-radius: 6px;
 
       font-size: 16px;
     }
@@ -46,9 +46,7 @@
       }
     }
   }
-  .inputLabel {
-    border-radius: 32px;
-  }
+
   .titleNhanHang {
     position: relative;
   }
@@ -190,8 +188,9 @@
   background-color: white;
 }
 .textarea {
-  padding-top: 10px;
-  font-size: 20px;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 .updateThongTin:hover {
   cursor: pointer;
@@ -201,4 +200,22 @@
   color: black;
   border: 1px black solid;
   padding: 0 10px;
+}
+.changleAddress {
+  cursor: pointer;
+  background-color: #ff5733;
+  border-radius: 15px;
+  height: 30px;
+  width: 102px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.customInput {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
 }
