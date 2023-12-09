@@ -11,7 +11,6 @@ const clearAuthToken = () => {
 };
 const validateToken = async (token) => {
   const response = await AuthAPI.validateToken(token);
-  console.log(JSON.stringify(response.data));
   return JSON.stringify(response.data);
 };
 const StaffAuth = ({ children }) => {
@@ -20,11 +19,7 @@ const StaffAuth = ({ children }) => {
   const userInfo = JSON.parse(localStorage.getItem('staffTokenString'));
   const staffId = localStorage.getItem('staffId');
   const staffToken = localStorage.getItem('staffToken');
-  console.log('====================================');
-  console.log(userInfo);
-  console.log(staffId);
-  console.log(staffToken);
-  console.log('====================================');
+
   const navigate = useNavigate();
   const validateToken = async (token) => {
     const response = await AuthAPI.validateToken(token);

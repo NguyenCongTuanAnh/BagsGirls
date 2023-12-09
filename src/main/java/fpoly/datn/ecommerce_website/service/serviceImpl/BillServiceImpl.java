@@ -1,10 +1,7 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
 import fpoly.datn.ecommerce_website.dto.BillsDTO;
-import fpoly.datn.ecommerce_website.dto.BillsQDTO;
-import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.entity.Bills;
-import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.repository.IBillRepository;
 import fpoly.datn.ecommerce_website.service.IBillService;
 import org.modelmapper.ModelMapper;
@@ -14,11 +11,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 public class BillServiceImpl implements IBillService {
@@ -123,5 +121,27 @@ public class BillServiceImpl implements IBillService {
             return true;
         }
         return false;
+    }
+
+        @Override
+        public BigDecimal calculateTotalSalesByTimePeriod(Date startDate, Date endDate) {
+            List<Bills> bills = this.iBillRepository.findByBillCreateDateBetween(startDate, endDate);
+            BigDecimal totalSales = bills.stream()
+                    .map(Bills::getBillTotalPrice)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            return totalSales;
+        }
+    @Override
+    public Map<LocalDate, BigDecimal> getSalesForLast30Days() {
+        Map<LocalDate, BigDecimal> salesByDay = new LinkedHashMap<>();
+        LocalDate currentDate = LocalDate.now();
+        LocalDate startDate = currentDate.minusDays(30);
+
+        while (!currentDate.isBefore(startDate)) {
+            BigDecimal totalSales = iBillRepository.calculateTotalSalesForDate(currentDate);
+            salesByDay.put(currentDate, totalSales);
+            currentDate = currentDate.minusDays(1);
+        }
+        return salesByDay;
     }
 }

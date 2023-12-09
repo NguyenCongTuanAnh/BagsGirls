@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -130,29 +131,10 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             @Param("search") String search,
             Pageable pageable);
 
-//    @Query("SELECT DISTINCT new com.fpoly.ooc.responce.bill.BillManagementResponse(b.id, b.billCode, COUNT(bd.id)," +
-//            "   b.price, dn.name, dn.phoneNumber, b.createdAt, b.billType, b.symbol, b.status, dn.shipPrice," +
-//            "   b.priceReduce, b.createdBy, a.fullName, a.numberPhone) " +
-//            "FROM Bill b LEFT JOIN Account a ON a.username = b.account.username " +
-//            "   LEFT JOIN BillDetails bd ON b.id = bd.bills.billId " +
-//            "   LEFT JOIN DeliveryNote dn ON dn.bill.id = b.id " +
-//            "WHERE (b.billCode like %:billCode% OR :billCode IS NULL) " +
-//            "   AND (b.createdAt >= :startDate OR :startDate IS NULL) " +
-//            "   AND (b.createdAt <= :endDate OR :endDate IS NULL) " +
-//            "   AND (:status IS NULL OR b.status LIKE :status) " +
-//            "   AND (:createdBy IS NULL OR b.createdBy LIKE :createdBy AND b.status not like 'Cancel') " +
-//            "GROUP BY b.id, b.billCode, b.price, b.createdAt, b.billType, b.status, " +
-//            "    b.symbol, dn.shipPrice, b.priceReduce, dn.name, dn.phoneNumber, b.createdBy, " +
-//            "    a.fullName, a.numberPhone " +
-//            "   having (:symbol IS NULL OR (b.symbol like :symbol and b.status not like 'Cancel' " +
-//            "       AND (:count IS NULL OR COUNT(tl.id) = :count))) " +
-//            "ORDER BY b.createdAt DESC ")
-//    List<BillsQDTO> getAllBillManagement(
-//            @Param("billCode") String billCode,
-//            @Param("startDate") LocalDateTime startDate,
-//            @Param("endDate") LocalDateTime endDate,
-//            @Param("status") String status,
-//            @Param("symbol") String symbol,
-//            @Param("count") Integer count,
-//            @Param("createdBy") String createdBy);
+
+    List<Bills> findByBillCreateDateBetween(Date startDate, Date endDate);
+
+    @Query("SELECT COALESCE(SUM(b.billTotalPrice), 0) FROM Bills b WHERE CAST(b.billCreateDate AS date) = CAST(:date AS date)")
+    BigDecimal calculateTotalSalesForDate(@Param("date") LocalDate date);
+
 }

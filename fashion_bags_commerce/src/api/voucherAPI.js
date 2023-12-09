@@ -38,6 +38,14 @@ const voucherAPI = {
       },
     });
   },
+  updateAmountBeforeAplied(voucherId, amount) {
+    const url = `api/voucher/update-amount?voucherId=${voucherId}&amount=${amount}`;
+    return axiosClient.put(url, null, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
   delete(id) {
     const url = `api/voucher?id=${id}`;
     return axiosClient.delete(url);

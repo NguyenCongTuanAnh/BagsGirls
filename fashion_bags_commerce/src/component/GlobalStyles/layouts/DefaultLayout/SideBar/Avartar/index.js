@@ -1,8 +1,11 @@
 import { Card } from 'antd';
 import Meta from 'antd/es/card/Meta';
+import { useState } from 'react';
 function Avartar() {
+  const [staff, setStaff] = useState(JSON.parse(atob(localStorage.getItem('customerTokenStringDecode'))));
+
   return (
-    <div style={{ padding: '0px 0px 50px 0px' }}>
+    <div style={{ padding: '0px 0px 60px 0px' }}>
       <br />
 
       <Card
@@ -23,7 +26,7 @@ function Avartar() {
           />
         }
       >
-        <Meta title="Fashions Bags Shop" description="" />
+        <Meta title="Fashions Bags Shop" description={staff ? staff.users.fullName : ''} />
       </Card>
     </div>
   );

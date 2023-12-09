@@ -6,9 +6,12 @@ import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.entity.Customers;
 import org.springframework.data.domain.Page;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 public interface IBillService {
@@ -30,4 +33,8 @@ public interface IBillService {
     BillsDTO update(BillsDTO billsDTO);
 
     Boolean delete(String id);
+
+    BigDecimal calculateTotalSalesByTimePeriod(Date startDate, Date endDate);
+
+    Map<LocalDate, BigDecimal> getSalesForLast30Days();
 }

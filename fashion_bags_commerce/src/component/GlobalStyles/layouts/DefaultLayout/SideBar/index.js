@@ -163,8 +163,7 @@ const items = [
       Thống kê
     </Link>,
     'sub9',
-    <BarChartOutlined style={{ fontSize: '23px' }} />
-
+    <BarChartOutlined style={{ fontSize: '23px' }} />,
   ),
   getItem('Giao Ca', 'sub10', <ContactsOutlined style={{ fontSize: '23px' }} />, [
     getItem(
@@ -177,7 +176,6 @@ const items = [
     getItem('Option 11', '36'),
     getItem('Option 12', '37'),
   ]),
-
 ];
 const rootSubmenuKeys = ['sub1', 'sub2', 'sub4', 'sub5', 'sub6', 'sub7', 'sub8', 'sub9', 'sub10', 'sub11', 'sub999'];
 function Sidebar(props) {
@@ -193,11 +191,11 @@ function Sidebar(props) {
   };
 
   return (
-    <div className={style.sidebar} style={{ height: '100vh' }}>
+    <div className={style.sidebar} style={{ height: '100vh', borderRadius: '50px' }}>
       <div style={{ padding: ' 0px 30px' }}>
         <Avartar />
-        <hr />
       </div>
+      <hr />
       <Menu
         className={style.menuCustom}
         mode="inline"
