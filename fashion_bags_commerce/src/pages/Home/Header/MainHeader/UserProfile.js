@@ -18,10 +18,9 @@ function UserProfile(props) {
     changeLoggedIn();
   };
 
-  // Trích xuất fullName từ location.state
-  const fullName = (location?.state && location?.state?.fullName) || '';
-  localStorage.setItem('fullName', fullName);
-  const storedFullName = localStorage.getItem('fullName') || '';
+  const customerTokenStrin = localStorage.getItem('customerTokenString');
+  const customerData = JSON.parse(customerTokenStrin);
+  const fullName = customerData?.users?.fullName || '';
 
   const PopupProContent = (
     <Card
@@ -36,8 +35,6 @@ function UserProfile(props) {
                 customerId: customerId,
                 customerTokenString: customerTokenString,
                 customerToken: customerToken,
-                fullName: fullName,
-                storedFullName: storedFullName,
               },
             });
           }}
@@ -56,7 +53,7 @@ function UserProfile(props) {
             alt="User Avatar"
           />
         }
-        title={`Xin chào, ${storedFullName}`}
+        title={`Xin chào, ${fullName}`}
         description="Chúc bạn 1 ngày tốt lành"
       />
     </Card>

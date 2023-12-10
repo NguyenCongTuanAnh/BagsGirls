@@ -42,7 +42,6 @@ function MainHeader() {
     localStorage.removeItem('customerId');
     localStorage.removeItem('customerToken');
     localStorage.removeItem('temporaryCart');
-    localStorage.removeItem('fullName');
     navigate('/')
     messageApi.open({
       type: 'success',
