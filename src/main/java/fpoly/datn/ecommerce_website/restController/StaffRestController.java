@@ -54,8 +54,11 @@ public class StaffRestController {
     public ResponseEntity<?> getAll(
             @RequestParam(name = "search", defaultValue = "") String search,
             @RequestParam(name = "page", defaultValue = "0") int pageNum,
-            @RequestParam(name = "size", defaultValue = "10") int pageSize) {
-        Page<Staffs> staffPage = staffService.findAllPage(search, pageNum, pageSize);
+            @RequestParam(name = "size", defaultValue = "10") int pageSize,
+            @RequestParam(name = "status", required = false) Integer status,
+            @RequestParam(name = "role", required = false) String role
+    ) {
+        Page<Staffs> staffPage = staffService.findAllPage(search, status, role, pageNum, pageSize);
         return new ResponseEntity<>(staffPage, HttpStatus.OK);
     }
 

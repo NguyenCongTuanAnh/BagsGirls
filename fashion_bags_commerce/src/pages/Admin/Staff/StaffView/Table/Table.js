@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { Button, Pagination, Popconfirm, Space, Spin, Table, notification } from 'antd';
+import { Button, Col, Pagination, Popconfirm, Row, Space, Spin, Table, notification } from 'antd';
 import staffAPI from '~/api/staffAPI';
 import { DeleteOutlined, ReloadOutlined, SyncOutlined } from '@ant-design/icons';
 import styles from './index.module.scss';
@@ -195,7 +195,18 @@ const TableContent = () => {
 
   return (
     <div>
-      <SearchForm onSubmit={handleSearchChange} />
+      <Row>
+        <Col span={6}>
+
+        </Col>
+        <Col span={6}>
+          
+        </Col>
+        <Col span={12}>
+          <SearchForm onSubmit={handleSearchChange} />
+        </Col>
+      </Row>
+
       <FormStaffCreate reload={() => setLoading(true)} />
       <Button icon={<ReloadOutlined />} onClick={() => setLoading(true)} style={{ marginLeft: '10px' }} loading={loading}></Button>
 
