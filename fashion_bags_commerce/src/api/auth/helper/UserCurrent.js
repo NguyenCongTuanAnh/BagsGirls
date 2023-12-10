@@ -1,5 +1,7 @@
 import { jwtDecode } from 'jwt-decode';
-
+import { useNavigate } from 'react-router-dom';
+import Constants from '~/Utilities/Constants';
+const CryptoJS = require('crypto-js');
 export const getUserToken = () => {
   const userToken = JSON.parse(localStorage.getItem('usersTokenString'));
   console.log(userToken);
@@ -31,4 +33,18 @@ export const getStaffDetailUser = () => {
 export const getCustomerDetailUser = () => {
   const token = getCustomerToken();
   return token ? jwtDecode(token) : null;
+};
+export const getCustomer = () => {
+  const customerString = CryptoJS.AES.decrypt(localStorage.getItem('customerDecodeString'), Constants.key).toString(
+    CryptoJS.enc.Utf8,
+  );
+  return customerString ? JSON.parse(customerString) : null;
+};
+
+export const getStaff = () => {
+  const staffString = CryptoJS.AES.decrypt(localStorage.getItem('staffDecodeString'), Constants.key).toString(
+    CryptoJS.enc.Utf8,
+  );
+  console.log(staffString);
+  return staffString ? JSON.parse(staffString) : null;
 };

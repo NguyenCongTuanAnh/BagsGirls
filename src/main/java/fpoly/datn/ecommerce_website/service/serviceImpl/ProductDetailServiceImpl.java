@@ -2,7 +2,6 @@ package fpoly.datn.ecommerce_website.service.serviceImpl;
 
 import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
-import fpoly.datn.ecommerce_website.entity.Products;
 import fpoly.datn.ecommerce_website.infrastructure.constant.Message;
 import fpoly.datn.ecommerce_website.infrastructure.exception.rest.RestApiException;
 import fpoly.datn.ecommerce_website.repository.IProductDetailRepository;
@@ -105,6 +104,15 @@ public class ProductDetailServiceImpl implements IProductDetalisService {
     @Override
     public List<ProductDetails> findAllByProductCode(String productCode) {
         return this.iProductDetailRepository.findAllByProductCode(productCode);
+    }
+    @Override
+    public ProductDetailDTO updateStatus(String productDetailsID, int status) {
+        Optional<ProductDetails> productDetails = iProductDetailRepository.findById(productDetailsID);
+        System.out.println("productDetails");
+        System.out.println(productDetails);
+        productDetails.get().setProductDetailStatus(status);
+
+        return modelMapper.map(this.iProductDetailRepository.save(productDetails.get()), ProductDetailDTO.class);
     }
 
     public List<ProductDetails> findAllByProductId(String productId) {

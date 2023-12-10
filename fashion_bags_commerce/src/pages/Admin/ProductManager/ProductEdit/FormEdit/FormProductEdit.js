@@ -264,7 +264,7 @@ function FormProductEdit(props) {
       var isDone = true;
       for (const e of selectedRowKeys) {
         try {
-          const response = await productDetailsAPI.delete(e);
+          const response = await productDetailsAPI.updateStatus(e, -1);
           if (response.status !== 200) {
             isDone = false;
           }
@@ -457,7 +457,7 @@ function FormProductEdit(props) {
         }}
       >
         <Button type="primary" loading={false} disabled={selectedRowKeys.length === 0}>
-          Xóa Balo Chi tiết
+          Hủy Hoạt động
         </Button>
       </Popconfirm>
     </div>

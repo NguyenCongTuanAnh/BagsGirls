@@ -82,6 +82,10 @@ const productDetailsAPI = {
     const url = `api/product-details?id=${data.id}`;
     return axiosClient.put(url, data);
   },
+  updateStatus(productDetailId, status) {
+    const url = `api/product-details/update-status?productDetailId=${productDetailId}&status=${status}`;
+    return axiosClient.put(url);
+  },
   delete(productDetailId) {
     const url = `api/product-details?productDetailId=${productDetailId}`;
     return axiosClient.delete(url);

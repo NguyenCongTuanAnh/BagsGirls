@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { getStaffToken, getCustomerToken } from './auth/helper/UserCurrent';
-
+import { getCustomerToken } from './auth/helper/UserCurrent';
 const axiosCustomerAuth = axios.create({
   baseURL: 'http://localhost:8080/',
   headers: {

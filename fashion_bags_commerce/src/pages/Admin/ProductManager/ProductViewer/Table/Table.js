@@ -493,11 +493,11 @@ function TableContent() {
         <Form form={form}>
           <Row>
             <Col span={6}>
-              <Form.Item label="Mã Balo" name={'productCode'}>
+              <Form.Item label="Mã Balo" name="productCode">
                 <Input
                   size="large"
                   onChange={(e) => {
-                    productNameTemp = e.target.value;
+                    productCodeTemp = e.target.value;
                   }}
                   value={productCode}
                 ></Input>
