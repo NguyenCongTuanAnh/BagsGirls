@@ -299,7 +299,20 @@ function AddressCustomer() {
               setDisplayInfoAddress(true);
             }}
           >
-            <button onClick={handleConfirmation}>Cập nhật</button>
+            <span>
+              <button className="changleAddress" onClick={handleConfirmation}>
+                Cập nhật
+              </button>
+              <div
+                className="changleAddress"
+                onClick={() => {
+                  setDisplayInfoAddress(true);
+                  setDisplayUpdateAddress(false);
+                }}
+              >
+                Quay lại
+              </div>
+            </span>
           </div>
         </div>
       )}

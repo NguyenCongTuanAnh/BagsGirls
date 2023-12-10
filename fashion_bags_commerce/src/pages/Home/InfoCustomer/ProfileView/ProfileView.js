@@ -8,6 +8,9 @@ function ProfileView() {
   const location = useLocation();
   const { TabPane } = Tabs;
 
+  const [customer, setCutomer] = useState(JSON.parse(localStorage.getItem('customerTokenString')));
+
+  // console.log(("thong tin khach hang",customer));
   const [displayTapTop, setDisplayTapTop] = useState(true);
 
   const handleTabClick = (key) => {
@@ -67,7 +70,7 @@ function ProfileView() {
                 }
                 key="2"
               >
-                <AddressCustomer/>
+                <AddressCustomer />
               </TabPane>
               <TabPane
                 tab={
