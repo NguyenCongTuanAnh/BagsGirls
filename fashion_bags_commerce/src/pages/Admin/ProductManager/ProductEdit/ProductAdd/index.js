@@ -40,11 +40,11 @@ function ProductAdd() {
         <Sider width={260} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
           <Sidebar keyIndex="10" openKey="sub999" />
         </Sider>
-        <Layout className={layoutContent}>
-          <Header className={headerStyle}>
+        <Layout className="layoutContent">
+          <Header className="headerStyle">
             <HeaderContent titlePage="Thêm Sản Phẩm Chi Tiết" />
           </Header>
-          <Content style={contentStyle}>
+          <Content className="contentStyle">
             <div>
               <ProductAddForm />
             </div>

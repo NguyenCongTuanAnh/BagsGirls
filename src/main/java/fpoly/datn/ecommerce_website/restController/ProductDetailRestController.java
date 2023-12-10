@@ -119,12 +119,13 @@ public class ProductDetailRestController {
     }
 
 //    //update
-//    @RequestMapping(value = "/product-details", method = RequestMethod.PUT)
-//    public ResponseEntity<?> update(@Valid @RequestBody Product_ProductDetailDTO balo_baloDetailDTO) {
-//        return new ResponseEntity<>(
-//                productDetailService.save(modelMapper.map(balo_baloDetailDTO, ProductDetails.class))
-//                , HttpStatus.OK);
-//    }
+    @RequestMapping(value = "/product-details/update-status", method = RequestMethod.PUT)
+    public ResponseEntity<?> update(@RequestParam String productDetailId, @RequestParam int status) {
+        return new ResponseEntity<>(
+                productDetailService.updateStatus(productDetailId, status)
+                , HttpStatus.OK);
+    }
+
 //
 //    //delete
     @RequestMapping(value = "/product-details", method = RequestMethod.DELETE)

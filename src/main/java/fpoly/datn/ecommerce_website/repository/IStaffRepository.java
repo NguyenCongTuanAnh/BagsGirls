@@ -19,9 +19,14 @@ public interface IStaffRepository extends JpaRepository<Staffs, String> {
             " or c.users.phoneNumber like %:search% " +
             " or c.users.email like %:search% " +
             " OR c.staffCode like %:search% " +
-            " or :search IS NULL ) "
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR c.staffStatus = :status ) " +
+//            " AND ( :gender IS NULL OR c.users.gender = :gender ) " +
+            " AND ( :role IS NULL OR c.users.role = :role ) "
     )
     Page<Staffs> getAllPage(@Param("search")  String search,
+                            @Param ("status") Integer status,
+                               @Param ("role") String role,
                                Pageable pageable);
 
 //    @Query(value = " SELECT c FROM Staffs c " +

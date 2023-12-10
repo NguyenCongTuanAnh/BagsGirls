@@ -1,7 +1,6 @@
-import { Button, Card, Image, Modal, Statistic, Typography } from 'antd';
+import { Button, Card, DatePicker, Image, Modal, Statistic, Typography } from 'antd';
 import { Fragment, useEffect, useState } from 'react';
 import styles from './index.module.scss';
-import weatherAPI from '~/api/UtilitiesAPI';
 import Meta from 'antd/es/card/Meta';
 function AdminComponent() {
   const [currentTime, setCurrentTime] = useState(new Date());

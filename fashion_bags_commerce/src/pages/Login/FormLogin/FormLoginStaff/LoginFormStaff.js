@@ -10,6 +10,8 @@ import axios from 'axios';
 import AuthAPI from '~/api/auth/AuthAPI';
 import customerAPI from '~/api/customerAPI';
 import staffAPI from '~/api/staffAPI';
+import Constants from '~/Utilities/Constants';
+const CryptoJS = require('crypto-js');
 function LoginFormStaff(props) {
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
@@ -35,12 +37,12 @@ function LoginFormStaff(props) {
         localStorage.setItem('customerToken', response.data.data.token);
         localStorage.setItem('customerId', customer.data.customerId);
         const userToken = await AuthAPI.getCustomerToken();
-        console.log('====================================');
-        console.log('kh');
-        console.log(userToken);
-        console.log('====================================');
-        localStorage.setItem('customerTokenString', JSON.stringify(userToken.data));
-        localStorage.setItem('customerTokenStringDecode', JSON.stringify(btoa(userToken.data)));
+
+        const userString = JSON.stringify(userToken.data);
+
+        const customerTokenStringDecode = CryptoJS.AES.encrypt(userString, Constants.key).toString();
+        localStorage.setItem('customerDecodeString', customerTokenStringDecode);
+        console.log(customerTokenStringDecode);
         notification.success({
           message: 'Đăng nhập thành công!!!',
           description: `Welcome back to ${response.data.data.users.fullName}`,
@@ -55,9 +57,10 @@ function LoginFormStaff(props) {
         localStorage.setItem('staffId', staff.data.staffId);
         const userToken = await AuthAPI.getStaffToken();
         const userString = JSON.stringify(userToken.data);
-        const decodeUserString = btoa(userString);
-        localStorage.setItem('staffTokenString', userString);
-        localStorage.setItem('staffTokenStringDecode', decodeUserString);
+
+        const staffTokenStringDecode = CryptoJS.AES.encrypt(userString, Constants.key).toString();
+        localStorage.setItem('staffDecodeString', staffTokenStringDecode);
+        console.log(staffTokenStringDecode);
         notification.success({
           message: 'Đăng nhập thành công!!!',
           description: `Welcome back to ${response.data.data.users.fullName}`,

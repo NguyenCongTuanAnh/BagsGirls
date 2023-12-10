@@ -94,12 +94,6 @@ const FormStaffCreate = (props) => {
                       if (value && value.trim() !== value) {
                         return Promise.reject('Tên không được chứa khoảng trắng ở hai đầu!');
                       }
-                      //  else if (value) {
-                      //   return Promise.reject('');
-                      // }
-                      // else if (true) {
-                      //   return Promise.reject('Vui lòng điền họ và tên!');
-                      // }
                       return Promise.resolve();
                     },
                   },

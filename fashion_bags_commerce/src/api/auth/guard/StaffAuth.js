@@ -1,5 +1,5 @@
 import { useLocation, Navigate, Outlet, Route, useNavigate } from 'react-router-dom';
-import { getStaffToken, getUserToken } from '../helper/UserCurrent';
+import { getStaff, getStaffToken, getUserToken } from '../helper/UserCurrent';
 import { useEffect, useState } from 'react';
 import AuthAPI from '../AuthAPI';
 import { notification } from 'antd';
@@ -16,7 +16,7 @@ const validateToken = async (token) => {
 const StaffAuth = ({ children }) => {
   const [accessChecked, setAccessChecked] = useState(false);
   const token = getStaffToken();
-  const userInfo = JSON.parse(localStorage.getItem('staffTokenString'));
+  const userInfo = getStaff();
   const staffId = localStorage.getItem('staffId');
   const staffToken = localStorage.getItem('staffToken');
 

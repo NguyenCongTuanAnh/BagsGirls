@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { EditOutlined, EllipsisOutlined, LogoutOutlined, SettingOutlined } from '@ant-design/icons';
 import { Avatar, Badge, Button, Card, Popconfirm, Popover, message } from 'antd';
 import { Navigate, useNavigate } from 'react-router-dom';
+import Constants from '~/Utilities/Constants';
+import { getStaff } from '~/api/auth/helper/UserCurrent';
 const { Meta } = Card;
+const CryptoJS = require('crypto-js');
 
 function PopupProfile() {
   const [messageApi, contextHolder] = message.useMessage();
-  const [staff, setStaff] = useState(JSON.parse(atob(localStorage.getItem('staffTokenStringDecode'))));
+
+  const [staff, setStaff] = useState(getStaff());
   console.log(staff);
   const key = 'updatable';
   const navigate = useNavigate();
