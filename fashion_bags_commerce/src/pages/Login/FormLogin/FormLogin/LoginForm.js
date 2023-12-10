@@ -10,6 +10,8 @@ import axios from 'axios';
 import AuthAPI from '~/api/auth/AuthAPI';
 import customerAPI from '~/api/customerAPI';
 import staffAPI from '~/api/staffAPI';
+import Constants from '~/Utilities/Constants';
+const CryptoJS = require('crypto-js');
 function LoginForm(props) {
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
@@ -39,8 +41,11 @@ function LoginForm(props) {
         console.log('kh');
         console.log(userToken);
         console.log('====================================');
-        localStorage.setItem('customerTokenString', JSON.stringify(userToken.data));
-        localStorage.setItem('customerTokenStringDecode', JSON.stringify(btoa(userToken.data)));
+        const userString = JSON.stringify(userToken.data);
+
+        const customerTokenStringDecode = CryptoJS.AES.encrypt(userString, Constants.key).toString();
+        localStorage.setItem('customerDecodeString', customerTokenStringDecode);
+        console.log(customerTokenStringDecode);
         notification.success({
           message: 'Đăng nhập thành công!!!',
           description: `Welcome back to ${response.data.data.users.fullName}`,
@@ -58,9 +63,11 @@ function LoginForm(props) {
         localStorage.setItem('staffToken', response.data.data.token);
         localStorage.setItem('staffId', staff.data.staffId);
         const userToken = await AuthAPI.getStaffToken('ROLE_STAFF');
-        localStorage.setItem('staffTokenString', JSON.stringify(userToken.data));
-        const decodeUserString = btoa(userToken.data);
-        localStorage.setItem('staffTokenStringDecode', decodeUserString);
+        const userString = JSON.stringify(userToken.data);
+
+        const staffTokenStringDecode = CryptoJS.AES.encrypt(userString, Constants.key).toString();
+        localStorage.setItem('staffDecodeString', staffTokenStringDecode);
+        console.log(staffTokenStringDecode);
 
         notification.success({
           message: 'Đăng nhập thành công!!!',

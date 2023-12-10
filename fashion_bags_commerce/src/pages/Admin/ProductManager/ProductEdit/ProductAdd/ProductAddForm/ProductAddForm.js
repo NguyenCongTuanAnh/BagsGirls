@@ -602,7 +602,7 @@ function ProductAddForm() {
   };
 
   return (
-    <div className="contentStyle1">
+    <div className="contentStyle222">
       {contextHolder}
       <div>
         <BaloDetailsPreview

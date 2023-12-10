@@ -36,6 +36,8 @@ public interface IProductDetalisService {
 
     List<ProductDetails> findAllByProductCode(String baloID);
 
+    ProductDetailDTO updateStatus(String productDetailsID, int status);
+
     ProductDetails findById(String id);
 
     ProductDetailDTO save(ProductDetailDTO entity);

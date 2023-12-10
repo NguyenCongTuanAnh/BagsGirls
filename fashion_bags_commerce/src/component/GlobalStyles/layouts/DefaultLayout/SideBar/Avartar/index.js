@@ -1,9 +1,11 @@
 import { Card } from 'antd';
 import Meta from 'antd/es/card/Meta';
 import { useState } from 'react';
+import Constants from '~/Utilities/Constants';
+import { getStaff } from '~/api/auth/helper/UserCurrent';
+const CryptoJS = require('crypto-js');
 function Avartar() {
-  console.log(atob(localStorage.getItem('staffTokenStringDecode')));
-  const [staff, setStaff] = useState(JSON.parse(atob(localStorage.getItem('staffTokenStringDecode'))));
+  const [staff, setStaff] = useState(getStaff());
 
   return (
     <div style={{ padding: '0px 0px 60px 0px' }}>
