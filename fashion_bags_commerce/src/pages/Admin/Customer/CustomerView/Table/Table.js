@@ -153,11 +153,11 @@ const TableContent = () => {
             statusClass = 'active-status';
             break;
           case -1:
-            statusText = 'Ngừng hoạt động';
+            statusText = 'Không hoạt động';
             statusClass = 'inactive-status';
             break;
           default:
-            statusText = 'Không hoạt động';
+            statusText = 'Null';
             statusClass = 'inactive-status';
         }
 
