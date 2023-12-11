@@ -2,6 +2,8 @@ package fpoly.datn.ecommerce_website.repository;
 
 import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Users;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Ranking;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Role;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,15 +19,23 @@ import java.util.List;
         @Query(value = "SELECT c FROM  Customers  c")
         Page<Customers> findAllCustomersWithUsersRoles(Pageable pageable);
 
-    @Query (value = "SELECT c FROM Customers c join Users i on c.users.userId = i.userId " +
-            "where i.account like %:keyword% " +
-            "or i.address like %:keyword% " +
-            " or i.fullName like %:keyword% " +
+    @Query (value = "SELECT c FROM Customers c  " +
+            "where ( c.users.account like %:keyword% " +
+            "or c.users.address like %:keyword% " +
+            " or c.users.fullName like %:keyword% " +
             " or c.customerCode like %:keyword% " +
-            " or i.email like %:keyword% " +
-            " or i.phoneNumber like %:keyword% "
+            " or c.users.email like %:keyword% " +
+            " or c.users.phoneNumber like %:keyword% ) " +
+            " AND ( :status IS NULL OR c.customerStatus = :status ) " +
+            " AND ( :gender IS NULL OR c.users.gender = :gender ) " +
+            " AND ( :ranking IS NULL OR c.customerRanking = :ranking ) "
             )
-    Page<Customers> findallSearch(@Param("keyword") String keyword, Pageable pageable);
+    Page<Customers> findallSearch(
+            @Param("keyword") String keyword,
+            @Param ("status") Integer status,
+            @Param ("gender") Boolean gender,
+            @Param ("ranking") Ranking ranking,
+            Pageable pageable);
 //    @Query("SELECT c FROM Customers c join Users u on c.users.userId = u.userId " +
 //            "where c.customerId LIKE %:keyword%" +
 //            "or  u.userId LIKE %:keyword%" +

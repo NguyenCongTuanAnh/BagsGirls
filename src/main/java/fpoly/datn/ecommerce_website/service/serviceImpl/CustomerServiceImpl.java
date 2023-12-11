@@ -14,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,6 +34,19 @@ public class CustomerServiceImpl implements ICustomerService {
     @Autowired
     private IUserRepository userInfoRepository;
 
+    private List<Sort.Order> createSortOrder(List<String> sortList, String sortDirection) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        Sort.Direction direction;
+        for (String sort : sortList) {
+            if (sortDirection != null) {
+                direction = Sort.Direction.fromString(sortDirection);
+            } else {
+                direction = Sort.Direction.DESC;
+            }
+            sorts.add(new Sort.Order(direction, sort));
+        }
+        return sorts;
+    }
 
     @Override
     public Page<Customers> findAllCustomersWithUserInfoUserRole(Integer page, Integer size) {
@@ -40,9 +55,9 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
-    public Page<Customers> findAllSearch(String search, Integer page, Integer size){
-        Pageable pageable = PageRequest.of(page, size);
-        return customerRepository.findallSearch(search, pageable);
+    public Page<Customers> findAllSearch(String search, Integer status, Boolean gender, Ranking ranking, Integer page, Integer size, List<String> sortList, String sortOrder){
+        Pageable pageable = PageRequest.of(page, size, Sort.by(createSortOrder(sortList, sortOrder)));
+        return customerRepository.findallSearch(search,status, gender, ranking, pageable);
     }
 
 

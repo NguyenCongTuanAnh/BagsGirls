@@ -10,11 +10,14 @@ const staffAPI = {
       },
     });
   },
-  getAllStaff(search, pageNum, pageSize) {
+  getAllStaffs(search, status, gender, role, pageNum, pageSize) {
     const url = 'api/staff/pagination';
     return axiosClient.get(url, {
       params: {
         search: search,
+        status: status,
+        gender: gender,
+        role: role,
         page: pageNum - 1,
         size: pageSize,
       },

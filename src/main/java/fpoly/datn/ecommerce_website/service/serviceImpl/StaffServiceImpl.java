@@ -4,6 +4,7 @@ import fpoly.datn.ecommerce_website.dto.StaffDTO1;
 import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Staffs;
 import fpoly.datn.ecommerce_website.entity.Users;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Role;
 import fpoly.datn.ecommerce_website.repository.IStaffRepository;
 import fpoly.datn.ecommerce_website.repository.IUserRepository;
 import fpoly.datn.ecommerce_website.service.IStaffService;
@@ -38,9 +39,9 @@ public class StaffServiceImpl implements IStaffService {
     }
 
     @Override
-    public Page<Staffs> findAllPage(String search, Integer status, String role, Integer page, Integer size) {
+    public Page<Staffs> findAllPage(String search, Integer status, Boolean gender, Role role, Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        return staffRepository.getAllPage(search, status, role, pageable);
+        return staffRepository.getAllPage(search, status, gender, role, pageable);
     }
 
 //    @Override

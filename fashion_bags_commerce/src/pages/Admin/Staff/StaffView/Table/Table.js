@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { Button, Col, Pagination, Popconfirm, Row, Space, Spin, Table, notification } from 'antd';
+import { Button, Col, Pagination, Popconfirm, Row, Select, Space, Spin, Table, notification } from 'antd';
 import staffAPI from '~/api/staffAPI';
-import { DeleteOutlined, ReloadOutlined, SyncOutlined } from '@ant-design/icons';
+import { DeleteOutlined, FilterFilled, ReloadOutlined, SyncOutlined } from '@ant-design/icons';
 import styles from './index.module.scss';
 // import FormStaffViewDetails from '../../StaffViewDetails/FormStaffViewDetails';
 import FormStaffEdit from '../../StaffEdit/FormEdit/FormStaffEdit';
@@ -14,6 +14,9 @@ const TableContent = () => {
   const [pagesSize, setPagesSize] = useState(10);
   const [totalItem, setTotalItem] = useState();
   const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('');
+  const [gender, setGender] = useState('');
+  const [role, setRole] = useState('');
 
   const onCancel = () => { };
 
@@ -40,14 +43,15 @@ const TableContent = () => {
 
   useEffect(() => {
     getAll(currentPage, pagesSize);
+    console.log(data);
     setTimeout(() => {
       setLoading(false);
     }, 500);
-  }, [loading, search]);
+  }, [loading, search, status, gender, role]);
 
   const getAll = async (current, pageSize) => {
     try {
-      const response = await staffAPI.getAllStaff(search, current, pageSize);
+      const response = await staffAPI.getAllStaffs(search, status, gender, role, current, pageSize);
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
       setData(data);
@@ -196,13 +200,71 @@ const TableContent = () => {
   return (
     <div>
       <Row>
-        <Col span={6}>
+        <h2 style={{ margin: '15px' }}>
+          <FilterFilled /> Bộ lọc
+        </h2>
+      </Row>
+      <Row style={{ textAlign: 'center' }}>
+        <Col span={5}>
+          <div style={{ marginTop: '15px' }}>
+            <span style={{ marginTop: '20px', fontSize: '20px', fontWeight: 600 }}>
+              Chức vụ
+              <Select
+                bordered={false}
+                style={{ width: '40%', borderBottom: '1px solid #ccc', marginLeft: '10px' }}
+                onChange={(value) => {
+                  setRole(value);
+                }}
+                defaultValue=""
+              >
+                <Select.Option value="">Tất cả</Select.Option>
+                <Select.Option value="ROLE_ADMIN">Admin</Select.Option>
+                <Select.Option value="ROLE_STAFF">Nhân viên</Select.Option>
+              </Select>
+            </span>
+          </div>
+        </Col>
+        <Col span={5}>
+          <div style={{ marginTop: '15px' }}>
+            <span style={{ marginLeft: '10%', marginTop: '20px', fontSize: '20px', fontWeight: 600 }}>
+              Trạng thái
+              <Select
+                bordered={false}
+                style={{ width: '40%', borderBottom: '1px solid #ccc', marginLeft: '10px' }}
+                onChange={(value) => {
+                  setStatus(value);
+                }}
+                defaultValue=""
+              >
+                <Select.Option value="">Tất cả</Select.Option>
+                <Select.Option value="1">Đang làm</Select.Option>
+                <Select.Option value="0">Tạm dừng</Select.Option>
+                <Select.Option value="-1">Nghỉ làm</Select.Option>
+              </Select>
+            </span>
+          </div>
+        </Col>
+        <Col span={5}>
+          <div style={{ marginTop: '15px' }}>
+            <span style={{ marginLeft: '10%', marginTop: '20px', fontSize: '20px', fontWeight: 600 }}>
+              Giới tính
+              <Select
+                bordered={false}
+                style={{ width: '40%', borderBottom: '1px solid #ccc', marginLeft: '10px' }}
+                onChange={(value) => {
+                  setGender(value);
+                }}
+                defaultValue=""
+              >
+                <Select.Option value="">Tất cả</Select.Option>
+                <Select.Option value="true">Nam</Select.Option>
+                <Select.Option value="false">Nữ</Select.Option>
+              </Select>
+            </span>
+          </div>
+        </Col>
 
-        </Col>
-        <Col span={6}>
-          
-        </Col>
-        <Col span={12}>
+        <Col span={9}>
           <SearchForm onSubmit={handleSearchChange} />
         </Col>
       </Row>
