@@ -21,7 +21,9 @@ import java.util.List;
             "where i.account like %:keyword% " +
             "or i.address like %:keyword% " +
             " or i.fullName like %:keyword% " +
-            "or i.phoneNumber like %:keyword%"
+            " or c.customerCode like %:keyword% " +
+            " or i.email like %:keyword% " +
+            " or i.phoneNumber like %:keyword% "
             )
     Page<Customers> findallSearch(@Param("keyword") String keyword, Pageable pageable);
 //    @Query("SELECT c FROM Customers c join Users u on c.users.userId = u.userId " +
