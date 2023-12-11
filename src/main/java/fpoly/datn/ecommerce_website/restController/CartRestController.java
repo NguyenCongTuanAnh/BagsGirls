@@ -52,19 +52,9 @@ public class CartRestController {
 //
     //Add
     @RequestMapping(value = "/cart", method = RequestMethod.POST)
-    public ResponseEntity<String> add(@RequestBody CartDTO cartDTO) {
-        try {
-            Carts savedCart = cartService.save(cartDTO);
-            if (savedCart != null) {
-                return new ResponseEntity<>("Cart added successfully!", HttpStatus.CREATED);
-            } else {
-                return new ResponseEntity<>("Failed to add cart", HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        } catch (Exception ex) {
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<?> add(@RequestBody CartDTO cartDTO) {
+                return new ResponseEntity<>(this.cartService.save(cartDTO), HttpStatus.OK);
     }
-//
     //update
     @RequestMapping(value = "/cart", method = RequestMethod.PUT)
     public ResponseEntity<?> update(@RequestBody @Valid CartDTO cartDTO, @RequestParam String id) {

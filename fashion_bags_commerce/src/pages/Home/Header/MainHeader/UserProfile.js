@@ -2,6 +2,7 @@ import React from 'react';
 import { Avatar, Badge, Button, Card, Popconfirm, Popover } from 'antd';
 import { LogoutOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { getCustomer } from '~/api/auth/helper/UserCurrent';
 
 const { Meta } = Card;
 
@@ -18,9 +19,9 @@ function UserProfile(props) {
     changeLoggedIn();
   };
 
-  const customerTokenStrin = localStorage.getItem('customerTokenString');
-  const customerData = JSON.parse(customerTokenStrin);
-  const fullName = customerData?.users?.fullName || '';
+  const customer = getCustomer();
+
+  console.log(customer);
 
   const PopupProContent = (
     <Card
@@ -32,9 +33,7 @@ function UserProfile(props) {
           onClick={() => {
             navigate('/profile', {
               state: {
-                customerId: customerId,
-                customerTokenString: customerTokenString,
-                customerToken: customerToken,
+                customer: customer
               },
             });
           }}
@@ -53,7 +52,7 @@ function UserProfile(props) {
             alt="User Avatar"
           />
         }
-        title={`Xin chào, ${fullName}`}
+        title={`Xin chào, ${customer.users.fullName}`}
         description="Chúc bạn 1 ngày tốt lành"
       />
     </Card>

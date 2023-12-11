@@ -3,6 +3,7 @@ import customerAPI from '~/api/customerAPI';
 import axios from 'axios';
 import { notification } from 'antd';
 import { faL } from '@fortawesome/free-solid-svg-icons';
+import { getCustomer } from '~/api/auth/helper/UserCurrent';
 
 function AddressCustomer() {
   const [customerInfo, setCustomerInfo] = useState(null);
@@ -17,14 +18,15 @@ function AddressCustomer() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   const [customerData, setCustomerData] = useState({});
-  const customerId = localStorage.getItem('customerId');
   const [displayUpdateAddress, setDisplayUpdateAddress] = useState(false);
   const [displayInfoAddress, setDisplayInfoAddress] = useState(true);
 
+  const customer = getCustomer();
+
+
   useEffect(() => {
-    const customerId = localStorage.getItem('customerId');
     customerAPI
-      .getOne(customerId)
+      .getOne(customer.customerId)
       .then((response) => {
         const data = response.data;
         console.log(data);
@@ -56,13 +58,10 @@ function AddressCustomer() {
     const fullAddress = `${address} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`;
 
     const updateFunction = async () => {
-      const customerId = localStorage.getItem('customerId');
-      const customerTokenString = localStorage.getItem('customerTokenString');
-      const customerData = JSON.parse(customerTokenString);
-      const userId = customerData?.users?.userId || '';
+      const userId = customer?.users?.userId || '';
 
       const update = {
-        customerId: customerId,
+        customerId: customer.customerId,
         users: {
           userId: userId,
           fullName: fullName,

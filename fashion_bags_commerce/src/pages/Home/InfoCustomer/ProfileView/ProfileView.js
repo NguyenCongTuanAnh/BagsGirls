@@ -4,11 +4,13 @@ import { Radio, Space, Tabs } from 'antd';
 import { useLocation } from 'react-router-dom';
 import './profile.css';
 import AddressCustomer from '../FormAddressCustomer/AddressCustomer';
+import { getCustomer } from '~/api/auth/helper/UserCurrent';
 function ProfileView() {
   const location = useLocation();
   const { TabPane } = Tabs;
 
-  const [customer, setCutomer] = useState(JSON.parse(localStorage.getItem('customerTokenString')));
+  // const [customer, setCutomer] = useState(JSON.parse(localStorage.getItem('customerTokenString')));
+  const customer = getCustomer();
 
   // console.log(("thong tin khach hang",customer));
   const [displayTapTop, setDisplayTapTop] = useState(true);
