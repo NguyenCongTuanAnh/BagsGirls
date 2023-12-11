@@ -3,6 +3,7 @@ package fpoly.datn.ecommerce_website.restController;
 import fpoly.datn.ecommerce_website.dto.CustomerDTO;
 import fpoly.datn.ecommerce_website.dto.CustomerDTO1;
 import fpoly.datn.ecommerce_website.entity.Customers;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Ranking;
 import fpoly.datn.ecommerce_website.repository.ICustomerRepository;
 import fpoly.datn.ecommerce_website.service.serviceImpl.CustomerServiceImpl;
 import fpoly.datn.ecommerce_website.service.serviceImpl.UserServiceImpl;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.EnumMap;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +37,16 @@ public class CustomerRestController {
     private UserServiceImpl userInfoService;
     @Autowired
     private ModelMapper modelMapper;
+
+//    private final EnumMap<Ranking, String> rankingMapping = new EnumMap<>(Ranking.class);
+//
+//    public CustomerRestController() {
+//        rankingMapping.put(Ranking.KH_TIEMNANG, "KH_TIEMNANG");
+//        rankingMapping.put(Ranking.KH_BAC, "KH_BAC");
+//        rankingMapping.put(Ranking.KH_KIMCUONG, "KH_KIMCUONG");
+//        rankingMapping.put(Ranking.KH_VANG, "KH_VANG");
+//        rankingMapping.put(Ranking.KH_THANTHIET, "KH_THANTHIET");
+//    }
 
     @RequestMapping("/customer/")
     public ResponseEntity<List<CustomerDTO>> getAll() {
@@ -108,11 +122,22 @@ public class CustomerRestController {
     public ResponseEntity<?> getAllSearch(
             @RequestParam(name = "page", defaultValue = "0") int pageNum,
             @RequestParam(name = "size", defaultValue = "10") int pageSize,
-            @RequestParam(name ="keyword", defaultValue = "") String keyword
+            @RequestParam(name ="keyword", defaultValue = "") String keyword,
+            @RequestParam(name = "status", required = false) Integer status,
+            @RequestParam(name = "gender", required = false) Boolean gender,
+            @RequestParam(name = "ranking", required = false) String ranking,
+            @RequestParam(defaultValue = "rankingPoints") List<String> sortList,
+            @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder
     ) {
-        Page<Customers> customerSearchPage = customerService.findAllSearch(keyword, pageNum, pageSize);
-        return new ResponseEntity<>
-                (customerSearchPage, HttpStatus.OK);
+        if (ranking.length() != 0 ) {
+            Ranking mappingRank = Ranking.valueOf(ranking);
+            Page<Customers> customerSearchPage = customerService.findAllSearch(keyword, status, gender, mappingRank, pageNum, pageSize, sortList, sortOrder.toString());
+            return ResponseEntity.ok(customerSearchPage);
+        }else{
+            Page<Customers> customerSearchPage = customerService.findAllSearch(keyword, status, gender, null, pageNum, pageSize, sortList, sortOrder.toString());
+            return ResponseEntity.ok(customerSearchPage);
+        }
+
     }
     @RequestMapping(value = "/customer/searchByKeyword", method = RequestMethod.GET)
     public ResponseEntity<?> findCustomerByKeyword(

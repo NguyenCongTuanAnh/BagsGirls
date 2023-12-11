@@ -10,11 +10,27 @@ const customerAPI = {
       },
     });
   },
-  getSearchPagination(key, pageNum, pageSize) {
+  getSearchPagination(
+    key,
+    status,
+    gender,
+    ranking,
+    pageNum,
+    pageSize,
+    sortList,
+    sortOrder,
+    sortListPlaceHolder
+  ) {
     const url = 'api/customer/search';
     return axiosClient.get(url, {
       params: {
         keyword: key,
+        status: status,
+        gender: gender,
+        ranking: ranking,
+        sortList: sortList,
+        sortOrder: sortOrder,
+        sortListPlaceHolder: sortListPlaceHolder,
         page: pageNum - 1,
         size: pageSize,
       },

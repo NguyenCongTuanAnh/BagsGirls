@@ -5,6 +5,7 @@ import fpoly.datn.ecommerce_website.dto.StaffDTO1;
 import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Staffs;
 import fpoly.datn.ecommerce_website.entity.Users;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Role;
 import fpoly.datn.ecommerce_website.repository.IStaffRepository;
 import fpoly.datn.ecommerce_website.repository.IUserRepository;
 import fpoly.datn.ecommerce_website.service.serviceImpl.CustomerServiceImpl;
@@ -56,10 +57,19 @@ public class StaffRestController {
             @RequestParam(name = "page", defaultValue = "0") int pageNum,
             @RequestParam(name = "size", defaultValue = "10") int pageSize,
             @RequestParam(name = "status", required = false) Integer status,
+            @RequestParam(name = "gender", required = false) Boolean gender,
             @RequestParam(name = "role", required = false) String role
     ) {
-        Page<Staffs> staffPage = staffService.findAllPage(search, status, role, pageNum, pageSize);
-        return new ResponseEntity<>(staffPage, HttpStatus.OK);
+        if(role.equalsIgnoreCase("ROLE_ADMIN")){
+            Page<Staffs> staffPage = staffService.findAllPage(search, status, gender, Role.ROLE_ADMIN, pageNum, pageSize);
+            return new ResponseEntity<>(staffPage, HttpStatus.OK);
+        }else if(role.equalsIgnoreCase("ROLE_STAFF")){
+            Page<Staffs> staffPage = staffService.findAllPage(search, status, gender, Role.ROLE_STAFF, pageNum, pageSize);
+            return new ResponseEntity<>(staffPage, HttpStatus.OK);
+        }else{
+            Page<Staffs> staffPage = staffService.findAllPage(search, status, gender, null, pageNum, pageSize);
+            return new ResponseEntity<>(staffPage, HttpStatus.OK);
+        }
     }
 
     @RequestMapping(value = "/staff", method = RequestMethod.GET)
