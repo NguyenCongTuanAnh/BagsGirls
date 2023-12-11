@@ -3,8 +3,9 @@ import React, { useState, Fragment } from 'react';
 import { Radio, Space, Tabs } from 'antd';
 import { useLocation } from 'react-router-dom';
 import './profile.css';
-import AddressCustomer from '../FormAddressCustomer/AddressCustomer';
+import AddressCustomer from '../InformationCustomer/InformationCustomer';
 import { getCustomer } from '~/api/auth/helper/UserCurrent';
+import ChanglePassword from '../FormChanglePassword/ChanglePassword';
 function ProfileView() {
   const location = useLocation();
   const { TabPane } = Tabs;
@@ -47,15 +48,15 @@ function ProfileView() {
     <div>
       <Breadcrumb steps={steps} />
       <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
-        <div className="tabLeft" title="Thông tin của bạn">
-          Thông tin của bạn
+        <div className="tabLeft">
           <div className="tabLeftChild">
             <Tabs defaultActiveKey="1" tabPosition="left" onTabClick={handleTabClick}>
               <TabPane
+                style={{ background: 'gray' }}
                 tab={
-                  <span className="tabLeftChildRow">
+                  <span className="tabLeftChildRow" style={{ fontSize: '20px', fontWeight: 'bold', color: 'red' }}>
                     <StarFilled />
-                    Vip
+                    TÀI KHOẢN VIP
                   </span>
                 }
                 key="1"
@@ -80,7 +81,7 @@ function ProfileView() {
                 }
                 key="3"
               >
-                Nội dung tab đổi mật khẩu
+                <ChanglePassword />
               </TabPane>
 
               <TabPane
@@ -97,10 +98,9 @@ function ProfileView() {
             </Tabs>
           </div>
         </div>
-
         {displayTapTop && (
           <div className="tabTop">
-            <Tabs defaultActiveKey="1" tabPosition="top">
+            <Tabs defaultActiveKey="1" tabPosition="top" className="tabTop">
               <TabPane
                 className="tabTopChild"
                 tab={<span style={{ fontSize: '25px', padding: '0 100px' }}>Hạng và điểm hiện tại</span>}
@@ -126,7 +126,6 @@ function ProfileView() {
           </div>
         )}
       </div>
-
       <br></br>
     </div>
   );
