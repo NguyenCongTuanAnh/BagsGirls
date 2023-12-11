@@ -61,6 +61,14 @@ const customerAPI = {
       },
     });
   },
+  updatePassword(customerId, password) {
+    const url = `api/customer/forget-password?customerId=${customerId}&password=${password}`;
+    return axiosClient.put(url, null, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
   delete(id) {
     const url = `api/customer?id=${id}`;
     return axiosClient.delete(url);

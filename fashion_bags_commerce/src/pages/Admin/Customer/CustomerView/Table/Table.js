@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { Button, Pagination, Popconfirm, Space, Spin, Table, notification } from 'antd';
+import { Button, Col, Pagination, Popconfirm, Row, Space, Spin, Table, notification } from 'antd';
 import customerAPI from '~/api/customerAPI';
 import { DeleteOutlined, ReloadOutlined, SyncOutlined } from '@ant-design/icons';
 import styles from './index.module.scss';
@@ -153,11 +153,11 @@ const TableContent = () => {
             statusClass = 'active-status';
             break;
           case -1:
-            statusText = 'Ngừng hoạt động';
+            statusText = 'Không hoạt động';
             statusClass = 'inactive-status';
             break;
           default:
-            statusText = 'Không hoạt động';
+            statusText = 'Null';
             statusClass = 'inactive-status';
         }
 
@@ -213,7 +213,17 @@ const TableContent = () => {
         padding: '10px',
       }}
     >
-      <SearchForm onSubmit={handleSearchChange} />
+      <Row>
+        <Col span={6}>
+
+        </Col>
+        <Col span={6}>
+          
+        </Col>
+        <Col span={12}>
+          <SearchForm onSubmit={handleSearchChange} />
+        </Col>
+      </Row>
       <FormCustomerCreate reload={() => setLoading(true)} />
       <Button icon={<ReloadOutlined />} style={{ marginLeft: '10px' }} onClick={() => setLoading(true)} loading={loading}></Button>
 

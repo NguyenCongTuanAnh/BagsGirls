@@ -191,7 +191,7 @@ function Sidebar(props) {
   };
 
   return (
-    <div className={style.sidebar} style={{ height: '100vh', borderRadius: '50px' }}>
+    <div className={style.sidebar} style={{ height: '100vh' }}>
       <div style={{ padding: ' 0px 30px' }}>
         <Avartar />
       </div>

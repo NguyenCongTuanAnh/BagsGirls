@@ -45,9 +45,12 @@ export const getCustomer = () => {
 };
 
 export const getStaff = () => {
-  const staffString = CryptoJS.AES.decrypt(localStorage.getItem('staffDecodeString'), Constants.key).toString(
-    CryptoJS.enc.Utf8,
-  );
-  console.log(staffString);
+  const stringUserInfo = localStorage.getItem('staffDecodeString');
+  if (stringUserInfo === null) {
+    return null;
+  }
+  const staffString = CryptoJS.AES.decrypt(stringUserInfo, Constants.key).toString(CryptoJS.enc.Utf8);
+
   return staffString ? JSON.parse(staffString) : null;
 };
+

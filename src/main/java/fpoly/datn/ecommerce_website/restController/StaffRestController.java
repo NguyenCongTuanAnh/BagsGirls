@@ -91,6 +91,14 @@ public class StaffRestController {
         return new ResponseEntity<>(staffService.update(id, staffDTO),
                 HttpStatus.OK);
     }
+    @RequestMapping(value = "/staff/forget-password", method = RequestMethod.PUT)
+    public ResponseEntity<?> forgetPassword(
+            @RequestParam(name = "staffId") String staffId,
+            @RequestParam(name = "password") String password
+    ) {
+        return new ResponseEntity<>
+                (staffService.forgetPassword(staffId, password), HttpStatus.OK);
+    }
 
     // updateStatus
     @RequestMapping(value = "/staff/update-status", method = RequestMethod.PUT)
