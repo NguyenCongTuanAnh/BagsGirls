@@ -231,7 +231,14 @@ const FormCustomerCreate = (props) => {
           <Row gutter={16}>
 
             <Col span={12}>
-              <Form.Item label="Giới tính" name={['users', 'gender']}>
+              <Form.Item label="Giới tính" name={['users', 'gender']}
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng chọn giới tính!',
+                  },
+                ]}
+              >
                 <Radio.Group>
                   <Radio value={true}>Nam</Radio>
                   <Radio value={false}>Nữ</Radio>

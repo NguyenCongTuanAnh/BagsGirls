@@ -214,10 +214,6 @@ function FormStaffEdit(props) {
               <Input placeholder="Vui lòng điền email!" name="usersEmail" onChange={updateData} />
             </Form.Item>
           </Col>
-
-        </Row>
-        <Row gutter={16}>
-
           <Col span={12}>
             <Form.Item
               name="usersPhoneNumber"
@@ -237,6 +233,10 @@ function FormStaffEdit(props) {
               <Input placeholder="Vui lòng điền số điện thoại!" name="usersPhoneNumber" onChange={updateData} />
             </Form.Item>
           </Col>
+        </Row>
+        <Row gutter={16}>
+
+
           <Col span={12}>
             <Form.Item
               name="usersAddress"
@@ -251,8 +251,6 @@ function FormStaffEdit(props) {
               <Input placeholder="Vui lòng điền địa chỉ!" name="usersAddress" onChange={updateData} />
             </Form.Item>
           </Col>
-        </Row>
-        <Row gutter={16}>
           <Col span={12}>
             <Form.Item
               name="usersRolesRoleName"
@@ -273,8 +271,17 @@ function FormStaffEdit(props) {
               </Select>
             </Form.Item>
           </Col>
+        </Row>
+        <Row gutter={16}>
+
           <Col span={12}>
-            <Form.Item label="Giới tính" name="usersGender" >
+            <Form.Item label="Giới tính" name="usersGender"
+              rules={[
+                {
+                  required: true,
+                  message: 'Vui lòng chọn giới tính!',
+                },
+              ]} >
               <Radio.Group name="usersGender" onChange={(e) => updateGender(JSON.parse(e.target.value))}>
                 <Radio value={true}>Nam</Radio>
                 <Radio value={false}>Nữ</Radio>
