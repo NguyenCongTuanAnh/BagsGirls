@@ -63,11 +63,8 @@ function ProfileView() {
               <TabPane
                 tab={
                   <span className="tabLeftChildRow">
-                    <img
-                      style={{ width: '15px', height: '15px', marginRight: '10px' }}
-                      src="https://i.imgur.com/2ThpWyL.png"
-                    />
-                    Địa chỉ
+                    <UserOutlined />
+                    Thông tin cá nhân
                   </span>
                 }
                 key="2"
@@ -85,17 +82,7 @@ function ProfileView() {
               >
                 Nội dung tab đổi mật khẩu
               </TabPane>
-              <TabPane
-                tab={
-                  <span className="tabLeftChildRow">
-                    <UserOutlined />
-                    Thông tin cá nhân
-                  </span>
-                }
-                key="4"
-              >
-                Nội dung tab cá nhân
-              </TabPane>
+
               <TabPane
                 tab={
                   <span className="tabLeftChildRow">

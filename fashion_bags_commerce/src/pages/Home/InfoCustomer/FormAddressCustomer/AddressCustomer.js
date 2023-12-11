@@ -16,13 +16,15 @@ function AddressCustomer() {
   const [selectedWard, setSelectedWard] = useState('');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [gender, setGender] = useState('');
+  const [birthDay, setBirthDay] = useState('');
+
   const [address, setAddress] = useState('');
   const [customerData, setCustomerData] = useState({});
   const [displayUpdateAddress, setDisplayUpdateAddress] = useState(false);
   const [displayInfoAddress, setDisplayInfoAddress] = useState(true);
 
   const customer = getCustomer();
-
 
   useEffect(() => {
     customerAPI
@@ -203,6 +205,37 @@ function AddressCustomer() {
                 placeholder="Số điện thoại"
                 pattern="(?:\+84|0)(?:\d){9,10}$"
                 title="vui lòng nhập số điện thoại hợp lệ"
+                required
+                style={{ flex: 1 }}
+              />
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
+            <div className="customerInput">
+              <label>
+                Giới tính<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+              </label>
+              <select
+                className="inputLabel"
+                value={customer.users.gender}
+                onChange={(e) => setGender(e.target.value)}
+                required
+                style={{ flex: 1 }}
+              >
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+                <option value="other">Khác</option>
+              </select>
+            </div>
+
+            <div className="customerInput">
+              <label>
+                Ngày sinh<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+              </label>
+              <input
+                className="inputLabel"
+                value={customer.users.birthDay}
+                onChange={(e) => setBirthDay(e.target.value)}
                 required
                 style={{ flex: 1 }}
               />
