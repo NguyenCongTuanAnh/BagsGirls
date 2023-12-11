@@ -124,16 +124,21 @@ const FormStaffCreate = (props) => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="usersAccount"
-                label="Tài khoản"
+                name="usersEmail"
+                label="Email"
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng điền tài khoản!',
+                    message: 'Vui lòng điền Email!',
+                    whitespace: true,
+                  },
+                  {
+                    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    message: 'Vui lòng nhập địa chỉ email hợp lệ!',
                   },
                 ]}
               >
-                <Input placeholder="Vui lòng điền tài khoản!" />
+                <Input placeholder="Vui lòng điền email!" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -170,25 +175,7 @@ const FormStaffCreate = (props) => {
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                name="usersEmail"
-                label="Email"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng điền Email!',
-                    whitespace: true,
-                  },
-                  {
-                    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                    message: 'Vui lòng nhập địa chỉ email hợp lệ!',
-                  },
-                ]}
-              >
-                <Input placeholder="Vui lòng điền email!" />
-              </Form.Item>
-            </Col>
+
             <Col span={12}>
               <Form.Item
                 name="usersPhoneNumber"
@@ -208,8 +195,6 @@ const FormStaffCreate = (props) => {
                 <Input placeholder="Vui lòng điền số điện thoại!" />
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={16}>
             <Col span={12}>
               <Form.Item
                 name="usersAddress"
@@ -222,22 +207,6 @@ const FormStaffCreate = (props) => {
                 ]}
               >
                 <Input placeholder="Vui lòng điền địa chỉ!" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Giới tính"
-                name="usersGender"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng chọn giới tính!',
-                  },
-                ]}>
-                <Radio.Group>
-                  <Radio value={true}>Nam</Radio>
-                  <Radio value={false}>Nữ</Radio>
-                </Radio.Group>
               </Form.Item>
             </Col>
           </Row>
@@ -259,7 +228,24 @@ const FormStaffCreate = (props) => {
                 </Select>
               </Form.Item>
             </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Giới tính"
+                name="usersGender"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Vui lòng chọn giới tính!',
+                  },
+                ]}>
+                <Radio.Group>
+                  <Radio value={true}>Nam</Radio>
+                  <Radio value={false}>Nữ</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </Col>
           </Row>
+
           <Row gutter={16}>
             <Col span={24}>
               <Form.Item

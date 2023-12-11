@@ -35,7 +35,31 @@ function FormCustomerEdit(props) {
 
   const updateFunction = async (values) => {
     setError(false);
-    if (!error) {
+    let returnEmail = true;
+    let returnSDT = true;
+    if (getEmail !== values.email) {
+      const checkEmail = await customerAPI.findByEmail(values.email);
+      if (checkEmail.data !== '') {
+        notification.error({
+          message: 'Cập nhật thất bại',
+          description: 'Email đã tồn tại!',
+          duration: 2,
+        });
+        returnEmail = false;
+      }
+    }
+    if (getSDT !== values.phoneNumber) {
+      const checkSDT = await customerAPI.findByPhoneNumber(values.phoneNumber);
+      if (checkSDT.data !== '') {
+        notification.error({
+          message: 'Cập nhật thất bại',
+          description: 'Số điện thoại đã tồn tại!',
+          duration: 2,
+        });
+        returnSDT = false;
+      }
+    }
+    if (returnEmail === true && returnSDT === true) {
       let update = {
         customerId: data.customerId,
         customerCode: data.customerCode,

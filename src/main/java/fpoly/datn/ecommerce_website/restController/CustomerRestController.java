@@ -103,6 +103,7 @@ public class CustomerRestController {
                 (customerService.forgetPassword(customerId, password), HttpStatus.OK);
     }
 
+    //getAll of Quan
     @RequestMapping(value = "/customer/search", method = RequestMethod.GET)
     public ResponseEntity<?> getAllSearch(
             @RequestParam(name = "page", defaultValue = "0") int pageNum,
