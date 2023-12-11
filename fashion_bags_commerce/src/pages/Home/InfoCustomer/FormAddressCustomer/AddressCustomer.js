@@ -16,13 +16,15 @@ function AddressCustomer() {
   const [selectedWard, setSelectedWard] = useState('');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [gender, setGender] = useState('');
+  const [birthDay, setBirthDay] = useState('');
+
   const [address, setAddress] = useState('');
   const [customerData, setCustomerData] = useState({});
   const [displayUpdateAddress, setDisplayUpdateAddress] = useState(false);
   const [displayInfoAddress, setDisplayInfoAddress] = useState(true);
 
   const customer = getCustomer();
-
 
   useEffect(() => {
     customerAPI
@@ -34,11 +36,15 @@ function AddressCustomer() {
           fullName: data.users.fullName || '',
           phoneNumber: data.users.phoneNumber || '',
           address: data.users.address || '',
+          gender: data.users.gender || '',
+          birthDay: data.users.birthDay || '',
         });
         setCustomerInfo(data);
         setFullName(data.users.fullName || '');
         setPhoneNumber(data.users.phoneNumber || '');
         setAddress(data.users.address || '');
+        setBirthDay(data.users.birthDay || '');
+        setGender(data.users.gender || '');
       })
       .catch((error) => {
         console.error('Error fetching customer data:', error);
@@ -58,14 +64,30 @@ function AddressCustomer() {
     const fullAddress = `${address} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`;
 
     const updateFunction = async () => {
-      const userId = customer?.users?.userId || '';
+      const user = customer?.users;
+
+      const updatedFields = {
+        fullName,
+        address: fullAddress,
+        gender,
+        birthDay,
+        phoneNumber,
+      };
+      const filteredFields = Object.keys(updatedFields).reduce((acc, key) => {
+        if (updatedFields[key] !== user[key]) {
+          acc[key] = updatedFields[key];
+        }
+        return acc;
+      }, {});
 
       const update = {
         customerId: customer.customerId,
         users: {
-          userId: userId,
-          fullName: fullName,
-          address: fullAddress,
+          userId: user.userId,
+          ...filteredFields,
+          password: user.password,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
         },
       };
 
@@ -88,7 +110,6 @@ function AddressCustomer() {
         console.log(error);
       }
     };
-
     updateFunction();
   };
 
@@ -203,6 +224,37 @@ function AddressCustomer() {
                 placeholder="Số điện thoại"
                 pattern="(?:\+84|0)(?:\d){9,10}$"
                 title="vui lòng nhập số điện thoại hợp lệ"
+                required
+                style={{ flex: 1 }}
+              />
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
+            <div className="customerInput">
+              <label>
+                Giới tính<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+              </label>
+              <select
+                className="inputLabel"
+                value={customer.users.gender}
+                onChange={(e) => setGender(e.target.value)}
+                required
+                style={{ flex: 1 }}
+              >
+                <option value="male">Nam</option>
+                <option value="female">Nữ</option>
+                <option value="other">Khác</option>
+              </select>
+            </div>
+
+            <div className="customerInput">
+              <label>
+                Ngày sinh<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+              </label>
+              <input
+                className="inputLabel"
+                value={customer.users.birthDay}
+                onChange={(e) => setBirthDay(e.target.value)}
                 required
                 style={{ flex: 1 }}
               />

@@ -7,7 +7,7 @@ import fullProductAPI from '~/api/client/fullProductAPI';
 
 import styles from '../MainHeader/index.module.scss';
 import UserProfile from './UserProfile';
-import { getCustomer, getCustomerIdUser, getStaff } from '~/api/auth/helper/UserCurrent';
+import { getCustomerIdUser } from '~/api/auth/helper/UserCurrent';
 
 function MainHeader() {
   const [cartCount, setCartCount] = useState(0); // Mặc định là 0
@@ -18,6 +18,7 @@ function MainHeader() {
   const location = useLocation();
   const [messageApi, contextHolder] = message.useMessage();
 
+
   console.log('>>> location: ', location);
 
   useEffect(() => {
@@ -27,26 +28,24 @@ function MainHeader() {
     const totalCount = parsedCart.reduce((acc, item) => acc + item.quantity, 0);
     setCartCount(totalCount);
 
-    const customerTokenString = getCustomer();
-    // const customerId = ;
-    // const customerToken = localStorage.getItem('customerToken');
-
+    const customerTokenString = localStorage.getItem('customerDecodeString');
     if (customerTokenString) {
       setIsLoggedIn(true);
     }
   }, []);
 
-  const changeLoggedIn = () => {
+  const   changeLoggedIn = () => {
     setIsLoggedIn(false);
-    localStorage.removeItem('customerTokenString');
+    localStorage.removeItem('customerDecodeString');
     localStorage.removeItem('customerId');
     localStorage.removeItem('customerToken');
     localStorage.removeItem('temporaryCart');
-    navigate('/');
+    navigate('/')
     messageApi.open({
       type: 'success',
       content: 'Đăng xuất thành công',
     });
+
   };
 
   const handleSearch = () => {

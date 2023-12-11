@@ -38,13 +38,19 @@ export const getCustomer = () => {
   const customerString = CryptoJS.AES.decrypt(localStorage.getItem('customerDecodeString'), Constants.key).toString(
     CryptoJS.enc.Utf8,
   );
+  if(customerString==null){
+    return null;
+  }
   return customerString ? JSON.parse(customerString) : null;
 };
 
 export const getStaff = () => {
-  const staffString = CryptoJS.AES.decrypt(localStorage.getItem('staffDecodeString'), Constants.key).toString(
-    CryptoJS.enc.Utf8,
-  );
-  console.log(staffString);
+  const stringUserInfo = localStorage.getItem('staffDecodeString');
+  if (stringUserInfo === null) {
+    return null;
+  }
+  const staffString = CryptoJS.AES.decrypt(stringUserInfo, Constants.key).toString(CryptoJS.enc.Utf8);
+
   return staffString ? JSON.parse(staffString) : null;
 };
+
