@@ -141,7 +141,9 @@ function FormCustomerEdit(props) {
           address: data.users.address,
           gender: data.users.gender,
           rankingPoints: data.rankingPoints,
-          userNote: data.users.userNote
+          userNote: data.users.userNote,
+          consumePoints: data.consumePoints,
+          customerRanking: data.customerRanking,
         }}
         onFinish={updateFunction} >
         <Row gutter={16}>
@@ -249,22 +251,14 @@ function FormCustomerEdit(props) {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item
-              name="rankingPoints"
-              label="Điểm"
+            <Form.Item label="Giới tính" name='gender'
+              rules={[
+                {
+                  required: true,
+                  message: 'Vui lòng chọn giới tính!',
+                },
+              ]}
             >
-              <Input
-                placeholder="Điểm"
-                type="number"
-                disabled={true}
-              />
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row gutter={16}>
-
-          <Col span={12}>
-            <Form.Item label="Giới tính" name='gender'>
               <Radio.Group>
                 <Radio value={true}>Nam</Radio>
                 <Radio value={false}>Nữ</Radio>
@@ -272,6 +266,49 @@ function FormCustomerEdit(props) {
             </Form.Item>
           </Col>
 
+        </Row>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              name="consumePoints"
+              label="Điểm tiêu dùng"
+            >
+              <Input
+                placeholder="Điểm tiêu dùng"
+                type="number"
+                disabled={true}
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item
+              name="rankingPoints"
+              label="Điểm hạng"
+            >
+              <Input
+                placeholder="Điểm hạng"
+                type="number"
+                disabled={true}
+              />
+            </Form.Item>
+          </Col>
+
+        </Row>
+        <Row gutter={16}>
+          <Col span={12}>
+            <Form.Item
+              name="customerRanking"
+              label="Hạng khách hàng"
+            >
+              <Select placeholder="Vui lòng chọn hạng khách hàng!" disabled={true}>
+                <Select.Option value={"KH_TIEMNANG"}>Tiềm năng</Select.Option>
+                <Select.Option value={"KH_THANTHIET"}>Thân thiết</Select.Option>
+                <Select.Option value={"KH_BAC"}>Bạc</Select.Option>
+                <Select.Option value={"KH_VANG"}>Vàng</Select.Option>
+                <Select.Option value={"KH_KIMCUONG"}>Kim cương</Select.Option>
+              </Select>
+            </Form.Item>
+          </Col>
         </Row>
         <Row gutter={16}>
           <Col span={24}>

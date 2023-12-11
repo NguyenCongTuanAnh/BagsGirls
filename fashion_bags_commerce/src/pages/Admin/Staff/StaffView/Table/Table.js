@@ -66,10 +66,32 @@ const TableContent = () => {
       render: (text, record, index) => <span>{(currentPage - 1) * pagesSize + index + 1}</span>,
     },
     {
-      title: 'Mã nhân viên',
+      title: 'Mã',
       dataIndex: 'staffCode',
       sorter: (a, b) => a.staffCode.localeCompare(b.staffCode),
       width: '7%',
+    },
+    {
+      title: 'Chức vụ',
+      dataIndex: ['users', 'role'],
+      width: '8%',
+      render: (text, record) => {
+        let statusText;
+        let statusClass;
+
+        switch (record.users.role) {
+          case 'ROLE_ADMIN':
+            statusText = 'Admin';
+            break;
+          case 'ROLE_STAFF':
+            statusText = 'Nhân viên';
+            break;
+          default:
+            statusText = 'Null';
+            statusClass = 'inactive-status';
+        }
+        return <span className={statusClass}>{statusText}</span>;
+      },
     },
     {
       title: 'Họ và tên',
@@ -97,39 +119,18 @@ const TableContent = () => {
         return gender ? 'Nam' : 'Nữ';
       },
     },
-    {
-      title: 'Chức vụ',
-      dataIndex: ['users', 'role'],
-      width: '8%',
-      render: (text, record) => {
-        let statusText;
-        let statusClass;
 
-        switch (record.users.role) {
-          case 'ROLE_ADMIN':
-            statusText = 'Admin';
-            break;
-          case 'ROLE_STAFF':
-            statusText = 'Nhân viên';
-            break;
-          default:
-            statusText = 'Null';
-            statusClass = 'inactive-status';
-        }
-        return <span className={statusClass}>{statusText}</span>;
-      },
-    },
     {
-      title: 'Ghi chú',
-      dataIndex: ['users', 'userNote'],
+      title: 'Địa chỉ',
+      dataIndex: ['users', 'address'],
       // sorter: (a, b) => a.users.userNote.localeCompare(b.users.userNote),
-      width: '12%',
+      width: '14%',
     },
 
     {
       title: 'Trạng thái',
       dataIndex: 'staffStatus',
-      width: '12%',
+      width: '8%',
       render: (text, record) => {
         let statusText;
         let statusClass;
