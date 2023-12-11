@@ -35,7 +35,6 @@ function LoginForm(props) {
         const customer = await customerAPI.findByUserId(response.data.data.users.userId);
 
         localStorage.setItem('customerToken', response.data.data.token);
-        localStorage.setItem('customerId', customer.data.customerId);
         const userToken = await AuthAPI.getCustomerToken('ROLE_CUSTOMER');
         console.log('====================================');
         console.log('kh');
