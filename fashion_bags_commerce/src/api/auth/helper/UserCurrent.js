@@ -38,6 +38,9 @@ export const getCustomer = () => {
   const customerString = CryptoJS.AES.decrypt(localStorage.getItem('customerDecodeString'), Constants.key).toString(
     CryptoJS.enc.Utf8,
   );
+  if(customerString==null){
+    return null;
+  }
   return customerString ? JSON.parse(customerString) : null;
 };
 

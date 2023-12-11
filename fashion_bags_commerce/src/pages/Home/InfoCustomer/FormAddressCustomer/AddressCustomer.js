@@ -36,11 +36,15 @@ function AddressCustomer() {
           fullName: data.users.fullName || '',
           phoneNumber: data.users.phoneNumber || '',
           address: data.users.address || '',
+          gender: data.users.gender || '',
+          birthDay: data.users.birthDay || '',
         });
         setCustomerInfo(data);
         setFullName(data.users.fullName || '');
         setPhoneNumber(data.users.phoneNumber || '');
         setAddress(data.users.address || '');
+        setBirthDay(data.users.birthDay || '');
+        setGender(data.users.gender || '');
       })
       .catch((error) => {
         console.error('Error fetching customer data:', error);
@@ -60,14 +64,30 @@ function AddressCustomer() {
     const fullAddress = `${address} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`;
 
     const updateFunction = async () => {
-      const userId = customer?.users?.userId || '';
+      const user = customer?.users;
+
+      const updatedFields = {
+        fullName,
+        address: fullAddress,
+        gender,
+        birthDay,
+        phoneNumber,
+      };
+      const filteredFields = Object.keys(updatedFields).reduce((acc, key) => {
+        if (updatedFields[key] !== user[key]) {
+          acc[key] = updatedFields[key];
+        }
+        return acc;
+      }, {});
 
       const update = {
         customerId: customer.customerId,
         users: {
-          userId: userId,
-          fullName: fullName,
-          address: fullAddress,
+          userId: user.userId,
+          ...filteredFields,
+          password: user.password,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
         },
       };
 
@@ -90,7 +110,6 @@ function AddressCustomer() {
         console.log(error);
       }
     };
-
     updateFunction();
   };
 
