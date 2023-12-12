@@ -1,6 +1,8 @@
 import axiosClient from './axiosClient';
 
 const staffAPI = {
+
+
   getAll(pageNum, pageSize) {
     const url = 'api/staff/pagination';
     return axiosClient.get(url, {
@@ -9,6 +11,10 @@ const staffAPI = {
         size: pageSize,
       },
     });
+  },
+  getAllStaff() {
+    const url = 'api/staff/get-all';
+    return axiosClient.get(url);
   },
   getAllStaffs(search, status, gender, role, pageNum, pageSize) {
     const url = 'api/staff/pagination';

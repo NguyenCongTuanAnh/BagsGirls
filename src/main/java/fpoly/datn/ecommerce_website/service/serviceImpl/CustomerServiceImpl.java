@@ -93,7 +93,7 @@ public class CustomerServiceImpl implements ICustomerService {
         Users savedUserInfo = userInfoRepository.save(users);
         if (savedUserInfo != null) {
             Customers customer = Customers.builder()
-                    .consumePoints(customerDTO.getConsumePoints())
+                    .consumePoints(0)
                     .customerCode((customerDTO.getCustomerCode()))
                     .customerStatus(customerDTO.getCustomerStatus())
                     .rankingPoints(0)
@@ -169,7 +169,6 @@ public class CustomerServiceImpl implements ICustomerService {
     @Override
     public CustomerDTO updatePointByTotalPrice(String customerId, Double totalPrice) {
         Customers customers = this.customerRepository.findById(customerId).get();
-
         int addPoint = 0;
        if (totalPrice >= Constants.TOTALPRICE_TO_ADD_20POINT){
            addPoint = 20;

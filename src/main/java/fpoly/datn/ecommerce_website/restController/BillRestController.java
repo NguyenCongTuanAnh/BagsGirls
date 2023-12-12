@@ -58,11 +58,11 @@ public class BillRestController {
     public ResponseEntity<?> getAllPagination(
             @RequestParam(name = "page", defaultValue = "0") Integer pageNum,
             @RequestParam(name = "size", defaultValue = "10") Integer pageSize,
-            @RequestParam(name ="status", defaultValue = "") Integer status,
+            @RequestParam(name ="status", required = false) Integer status,
             @RequestParam(name ="search", defaultValue = "") String search,
             @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
             @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr,
-            @RequestParam(defaultValue = "") List<String> sortList,
+            @RequestParam(defaultValue = "billCreateDate") List<String> sortList,
             @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder
     ) {
         try {
@@ -78,13 +78,13 @@ public class BillRestController {
 
     @RequestMapping(value = "/bills/bill-offline", method = RequestMethod.GET)
     public ResponseEntity<?> getAllBillsOffline(
-            @RequestParam(name = "page", defaultValue = "0") Integer pageNum,
-            @RequestParam(name = "size", defaultValue = "10") Integer pageSize,
-            @RequestParam(name ="status", defaultValue = "") Integer status,
-            @RequestParam(name ="search", defaultValue = "") String search,
-            @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
-            @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr,
-            @RequestParam(name ="filterStaffName", defaultValue = "") String filterStaffName,
+            @RequestParam(name = "page", required = false, defaultValue = "0") Integer pageNum,
+            @RequestParam(name = "size", required = false, defaultValue = "10") Integer pageSize,
+            @RequestParam(name ="status", required = false) Integer status,
+            @RequestParam(name ="search", required = false, defaultValue = "") String search,
+            @RequestParam(name ="startDate", required = false, defaultValue = "0001-01-01") String startDateStr,
+            @RequestParam(name ="endDate", required = false, defaultValue = "9999-01-01") String endDateStr,
+            @RequestParam(name ="filterStaffName", required = false, defaultValue = "") String filterStaffName,
             @RequestParam(defaultValue = "billCreateDate") List<String> sortList,
             @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder
     ) {
