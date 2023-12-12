@@ -50,7 +50,7 @@ import Header from './pages/Home/Header';
 import ThongKeView from './pages/Admin/ThongKe/indexThongKe';
 import LoginFormStaff from './pages/Login/FormLogin/FormLoginStaff/LoginFormStaff';
 import CustomerProfile from './pages/Home/InfoCustomer/index';
-import AddressCustomer from './pages/Home/InfoCustomer/FormAddressCustomer/AddressCustomer';
+import AddressCustomer from './pages/Home/InfoCustomer/InformationCustomer/InformationCustomer';
 import CustomerGuard from './api/auth/guard/CustomerGuard';
 import ProfilePage from './pages/Admin/ProfilePage/ProfilePage';
 
@@ -82,15 +82,6 @@ function App() {
               </CustomerGuard>
             }
           />
-          <Route
-            path="/profile/address"
-            element={
-              <CustomerGuard>
-                <AddressCustomer />
-              </CustomerGuard>
-            }
-          />
-
           <Route
             path="/bill-offline-view"
             element={

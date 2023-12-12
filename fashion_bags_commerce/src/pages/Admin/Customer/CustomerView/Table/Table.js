@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { Button, Pagination, Popconfirm, Space, Spin, Table, notification } from 'antd';
+import { Button, Col, Pagination, Popconfirm, Row, Select, Space, Spin, Table, notification } from 'antd';
 import customerAPI from '~/api/customerAPI';
-import { DeleteOutlined, ReloadOutlined, SyncOutlined } from '@ant-design/icons';
+import { DeleteOutlined, FilterFilled, ReloadOutlined, SyncOutlined } from '@ant-design/icons';
 import styles from './index.module.scss';
 import { tab } from '@testing-library/user-event/dist/tab';
 import FormCustomerEdit from '../../CustomerEdit/FormEdit/FormCustomerEdit';
@@ -15,6 +15,12 @@ const TableContent = () => {
   const [pagesSize, setPagesSize] = useState(10);
   const [totalItem, setTotalItem] = useState();
   const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('');
+  const [gender, setGender] = useState('');
+  const [ranking, setRanking] = useState('');
+  const [sortList, setSortList] = useState('rankingPoints');
+  const [sortOrder, setSortOrder] = useState('DESC');
+  const [sortListPlaceHolder, setSortListPlaceHolder] = useState('rankPointDESC');
 
   const onCancel = () => { };
 
@@ -23,7 +29,7 @@ const TableContent = () => {
     setTimeout(() => {
       setLoading(false);
     }, 500);
-  }, [loading, search]);
+  }, [loading, search, status, gender, ranking, sortList, sortOrder, sortListPlaceHolder]);
 
 
 
@@ -47,7 +53,17 @@ const TableContent = () => {
 
   const getAll = async (page, size) => {
     try {
-      const response = await customerAPI.getSearchPagination(search, page, size);
+      const response = await customerAPI.getSearchPagination(
+        search,
+        status,
+        gender,
+        ranking,
+        page,
+        size,
+        sortList,
+        sortOrder,
+        sortListPlaceHolder
+      );
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
       setData(data);
@@ -62,10 +78,10 @@ const TableContent = () => {
       render: (text, record, index) => <span>{(currentPage - 1) * pagesSize + index + 1}</span>,
     },
     {
-      title: 'Mã khách hàng',
+      title: 'Mã',
       dataIndex: 'customerCode',
-      // sorter: (a, b) => a.staffCode.localeCompare(b.staffCode),
-      width: '7%',
+      sorter: (a, b) => a.customerCode.localeCompare(b.customerCode),
+      width: '6%',
     },
     {
       title: 'Họ và tên',
@@ -76,7 +92,7 @@ const TableContent = () => {
     {
       title: 'Email',
       dataIndex: ['users', 'email'],
-      sorter: (a, b) => a.users.usersEmail.localeCompare(b.users.usersEmail),
+      sorter: (a, b) => a.users.email.localeCompare(b.users.email),
       width: '15%',
     },
 
@@ -101,16 +117,22 @@ const TableContent = () => {
       width: '15%',
     },
     {
-      title: 'Điểm',
-      dataIndex: 'rankingPoints',
-      sorter: (a, b) => a.rankingPoints.localeCompare(b.rankingPoints),
+      title: 'Điểm tiêu dùng',
+      dataIndex: 'consumePoints',
+      // sorter: (a, b) => a.rankingPoints.localeCompare(b.rankingPoints),
       width: '5%',
     },
     {
-      title: 'Hạng khách hàng',
+      title: 'Điểm hạng',
+      dataIndex: 'rankingPoints',
+      // sorter: (a, b) => a.rankingPoints.localeCompare(b.rankingPoints),
+      width: '5%',
+    },
+    {
+      title: 'Hạng',
       dataIndex: 'customerRanking',
       // sorter: (a, b) => a.users.userNote.localeCompare(b.users.userNote),
-      width: '9%',
+      width: '7%',
       render: (text, record) => {
         let statusText;
 
@@ -131,7 +153,7 @@ const TableContent = () => {
             statusText = 'Kim cương';
             break;
           default:
-            statusText = 'Tiềm năng';
+            statusText = 'Vô rank';
         }
 
         return <span>{statusText}</span>;
@@ -141,7 +163,6 @@ const TableContent = () => {
     {
       title: 'Trạng thái',
       dataIndex: 'customerStatus',
-
       width: '11%',
       render: (status) => {
         let statusText;
@@ -153,11 +174,11 @@ const TableContent = () => {
             statusClass = 'active-status';
             break;
           case -1:
-            statusText = 'Ngừng hoạt động';
+            statusText = 'Không hoạt động';
             statusClass = 'inactive-status';
             break;
           default:
-            statusText = 'Không hoạt động';
+            statusText = 'Null';
             statusClass = 'inactive-status';
         }
 
@@ -199,7 +220,7 @@ const TableContent = () => {
   ];
 
   const deleteHandle = async (id, status) => {
-    const xoa = await customerAPI.updateStatus(id, status);
+    await customerAPI.updateStatus(id, status);
     notification.info({
       message: 'Thông báo',
       description: 'Đã xóa thành công khách khàng',
@@ -213,7 +234,131 @@ const TableContent = () => {
         padding: '10px',
       }}
     >
-      <SearchForm onSubmit={handleSearchChange} />
+      <Row>
+        <h2 style={{ margin: '15px' }}>
+          <FilterFilled /> Bộ lọc
+        </h2>
+      </Row>
+      <Row style={{ textAlign: 'center' }}>
+        <Col span={4}>
+          <div style={{ marginTop: '15px' }}>
+            <span style={{ marginTop: '20px', fontSize: '20px', fontWeight: 600 }}>
+              Hạng
+              <Select
+                bordered={false}
+                style={{ width: '40%', borderBottom: '1px solid #ccc', marginLeft: '10px' }}
+                onChange={(value) => {
+                  setRanking(value);
+                }}
+                defaultValue=""
+              >
+                <Select.Option value="">Tất cả</Select.Option>
+                <Select.Option value="KH_TIEMNANG">Tiềm năng</Select.Option>
+                <Select.Option value="KH_THANTHIET">Thân thiết</Select.Option>
+                <Select.Option value="KH_BAC">Bạc</Select.Option>
+                <Select.Option value="KH_VANG">Vàng</Select.Option>
+                <Select.Option value="KH_KIMCUONG">Kim cương</Select.Option>
+              </Select>
+            </span>
+          </div>
+        </Col>
+        <Col span={4}>
+          <div style={{ marginTop: '15px' }}>
+            <span style={{ marginTop: '20px', fontSize: '20px', fontWeight: 600 }}>
+              Trạng thái
+              <Select
+                bordered={false}
+                style={{ width: '55%', borderBottom: '1px solid #ccc', marginLeft: '10px' }}
+                onChange={(value) => {
+                  setStatus(value);
+                }}
+                defaultValue=""
+              >
+                <Select.Option value="">Tất cả</Select.Option>
+                <Select.Option value="1">Hoạt động</Select.Option>
+                <Select.Option value="-1">Không hoạt động</Select.Option>
+              </Select>
+            </span>
+          </div>
+        </Col>
+        <Col span={4}>
+          <div style={{ marginTop: '15px' }}>
+            <span style={{ marginLeft: '10%', marginTop: '20px', fontSize: '20px', fontWeight: 600 }}>
+              Giới tính
+              <Select
+                bordered={false}
+                style={{ width: '40%', borderBottom: '1px solid #ccc', marginLeft: '10px' }}
+                onChange={(value) => {
+                  setGender(value);
+                }}
+                defaultValue=""
+              >
+                <Select.Option value="">Tất cả</Select.Option>
+                <Select.Option value="true">Nam</Select.Option>
+                <Select.Option value="false">Nữ</Select.Option>
+              </Select>
+            </span>
+          </div>
+        </Col>
+        <Col span={6}>
+          <div style={{ marginTop: '15px' }}>
+            <span style={{ marginTop: '20px', fontSize: '20px', fontWeight: 600 }}>
+              Sắp xếp
+              <Select
+                allowClear
+                value={sortListPlaceHolder}
+                placeholder={'Sắp xếp theo...'}
+                size="large"
+                style={{
+                  width: 250, marginLeft: '10px'
+                }}
+                onChange={(value) => {
+                  if (value === 'pointsDESC') {
+                    setSortOrder('DESC');
+                    setSortList('consumePoints');
+                    setSortListPlaceHolder('Điểm tiêu dùng giảm dần');
+                  } else if (value === 'pointsASC') {
+                    setSortOrder('ASC');
+                    setSortList('consumePoints');
+                    setSortListPlaceHolder('Điểm tiêu dùng tăng dần');
+                  } else if (value === 'rankPointDESC') {
+                    setSortOrder('DESC');
+                    setSortList('rankingPoints');
+                    setSortListPlaceHolder('Hạng khách hàng giảm dần');
+                  } else if (value === 'rankPointASC') {
+                    setSortOrder('ASC');
+                    setSortList('rankingPoints');
+                    setSortListPlaceHolder('Hạng khách hàng tăng dần');
+                  } else {
+                    setSortOrder(null);
+                    setSortList(null);
+                    setSortListPlaceHolder('Không sắp xếp');
+                  }
+                }}
+              >
+                <Select.Option key={'0'} value={'0'}>
+                  Không sắp xếp
+                </Select.Option>
+                <Select.Option key={'1'} value={'pointsDESC'}>
+                  Điểm tiêu dùng giảm dần
+                </Select.Option>
+                <Select.Option key={'2'} value={'pointsASC'}>
+                  Điểm tiêu dùng tăng dần
+                </Select.Option>
+                <Select.Option key={'3'} value={'rankPointDESC'}>
+                  Hạng khách hàng giảm dần
+                </Select.Option>
+                <Select.Option key={'4'} value={'rankPointASC'}>
+                  Hạng khách hàng tăng dần
+                </Select.Option>
+              </Select>
+            </span>
+          </div>
+        </Col>
+        <Col span={6}>
+          <SearchForm onSubmit={handleSearchChange} />
+        </Col>
+      </Row>
       <FormCustomerCreate reload={() => setLoading(true)} />
       <Button icon={<ReloadOutlined />} style={{ marginLeft: '10px' }} onClick={() => setLoading(true)} loading={loading}></Button>
 

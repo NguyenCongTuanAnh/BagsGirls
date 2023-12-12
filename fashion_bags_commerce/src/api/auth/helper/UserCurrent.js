@@ -37,6 +37,9 @@ export const getCustomer = () => {
   const customerString = CryptoJS.AES.decrypt(localStorage.getItem('customerDecodeString'), Constants.key).toString(
     CryptoJS.enc.Utf8,
   );
+  if(customerString==null){
+    return null;
+  }
   return customerString ? JSON.parse(customerString) : null;
 };
 
@@ -49,6 +52,7 @@ export const getStaff = () => {
 
   return staffString ? JSON.parse(staffString) : null;
 };
+
 export const covertObjectToDecode = (object) => {
   const userString = JSON.stringify(object);
 
@@ -56,3 +60,4 @@ export const covertObjectToDecode = (object) => {
 
   return decodeString;
 };
+

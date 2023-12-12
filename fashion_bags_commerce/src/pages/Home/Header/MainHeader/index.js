@@ -28,21 +28,18 @@ function MainHeader() {
     const totalCount = parsedCart.reduce((acc, item) => acc + item.quantity, 0);
     setCartCount(totalCount);
 
-    const customerTokenString = localStorage.getItem('customerTokenString');
-    const customerId = localStorage.getItem('customerId');
-    const customerToken = localStorage.getItem('customerToken');
-    if (customerTokenString && customerId && customerToken) {
+    const customerTokenString = localStorage.getItem('customerDecodeString');
+    if (customerTokenString) {
       setIsLoggedIn(true);
     }
   }, []);
 
   const   changeLoggedIn = () => {
     setIsLoggedIn(false);
-    localStorage.removeItem('customerTokenString');
+    localStorage.removeItem('customerDecodeString');
     localStorage.removeItem('customerId');
     localStorage.removeItem('customerToken');
     localStorage.removeItem('temporaryCart');
-    localStorage.removeItem('fullName');
     navigate('/')
     messageApi.open({
       type: 'success',

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import { Button, Pagination, Popconfirm, Space, Spin, Table, notification } from 'antd';
+import { Button, Col, Pagination, Popconfirm, Row, Select, Space, Spin, Table, notification } from 'antd';
 import staffAPI from '~/api/staffAPI';
-import { DeleteOutlined, ReloadOutlined, SyncOutlined } from '@ant-design/icons';
+import { DeleteOutlined, FilterFilled, ReloadOutlined, SyncOutlined } from '@ant-design/icons';
 import styles from './index.module.scss';
 // import FormStaffViewDetails from '../../StaffViewDetails/FormStaffViewDetails';
 import FormStaffEdit from '../../StaffEdit/FormEdit/FormStaffEdit';
@@ -14,6 +14,9 @@ const TableContent = () => {
   const [pagesSize, setPagesSize] = useState(10);
   const [totalItem, setTotalItem] = useState();
   const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('');
+  const [gender, setGender] = useState('');
+  const [role, setRole] = useState('');
 
   const onCancel = () => { };
 
@@ -40,14 +43,15 @@ const TableContent = () => {
 
   useEffect(() => {
     getAll(currentPage, pagesSize);
+    console.log(data);
     setTimeout(() => {
       setLoading(false);
     }, 500);
-  }, [loading, search]);
+  }, [loading, search, status, gender, role]);
 
   const getAll = async (current, pageSize) => {
     try {
-      const response = await staffAPI.getAllStaff(search, current, pageSize);
+      const response = await staffAPI.getAllStaffs(search, status, gender, role, current, pageSize);
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
       setData(data);
@@ -62,10 +66,32 @@ const TableContent = () => {
       render: (text, record, index) => <span>{(currentPage - 1) * pagesSize + index + 1}</span>,
     },
     {
-      title: 'Mã nhân viên',
+      title: 'Mã',
       dataIndex: 'staffCode',
       sorter: (a, b) => a.staffCode.localeCompare(b.staffCode),
       width: '7%',
+    },
+    {
+      title: 'Chức vụ',
+      dataIndex: ['users', 'role'],
+      width: '8%',
+      render: (text, record) => {
+        let statusText;
+        let statusClass;
+
+        switch (record.users.role) {
+          case 'ROLE_ADMIN':
+            statusText = 'Admin';
+            break;
+          case 'ROLE_STAFF':
+            statusText = 'Nhân viên';
+            break;
+          default:
+            statusText = 'Null';
+            statusClass = 'inactive-status';
+        }
+        return <span className={statusClass}>{statusText}</span>;
+      },
     },
     {
       title: 'Họ và tên',
@@ -93,39 +119,18 @@ const TableContent = () => {
         return gender ? 'Nam' : 'Nữ';
       },
     },
-    {
-      title: 'Chức vụ',
-      dataIndex: ['users', 'role'],
-      width: '8%',
-      render: (text, record) => {
-        let statusText;
-        let statusClass;
 
-        switch (record.users.role) {
-          case 'ROLE_ADMIN':
-            statusText = 'Admin';
-            break;
-          case 'ROLE_STAFF':
-            statusText = 'Nhân viên';
-            break;
-          default:
-            statusText = 'Null';
-            statusClass = 'inactive-status';
-        }
-        return <span className={statusClass}>{statusText}</span>;
-      },
-    },
     {
-      title: 'Ghi chú',
-      dataIndex: ['users', 'userNote'],
+      title: 'Địa chỉ',
+      dataIndex: ['users', 'address'],
       // sorter: (a, b) => a.users.userNote.localeCompare(b.users.userNote),
-      width: '12%',
+      width: '14%',
     },
 
     {
       title: 'Trạng thái',
       dataIndex: 'staffStatus',
-      width: '12%',
+      width: '8%',
       render: (text, record) => {
         let statusText;
         let statusClass;
@@ -195,7 +200,76 @@ const TableContent = () => {
 
   return (
     <div>
-      <SearchForm onSubmit={handleSearchChange} />
+      <Row>
+        <h2 style={{ margin: '15px' }}>
+          <FilterFilled /> Bộ lọc
+        </h2>
+      </Row>
+      <Row style={{ textAlign: 'center' }}>
+        <Col span={5}>
+          <div style={{ marginTop: '15px' }}>
+            <span style={{ marginTop: '20px', fontSize: '20px', fontWeight: 600 }}>
+              Chức vụ
+              <Select
+                bordered={false}
+                style={{ width: '40%', borderBottom: '1px solid #ccc', marginLeft: '10px' }}
+                onChange={(value) => {
+                  setRole(value);
+                }}
+                defaultValue=""
+              >
+                <Select.Option value="">Tất cả</Select.Option>
+                <Select.Option value="ROLE_ADMIN">Admin</Select.Option>
+                <Select.Option value="ROLE_STAFF">Nhân viên</Select.Option>
+              </Select>
+            </span>
+          </div>
+        </Col>
+        <Col span={5}>
+          <div style={{ marginTop: '15px' }}>
+            <span style={{ marginLeft: '10%', marginTop: '20px', fontSize: '20px', fontWeight: 600 }}>
+              Trạng thái
+              <Select
+                bordered={false}
+                style={{ width: '40%', borderBottom: '1px solid #ccc', marginLeft: '10px' }}
+                onChange={(value) => {
+                  setStatus(value);
+                }}
+                defaultValue=""
+              >
+                <Select.Option value="">Tất cả</Select.Option>
+                <Select.Option value="1">Đang làm</Select.Option>
+                <Select.Option value="0">Tạm dừng</Select.Option>
+                <Select.Option value="-1">Nghỉ làm</Select.Option>
+              </Select>
+            </span>
+          </div>
+        </Col>
+        <Col span={5}>
+          <div style={{ marginTop: '15px' }}>
+            <span style={{ marginLeft: '10%', marginTop: '20px', fontSize: '20px', fontWeight: 600 }}>
+              Giới tính
+              <Select
+                bordered={false}
+                style={{ width: '40%', borderBottom: '1px solid #ccc', marginLeft: '10px' }}
+                onChange={(value) => {
+                  setGender(value);
+                }}
+                defaultValue=""
+              >
+                <Select.Option value="">Tất cả</Select.Option>
+                <Select.Option value="true">Nam</Select.Option>
+                <Select.Option value="false">Nữ</Select.Option>
+              </Select>
+            </span>
+          </div>
+        </Col>
+
+        <Col span={9}>
+          <SearchForm onSubmit={handleSearchChange} />
+        </Col>
+      </Row>
+
       <FormStaffCreate reload={() => setLoading(true)} />
       <Button icon={<ReloadOutlined />} onClick={() => setLoading(true)} style={{ marginLeft: '10px' }} loading={loading}></Button>
 

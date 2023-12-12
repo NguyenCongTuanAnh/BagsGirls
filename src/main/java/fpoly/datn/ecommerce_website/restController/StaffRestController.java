@@ -5,6 +5,7 @@ import fpoly.datn.ecommerce_website.dto.StaffDTO1;
 import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Staffs;
 import fpoly.datn.ecommerce_website.entity.Users;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Role;
 import fpoly.datn.ecommerce_website.repository.IStaffRepository;
 import fpoly.datn.ecommerce_website.repository.IUserRepository;
 import fpoly.datn.ecommerce_website.service.serviceImpl.CustomerServiceImpl;
@@ -54,9 +55,21 @@ public class StaffRestController {
     public ResponseEntity<?> getAll(
             @RequestParam(name = "search", defaultValue = "") String search,
             @RequestParam(name = "page", defaultValue = "0") int pageNum,
-            @RequestParam(name = "size", defaultValue = "10") int pageSize) {
-        Page<Staffs> staffPage = staffService.findAllPage(search, pageNum, pageSize);
-        return new ResponseEntity<>(staffPage, HttpStatus.OK);
+            @RequestParam(name = "size", defaultValue = "10") int pageSize,
+            @RequestParam(name = "status", required = false) Integer status,
+            @RequestParam(name = "gender", required = false) Boolean gender,
+            @RequestParam(name = "role", required = false) String role
+    ) {
+        if(role.equalsIgnoreCase("ROLE_ADMIN")){
+            Page<Staffs> staffPage = staffService.findAllPage(search, status, gender, Role.ROLE_ADMIN, pageNum, pageSize);
+            return new ResponseEntity<>(staffPage, HttpStatus.OK);
+        }else if(role.equalsIgnoreCase("ROLE_STAFF")){
+            Page<Staffs> staffPage = staffService.findAllPage(search, status, gender, Role.ROLE_STAFF, pageNum, pageSize);
+            return new ResponseEntity<>(staffPage, HttpStatus.OK);
+        }else{
+            Page<Staffs> staffPage = staffService.findAllPage(search, status, gender, null, pageNum, pageSize);
+            return new ResponseEntity<>(staffPage, HttpStatus.OK);
+        }
     }
 
     @RequestMapping(value = "/staff", method = RequestMethod.GET)
@@ -92,10 +105,20 @@ public class StaffRestController {
         return new ResponseEntity<>(staffService.update(id, staffDTO),
                 HttpStatus.OK);
     }
+
     @RequestMapping(value = "/staff/update", method = RequestMethod.PUT)
     public ResponseEntity<?> staffUpdate(@Valid  @RequestBody Staffs staff) {
         return new ResponseEntity<>(staffService.staffUpdate( staff),
                 HttpStatus.OK);
+
+    @RequestMapping(value = "/staff/forget-password", method = RequestMethod.PUT)
+    public ResponseEntity<?> forgetPassword(
+            @RequestParam(name = "staffId") String staffId,
+            @RequestParam(name = "password") String password
+    ) {
+        return new ResponseEntity<>
+                (staffService.forgetPassword(staffId, password), HttpStatus.OK);
+
     }
 
     // updateStatus

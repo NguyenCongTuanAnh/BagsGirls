@@ -2,9 +2,11 @@
 
 .search {
     &Container {
-        padding-top : 20px;
-        width       : 80%;
-        padding-left: 350px;
+        padding-top   : 10px;
+        width         : 100%;
+        padding-left  : 10%;
+        padding-right : 10%;
+        padding-bottom: 20px;
     }
 
     &Ttitle {
