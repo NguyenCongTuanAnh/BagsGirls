@@ -51,7 +51,7 @@ const TableContent = () => {
 
   const getAll = async (current, pageSize) => {
     try {
-      const response = await staffAPI.getAllStaffs(search, status, gender, role, current, pageSize);
+      const response = await staffAPI.getAlls(search, status, gender, role, current, pageSize);
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
       setData(data);

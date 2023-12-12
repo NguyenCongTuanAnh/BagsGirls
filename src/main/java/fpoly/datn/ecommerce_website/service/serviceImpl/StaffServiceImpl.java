@@ -1,5 +1,6 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
+import fpoly.datn.ecommerce_website.dto.StaffDTO;
 import fpoly.datn.ecommerce_website.dto.StaffDTO1;
 import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Staffs;
@@ -74,12 +75,37 @@ public class StaffServiceImpl implements IStaffService {
             throw new IllegalStateException("Failed to save UserInfo");
         }
     }
+    @Override
+    public Staffs signup(StaffDTO staffDTO) {
+        Staffs staff = modelMapper.map(staffDTO, Staffs.class);
+
+        if (staff != null) {
+            staff.getUsers().setPassword(passwordEncoder.encode(staffDTO.getUsers().getPassword()));
+            return staffRepository.save(staff);
+        } else {
+            throw new IllegalStateException("Failed to save UserInfo");
+        }
+    }
+    @Override
+    public Staffs staffUpdate(Staffs staffs) {
+
+
+
+
+        if (staffs != null) {
+
+            return staffRepository.save(staffs);
+        } else {
+            throw new IllegalStateException("Failed to save UserInfo");
+        }
+    }
 
     public Staffs forgetPassword(String staffId, String password) {
         Staffs staffs = staffRepository.findById(staffId).get();
         staffs.getUsers().setPassword(passwordEncoder.encode(password));
         return staffRepository.save(staffs);
     }
+
 
     @Override
     public Staffs findByEmail(String mail) {

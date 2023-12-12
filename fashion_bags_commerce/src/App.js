@@ -52,6 +52,7 @@ import LoginFormStaff from './pages/Login/FormLogin/FormLoginStaff/LoginFormStaf
 import CustomerProfile from './pages/Home/InfoCustomer/index';
 import AddressCustomer from './pages/Home/InfoCustomer/InformationCustomer/InformationCustomer';
 import CustomerGuard from './api/auth/guard/CustomerGuard';
+import ProfilePage from './pages/Admin/ProfilePage/ProfilePage';
 
 function App() {
   return (
@@ -108,6 +109,31 @@ function App() {
             }
           />
 
+          <Route
+            path="/admin"
+            element={
+              <StaffAuth>
+                <Admin />
+              </StaffAuth>
+            }
+          />
+
+          <Route
+            path="/frofile"
+            element={
+              <StaffAuth>
+                <ProfilePage />
+              </StaffAuth>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <StaffAuth>
+                <Admin />
+              </StaffAuth>
+            }
+          />
           <Route
             path="/admin"
             element={

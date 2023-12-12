@@ -19,7 +19,7 @@ public interface IBillService {
 
     Page<BillsDTO> getPagination(int pageNum, int pageSize);
 
-    Page<BillsDTO> getAllBillsPagination( Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize,List<String> sortList,
+    Page<BillsDTO> getAllBillsPagination( Date startDate, Date endDate, Integer status, String billCode, int pageNum, int pageSize,List<String> sortList,
                                           String sortOrder);
 
     Page<BillsDTO> getAllBillsOffline(
@@ -27,7 +27,7 @@ public interface IBillService {
             Date startDate,
             Date endDate,
             Integer status,
-            String search,
+            String billCode,
             int pageNum,
             int pageSize,
             List<String> sortList,

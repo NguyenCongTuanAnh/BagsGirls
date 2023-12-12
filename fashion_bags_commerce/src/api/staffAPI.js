@@ -12,11 +12,11 @@ const staffAPI = {
       },
     });
   },
-  getAllStaff() {
+  getAllStaffs() {
     const url = 'api/staff/get-all';
     return axiosClient.get(url);
   },
-  getAllStaffs(search, status, gender, role, pageNum, pageSize) {
+  getAlls(search, status, gender, role, pageNum, pageSize) {
     const url = 'api/staff/pagination';
     return axiosClient.get(url, {
       params: {
@@ -24,6 +24,17 @@ const staffAPI = {
         status: status,
         gender: gender,
         role: role,
+        page: pageNum - 1,
+        size: pageSize,
+      },
+    });
+  },
+
+  getAllStaff(search, pageNum, pageSize) {
+    const url = 'api/staff/pagination';
+    return axiosClient.get(url, {
+      params: {
+        search: search,
         page: pageNum - 1,
         size: pageSize,
       },
@@ -68,8 +79,24 @@ const staffAPI = {
       },
     });
   },
+  signup(data) {
+    const url = `api/staff/signup`;
+    return axiosClient.post(url, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
   update(id, data) {
     const url = `api/staff?id=${id}`;
+    return axiosClient.put(url, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
+  staffUpdate(data) {
+    const url = `api/staff/update`;
     return axiosClient.put(url, data, {
       headers: {
         'Content-Type': 'application/json',

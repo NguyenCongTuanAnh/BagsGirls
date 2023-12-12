@@ -67,7 +67,7 @@ public class BillServiceImpl implements IBillService {
     }
 
     @Override
-    public Page<BillsDTO> getAllBillsOffline(String filterStaffName, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize, List<String> sortList,
+    public Page<BillsDTO> getAllBillsOffline(String filterStaffName, Date startDate, Date endDate, Integer status, String billCode, int pageNum, int pageSize, List<String> sortList,
                                              String sortOrder) {
         PageRequest pageable = PageRequest.of(pageNum, pageSize, Sort.by(createSortOrder(sortList, sortOrder)));
 
@@ -75,7 +75,7 @@ public class BillServiceImpl implements IBillService {
                         status,
                         startDate,
                         endDate,
-                        search,
+                        billCode,
 //                        filterStaffName,
                         pageable
                 );

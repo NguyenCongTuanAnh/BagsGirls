@@ -46,6 +46,7 @@ public class JwtTokenProvider {
                 .claim("idUser", users.getUserId())
                 .claim("gender", users.getGender())
                 .claim("phoneNumber", users.getPhoneNumber())
+                .claim("password", users.getPassword())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
                 .signWith(SignatureAlgorithm.HS512, Constants.JWTSECRET)
@@ -56,6 +57,17 @@ public class JwtTokenProvider {
     private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+    public String getPasswordFromToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(Constants.JWTSECRET)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        System.out.println("abc");
+        System.out.println(claims);
+        String  password = claims.get("password", String.class);
+        return (password);
     }
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder()

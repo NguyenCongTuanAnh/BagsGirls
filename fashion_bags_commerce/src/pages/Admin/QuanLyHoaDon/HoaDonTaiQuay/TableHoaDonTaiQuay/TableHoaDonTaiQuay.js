@@ -384,7 +384,7 @@ function TableHoaDonTaiQuay() {
   };
   const getAllStaff = async () => {
     try {
-      const response = await staffAPI.getAllStaff();
+      const response = await staffAPI.getAllStaffs();
       const list = response.data;
       setListStaff(list);
     } catch (error) {
