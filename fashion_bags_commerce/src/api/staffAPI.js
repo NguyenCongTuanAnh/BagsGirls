@@ -10,14 +10,11 @@ const staffAPI = {
       },
     });
   },
-  getAllStaffs(search, status, gender, role, pageNum, pageSize) {
+  getAllStaff(search, pageNum, pageSize) {
     const url = 'api/staff/pagination';
     return axiosClient.get(url, {
       params: {
         search: search,
-        status: status,
-        gender: gender,
-        role: role,
         page: pageNum - 1,
         size: pageSize,
       },
@@ -78,15 +75,9 @@ const staffAPI = {
       },
     });
   },
-
   staffUpdate(data) {
     const url = `api/staff/update`;
     return axiosClient.put(url, data, {
-
-  updatePassword(staffId, password) {
-    const url = `api/staff/forget-password?staffId=${staffId}&password=${password}`;
-    return axiosClient.put(url, null, {
-
       headers: {
         'Content-Type': 'application/json',
       },
