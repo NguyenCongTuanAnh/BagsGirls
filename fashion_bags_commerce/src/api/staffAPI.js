@@ -83,6 +83,14 @@ const staffAPI = {
       },
     });
   },
+  updatePassword(staffId, password) {
+    const url = `api/staff/forget-password?staffId=${staffId}&password=${password}`;
+    return axiosClient.put(url, null, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
   updateStatus(id, status) {
     const url = `api/staff/update-status?id=${id}&status=${status}`;
     return axiosClient.put(url, null, {
