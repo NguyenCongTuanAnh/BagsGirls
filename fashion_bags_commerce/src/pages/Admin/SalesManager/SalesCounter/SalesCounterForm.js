@@ -42,6 +42,7 @@ import moment from 'moment/moment';
 import Search from 'antd/es/input/Search';
 import { MdRestore } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom';
+import { getStaff } from '~/api/auth/helper/UserCurrent';
 const { Option } = AutoComplete;
 
 const SalesCounterForm = () => {
@@ -112,7 +113,7 @@ const SalesCounterForm = () => {
     const [totalPayment, setTotalPayment] = useState(0);
     const [totalAmount, setTotalAmount] = useState(0);
     const [staffId, setStaffId] = useState('');
-    const [staff, setStaff] = useState(JSON.parse(localStorage.getItem('staffTokenString')));
+    const [staff, setStaff] = useState(getStaff());
     const [billInfo, setBillInfo] = useState({});
     const [form] = Form.useForm();
     const searchInputRef = useRef(null);

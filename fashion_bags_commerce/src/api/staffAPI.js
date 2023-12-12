@@ -62,6 +62,14 @@ const staffAPI = {
       },
     });
   },
+  signup(data) {
+    const url = `api/staff/signup`;
+    return axiosClient.post(url, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
   update(id, data) {
     const url = `api/staff?id=${id}`;
     return axiosClient.put(url, data, {
@@ -70,9 +78,15 @@ const staffAPI = {
       },
     });
   },
+
+  staffUpdate(data) {
+    const url = `api/staff/update`;
+    return axiosClient.put(url, data, {
+
   updatePassword(staffId, password) {
     const url = `api/staff/forget-password?staffId=${staffId}&password=${password}`;
     return axiosClient.put(url, null, {
+
       headers: {
         'Content-Type': 'application/json',
       },

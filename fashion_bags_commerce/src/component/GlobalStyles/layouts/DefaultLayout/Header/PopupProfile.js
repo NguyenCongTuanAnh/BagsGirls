@@ -11,7 +11,6 @@ function PopupProfile() {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [staff, setStaff] = useState(getStaff());
-  console.log(staff);
   const key = 'updatable';
   const navigate = useNavigate();
   let canNavigate = false;
@@ -30,9 +29,10 @@ function PopupProfile() {
       });
       canNavigate = true;
       setTimeout(() => {
-        localStorage.removeItem('staffTokenString');
+        localStorage.removeItem('staffDecodeString');
         localStorage.removeItem('staffId');
-        localStorage.removeItem('token');
+
+        localStorage.removeItem('staffToken');
         navigate('/admin/login');
         window.location.reload();
       }, 1000);
@@ -54,13 +54,16 @@ function PopupProfile() {
           onConfirm={handleLgOut}
           onCancel={() => {}}
         >
-          <Button>
-            <LogoutOutlined key="setting" />
-          </Button>
-          ,
+          <Button icon={<LogoutOutlined />}>Đăng xuất</Button>
         </Popconfirm>,
-        <EditOutlined key="edit" />,
-        <EllipsisOutlined key="ellipsis" />,
+        <Button
+          icon={<EditOutlined />}
+          onClick={() => {
+            navigate('/frofile');
+          }}
+        >
+          Thông Tin
+        </Button>,
       ]}
     >
       <Meta
@@ -73,7 +76,7 @@ function PopupProfile() {
     </Card>
   );
   return (
-    <Popover content={PopupProContent} title="Thông tin Người Dùng" trigger="click">
+    <Popover content={PopupProContent} title="Thông tin Nhân Viên" trigger="click">
       {contextHolder}
       <Badge dot={true}>
         <div style={{ cursor: 'pointer' }}>

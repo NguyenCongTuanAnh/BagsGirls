@@ -21,6 +21,7 @@ import fpoly.datn.ecommerce_website.service.UserService;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -82,6 +83,19 @@ public class AuthController {
 
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/getPassword")
+    public ResponseEntity<?> getPasswordFromToken(HttpServletRequest request){
+        String authorizationHeader = request.getHeader("Authorization");
+
+        String token = null;
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            token = authorizationHeader.substring(7);
+            return new ResponseEntity<>(this.authService.getPasswordFromToken(token), HttpStatus.OK);
+        }
+        return ResponseEntity.notFound().build();
+
     }
     @PostMapping("/login-google/{tokenId}")
     public ResponseObject loginGoogle(@PathVariable("tokenId") String tokenId) {
