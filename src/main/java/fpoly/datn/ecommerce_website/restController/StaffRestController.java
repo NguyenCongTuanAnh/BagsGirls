@@ -82,10 +82,19 @@ public class StaffRestController {
     public ResponseEntity<Staffs> add(@RequestBody StaffDTO1 staffDTO) {
         return new ResponseEntity<>(this.staffService.save(staffDTO), HttpStatus.OK);
     }
+    @RequestMapping(value = "/staff/signup", method = RequestMethod.POST)
+    public ResponseEntity<Staffs> save(@RequestBody StaffDTO staffDTO) {
+        return new ResponseEntity<>(this.staffService.signup(staffDTO), HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/staff", method = RequestMethod.PUT)
     public ResponseEntity<?> update(@Valid @RequestParam String id, @RequestBody StaffDTO1 staffDTO) {
         return new ResponseEntity<>(staffService.update(id, staffDTO),
+                HttpStatus.OK);
+    }
+    @RequestMapping(value = "/staff/update", method = RequestMethod.PUT)
+    public ResponseEntity<?> staffUpdate(@Valid  @RequestBody Staffs staff) {
+        return new ResponseEntity<>(staffService.staffUpdate( staff),
                 HttpStatus.OK);
     }
 

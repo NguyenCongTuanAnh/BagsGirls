@@ -4,7 +4,6 @@ import Constants from '~/Utilities/Constants';
 const CryptoJS = require('crypto-js');
 export const getUserToken = () => {
   const userToken = JSON.parse(localStorage.getItem('usersTokenString'));
-  console.log(userToken);
   return userToken || null;
 };
 
@@ -42,9 +41,18 @@ export const getCustomer = () => {
 };
 
 export const getStaff = () => {
-  const staffString = CryptoJS.AES.decrypt(localStorage.getItem('staffDecodeString'), Constants.key).toString(
-    CryptoJS.enc.Utf8,
-  );
-  console.log(staffString);
+  const stringUserInfo = localStorage.getItem('staffDecodeString');
+  if (stringUserInfo === null) {
+    return null;
+  }
+  const staffString = CryptoJS.AES.decrypt(stringUserInfo, Constants.key).toString(CryptoJS.enc.Utf8);
+
   return staffString ? JSON.parse(staffString) : null;
+};
+export const covertObjectToDecode = (object) => {
+  const userString = JSON.stringify(object);
+
+  const decodeString = CryptoJS.AES.encrypt(userString, Constants.key).toString();
+
+  return decodeString;
 };

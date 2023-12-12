@@ -179,7 +179,7 @@ function FormProductEdit(props) {
           case 0:
             return 'Không Hoạt Động';
           case -1:
-            return 'Trạng Thái Khác';
+            return 'Hủy Hoạt Động';
           default:
             return 'Không Xác Định';
         }

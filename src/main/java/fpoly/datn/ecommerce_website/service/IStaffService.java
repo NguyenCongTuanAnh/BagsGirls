@@ -1,6 +1,7 @@
 package fpoly.datn.ecommerce_website.service;
 
 import fpoly.datn.ecommerce_website.dto.CustomerDTO;
+import fpoly.datn.ecommerce_website.dto.StaffDTO;
 import fpoly.datn.ecommerce_website.dto.StaffDTO1;
 import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Staffs;
@@ -19,6 +20,10 @@ public interface IStaffService {
     Staffs findById(String id);
 
     Staffs save(StaffDTO1 staffDTO);
+
+    Staffs signup(StaffDTO staffDTO);
+
+    Staffs staffUpdate(Staffs staffs);
 
     Staffs findByEmail(String mail);
 
