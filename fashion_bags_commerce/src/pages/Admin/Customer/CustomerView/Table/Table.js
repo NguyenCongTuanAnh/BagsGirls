@@ -1,5 +1,5 @@
-import React, { useState, useEffect, Fragment } from 'react';
-import { Button, Col, Pagination, Popconfirm, Row, Select, Space, Spin, Table, notification } from 'antd';
+import React, { useState, useEffect, Fragment, useRef } from 'react';
+import { Button, Col, Input, Pagination, Popconfirm, Row, Select, Space, Spin, Table, notification } from 'antd';
 import customerAPI from '~/api/customerAPI';
 import { DeleteOutlined, FilterFilled, ReloadOutlined, SyncOutlined } from '@ant-design/icons';
 import styles from './index.module.scss';
@@ -15,12 +15,14 @@ const TableContent = () => {
   const [pagesSize, setPagesSize] = useState(10);
   const [totalItem, setTotalItem] = useState();
   const [search, setSearch] = useState('');
+  const typingTimeoutRef = useRef(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [status, setStatus] = useState('');
   const [gender, setGender] = useState('');
   const [ranking, setRanking] = useState('');
-  const [sortList, setSortList] = useState('rankingPoints');
-  const [sortOrder, setSortOrder] = useState('DESC');
-  const [sortListPlaceHolder, setSortListPlaceHolder] = useState('rankPointDESC');
+  const [sortList, setSortList] = useState('');
+  const [sortOrder, setSortOrder] = useState('');
+  const [sortListPlaceHolder, setSortListPlaceHolder] = useState('');
 
   const onCancel = () => { };
 
@@ -39,16 +41,16 @@ const TableContent = () => {
     setLoading(true);
   };
 
-  const handleSearchChange = (newFilter) => {
-    if (newFilter === undefined || newFilter.trim().length === 0) {
-      setSearch('');
-      setLoading(true);
-      setCurrentPage(1);
-    } else {
-      setSearch(newFilter.trim());
-      setLoading(true);
-      setCurrentPage(1);
+  const handleSearchChange = (value) => {
+    setSearchTerm(value.target.value.toString());
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
     }
+    typingTimeoutRef.current = setTimeout(() => {
+      setSearch(value.target.value.trim().toString());
+    }, 500);
+    setLoading(true);
+    setCurrentPage(1);
   };
 
   const getAll = async (page, size) => {
@@ -227,6 +229,16 @@ const TableContent = () => {
     });
     setLoading(true);
   };
+  const lamMoiTrang = () => {
+    setSearchTerm('');
+    setSearch('');
+    setStatus('');
+    setGender('');
+    setRanking('');
+    setSortList('');
+    setSortListPlaceHolder('');
+    setSortOrder('');
+  };
 
   return (
     <div
@@ -235,9 +247,14 @@ const TableContent = () => {
       }}
     >
       <Row>
-        <h2 style={{ margin: '15px' }}>
-          <FilterFilled /> Bộ lọc
-        </h2>
+        <Col span={2.5}>
+          <h2 style={{ margin: '15px 30px 15px 15px ' }}>
+            <FilterFilled /> Bộ lọc
+          </h2>
+        </Col>
+        <Col>
+          <Button icon={<ReloadOutlined />} onClick={lamMoiTrang} style={{ marginTop: '20px' }} loading={loading}> Làm mới</Button>
+        </Col>
       </Row>
       <Row style={{ textAlign: 'center' }}>
         <Col span={4}>
@@ -250,7 +267,7 @@ const TableContent = () => {
                 onChange={(value) => {
                   setRanking(value);
                 }}
-                defaultValue=""
+                value={ranking}
               >
                 <Select.Option value="">Tất cả</Select.Option>
                 <Select.Option value="KH_TIEMNANG">Tiềm năng</Select.Option>
@@ -272,7 +289,7 @@ const TableContent = () => {
                 onChange={(value) => {
                   setStatus(value);
                 }}
-                defaultValue=""
+                value={status}
               >
                 <Select.Option value="">Tất cả</Select.Option>
                 <Select.Option value="1">Hoạt động</Select.Option>
@@ -291,7 +308,7 @@ const TableContent = () => {
                 onChange={(value) => {
                   setGender(value);
                 }}
-                defaultValue=""
+                value={gender}
               >
                 <Select.Option value="">Tất cả</Select.Option>
                 <Select.Option value="true">Nam</Select.Option>
@@ -330,13 +347,13 @@ const TableContent = () => {
                     setSortList('rankingPoints');
                     setSortListPlaceHolder('Hạng khách hàng tăng dần');
                   } else {
-                    setSortOrder(null);
-                    setSortList(null);
+                    setSortOrder('');
+                    setSortList('');
                     setSortListPlaceHolder('Không sắp xếp');
                   }
                 }}
               >
-                <Select.Option key={'0'} value={'0'}>
+                <Select.Option key={'0'} value={''}>
                   Không sắp xếp
                 </Select.Option>
                 <Select.Option key={'1'} value={'pointsDESC'}>
@@ -356,7 +373,15 @@ const TableContent = () => {
           </div>
         </Col>
         <Col span={6}>
-          <SearchForm onSubmit={handleSearchChange} />
+          <div className={styles.searchContainer}>
+            <Input
+              className={styles.searchIinput}
+              type="text"
+              placeholder="Tìm kiếm"
+              value={searchTerm}
+              onChange={handleSearchChange}
+            ></Input>
+          </div>
         </Col>
       </Row>
       <FormCustomerCreate reload={() => setLoading(true)} />
