@@ -65,17 +65,10 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
 //            " OR (b.customer IS NOT NULL AND b.customer.users.phoneNumber LIKE %:search%) " +
 
     @Query(value = "SELECT b FROM Bills b " +
-//            " join Staffs s on b.staff.staffId = s.staffId " +
-//            " join Customers c on b.customer.customerId = c.customerId " +
             " WHERE ( :status IS NULL OR b.billStatus = :status ) " +
             " AND ( b.billCreateDate BETWEEN :startDate AND :endDate ) " +
-            " AND ( :billCode IS NULL OR b.billCode like %:billCode% ) " 
-//            " AND ( :search IS NULL OR b.billCode like %:search% ) "
-//            " OR b.orderPhone LIKE %:search% " +
-//            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
-//            " OR b.receiverName LIKE %:search% ) "
-//            " AND ( :search IS NULL OR b.receiverName LIKE %:search% ) " +
-//            " AND ( :filterStaffName IS NULL OR b.orderPhone LIKE %:filterStaffName% ) "
+            " AND ( :billCode IS NULL OR b.billCode like %:billCode% ) "
+
     )
     Page<Bills> findAllBillsOffline(
             @Param("status") Integer status,
