@@ -567,13 +567,17 @@ function ProfileComponent() {
   return (
     <Fragment>
       {contextHolder}
-      <Tabs activeKey={activeTab} onChange={handleTabChange} tabPosition="left">
-        {tabContent.map((tab) => (
-          <Tabs.TabPane key={tab.key} tab={tab.tab}>
-            {tab.content}
-          </Tabs.TabPane>
-        ))}
-      </Tabs>
+
+      <Tabs
+        activeKey={activeTab}
+        onChange={handleTabChange}
+        tabPosition="left"
+        items={tabContent.map((tab) => ({
+          key: tab.key,
+          label: tab.tab,
+          children: tab.content,
+        }))}
+      />
     </Fragment>
   );
 }

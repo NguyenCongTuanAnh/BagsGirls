@@ -112,7 +112,7 @@ public class CustomerServiceImpl implements ICustomerService {
         Customers customers = modelMapper.map(customerDTO, Customers.class);
         Users userInfo = modelMapper.map(customerDTO.getUsers(), Users.class);
         userInfo.setRole(customerDTO.getUsers().getRole());
-//        userInfo.setPassword(customerDTO.getUsers().getPassword());
+        userInfo.setPassword(passwordEncoder.encode(customerDTO.getUsers().getPassword()));
         Users savedUserInfo = userInfoRepository.save(userInfo);
         if (savedUserInfo != null) {
             customers.setUsers(savedUserInfo);

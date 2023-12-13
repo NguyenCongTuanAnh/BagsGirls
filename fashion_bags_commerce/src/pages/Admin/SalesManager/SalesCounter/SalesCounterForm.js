@@ -438,7 +438,7 @@ const SalesCounterForm = () => {
           billCode: values.billCode,
           billCreateDate: formattedDate,
           billDatePayment: formattedDate,
-          billShipDate: null,
+          billShipDate: formattedDate,
           billReceiverDate: formattedDate,
           billTotalPrice: totalPrice,
           productAmount: handleCacuTotalAmount(),
@@ -446,10 +446,10 @@ const SalesCounterForm = () => {
             totalPrice + totalPrice * VAT - voucherPrice - totalPrice * (discountPercentByRankingName / 100),
           shippingAddress: null,
           billingAddress: null,
-          receiverName: null,
-          shipPrice: null,
-          orderEmail: null,
-          orderPhone: null,
+          receiverName: customer.users.fullName,
+          shipPrice: 0,
+          orderEmail: customer.users.email,
+          orderPhone: customer.users.phoneNumber,
           paymentMethod: values.paymentMethod,
           billNote: values.billNote,
           billStatus: 1,
@@ -566,6 +566,7 @@ const SalesCounterForm = () => {
                   setSelectedItems(updatedItems);
                   setInputValue(item.product.productCode);
                   setTotalPrice(calculateTotalPrice(updatedItems));
+                  soundEffect.play();
                   notification.success({
                     message: 'Thành Công',
                     description: 'Số lượng đã được Update!!!!',
@@ -1398,11 +1399,13 @@ const SalesCounterForm = () => {
                         <Col span={4}>
                           <div>
                             <Modal
-                              title="Basic Modal"
+                              title="Quét Mã"
                               width={250}
                               open={isModalQROpen}
                               onOk={handleOk}
                               onCancel={handleCancel}
+                              closable={false}
+                              okButtonProps={{ hidden: true }}
                             >
                               {isModalQROpen ? <QRCodeScanner showScanner={showScanner}></QRCodeScanner> : ''}
                             </Modal>

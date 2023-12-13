@@ -111,6 +111,7 @@ public class StaffRestController {
         return new ResponseEntity<>(staffService.staffUpdate(staff),
                 HttpStatus.OK);
     }
+
     @RequestMapping(value = "/staff/forget-password", method = RequestMethod.PUT)
     public ResponseEntity<?> forgetPassword(
             @RequestParam(name = "staffId") String staffId,

@@ -185,8 +185,11 @@ function LoginForm(props) {
           </Form.Item>
         </Form>
 
-        <Button className={styles.linkBtn} onClick={() => navigate('/signup')}>
-          Bạn đã chưa có tài khoản? Đăng kí ở đây!!!
+        <Button type="link" className={styles.linkBtn} onClick={() => navigate('/signup')}>
+          Đăng kí tài khoản?
+        </Button>
+        <Button className={styles.linkBtn} onClick={() => navigate('/forget-password')}>
+          Quên mật khẩu?
         </Button>
       </div>
     </div>

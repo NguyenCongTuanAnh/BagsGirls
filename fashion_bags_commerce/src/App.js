@@ -53,6 +53,7 @@ import CustomerProfile from './pages/Home/InfoCustomer/index';
 import AddressCustomer from './pages/Home/InfoCustomer/InformationCustomer/InformationCustomer';
 import CustomerGuard from './api/auth/guard/CustomerGuard';
 import ProfilePage from './pages/Admin/ProfilePage/ProfilePage';
+import ForgotPassword from './pages/Login/FormLogin/FormForgotPassword/FormForgotPassword';
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
         <Routes>
           <Route path="/admin/login" element={<LoginFormStaff />} />
           <Route path="/login" element={<LoginForm />} />
+          <Route path="/forget-password" element={<ForgotPassword />} />
           <Route path="/signup" element={<RegisterForm />} />
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
