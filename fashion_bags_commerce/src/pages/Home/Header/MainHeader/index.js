@@ -18,7 +18,6 @@ function MainHeader() {
   const location = useLocation();
   const [messageApi, contextHolder] = message.useMessage();
 
-
   console.log('>>> location: ', location);
 
   useEffect(() => {
@@ -34,18 +33,17 @@ function MainHeader() {
     }
   }, []);
 
-  const   changeLoggedIn = () => {
+  const changeLoggedIn = () => {
     setIsLoggedIn(false);
     localStorage.removeItem('customerDecodeString');
     localStorage.removeItem('customerId');
     localStorage.removeItem('customerToken');
     localStorage.removeItem('temporaryCart');
-    navigate('/')
+    navigate('/');
     messageApi.open({
       type: 'success',
       content: 'Đăng xuất thành công',
     });
-
   };
 
   const handleSearch = () => {
@@ -110,7 +108,11 @@ function MainHeader() {
       {contextHolder}
       <div className={styles.mainHeader}>
         <Link to={'/'}>
-          <img className={styles.image} alt="img" src="https://i.imgur.com/e1Tfbn5.png"></img>
+          <img
+            className={styles.image}
+            alt="img"
+            src="https://firebasestorage.googleapis.com/v0/b/bagsgirl-datn.appspot.com/o/Image%2Flogo.png?alt=media&token=5eac10cf-5998-459a-90ab-9ae86c0c631e"
+          ></img>
         </Link>
         <div className={styles.content}>
           <div className={styles.toolLeft}></div>

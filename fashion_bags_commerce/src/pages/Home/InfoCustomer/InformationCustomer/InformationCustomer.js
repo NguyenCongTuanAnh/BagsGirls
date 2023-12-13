@@ -39,6 +39,7 @@ function AddressCustomer() {
         setPhoneNumber(data.users.phoneNumber || '');
         setAddress(data.users.address || '');
         setBirthDay(data.users.birthDay || '');
+        setGender(data.users.gender || '');
       })
       .catch((error) => {
         console.error('Error fetching customer data:', error);
@@ -52,7 +53,7 @@ function AddressCustomer() {
         description: 'Vui lòng nhập đầy đủ thông tin',
         duration: 2,
       });
-  
+
       // Fill out the empty fields for easier correction
       if (!fullName) setFullName(customerInfo?.users?.fullName || '');
       if (!phoneNumber) setPhoneNumber(customerInfo?.users?.phoneNumber || '');
@@ -61,7 +62,7 @@ function AddressCustomer() {
       if (!selectedDistrict) setSelectedDistrict(customerInfo?.users?.districtCode || '');
       if (!selectedWard) setSelectedWard(customerInfo?.users?.wardCode || '');
       if (!address) setAddress(customerInfo?.users?.address || '');
-  
+
       return;
     }
     const getNameFromCode = (code, list) => {
@@ -77,11 +78,11 @@ function AddressCustomer() {
     const updateFunction = async () => {
       const user = customer?.users;
       const updatedFields = {
-        fullName,
+        fullName: fullName,
         address: fullAddress,
-        gender,
-        birthDay,
-        phoneNumber,
+        gender: gender,
+        birthDay: birthDay,
+        phoneNumber: phoneNumber,
       };
       const filteredFields = Object.keys(updatedFields).reduce((acc, key) => {
         if (updatedFields[key] !== user[key]) {
@@ -92,12 +93,21 @@ function AddressCustomer() {
 
       const update = {
         customerId: customer.customerId,
+        customerCode: customer.customerCode,
+        customerRanking: customer.customerRanking,
+        rankingPoints: customer.rankingPoints,
+        customerStatus: customer.customerStatus,
         users: {
           userId: user.userId,
-          ...filteredFields,
+          fullName: user.fullName,
           password: user.password,
           email: user.email,
+          ...filteredFields,
           phoneNumber: user.phoneNumber,
+          account: user.account,
+          gender: user.gender,
+          address: fullAddress,
+
           role: 'ROLE_CUSTOMER',
         },
       };
@@ -182,54 +192,51 @@ function AddressCustomer() {
 
   return (
     <div>
-        {customerInfo && displayInfoAddress && (
+      {customerInfo && displayInfoAddress && (
+        <div>
           <div>
-            <div>
-              <h5 style={{ textAlign: 'center' }}>THÔNG TIN CÁ NHÂN CỦA BẠN</h5>
-            </div>
-            <div className="thongTinKhachHang">
-              <p style={{ fontSize: '15px' }}>
-                <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Họ và tên:</span> {customerInfo.users.fullName}
-              </p>
-              <p style={{ fontSize: '15px' }}>
-                <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Số điện thoại:</span>{' '}
-                {customerInfo.users.phoneNumber}
-              </p>
-              <p style={{ fontSize: '15px' }}>
-                <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Email:</span> {customer.users.email}
-              </p>
-              <p style={{ fontSize: '15px' }}>
-                <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Ngày sinh:</span> {customerInfo.users.birthDay}
-              </p>
-              <p style={{ fontSize: '15px' }}>
-                <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Địa chỉ:</span> {customerInfo.users.address}
-              </p>
+            <h5 style={{ textAlign: 'center' }}>THÔNG TIN CÁ NHÂN CỦA BẠN</h5>
+          </div>
+          <div className="thongTinKhachHang">
+            <p style={{ fontSize: '15px' }}>
+              <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Họ và tên:</span> {customerInfo.users.fullName}
+            </p>
+            <p style={{ fontSize: '15px' }}>
+              <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Số điện thoại:</span>{' '}
+              {customerInfo.users.phoneNumber}
+            </p>
+            <p style={{ fontSize: '15px' }}>
+              <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Email:</span> {customer.users.email}
+            </p>
+            <p style={{ fontSize: '15px' }}>
+              <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Ngày sinh:</span> {customerInfo.users.birthDay}
+            </p>
+            <p style={{ fontSize: '15px' }}>
+              <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Địa chỉ:</span> {customerInfo.users.address}
+            </p>
 
-              <div
-                onClick={() => {
-                  setDisplayUpdateAddress(true);
-                  setDisplayInfoAddress(false);
-                }}
-                className="changleAddress"
-                style={{
-                  width: '100%',
-                  background: '#ff5733',
-                  padding: '20px 20px',
-                  margin: '30px 0 0 0',
-                  cursor: 'pointer',
-                  color: 'white',
-                  textAlign: 'center',
-                  transition: 'background 0.3s',
-                  ':hover': {
-                    background: 'white',
-                  },
-                }}
-              >
-                <EditOutlined /> Thay đổi
-              </div>
+            <div
+              onClick={() => {
+                setDisplayUpdateAddress(true);
+                setDisplayInfoAddress(false);
+              }}
+              className="changleAddress"
+              style={{
+                width: '100%',
+                background: 'orange',
+                padding: '20px 20px',
+                margin: '30px 0 0 0',
+                cursor: 'pointer',
+                color: 'white',
+                textAlign: 'center',
+                transition: 'background 0.3s',
+              }}
+            >
+              <EditOutlined /> Thay đổi
             </div>
           </div>
-        )}
+        </div>
+      )}
 
       {displayUpdateAddress && (
         <div>
@@ -382,7 +389,7 @@ function AddressCustomer() {
             >
               <span>
                 <div className="btn-container">
-                  <div
+                  <button
                     className="btn-back"
                     onClick={() => {
                       setDisplayInfoAddress(true);
@@ -390,18 +397,16 @@ function AddressCustomer() {
                     }}
                   >
                     <RollbackOutlined /> Quay lại
-                  </div>
+                  </button>
 
-                  <div className="btn-update" onClick={handleConfirmation}>
+                  <button className="btn-update" onClick={handleConfirmation}>
                     <EditOutlined />
                     Cập nhật
-                  </div>
+                  </button>
                 </div>
               </span>
             </div>
           </div>
-
-          <br></br>
         </div>
       )}
     </div>

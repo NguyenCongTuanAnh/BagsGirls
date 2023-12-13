@@ -18,10 +18,11 @@ import {
   ClockCircleOutlined,
   CloseCircleOutlined,
   FilterFilled,
+  StarFilled,
   SyncOutlined,
   TableOutlined,
 } from '@ant-design/icons';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import billsAPI from '~/api/BillApi';
 import staffAPI from '~/api/staffAPI';
 import styles from './index.module.scss';
@@ -40,7 +41,7 @@ function TableHoaDonTaiQuay() {
   const [loading, setLoading] = useState(true);
   const [PageNum, setPageNum] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [status, setStatus] = useState('0');
+  const [status, setStatus] = useState('');
   const [search, setSearch] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -64,12 +65,25 @@ function TableHoaDonTaiQuay() {
       title: 'Mã hóa đơn',
       dataIndex: 'billCode',
       key: 'code',
-      width: '10%',
+      width: '6%',
+    },
+    {
+      title: 'Loại hóa đơn',
+      dataIndex: 'staff',
+      key: 'staffCode',
+      width: '6%',
+      render: (staff) => {
+        if (staff && staff.users) {
+          return "Tại quầy";
+        } else {
+          return "Online";
+        }
+      },
     },
     {
       title: 'Ngày tạo',
       dataIndex: 'billCreateDate',
-      width: '15%',
+      width: '12%',
       sorter: (a, b) => a.billCreateDate.localeCompare(b.billCreateDate),
       render: (date) => {
         const formattedDate = dayjs(date).add(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
@@ -77,15 +91,15 @@ function TableHoaDonTaiQuay() {
       },
     },
     {
-      title: 'Tên nhân viên',
+      title: 'Mã nhân viên',
       dataIndex: 'staff',
-      key: 'staffName',
-      width: '15%',
+      key: 'staffCode',
+      width: '5%',
       render: (staff) => {
-        if (staff && staff.users && staff.users.fullName) {
-          return staff.users.fullName;
+        if (staff && staff.users) {
+          return staff.staffCode;
         } else {
-          return 'NULL';
+          return '';
         }
       },
     },
@@ -93,9 +107,12 @@ function TableHoaDonTaiQuay() {
       title: 'Tên khách hàng',
       dataIndex: 'receiverName',
       key: 'receiverName',
-      width: '15%',
+      width: '12%',
       render: (text, record) => {
         if (record.customer == null) {
+          if (record.receiverName == null) {
+            return "";
+          }
           return record.receiverName;
         } else {
           return record.customer.users.fullName;
@@ -103,23 +120,36 @@ function TableHoaDonTaiQuay() {
       },
     },
     {
-      title: 'Số điện thoại',
+      title: 'SĐT khách hàng',
       dataIndex: 'orderPhone',
       key: 'orderPhone',
       width: '10%',
       render: (text, record) => {
         if (record.customer == null) {
+          if (record.orderPhone == null) {
+            return "";
+          }
           return record.orderPhone;
+
         } else {
           return record.customer.users.phoneNumber;
         }
       },
     },
     {
+      title: 'Hạng khách hàng',
+      dataIndex: 'customerRanking',
+      key: 'customerRanking',
+      width: '10%',
+      render: (text, record) => {
+        return (setRankKhachHang(record));
+      },
+    },
+    {
       title: 'Tổng thanh toán',
       dataIndex: 'billPriceAfterVoucher',
       key: 'billPriceAfterVoucher',
-      width: '15%',
+      width: '10%',
       // sorter: (a, b) => a.billTotalPrice.localeCompare(b.billTotalPrice),
       render: (price) => {
         return <span>{VNDFormaterFunc(price)}</span>;
@@ -130,7 +160,7 @@ function TableHoaDonTaiQuay() {
       title: 'Trạng thái',
       dataIndex: 'billStatus',
       key: 'status',
-      width: '15%',
+      width: '13%',
       render: (status) => {
         let statusText;
         let statusClass;
@@ -289,6 +319,26 @@ function TableHoaDonTaiQuay() {
     },
   ];
 
+  const setRankKhachHang = (values) => {
+    if (values.customer == null) {
+      return (<span>
+        <StarFilled /> Khách hàng lẻ
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_TIEMNANG') {
+      return "Tiềm năng";
+    } else if (values.customer.customerRanking === 'KH_THANTHIET') {
+      return "Thân thiết";
+    } else if (values.customer.customerRanking === 'KH_BAC') {
+      return "Bạc";
+    } else if (values.customer.customerRanking === 'KH_VANG') {
+      return "Vàng";
+    } else if (values.customer.customerRanking === 'KH_KIMCUONG') {
+      return "Kim cương";
+    } else {
+      return 'Chưa có hạng';
+    }
+  }
+
   const handleSearchChange = (newFilter) => {
     if (newFilter === undefined || newFilter.trim().length === 0) {
       setSearch('');
@@ -334,7 +384,7 @@ function TableHoaDonTaiQuay() {
   };
   const getAllStaff = async () => {
     try {
-      const response = await staffAPI.getAllStaff();
+      const response = await staffAPI.getAllStaffs();
       const list = response.data;
       setListStaff(list);
     } catch (error) {
@@ -379,8 +429,8 @@ function TableHoaDonTaiQuay() {
                   >
                     <Select.Option value="">Tất cả</Select.Option>
                     {(listStaff ?? []).map((item, index) => (
-                      <Select.Option key={index} value={item.usersFullName}>
-                        {item.usersFullName}
+                      <Select.Option key={index} value={item.staffCode}>
+                        {item.staffCode}
                       </Select.Option>
                     ))}
                   </Select>
@@ -459,6 +509,9 @@ function TableHoaDonTaiQuay() {
             onChange={(e) => onChangeBill(e)}
             items={[
               SyncOutlined,
+              ClockCircleOutlined,
+              ClockCircleOutlined,
+              ClockCircleOutlined,
               CheckCircleOutlined,
               CloseCircleOutlined,
             ].map((Icon, i) => {
@@ -466,24 +519,23 @@ function TableHoaDonTaiQuay() {
               return {
                 label: (
                   <span>
-                    <Icon />
+                    {React.createElement(Icon)} {/* Use React.createElement to create the icon */}
                     {id === '1'
                       ? 'Tất cả'
                       : id === '2'
-                        ? 'Thành công'
+                        ? 'Chờ xác nhận'
                         : id === '3'
-                          ? 'Đã hủy'
-                          : ''}
+                          ? 'Đang đóng gói'
+                          : id === '4'
+                            ? 'Đang giao'
+                            : id === '5'
+                              ? 'Thành công'
+                              : id === '6'
+                                ? 'Đã hủy'
+                                : ''}
                   </span>
                 ),
-                key:
-                  id === '1'
-                    ? '0'
-                    : id === '2'
-                      ? '1'
-                      : id === '3'
-                        ? '-1'
-                        : '',
+                key: id === '1' ? '' : id === '2' ? '4' : id === '3' ? '3' : id === '4' ? '2' : id === '5' ? '1' : id === '6' ? '-1' : '',
                 children: (
                   <div style={{ padding: '8px' }}>
                     <span style={{ fontWeight: 500 }}>{/* <TableOutlined /> Danh sách yêu cầu */}</span>
