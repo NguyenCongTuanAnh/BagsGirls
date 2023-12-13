@@ -10,17 +10,7 @@ const customerAPI = {
       },
     });
   },
-  getSearchPagination(
-    key,
-    status,
-    gender,
-    ranking,
-    pageNum,
-    pageSize,
-    sortList,
-    sortOrder,
-    sortListPlaceHolder
-  ) {
+  getSearchPagination(key, status, gender, ranking, pageNum, pageSize, sortList, sortOrder, sortListPlaceHolder) {
     const url = 'api/customer/search';
     return axiosClient.get(url, {
       params: {
@@ -84,6 +74,10 @@ const customerAPI = {
         'Content-Type': 'application/json',
       },
     });
+  },
+  changePassword(customerId, oldPassword, newPassword) {
+    const url = `api/${customerId}/change-password?oldPassword=${oldPassword}&newPassword=${newPassword}`;
+    return axiosClient.post(url);
   },
   delete(id) {
     const url = `api/customer?id=${id}`;

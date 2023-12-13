@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -172,4 +174,20 @@ public class CustomerRestController {
         return new ResponseEntity<>
                 (customers, HttpStatus.OK);
     }
+
+    @PostMapping("/{customerId}/change-password")
+    public ResponseEntity<String> changePassword(
+            @PathVariable("customerId") String userId,
+            @RequestParam String oldPassword,
+            @RequestParam String newPassword
+    ) {
+        boolean passwordChanged = customerService.changePassword(userId, oldPassword, newPassword);
+
+        if (passwordChanged) {
+            return ResponseEntity.ok("Password changed successfully");
+        } else {
+            return ResponseEntity.badRequest().body("Invalid user ID or old password");
+        }
+    }
+
 }

@@ -1,376 +1,163 @@
-import React, { useState, useEffect, Fragment, useRef } from 'react';
+import React, { useState } from 'react';
 import customerAPI from '~/api/customerAPI';
-import axios from 'axios';
-import { Radio, notification } from 'antd';
-import { faL } from '@fortawesome/free-solid-svg-icons';
+import { notification } from 'antd';
 import { getCustomer } from '~/api/auth/helper/UserCurrent';
-import { EditOutlined, FontSizeOutlined, RollbackOutlined } from '@ant-design/icons';
+import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
+function ChangePassword() {
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const customerId = getCustomer().customerId;
 
-function ChanglePassword() {
-  const [customerInfo, setCustomerInfo] = useState(null);
-  const host = 'https://provinces.open-api.vn/api/';
-  const [provinces, setProvinces] = useState([]);
-  const [districts, setDistricts] = useState([]);
-  const [wards, setWards] = useState([]);
-  const [selectedProvince, setSelectedProvince] = useState('');
-  const [selectedDistrict, setSelectedDistrict] = useState('');
-  const [selectedWard, setSelectedWard] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [gender, setGender] = useState('');
-  const [birthDay, setBirthDay] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPassword1, setShowPassword1] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
 
-  const [address, setAddress] = useState('');
-  const [displayUpdateAddress, setDisplayUpdateAddress] = useState(false);
-  const [displayInfoAddress, setDisplayInfoAddress] = useState(true);
-
-  const customer = getCustomer();
-
-  useEffect(() => {
-    customerAPI
-      .getOne(customer.customerId)
-      .then((response) => {
-        const data = response.data;
-        console.log(data);
-
-        setCustomerInfo(data);
-        setFullName(data.users.fullName || '');
-        setPhoneNumber(data.users.phoneNumber || '');
-        setAddress(data.users.address || '');
-        setBirthDay(data.users.birthDay || '');
-      })
-      .catch((error) => {
-        console.error('Error fetching customer data:', error);
-      });
-  }, []);
-
-  const handleConfirmation = async () => {
-    const getNameFromCode = (code, list) => {
-      const selectedItem = list.find((item) => item.code === +code);
-      return selectedItem ? selectedItem.name : '';
-    };
-    const selectedProvinceName = getNameFromCode(selectedProvince, provinces);
-    const selectedDistrictName = getNameFromCode(selectedDistrict, districts);
-    const selectedWardName = getNameFromCode(selectedWard, wards);
-
-    const fullAddress = `${address} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`;
-
-    const updateFunction = async () => {
-      const user = customer?.users;
-
-      const updatedFields = {
-        fullName,
-        address: fullAddress,
-        gender,
-        birthDay,
-        phoneNumber,
-      };
-      const filteredFields = Object.keys(updatedFields).reduce((acc, key) => {
-        if (updatedFields[key] !== user[key]) {
-          acc[key] = updatedFields[key];
-        }
-        return acc;
-      }, {});
-
-      const update = {
-        customerId: customer.customerId,
-        users: {
-          userId: user.userId,
-          ...filteredFields,
-          password: user.password,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          role: 'ROLE_CUSTOMER',
-        },
-      };
-
-      try {
-        console.log(update);
-        await customerAPI.update(update);
-
-        notification.success({
-          message: 'Update thành công',
-          description: 'Dữ liệu đã được cập nhật thành công',
-          duration: 2,
-        });
-        const updatedCustomerInfo = await customerAPI.getOne(customer.customerId);
-        setCustomerInfo(updatedCustomerInfo.data);
-      } catch (error) {
-        notification.error({
-          message: 'Lỗi',
-          description: 'Vui lòng xác nhận',
-          duration: 2,
-        });
-        console.log(error);
-      }
-    };
-    updateFunction();
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+  const togglePasswordVisibility1 = () => {
+    setShowPassword1(!showPassword1);
+  };
+  const togglePasswordVisibility2 = () => {
+    setShowPassword2(!showPassword2);
   };
 
-  useEffect(() => {
-    axios
-      .get(`${host}?depth=1`)
-      .then((response) => {
-        setProvinces(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching provinces:', error);
-      });
-  }, []);
-
-  const handleProvinceChange = (event) => {
-    const provinceName = event.target.value;
-    console.log('tinh', provinceName);
-    setSelectedProvince(provinceName);
-    setSelectedDistrict('');
-    setSelectedWard('');
-
-    axios
-      .get(`${host}p/${provinceName}?depth=2`)
-      .then((response) => {
-        setDistricts(response.data.districts);
-      })
-      .catch((error) => {
-        console.error('Error fetching districts:', error);
-      });
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,30}$/;
+    return passwordRegex.test(password);
   };
 
-  const handleDistrictChange = (event) => {
-    const districtCode = event.target.value;
-    console.log('huyen', districtCode);
-    setSelectedDistrict(districtCode);
-    setSelectedWard('');
-
-    axios
-      .get(`${host}d/${districtCode}?depth=2`)
-      .then((response) => {
-        setWards(response.data.wards);
-      })
-      .catch((error) => {
-        console.error('Error fetching wards:', error);
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmNewPassword) {
+      notification.error({
+        message: 'Lỗi',
+        description: 'Mật khẩu mới và xác nhận mật khẩu mới không khớp',
+        duration: 2,
       });
+      return;
+    }
+
+    if (!validatePassword(newPassword)) {
+      notification.error({
+        message: 'Lỗi',
+        description:
+          'Mật khẩu mới phải có ít nhất 12 kí tự, bao gồm ít nhất 1 kí tự viết hoa, 1 kí tự đặc biệt và dưới 30 kí tự',
+        duration: 2,
+      });
+      return;
+    }
+    if (!oldPassword || !newPassword || !confirmNewPassword) {
+      notification.error({
+        message: 'Lỗi',
+        description: 'Vui lòng điền đầy đủ thông tin',
+        duration: 2,
+      });
+      return;
+    }
+
+    try {
+      await customerAPI.changePassword(customerId, oldPassword, newPassword);
+      handleSuccessfulPasswordChange(); // Xử lý khi thay đổi mật khẩu thành công
+    } catch (error) {
+      handleFailedPasswordChange(); // Xử lý khi thay đổi mật khẩu thất bại
+    }
   };
 
-  const handleWardChange = (event) => {
-    const wardCode = event.target.value;
-    console.log('xa', wardCode);
+  const handleSuccessfulPasswordChange = () => {
+    notification.success({
+      message: 'Thay đổi mật khẩu thành công',
+      description: 'Mật khẩu đã được cập nhật thành công',
+      duration: 2,
+    });
+    setOldPassword('');
+    setNewPassword('');
+    setConfirmNewPassword('');
+  };
 
-    setSelectedWard(wardCode);
+  const handleFailedPasswordChange = () => {
+    notification.error({
+      message: 'Lỗi',
+      description: 'Xảy ra lỗi, vui lòng nhập đúng mật khẩu',
+      duration: 2,
+    });
   };
 
   return (
     <div>
-      <div>
-        {customerInfo && displayInfoAddress && (
-          <div>
-            <div>
-              <h5 style={{ textAlign: 'center' }}>THAY ĐỔI MẬT KHẨU ĐĂNG NHẬP CỦA BẠN</h5>
-            </div>
-            <div className="thongTinKhachHang">
-              <p style={{ fontSize: '15px' }}>
-                <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Họ và tên:</span> {customerInfo.users.fullName}
-              </p>
-              <p style={{ fontSize: '15px' }}>
-                <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Số điện thoại:</span>{' '}
-                {customerInfo.users.phoneNumber}
-              </p>
-              <p style={{ fontSize: '15px' }}>
-                <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Email:</span> {customer.users.email}
-              </p>
-              <p style={{ fontSize: '15px' }}>
-                <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Ngày sinh:</span> {customerInfo.users.birthDay}
-              </p>
-              <p style={{ fontSize: '15px' }}>
-                <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Địa chỉ:</span> {customerInfo.users.address}
-              </p>
-
-              <div
-                onClick={() => {
-                  setDisplayUpdateAddress(true);
-                  setDisplayInfoAddress(false);
-                }}
-                className="changleAddress"
-                style={{
-                  width: '100%',
-                  background: '#ff5733',
-                  padding: '20px 20px',
-                  margin: '30px 0 0 0',
-                  cursor: 'pointer',
-                  color: 'white',
-                  textAlign: 'center',
-                  transition: 'background 0.3s',
-                  ':hover': {
-                    background: 'white',
-                  },
-                }}
-              >
-                <EditOutlined /> Thay đổi
-              </div>
-            </div>
+      <h5 style={{ textAlign: 'center' }}>THAY ĐỔI MẬT KHẨU ĐĂNG NHẬP CỦA BẠN</h5>
+      <div className="infor-custom">
+        <div className="infor-custom-container">
+          <div className="infor-custom-lable-name">
+            Mật khẩu cũ<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
           </div>
-        )}
-      </div>
-
-      {displayUpdateAddress && (
-        <div>
-          <h5 style={{ textAlign: 'center' }}>CẬP NHẬT THÔNG TIN</h5>
-          <div className="infor-custom">
-            <div className="infor-custom-container">
-              <div className="infor-custom-lable-name">Họ tên</div>
-              <div className="infor-custom-input">
-                <input
-                  className="infor-custom-input-item"
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)} // Handle changes to fullName
-                  placeholder="Họ và tên"
-                />
-              </div>
-            </div>
-
-            <div className="infor-custom-container">
-              <div className="infor-custom-lable-name">Số điện thoại</div>
-              <div className="infor-custom-input">
-                <input
-                  className="infor-custom-input-item"
-                  type="text"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="Số điện thoại"
-                  pattern="(?:\+84|0)(?:\d){9,10}$"
-                  title="vui lòng nhập số điện thoại hợp lệ"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="infor-custom-container">
-              <div className="infor-custom-lable-name">Ngày sinh</div>
-              <div className="infor-custom-input">
-                <input
-                  className="infor-custom-input-item"
-                  type="date"
-                  value={birthDay}
-                  onChange={(e) => setBirthDay(e.target.value)} // Handle changes to fullName
-                  placeholder="Họ và tên"
-                />
-              </div>
-            </div>
-
-            <div className="infor-custom-container">
-              <div className="infor-custom-lable-name">Tỉnh/ Thành phố</div>
-              <div className="infor-custom-input">
-                <select
-                  value={selectedProvince}
-                  id="selectedProvince"
-                  onChange={handleProvinceChange}
-                  required
-                  style={{ flex: 1 }}
-                  className="infor-custom-input-item"
-                >
-                  <option disabled value="">
-                    Tỉnh/ Thành phố
-                  </option>
-                  {provinces.map((province) => (
-                    <option key={province.code} value={province.code}>
-                      {province.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="infor-custom-container">
-              <div className="infor-custom-lable-name">Quận/ Huyện</div>
-              <div className="infor-custom-input">
-                <select
-                  value={selectedDistrict}
-                  id="selectedDistrict"
-                  className="infor-custom-input-item"
-                  onChange={handleDistrictChange}
-                  required
-                  style={{ flex: 1 }}
-                >
-                  <option disabled value="">
-                    Quận/ Huyện
-                  </option>
-                  {districts.map((district) => (
-                    <option key={district.code} value={district.code}>
-                      {district.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="infor-custom-container">
-              <div className="infor-custom-lable-name">Xã/ Phường</div>
-              <div className="infor-custom-input">
-                <select
-                  value={selectedWard}
-                  id="selectedWard"
-                  onChange={handleWardChange}
-                  required
-                  style={{ flex: 1 }}
-                  className="infor-custom-input-item"
-                >
-                  <option disabled value="">
-                    Phường/ Xã/ Thị trấn
-                  </option>
-                  {wards.map((ward) => (
-                    <option key={ward.code} value={ward.code}>
-                      {ward.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="infor-custom-container">
-              <div className="infor-custom-lable-name">Địa chỉ</div>
-              <div className="infor-custom-input">
-                <input
-                  className="infor-custom-input-item"
-                  type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)} // Handle changes to fullName
-                  placeholder="Địa chỉ cụ thểm tên nhà, số đường, ngõ, ..."
-                />
-              </div>
-            </div>
-
-            <div
-              onClick={() => {
-                setDisplayUpdateAddress(false); // Show the update section
-                setDisplayInfoAddress(true);
-              }}
-            >
-              <span>
-                <div className="btn-container">
-                  <div
-                    className="btn-back"
-                    onClick={() => {
-                      setDisplayInfoAddress(true);
-                      setDisplayUpdateAddress(false);
-                    }}
-                  >
-                    <RollbackOutlined /> Quay lại
-                  </div>
-
-                  <div className="btn-update" onClick={handleConfirmation}>
-                    <EditOutlined />
-                    Cập nhật
-                  </div>
-                </div>
-              </span>
-            </div>
+          <div className="infor-custom-input" style={{ display: 'flex' }}>
+            <input
+              className="infor-custom-input-item"
+              type={showPassword ? 'text' : 'password'}
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+              placeholder="Mật khẩu cũ"
+              required
+            />
+            {showPassword ? (
+              <EyeInvisibleOutlined onClick={togglePasswordVisibility} />
+            ) : (
+              <EyeOutlined onClick={togglePasswordVisibility} />
+            )}
           </div>
-
-          <br></br>
         </div>
-      )}
+
+        <div className="infor-custom-container">
+          <div className="infor-custom-lable-name">
+            Mật khẩu mới<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+          </div>
+          <div className="infor-custom-input" style={{ display: 'flex' }}>
+            <input
+              className="infor-custom-input-item"
+              type={showPassword1 ? 'text' : 'password'}
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Mật khẩu mới"
+              required
+            />
+            {showPassword1 ? (
+              <EyeInvisibleOutlined onClick={togglePasswordVisibility1} />
+            ) : (
+              <EyeOutlined onClick={togglePasswordVisibility1} />
+            )}
+          </div>
+        </div>
+
+        <div className="infor-custom-container">
+          <div className="infor-custom-lable-name">
+            Nhập lại:<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+          </div>
+          <div className="infor-custom-input" style={{ display: 'flex' }}>
+            <input
+              className="infor-custom-input-item"
+              type={showPassword2 ? 'text' : 'password'}
+              value={confirmNewPassword}
+              onChange={(e) => setConfirmNewPassword(e.target.value)}
+              placeholder="Xác nhận mật khẩu mới"
+              required
+            />
+            {showPassword2 ? (
+              <EyeInvisibleOutlined onClick={togglePasswordVisibility2} />
+            ) : (
+              <EyeOutlined onClick={togglePasswordVisibility2} />
+            )}
+          </div>
+        </div>
+        <button
+          style={{ background: 'orange', color: 'white ', padding: '5px 0', borderRadius: '32px', fontSize: '18px' }}
+          onClick={handleChangePassword}
+        >
+          Thay đổi mật khẩu
+        </button>
+      </div>
     </div>
   );
 }
 
-export default ChanglePassword;
+export default ChangePassword;

@@ -6,7 +6,7 @@ import { Fragment, useState } from 'react';
 
 const MainLayout = ({ children }) => {
   return (
-    <Fragment className="fullpage">
+    <div className="fullpage">
       <div className="header001">
         <Header />
       </div>
@@ -14,7 +14,7 @@ const MainLayout = ({ children }) => {
       <div className="footer_client">
         <Footer />
       </div>
-    </Fragment>
+    </div>
   );
 };
 

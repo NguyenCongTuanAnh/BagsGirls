@@ -55,9 +55,9 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
-    public Page<Customers> findAllSearch(String search, Integer status, Boolean gender, Ranking ranking, Integer page, Integer size, List<String> sortList, String sortOrder){
+    public Page<Customers> findAllSearch(String search, Integer status, Boolean gender, Ranking ranking, Integer page, Integer size, List<String> sortList, String sortOrder) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(createSortOrder(sortList, sortOrder)));
-        return customerRepository.findallSearch(search,status, gender, ranking, pageable);
+        return customerRepository.findallSearch(search, status, gender, ranking, pageable);
     }
 
 
@@ -77,19 +77,19 @@ public class CustomerServiceImpl implements ICustomerService {
     public Customers save(CustomerDTO customerDTO) {
 
 
-      Users users = Users.builder()
-              .account(customerDTO.getUsers().getAccount())
-              .fullName(customerDTO.getUsers().getFullName())
-              .password(passwordEncoder.encode(customerDTO.getUsers().getPassword()))
-              .email(customerDTO.getUsers().getEmail())
-              .userStatus(customerDTO.getUsers().getUserStatus())
-              .gender(customerDTO.getUsers().getGender())
-              .address(customerDTO.getUsers().getAddress())
-              .phoneNumber(customerDTO.getUsers().getPhoneNumber())
-              .birthDay(customerDTO.getUsers().getBirthDay())
-              .userNote(customerDTO.getUsers().getUserNote())
-              .role(customerDTO.getUsers().getRole())
-              .build();
+        Users users = Users.builder()
+                .account(customerDTO.getUsers().getAccount())
+                .fullName(customerDTO.getUsers().getFullName())
+                .password(passwordEncoder.encode(customerDTO.getUsers().getPassword()))
+                .email(customerDTO.getUsers().getEmail())
+                .userStatus(customerDTO.getUsers().getUserStatus())
+                .gender(customerDTO.getUsers().getGender())
+                .address(customerDTO.getUsers().getAddress())
+                .phoneNumber(customerDTO.getUsers().getPhoneNumber())
+                .birthDay(customerDTO.getUsers().getBirthDay())
+                .userNote(customerDTO.getUsers().getUserNote())
+                .role(customerDTO.getUsers().getRole())
+                .build();
         Users savedUserInfo = userInfoRepository.save(users);
         if (savedUserInfo != null) {
             Customers customer = Customers.builder()
@@ -105,7 +105,6 @@ public class CustomerServiceImpl implements ICustomerService {
             throw new IllegalStateException("Failed to save UserInfo");
         }
     }
-
 
 
     @Override
@@ -126,7 +125,7 @@ public class CustomerServiceImpl implements ICustomerService {
     public Customers forgetPassword(String customerId, String password) {
         Customers customer = customerRepository.findById(customerId).get();
         customer.getUsers().setPassword(passwordEncoder.encode(password));
-            return customerRepository.save(customer);
+        return customerRepository.save(customer);
     }
 
 
@@ -153,6 +152,7 @@ public class CustomerServiceImpl implements ICustomerService {
                 .map(c -> modelMapper.map(c, CustomerDTO.class))
                 .toList();
     }
+
     @Override
     public List<CustomerDTO> findCustomerByKeyword(String keyword) {
         List<Customers> customers = this.customerRepository.findCustomerByKeyword(keyword);
@@ -160,12 +160,14 @@ public class CustomerServiceImpl implements ICustomerService {
                 .map(c -> modelMapper.map(c, CustomerDTO.class))
                 .toList();
     }
+
     @Override
     public Customers findByEmail(String mail) {
         Customers customers = this.customerRepository.findByEmail(mail);
 
         return customers;
     }
+
     @Override
     public CustomerDTO updatePointByTotalPrice(String customerId, Double totalPrice) {
         Customers customers = this.customerRepository.findById(customerId).get();
@@ -180,21 +182,35 @@ public class CustomerServiceImpl implements ICustomerService {
 //       }else{
 //           addPoint = 1;
 //       }
-       customers.setRankingPoints(addPoint + customers.getRankingPoints());
-       customers.setConsumePoints(addPoint + customers.getConsumePoints());
+        customers.setRankingPoints(addPoint + customers.getRankingPoints());
+        customers.setConsumePoints(addPoint + customers.getConsumePoints());
 
-        if ( customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHKC){
-         customers.setCustomerRanking(Ranking.KH_KIMCUONG);
-        }else if ( customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHV){
-           customers.setCustomerRanking(Ranking.KH_VANG);
-        }else if ( customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHB){
-          customers.setCustomerRanking(Ranking.KH_BAC);
-        }else if ( customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHTT){
-          customers.setCustomerRanking(Ranking.KH_THANTHIET);
-        }else if(customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHTN){
+        if (customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHKC) {
+            customers.setCustomerRanking(Ranking.KH_KIMCUONG);
+        } else if (customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHV) {
+            customers.setCustomerRanking(Ranking.KH_VANG);
+        } else if (customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHB) {
+            customers.setCustomerRanking(Ranking.KH_BAC);
+        } else if (customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHTT) {
+            customers.setCustomerRanking(Ranking.KH_THANTHIET);
+        } else if (customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHTN) {
             customers.setCustomerRanking(Ranking.KH_TIEMNANG);
         }
 
         return modelMapper.map(this.customerRepository.save(customers), CustomerDTO.class);
     }
+
+    @Override
+    public boolean changePassword(String id, String oldPassword, String newPassword) {
+        Customers customers = findById(id);
+
+        if (passwordEncoder.matches(oldPassword, customers.getUsers().getPassword())) {
+            customers.getUsers().setPassword(passwordEncoder.encode(newPassword));
+            userInfoRepository.save(customers.getUsers());
+            return true;
+        }
+
+        return false;
+    }
+
 }
