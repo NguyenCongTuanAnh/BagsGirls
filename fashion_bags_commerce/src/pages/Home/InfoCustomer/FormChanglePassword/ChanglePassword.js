@@ -149,12 +149,21 @@ function ChangePassword() {
             )}
           </div>
         </div>
-        <button
-          style={{ background: 'orange', color: 'white ', padding: '5px 0', borderRadius: '32px', fontSize: '18px' }}
-          onClick={handleChangePassword}
-        >
-          Thay đổi mật khẩu
-        </button>
+        <div style={{ textAlign: 'center' }}>
+          <button
+            style={{
+              background: 'orange',
+              color: 'white ',
+              width: '300px',
+              padding: '5px 0',
+              borderRadius: '32px',
+              fontSize: '18px',
+            }}
+            onClick={handleChangePassword}
+          >
+            Thay đổi mật khẩu
+          </button>
+        </div>
       </div>
     </div>
   );
