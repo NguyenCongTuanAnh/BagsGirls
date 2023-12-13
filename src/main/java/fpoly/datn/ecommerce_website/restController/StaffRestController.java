@@ -108,8 +108,9 @@ public class StaffRestController {
 
     @RequestMapping(value = "/staff/update", method = RequestMethod.PUT)
     public ResponseEntity<?> staffUpdate(@Valid  @RequestBody Staffs staff) {
-        return new ResponseEntity<>(staffService.staffUpdate( staff),
+        return new ResponseEntity<>(staffService.staffUpdate(staff),
                 HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/staff/forget-password", method = RequestMethod.PUT)
     public ResponseEntity<?> forgetPassword(
