@@ -17,16 +17,17 @@ function FormCustomerEdit(props) {
   const [form] = useForm();
 
 
-
   const showDrawer = () => {
     setOpen(true);
     setData(props.customerData);
     setEmail(props.customerData.users.email);
     setSDT(props.customerData.users.phoneNumber);
     setPassword(props.customerData.users.password);
+    form.resetFields();
   };
   const onClose = () => {
     setOpen(false);
+    // form.resetFields();
   };
   const updateData = (event) => {
     const { name, value } = event.target;
@@ -90,6 +91,7 @@ function FormCustomerEdit(props) {
           description: 'Dữ liệu đã được thay đổi thành công',
           duration: 2,
         });
+        setData(update);
         props.reload();
         onClose();
 
@@ -115,6 +117,7 @@ function FormCustomerEdit(props) {
         description: 'Dữ liệu đã được thay đổi thành công',
         duration: 2,
       });
+      setData(...data,);
       onClose();
 
       // Đóng Modal sau khi thêm thành công
@@ -390,7 +393,18 @@ function FormCustomerEdit(props) {
       </div>
     )
   }
-
+  const items = [
+    {
+      key: '1',
+      label: 'Cập nhật thông tin',
+      children: capNhatThongTin(data),
+    },
+    {
+      key: '2',
+      label: 'Cập nhật mật khẩu',
+      children: capNhatMatKhau(data),
+    },
+  ];
   return (
     <Fragment>
       <Button style={{ borderColor: 'blue', color: 'blue' }} onClick={showDrawer} icon={<EditOutlined />}>
@@ -407,14 +421,7 @@ function FormCustomerEdit(props) {
           },
         }}
       >
-        <Tabs defaultActiveKey="1">
-          <TabPane tab="Cập nhật thông tin" key="1">
-            {capNhatThongTin(data)}
-          </TabPane>
-          <TabPane tab="Cập nhật mật khẩu" key="2">
-            {capNhatMatKhau(data)}
-          </TabPane>
-        </Tabs>
+        <Tabs defaultActiveKey="1" items={items} />;
 
 
       </Drawer>

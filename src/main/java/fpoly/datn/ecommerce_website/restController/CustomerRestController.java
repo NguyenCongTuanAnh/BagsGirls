@@ -128,7 +128,7 @@ public class CustomerRestController {
             @RequestParam(name = "status", required = false) Integer status,
             @RequestParam(name = "gender", required = false) Boolean gender,
             @RequestParam(name = "ranking", required = false) String ranking,
-            @RequestParam(defaultValue = "rankingPoints") List<String> sortList,
+            @RequestParam(defaultValue = "") List<String> sortList,
             @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder
     ) {
         if (ranking.length() != 0 ) {

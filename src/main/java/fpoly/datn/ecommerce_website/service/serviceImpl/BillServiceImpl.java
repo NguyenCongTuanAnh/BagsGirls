@@ -62,42 +62,24 @@ public class BillServiceImpl implements IBillService {
     public Page<BillsDTO> getAllBillsPagination( Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize,List<String> sortList,
                                                  String sortOrder) {
         PageRequest pageable = PageRequest.of(pageNum, pageSize, Sort.by(createSortOrder(sortList, sortOrder)));
-        if(status == 0){
-            Page<Bills> bills = this.iBillRepository.findAllBillsBySearch(startDate, endDate, search, pageable);
-
-            return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
-        }else {
             Page<Bills> bills = this.iBillRepository.findAllBillsBySearchStatus(startDate, endDate, status, search, pageable);
-
             return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
-        }
     }
 
     @Override
-    public Page<BillsDTO> getAllBillsOffline(String filterStaffName, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize, List<String> sortList,
+    public Page<BillsDTO> getAllBillsOffline(String filterStaffName, Date startDate, Date endDate, Integer status, String billCode, int pageNum, int pageSize, List<String> sortList,
                                              String sortOrder) {
         PageRequest pageable = PageRequest.of(pageNum, pageSize, Sort.by(createSortOrder(sortList, sortOrder)));
-        if(status == 0){
-            if(search.trim().length()==0){
-                Page<Bills> bills = this.iBillRepository.findAllBillOffNotSearch( startDate, endDate, search, filterStaffName, pageable);
 
+                Page<Bills> bills = this.iBillRepository.findAllBillsOffline(
+                        status,
+                        startDate,
+                        endDate,
+                        billCode,
+//                        filterStaffName,
+                        pageable
+                );
                 return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
-            }else{
-                Page<Bills> bills = this.iBillRepository.findAllBillsOffline( startDate, endDate, search, filterStaffName, pageable);
-
-                return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
-            }
-
-        }else {
-            if(search.trim().length()==0){
-                Page<Bills> bills = this.iBillRepository.findAllBillOffStatusNotSearch( startDate, endDate, status, search, filterStaffName, pageable);
-
-                return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
-            }
-            Page<Bills> bills = this.iBillRepository.findAllBillsOfflineStatus( startDate, endDate, status, search, filterStaffName, pageable);
-
-            return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
-        }
     }
 
     @Override
@@ -106,8 +88,6 @@ public class BillServiceImpl implements IBillService {
         bill.setBillStatus(status);
         return this.iBillRepository.save(bill);
     }
-
-    ;
 
 
     @Override

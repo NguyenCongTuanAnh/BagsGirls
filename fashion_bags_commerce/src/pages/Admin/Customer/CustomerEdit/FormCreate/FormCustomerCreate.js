@@ -15,7 +15,7 @@ const FormCustomerCreate = (props) => {
 
   const showDrawer = () => {
     setOpen(true);
-
+    form.resetFields();
   };
   const onClose = () => {
     setOpen(false);

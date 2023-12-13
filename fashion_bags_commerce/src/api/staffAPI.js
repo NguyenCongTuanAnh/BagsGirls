@@ -1,6 +1,8 @@
 import axiosClient from './axiosClient';
 
 const staffAPI = {
+
+
   getAll(pageNum, pageSize) {
     const url = 'api/staff/pagination';
     return axiosClient.get(url, {
@@ -10,6 +12,24 @@ const staffAPI = {
       },
     });
   },
+  getAllStaffs() {
+    const url = 'api/staff/get-all';
+    return axiosClient.get(url);
+  },
+  getAlls(search, status, gender, role, pageNum, pageSize) {
+    const url = 'api/staff/pagination';
+    return axiosClient.get(url, {
+      params: {
+        search: search,
+        status: status,
+        gender: gender,
+        role: role,
+        page: pageNum - 1,
+        size: pageSize,
+      },
+    });
+  },
+
   getAllStaff(search, pageNum, pageSize) {
     const url = 'api/staff/pagination';
     return axiosClient.get(url, {

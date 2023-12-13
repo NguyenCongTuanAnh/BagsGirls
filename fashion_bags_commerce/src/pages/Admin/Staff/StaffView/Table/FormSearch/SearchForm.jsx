@@ -11,27 +11,20 @@ SearchForm.defaultProps = {
 };
 
 function SearchForm(props) {
-    const { onSubmit } = props;
+    const { onSubmit } = props.onSubmit;
     const [srearchTerm, setSearchTerm] = useState('');
     const typingTimeoutRef = useRef(null);
 
     function handleSearchTermChange(e) {
         setSearchTerm(e.target.value.toString());
         if (!onSubmit) return;
-
-        // set 100 -> clear, set 300 -> submit
-        //set 300 => submit
         if (typingTimeoutRef.current) {
             clearTimeout(typingTimeoutRef.current);
         }
 
         typingTimeoutRef.current = setTimeout(() => {
-            // const formValues = {
-            //     srearchTerm: e.target.value.toString(),
-            // };
             onSubmit(e.target.value.toString());
         }, 300);
-
     }
 
     return (
