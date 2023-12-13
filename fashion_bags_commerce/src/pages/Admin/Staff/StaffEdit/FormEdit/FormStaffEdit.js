@@ -3,8 +3,11 @@ import { EyeFilled, EyeInvisibleOutlined, EditOutlined } from '@ant-design/icons
 import { Button, Col, Drawer, Form, Input, Radio, Row, Select, Space, Tabs, Tooltip, notification } from 'antd';
 import staffAPI from '~/api/staffAPI';
 import { Option } from 'antd/es/mentions';
+
+
 const { useForm } = Form;
 const { TabPane } = Tabs;
+
 
 function FormStaffEdit(props) {
   const [open, setOpen] = useState(false);
@@ -30,37 +33,40 @@ function FormStaffEdit(props) {
   const [form] = useForm();
 
   const showDrawer = () => {
-    console.log(props.staffData)
+    setData({
+      usersId: props.staffData.users.userId,
+      staffId: props.staffData.staffId,
+      staffCode: props.staffData.staffCode,
+      staffStatus: props.staffData.staffStatus,
+      usersFullName: props.staffData.users.fullName,
+      usersAccount: props.staffData.users.account,
+      usersPassword: props.staffData.users.password,
+      usersEmail: props.staffData.users.email,
+      usersGender: props.staffData.users.gender,
+      usersPhoneNumber: props.staffData.users.phoneNumber,
+      usersAddress: props.staffData.users.address,
+      usersUserNote: props.staffData.users.userNote,
+      usersRolesRoleName: props.staffData.users.role
+    });
     setOpen(true);
     setEmail(props.staffData.users.email);
     setSDT(props.staffData.users.phoneNumber);
     setPassword(props.staffData.users.password);
-
+    form.resetFields();
   };
   const onClose = () => {
     setOpen(false);
   };
 
-
   const updateData = (event) => {
     const { name, value } = event.target;
-    setData({ ...data, [name]: value });
-  };
-  const updateStatus = (value) => {
-    setData({ ...data, staffStatus: value.toString() });
-  };
-  const updateRole = (value) => {
-    setData({ ...data, usersRolesRoleName: value.toString() });
-  };
-  const updateGender = (value) => {
-    setData({ ...data, usersGender: value });
-  };
-  const updatePassword = (event) => {
-    const { name, value } = event.target;
     setPassword(value);
-  }
+  };
 
-  const updateFunction = async (staffId, values) => {
+
+
+
+  const updateFunction = async (values) => {
     setError(false);
     let returnEmail = true;
     let returnSDT = true;
@@ -87,14 +93,29 @@ function FormStaffEdit(props) {
       }
     }
     if (returnEmail === true && returnSDT === true) {
-      let update = { ...values };
+      let update = {
+        usersId: data.usersId,
+        staffId: data.staffId,
+        staffCode: data.staffCode,
+        staffStatus: values.staffStatus,
+        usersFullName: values.usersFullName,
+        usersAccount: data.usersAccount,
+        usersPassword: data.usersPassword,
+        usersEmail: values.usersEmail,
+        usersGender: values.usersGender,
+        usersPhoneNumber: values.usersPhoneNumber,
+        usersAddress: values.usersAddress,
+        usersUserNote: values.usersUserNote,
+        usersRolesRoleName: values.usersRolesRoleName
+      };
       try {
-        await staffAPI.update(staffId, update);
+        await staffAPI.update(data.staffId, update);
         notification.success({
           message: 'Cập nhật thành công',
           description: 'Dữ liệu đã được thêm thành công',
           duration: 2,
         });
+        setData(update);
         props.reload();
         onClose();
 
@@ -134,6 +155,7 @@ function FormStaffEdit(props) {
       console.log(error);
     }
   }
+
   const capNhatThongTin = (data) => {
     return (
       <Form layout="vertical" form={form} initialValues={{
@@ -148,7 +170,8 @@ function FormStaffEdit(props) {
         usersAddress: data.usersAddress,
         usersUserNote: data.usersUserNote,
         usersRolesRoleName: data.usersRolesRoleName
-      }} >
+      }}
+        onFinish={updateFunction}>
         <Row gutter={16}>
           <Col span={12}>
             <Form.Item
@@ -171,7 +194,6 @@ function FormStaffEdit(props) {
             >
               <Input placeholder="Vui lòng điền họ và tên!"
                 name="usersFullName"
-                onChange={updateData}
               />
             </Form.Item>
           </Col>
@@ -186,7 +208,7 @@ function FormStaffEdit(props) {
                 },
               ]}
             >
-              <Select placeholder="Vui lòng chọn trạng thái!" name="staffStatus" onChange={updateStatus}>
+              <Select placeholder="Vui lòng chọn trạng thái!" name="staffStatus" >
                 <Select.Option value={1}>Đang làm</Select.Option>
                 <Select.Option value={0}>Tạm dừng</Select.Option>
                 <Select.Option value={-1}>Nghỉ làm</Select.Option>
@@ -211,7 +233,7 @@ function FormStaffEdit(props) {
                 },
               ]}
             >
-              <Input placeholder="Vui lòng điền email!" name="usersEmail" onChange={updateData} />
+              <Input placeholder="Vui lòng điền email!" name="usersEmail" />
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -230,7 +252,7 @@ function FormStaffEdit(props) {
                 },
               ]}
             >
-              <Input placeholder="Vui lòng điền số điện thoại!" name="usersPhoneNumber" onChange={updateData} />
+              <Input placeholder="Vui lòng điền số điện thoại!" name="usersPhoneNumber" />
             </Form.Item>
           </Col>
         </Row>
@@ -248,7 +270,7 @@ function FormStaffEdit(props) {
                 },
               ]}
             >
-              <Input placeholder="Vui lòng điền địa chỉ!" name="usersAddress" onChange={updateData} />
+              <Input placeholder="Vui lòng điền địa chỉ!" name="usersAddress" />
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -265,7 +287,7 @@ function FormStaffEdit(props) {
               <Select
                 placeholder="Vui lòng chọn chức vụ!"
                 name="usersRolesRoleName"
-                onChange={updateRole}>
+              >
                 <Select.Option value="ROLE_ADMIN">Admin</Select.Option>
                 <Select.Option value="ROLE_STAFF">Nhân viên</Select.Option>
               </Select>
@@ -282,7 +304,7 @@ function FormStaffEdit(props) {
                   message: 'Vui lòng chọn giới tính!',
                 },
               ]} >
-              <Radio.Group name="usersGender" onChange={(e) => updateGender(JSON.parse(e.target.value))}>
+              <Radio.Group name="usersGender" >
                 <Radio value={true}>Nam</Radio>
                 <Radio value={false}>Nữ</Radio>
               </Radio.Group>
@@ -303,14 +325,14 @@ function FormStaffEdit(props) {
                 },
               ]}
             >
-              <Input.TextArea rows={4} placeholder="Vui lòng điền ghi chú!" name="usersUserNote" onChange={updateData} />
+              <Input.TextArea rows={4} placeholder="Vui lòng điền ghi chú!" name="usersUserNote" />
             </Form.Item>
           </Col>
         </Row>
         <div>
           <Space>
 
-            <Button onClick={() => updateFunction(data.staffId, data)} htmlType="submit" type="primary" className="btn btn-warning">
+            <Button htmlType="submit" type="primary" className="btn btn-warning">
               Lưu
             </Button>
             <Button onClick={onClose}>Thoát</Button>
@@ -353,7 +375,7 @@ function FormStaffEdit(props) {
                   }),
                 ]}
               >
-                <Input.Password iconRender={(visible) => (visible ? <EyeInvisibleOutlined /> : <EyeFilled />)} onChange={updatePassword} name="usersPassword" />
+                <Input.Password iconRender={(visible) => (visible ? <EyeInvisibleOutlined /> : <EyeFilled />)} onChange={updateData} name="usersPassword" />
               </Form.Item>
             </Col>
           </Row>
@@ -371,6 +393,18 @@ function FormStaffEdit(props) {
       </div>
     )
   }
+  const items = [
+    {
+      key: '1',
+      label: 'Cập nhật thông tin',
+      children: capNhatThongTin(data),
+    },
+    {
+      key: '2',
+      label: 'Cập nhật mật khẩu',
+      children: capNhatMatKhau(data),
+    },
+  ];
   return (
     <Fragment>
       {' '}
@@ -393,15 +427,7 @@ function FormStaffEdit(props) {
           },
         }}
       >
-        <Tabs defaultActiveKey="1">
-          <TabPane tab="Cập nhật thông tin" key="1">
-            {capNhatThongTin(data)}
-          </TabPane>
-          <TabPane tab="Cập nhật mật khẩu" key="2">
-            {capNhatMatKhau(data)}
-          </TabPane>
-        </Tabs>
-
+        <Tabs defaultActiveKey="1" items={items} />;
       </Drawer>
     </Fragment>
   );
