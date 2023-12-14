@@ -6,11 +6,12 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-//update so với bản ServiceGenarelTwo phần findAllPhanTrang
 public interface CartService {
-    List<Carts> findAll();
+
 
     Page<Carts> findAllPhanTrang(Integer page);
+
+    Carts findAll(String cartId);
 
     Carts findById(String id);
 

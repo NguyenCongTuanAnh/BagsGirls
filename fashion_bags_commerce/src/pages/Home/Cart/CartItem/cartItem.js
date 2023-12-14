@@ -1,14 +1,12 @@
-import { Table, Image, Button, notification, message, Input, Form } from 'antd';
-import { useEffect, useState } from 'react';
-import styles from './tableCart.module.scss';
-import vndFormaterFunc from '~/Utilities/VNDFormaterFunc';
-import { DeleteFilled, DeleteOutlined, DoubleRightOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
-import { Link, useNavigate } from 'react-router-dom';
-import { Tab } from 'bootstrap';
-import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
-import voucherAPI from '~/api/voucherAPI';
-import moment from 'moment/moment';
+import { DeleteOutlined, DoubleRightOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Form, Image, Table, message, notification } from 'antd';
 import Search from 'antd/es/input/Search';
+import moment from 'moment/moment';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { default as VNDFormaterFunc, default as vndFormaterFunc } from '~/Utilities/VNDFormaterFunc';
+import voucherAPI from '~/api/voucherAPI';
+import styles from './tableCart.module.scss';
 
 function CartItem() {
   const [cartItems, setCartItems] = useState([]);

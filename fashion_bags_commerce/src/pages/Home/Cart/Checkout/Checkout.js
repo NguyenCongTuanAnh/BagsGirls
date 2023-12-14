@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
-import Header from '../../Header';
-import styles from './checkout.module.scss';
 import CheckoutDetail from '~/pages/Home/Cart/Checkout/FormCheckoutDetail/CheckoutDetail';
+import Header from '../../Header';
 function Checkout() {
 
 
