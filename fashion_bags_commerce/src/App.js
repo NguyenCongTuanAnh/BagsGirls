@@ -54,6 +54,7 @@ import AddressCustomer from './pages/Home/InfoCustomer/InformationCustomer/Infor
 import CustomerGuard from './api/auth/guard/CustomerGuard';
 import ProfilePage from './pages/Admin/ProfilePage/ProfilePage';
 import ForgotPassword from './pages/Login/FormLogin/FormForgotPassword/FormForgotPassword';
+import CartCustomer from './pages/Home/Cart/CartCustomer/CartCustomer';
 
 function App() {
   return (
@@ -69,6 +70,7 @@ function App() {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/shop/detail/:productId" element={<ShopDetail />} />
           <Route path="/cart" element={<CartView />} />
+          <Route path="/cart/:cartId" element={<CartCustomer />} />
           <Route path="/cart/checkout" element={<Checkout />} />
           <Route path="/unauthorized" element={<UnAuthorPage />} />
           <Route path="/print-table" element={<PrintTableComponent />} />

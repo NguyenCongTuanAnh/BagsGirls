@@ -1,6 +1,4 @@
-import React from 'react';
-import { Avatar, Badge, Button, Card, Popconfirm, Popover } from 'antd';
-import { LogoutOutlined } from '@ant-design/icons';
+import { Avatar, Badge, Button, Card, Popover } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getCustomer } from '~/api/auth/helper/UserCurrent';
 

@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import styles from './shopDetail.module.scss';
-import { Carousel, Checkbox, Image, Input, Select, notification } from 'antd';
-import fullProductAPI from '~/api/client/fullProductAPI';
+import { MinusOutlined, PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Carousel, Checkbox, notification } from 'antd';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
-import axios from 'axios';
-import { data } from 'jquery';
-import Icon from '@ant-design/icons/lib/components/Icon';
-import { CarOutlined, MinusOutlined, PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import BeatLoader from 'react-spinners/ClipLoader';
-import { faL, fas } from '@fortawesome/free-solid-svg-icons';
+import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
+import cartAPI from '~/api/cartAPI';
+import cartDetailAPI from '~/api/cartDetailAPI';
+import fullProductAPI from '~/api/client/fullProductAPI';
+import styles from './shopDetail.module.scss';
 
 function ShopDetailView() {
   const [quantity, setQuantity] = useState(1);
@@ -23,6 +21,46 @@ function ShopDetailView() {
   const [materialOptions, setMaterialOptions] = useState([]);
   const [defaultMaterial, setDefaultMaterial] = useState(null);
 
+  const customerId = localStorage.getItem('customerId');
+  const [customeridd, setCustomerId] = useState('');
+  const [cartId1, setCartId] = useState('');
+  const { cartId: routeCartId } = useParams();
+  const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        const response = await cartAPI.findByIdCustomer(customerId);
+        const data = response.data;
+        setCustomerId(customerId);
+        setCartId(data.cartId);
+        setCartItems(data);
+      } catch (error) {
+        console.error('Error fetching product details:', error);
+      }
+    };
+
+    fetchCart();
+  }, [customerId]);
+
+  useEffect(() => {
+    const fetchProductDetail = async () => {
+      try {
+        const response = await fullProductAPI.findById(productId);
+        const data = response.data;
+        setProduct(data);
+        setDataDetail(data?.productDetails[0]);
+        setLoading(true);
+      } catch (error) {
+        setLoading(true);
+        console.error('Error fetching product details:', error);
+      }
+    };
+
+    fetchProductDetail();
+  }, [productId]);
+
+
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(false);
@@ -31,6 +69,42 @@ function ShopDetailView() {
     }, 5000);
   }, []);
 
+  const addToCart = async (product) => {
+    const productToAdd = {
+      productDetails: {
+        productDetailId: dataDetail.productDetailId,
+      },
+      carts: {
+        cartId: cartItems.cartId,
+      },
+      amount: quantity,
+    };
+
+    try {
+      if (!productToAdd.carts?.cartId) {
+        console.error('Cart ID is not available');
+        return;
+      }
+
+      const response = await cartDetailAPI.save(productToAdd);
+
+      setQuantity(1);
+
+      notification.success({
+        message: 'Thành công',
+        description: 'Sản phẩm đã được thêm vào giỏ hàng',
+        duration: 3,
+      });
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      // Handle the error scenario (e.g., display an error message)
+      notification.error({
+        message: 'Lỗi',
+        description: 'Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng',
+        duration: 3,
+      });
+    }
+  };
   const renderAddToCartButton = () => {
     if (!dataDetail) {
       return null;
@@ -86,9 +160,7 @@ function ShopDetailView() {
   };
 
   const addToTemporaryCart = async (product) => {
-    console.log(product);
     try {
-      // Gọi API hoặc truy vấn cơ sở dữ liệu để lấy thông tin chi tiết sản phẩm
       const amountInDatabase = dataDetail.amount; // Số lượng tồn kho trong cơ sở dữ liệu
 
       if (quantity <= amountInDatabase) {
@@ -110,7 +182,6 @@ function ShopDetailView() {
         // Thêm sản phẩm vào giỏ hàng tạm thời
         const storedCart = localStorage.getItem('temporaryCart');
         let updatedTemporaryCart = storedCart ? JSON.parse(storedCart) : [];
-        console.log('cart', storedCart);
 
         // if (storedCart) {
         const existingProductIndex = updatedTemporaryCart.findIndex(
@@ -135,7 +206,6 @@ function ShopDetailView() {
         });
         // }
       } else {
-        // Hiển thị thông báo cho người dùng rằng số lượng không đủ trong kho
         notification.error({
           message: 'Thất bại',
           description: 'Số lượng sản phẩm trong kho không đủ',
@@ -148,19 +218,17 @@ function ShopDetailView() {
   };
 
   const handleInputChange = (event) => {
-    let newValue = event.target.value.replace(/\D/g, ''); 
+    let newValue = event.target.value.replace(/\D/g, '');
     if (newValue === '' || parseInt(newValue, 10) === 0) {
       newValue = '1';
     }
-    console.log('>>>> value', newValue);
-  
+
     setQuantity(parseInt(newValue, 10));
   };
 
   const handleIncrement = () => {
     // Tăng giá trị quantity khi nhấn nút '+'
     const amountInDatabase = dataDetail.amount; // Số lượng tồn kho trong cơ sở dữ liệu
-    console.log("so luong so trongkho", amountInDatabase)
     if (quantity + 1 > amountInDatabase) {
       // Hiển thị thông báo khi số lượng vượt quá số lượng trong kho
       notification.error({
@@ -180,26 +248,6 @@ function ShopDetailView() {
       setQuantity(quantity - 1);
     }
   };
-
-  useEffect(() => {
-    const fetchProductDetail = async () => {
-      try {
-        const response = await fullProductAPI.findById(productId);
-        const data = response.data;
-        setProduct(data);
-        setDataDetail(data?.productDetails[0]);
-        setLoading(true);
-        console.log('>>>> data', data);
-      } catch (error) {
-        setLoading(true);
-        console.error('Error fetching product details:', error);
-      }
-    };
-
-    fetchProductDetail();
-  }, [productId]);
-
-  console.log('>>> data detail', dataDetail);
 
   useEffect(() => {
     // Thiết lập mặc định cho màu sắc và chất liệu
@@ -433,6 +481,12 @@ function ShopDetailView() {
               <Link to="/cart">
                 <div className={styles.button_buy_now1} onClick={() => addToTemporaryCart(product)}>
                   Mua ngay
+                </div>
+              </Link>
+
+              <Link to={`/cart/${customerId}`}>
+                <div className={styles.button_buy_now1} onClick={() => addToCart(product)}>
+                  Them vao gio hang
                 </div>
               </Link>
             </div>

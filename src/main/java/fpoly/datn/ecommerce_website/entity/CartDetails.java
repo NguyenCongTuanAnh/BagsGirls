@@ -45,8 +45,5 @@ public class CartDetails {
     @Column(name = "amount")
     private Integer amount;
 
-    @Column(name = "price")
-    private Double price;
-
 
 }
