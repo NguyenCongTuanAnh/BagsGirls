@@ -1,38 +1,71 @@
-import { Table, Image, Button, notification, Modal, Card, Row, Col } from 'antd';
+import { Table, Image, Button, notification, Modal, Card, Row, Col, Popconfirm, Space, Input, InputNumber } from 'antd';
 import { useEffect, useState } from 'react';
 import styles from './chiTietHoaDon.module.scss';
 import vndFormaterFunc from '~/Utilities/VNDFormaterFunc';
-import { DeleteOutlined, DoubleRightOutlined, MenuFoldOutlined, MinusOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
+import { CheckOutlined, DeleteOutlined, DoubleRightOutlined, ExclamationCircleOutlined, MenuFoldOutlined, MinusOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import billDetailsAPI from '~/api/BillDetailsAPI';
+import FormStaffEdit from '../../Staff/StaffEdit/FormEdit/FormStaffEdit';
+import productDetailsAPI from '~/api/productDetailsAPI';
 
 function FormChiTietHoaDon(props) {
     const [totalQuantity, setTotalQuantity] = useState(0);
     const [visible, setVisible] = useState(false);
+    const [reload, setReload] = useState(false);
     const [billId, setBillId] = useState();
     const [titleComponent, setTitleComponent] = useState();
     const [listBillDetails, setListBillDetais] = useState([]);
+    const [newAmount, setNewAmount] = useState([]);
+    const [maxAmount, setMaxAmount] = useState([]);
 
+
+    const addItemToNewAmount = (item) => {
+        setNewAmount(prevState => [...prevState, item]);
+    };
+    const addItemToMaxAmount = (item) => {
+        setMaxAmount(prevState => [...prevState, item]);
+    };
     const showModal = () => {
         setBillId(props.bills.billId);
+        setNewAmount([]);
+        setMaxAmount([]);
         getAllByBillId();
-        console.log(listBillDetails);
+        // console.log(listBillDetails);
         setTitleComponent(props.bills.billCode);
-        setVisible(true);
-    };
-
-
-    useEffect(() => {
-        getAllByBillId();
         const total = listBillDetails.reduce((totalQty, item) => {
+            addItemToNewAmount(item.amount);
+            addItemToMaxAmount(item.amount + item.productDetails.productDetailAmount);
             return totalQty + item.amount;
         }, 0);
         setTotalQuantity(total);
-    }, [visible]);
+        setVisible(true);
+    };
+
+    useEffect(() => {
+        setReload(false);
+        getAllByBillId();
+        calculateTotal();
+        soLuongView();
+    }, [visible, reload, totalQuantity]);
+
+    const calculateTotal = () => {
+        return listBillDetails.reduce((total, item) => {
+            return total + item.amount * item.price;
+        }, 0);
+    };
+    const soLuongView = () => {
+        return listBillDetails.reduce((total, item) => {
+            return total + item.amount;
+        }, 0);
+    };
+    // const thanhTienView = () => {
+    //     return calculateTotal() -
+    // }
+
 
     const getAllByBillId = async () => {
-        const response = await billDetailsAPI.getAllByBillId(props.bills.billId);
+        const response = await billDetailsAPI.getAllByBillId(props.bills.billId, -1);
         const data = response.data;
         setListBillDetais(data);
 
@@ -96,6 +129,19 @@ function FormChiTietHoaDon(props) {
         }
     }
 
+    const updateAmountProductDetail = async (billDetailId, amount) => {
+        try {
+            await billDetailsAPI.updateAmountProductDetail(billDetailId, amount);
+            notification.success({
+                message: 'Thành công',
+                description: 'Sửa thành công số lượng sản phẩm thành: ' + amount.toString(),
+            });
+
+
+        } catch (error) {
+            console.error('Đã xảy ra lỗi: ', error);
+        }
+    }
 
 
 
@@ -105,11 +151,11 @@ function FormChiTietHoaDon(props) {
             key: 'stt',
             dataIndex: 'index',
             title: 'STT',
-            width: 70,
+            // width: 70,
             render: (text, record, index) => {
                 return <span id={record.id}>{(index + 1)}</span>;
             },
-            width: '6%'
+            width: '57px'
         },
         {
             title: 'Ảnh',
@@ -118,20 +164,19 @@ function FormChiTietHoaDon(props) {
             render: (text, record) => (
                 <Image style={{ width: '100px', height: '100px' }} src={record.productDetails.product.images[0].imgUrl} />
             ),
-            width: '15%'
+            width: '125px'
         },
         {
             title: 'Sản phẩm',
             dataIndex: 'productName',
+            width: '250px',
             render: (texe, record) => (
                 <div className={styles.info_item}>
                     <div className={styles.title_product}>
-                        {' '}
                         {record.productDetails.product.productName}-{record.productDetails.product.productCode}
                     </div>
                     <ul className={styles.attr}>
                         <li>
-                            {' '}
                             <span className={styles.spanTitle}>Màu sắc: </span> {record.productDetails.color.colorName}
                         </li>
                         <li>
@@ -147,20 +192,127 @@ function FormChiTietHoaDon(props) {
             title: 'SL',
             dataIndex: 'amount',
             key: 'amount',
-            width: '7%'
+            width: '130px',
+            render: (text, record, index) => (
+                <Space>
+                    <InputNumber
+                        min={1}
+                        max={Math.floor(maxAmount[index])}
+                        step={1}
+                        value={newAmount[index]}
+                        onChange={(newValue) => {
+                            setNewAmount(prevAmount => {
+                                const updatedAmount = [...prevAmount];
+                                updatedAmount[index] = newValue;
+                                return updatedAmount;
+                            });
+                            // console.log(newAmount);
+                        }}
+                        style={{ width: '55px' }}
+                    />
+                    <Button
+                        type="primary"
+                        danger={newAmount[index] <= 0}
+                        disabled={newAmount[index] == null ? true : false}
+                        onClick={() => {
+                            updateAmountProductDetail(record.billDetailId, newAmount[index]);
+                            setReload(true);
+                        }}
+                        icon={<CheckOutlined />}
+                        style={{ backgroundColor: newAmount[index] == null ? 'grey' : 'red', color: 'white' }}
+                    >
+                    </Button>
+                </Space>
+            ),
         },
         {
-            title: 'Giá sản phẩm',
+            title: 'Giá',
             dataIndex: 'price',
             render: (text, record) => vndFormaterFunc(record.price),
             key: 'price',
-            width: '13%'
+            width: '120px'
         },
         {
             title: 'Thành tiền',
             render: (text, record) => vndFormaterFunc(record.amount * record.price),
             key: 'calculateTotal',
-            width: '15%'
+            width: '130px'
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'billDetailStatus',
+            width: '200px',
+            key: 'status',
+            render: (status) => {
+                let statusText;
+                let statusClass;
+                let backgroundColor; // Define a variable for text color
+
+                switch (status) {
+                    case 3:
+                        statusText = 'Chờ xác nhận lỗi';
+                        statusClass = 'active-status';
+                        backgroundColor = '#ffcc00';
+                        break;
+                    case 2:
+                        statusText = 'Đã xác nhận lỗi';
+                        statusClass = 'inactiveStatus';
+                        backgroundColor = '#66cc66';
+                        break;
+                    case 1:
+                        statusText = 'Không lỗi';
+                        statusClass = 'inactiveStatus';
+                        backgroundColor = '#3399ff';
+                        break;
+                    case -1:
+                        statusText = 'Hàng lỗi';
+                        statusClass = 'other-status';
+                        backgroundColor = '#ff3333';
+                        break;
+                    default:
+                        statusText = 'Không xác định';
+                        statusClass = 'other-status';
+                        backgroundColor = '#ff3333';
+                }
+                const textStyles = {
+                    backgroundColor: backgroundColor,
+                    padding: '13px',
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    borderRadius: '20px',
+                    color: 'white',
+                };
+                return (
+                    <span className={statusClass} style={textStyles}>
+                        {statusText}
+                    </span>
+                );
+            },
+        },
+        {
+            title: 'Action',
+            key: 'action',
+            render: (_, record) => (
+                <Space size="middle">
+                    <Popconfirm
+                        title="Xác nhận"
+                        description="Bạn có chắc chắn muốn cho nhân viên nghỉ làm?"
+                        okText="Đồng ý"
+                        cancelText="Không"
+                        onConfirm={() => {
+                            // deleteHandle(record.staffId, -1, record.staffCode);
+                            // setLoading(true);
+                        }}
+                    //   onCancel={onCancel}
+                    >
+                        <Button type="default" danger icon={<ExclamationCircleOutlined />}>
+                            Hàng lỗi
+                        </Button>
+                    </Popconfirm>
+                </Space>
+            ),
+
+            width: '150px',
         },
 
     ];
@@ -175,8 +327,8 @@ function FormChiTietHoaDon(props) {
                 centered
                 visible={visible}
                 onCancel={() => setVisible(false)}
-                width={'85%'}
-                height={'85%'}
+                width={'97%'}
+                height={'90%'}
                 footer={[
                     <Button key="cancel" onClick={() => setVisible(false)}>
                         Hủy
@@ -185,7 +337,7 @@ function FormChiTietHoaDon(props) {
             >
                 <div>
                     <Row>
-                        <Col span={15} style={{ border: '1px solid #cccccc ', margin: '10px 20px 0 20px', borderRadius: '15px', height: '700px' }}>
+                        <Col span={16} style={{ border: '1px solid #cccccc ', margin: '10px 20px 0 20px', borderRadius: '15px', height: '700px' }}>
                             <h4 style={{ margin: '10px', fontWeight: 'bold' }}>Danh sách sản phẩm đã mua:</h4>
                             <Table
                                 bordered
@@ -198,17 +350,17 @@ function FormChiTietHoaDon(props) {
                                 pagination={false}
                             />
                         </Col>
-                        <Col span={8} style={{ border: '1px solid #cccccc ', margin: '10px 0 0 0', borderRadius: '15px', height: '700px' }}>
+                        <Col span={7} style={{ border: '1px solid #cccccc ', margin: '10px 0 0 0', borderRadius: '15px', height: '700px' }}>
                             <h4 style={{ margin: '10px', fontWeight: 'bold' }}>Nhân viên: </h4>
                             <div >
                                 <ul >
                                     <li >
-                                        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>Tên: </span>
-                                        <span style={{ color: 'red', fontSize: '20px' }}>{setTenNhanVien()} </span>
+                                        <span style={{ fontSize: '18px', fontWeight: 'bold' }}>Tên: </span>
+                                        <span style={{ color: 'red', fontSize: '18px' }}>{setTenNhanVien()} </span>
                                     </li>
                                     <li >
-                                        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>SĐT: </span>
-                                        <span style={{ color: 'red', fontSize: '20px' }}>{setSDTNhanVien()} </span>
+                                        <span style={{ fontSize: '18px', fontWeight: 'bold' }}>SĐT: </span>
+                                        <span style={{ color: 'red', fontSize: '18px' }}>{setSDTNhanVien()} </span>
                                     </li>
                                 </ul>
                             </div>
@@ -217,20 +369,20 @@ function FormChiTietHoaDon(props) {
                             <div>
                                 <ul >
                                     <li >
-                                        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>Tên: </span>
-                                        <span style={{ color: 'red', fontSize: '20px' }}>{setTenKhachHang()} </span>
+                                        <span style={{ fontSize: '18px', fontWeight: 'bold' }}>Tên: </span>
+                                        <span style={{ color: 'red', fontSize: '18px' }}>{setTenKhachHang()} </span>
                                     </li>
                                     <li >
-                                        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>SĐT: </span>
-                                        <span style={{ color: 'red', fontSize: '20px' }}>{setSDTKhachHang()} </span>
+                                        <span style={{ fontSize: '18px', fontWeight: 'bold' }}>SĐT: </span>
+                                        <span style={{ color: 'red', fontSize: '18px' }}>{setSDTKhachHang()} </span>
                                     </li>
                                     <li >
-                                        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>Địa chỉ: </span>
-                                        <span style={{ color: 'red', fontSize: '20px' }}>{setDiaChiKhachHang()} </span>
+                                        <span style={{ fontSize: '18px', fontWeight: 'bold' }}>Địa chỉ: </span>
+                                        <span style={{ color: 'red', fontSize: '18px' }}>{setDiaChiKhachHang()} </span>
                                     </li>
                                     <li >
-                                        <span style={{ fontSize: '20px', fontWeight: 'bold' }}>Hạng khách hàng: </span>
-                                        <span style={{ color: 'red', fontSize: '20px' }}>{setRankKhachHang()} </span>
+                                        <span style={{ fontSize: '18px', fontWeight: 'bold' }}>Hạng khách hàng: </span>
+                                        <span style={{ color: 'red', fontSize: '18px' }}>{setRankKhachHang()} </span>
                                     </li>
                                 </ul>
                             </div>
@@ -244,13 +396,13 @@ function FormChiTietHoaDon(props) {
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Số lượng: </span>
                                                     <span className={styles.labelName}>
-                                                        <span style={{ color: 'red', fontSize: '30px' }}>{totalQuantity} </span>Sản phẩm
+                                                        <span style={{ color: 'red', fontSize: '26px' }}>{soLuongView()} </span>Sản phẩm
                                                     </span>
                                                 </li>
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Giá trị hàng hóa: </span>
-                                                    <span className={styles.labelName} style={{ marginTop: '10px' }}>{vndFormaterFunc(props.bills.billTotalPrice)}</span>
+                                                    <span className={styles.labelName} style={{ marginTop: '10px' }}>{vndFormaterFunc(calculateTotal())}</span>
                                                 </li>
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
@@ -260,8 +412,8 @@ function FormChiTietHoaDon(props) {
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Thành tiền: </span>
-                                                    <span className={styles.labelName} style={{ color: 'red', fontWeight: 'bold', fontSize: '30px' }}>
-                                                        {vndFormaterFunc(props.bills.billPriceAfterVoucher)}
+                                                    <span className={styles.labelName} style={{ color: 'red', fontWeight: 'bold', fontSize: '26px' }}>
+                                                        {vndFormaterFunc(calculateTotal())}
                                                     </span>
                                                 </li>{' '}
                                             </ul>
@@ -273,7 +425,7 @@ function FormChiTietHoaDon(props) {
                     </Row>
 
                 </div>
-            </Modal >
+            </Modal>
         </>
     );
 }

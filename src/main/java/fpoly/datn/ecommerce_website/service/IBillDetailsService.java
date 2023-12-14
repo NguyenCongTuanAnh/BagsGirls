@@ -17,13 +17,14 @@ public interface IBillDetailsService {
 
     Page<BillDetailsDTO> getPagination(int pageNum, int pageSize);
 
-    BillDetailsDTO getOne(String id);
+    GetBillDetailsDTO getOne(String billDetailId);
 
-    List<BillDetails_ChiTiet> findAllByBillId(String billID) ;
+    List<BillDetails_ChiTiet> findAllByBillId(String billID, Integer status) ;
 
 //    List<BillDetails> findAllBillProduct(String billId);
 
     BillDetailsDTO save(BillDetailsDTO billDetailsDTO);
+//    BillDetailsQDTO updateAmountProduct(BillDetailsQDTO billDetailsQDTO);
 
     BillDetailsDTO update(BillDetailsDTO billDetailsDTO);
 

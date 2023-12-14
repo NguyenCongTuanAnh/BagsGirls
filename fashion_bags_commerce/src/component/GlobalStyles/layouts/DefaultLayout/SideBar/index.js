@@ -49,16 +49,23 @@ const items = [
   ]),
   getItem('Quản lý Hóa Đơn', 'sub4', <PaperClipOutlined style={{ fontSize: '23px' }} />, [
     getItem(
+      <Link style={{ textDecoration: 'none' }} to={'/bill-offline-view'}>
+        Tất cả hóa đơn
+      </Link>,
+      '7',
+    ),
+    getItem(
       <Link style={{ textDecoration: 'none' }} to={'/bill-online-view'}>
         Hóa đơn online
       </Link>,
       '6',
     ),
+
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/bill-offline-view'}>
-        Hóa đơn tại quầy
+        Hóa đơn hàng lỗi
       </Link>,
-      '7',
+      '8',
     ),
   ]),
 

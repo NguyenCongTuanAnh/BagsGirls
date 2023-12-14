@@ -14,8 +14,8 @@ const billDetailsAPI = {
     const url = `api/billDetails?id=${id}`;
     return axiosClient.get(url);
   },
-  getAllByBillId(billId) {
-    const url = `api/bill-detail/getBillDetailsByBillId?billId=${billId}`;
+  getAllByBillId(billId, status) {
+    const url = `api/bill-detail/getBillDetailsByBillId?billId=${billId}&status=${status}`;
     return axiosClient.get(url);
   },
   add(data) {
@@ -29,6 +29,14 @@ const billDetailsAPI = {
   update(data) {
     const url = `api/billDetails?id=${data.id}`;
     return axiosClient.put(url, data);
+  },
+  updateAmountProductDetail(billDetailId, amount) {
+    const url = `api/bill-detail/update-amount-product-detail?billDetailId=${billDetailId}&amount=${amount}`;
+    return axiosClient.put(url, null, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
   },
   updateStatus(billDetailsID, status) {
     const url = `api/billDetails/update-status?billDetailsID=${billDetailsID}&status=${status}`;

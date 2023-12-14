@@ -109,4 +109,7 @@ public class Bills {
 
     @Column(name = "bill_status")
     private Integer billStatus;
+
+    @Column(name = "bill_reduced_price")
+    private BigDecimal billReducedPrice;
 }

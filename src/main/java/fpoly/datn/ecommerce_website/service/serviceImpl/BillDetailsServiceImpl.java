@@ -2,6 +2,7 @@ package fpoly.datn.ecommerce_website.service.serviceImpl;
 
 import fpoly.datn.ecommerce_website.dto.BillDetailsDTO;
 import fpoly.datn.ecommerce_website.dto.BillDetailsQDTO;
+import fpoly.datn.ecommerce_website.dto.BillsDTO;
 import fpoly.datn.ecommerce_website.dto.GetBillDetailsDTO;
 import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.entity.BillDetails_ChiTiet;
@@ -42,14 +43,14 @@ public class BillDetailsServiceImpl implements IBillDetailsService {
 
 
     @Override
-    public BillDetailsDTO getOne(String id) {
-        BillDetails billDetails = this.iBillDetailRepository.getReferenceById(id);
-        return modelMapper.map(billDetails, BillDetailsDTO.class);
+    public GetBillDetailsDTO getOne(String id) {
+        BillDetails bill = this.iBillDetailRepository.findBillDetailsById(id);
+        return  modelMapper.map(bill, GetBillDetailsDTO.class);
     }
 
     @Override
-    public List<BillDetails_ChiTiet> findAllByBillId(String billID) {
-        return this.iBillDetailRepository.findAllByBillId(billID);
+    public List<BillDetails_ChiTiet> findAllByBillId(String billID, Integer status) {
+        return this.iBillDetailRepository.findAllByBillId(billID, status);
     }
 
 
@@ -59,6 +60,13 @@ public class BillDetailsServiceImpl implements IBillDetailsService {
 
         return modelMapper.map(this.iBillDetailRepository.save(billDetails), BillDetailsDTO.class);
     }
+
+//    @Override
+//    public BillDetailsQDTO updateAmountProduct(BillDetailsQDTO billDetailsQDTO) {
+//        BillDetails billDetails = modelMapper.map(billDetailsQDTO, BillDetails.class);
+//
+//        return modelMapper.map(this.iBillDetailRepository.save(billDetails), BillDetailsQDTO.class);
+//    }
 
     @Override
     public BillDetailsDTO update(BillDetailsDTO billDetailsDTO) {
