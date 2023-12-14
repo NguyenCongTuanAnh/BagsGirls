@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
 import fpoly.datn.ecommerce_website.entity.ProductDetails_BillDetails;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,4 +30,8 @@ public class BillDetailsDTO {
     private Integer amount;
 
     private Double price;
+
+    private Integer billDetailStatus;
+
+    private String billDetailNote;
 }

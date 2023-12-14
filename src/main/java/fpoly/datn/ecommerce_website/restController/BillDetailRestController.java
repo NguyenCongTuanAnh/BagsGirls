@@ -1,15 +1,15 @@
 package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.BillDetailsDTO;
+import fpoly.datn.ecommerce_website.dto.BillDetailsQDTO;
 import fpoly.datn.ecommerce_website.dto.GetBillDetailsDTO;
-import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
-import fpoly.datn.ecommerce_website.entity.Bills;
+import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.service.IBillDetailsService;
+import jakarta.validation.constraints.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -46,14 +46,38 @@ public class BillDetailRestController {
     }
 
     @RequestMapping(value = "bill-detail/getBillDetailsByBillId", method = RequestMethod.GET)
-    public ResponseEntity<?> getAllbyBillId(@RequestParam (name ="billId") String billId) {
+    public ResponseEntity<?> getAllbyBillId(@RequestParam (name ="billId") String billId,
+                                            @RequestParam(name ="status", required = false) Integer status
+                                            ) {
         return new ResponseEntity<>(
-                this.iBillDetailsService.findAllByBillId(billId)
+                this.iBillDetailsService.findAllByBillId(billId, status)
                         .stream()
                         .map(billDetails -> modelMapper.map(billDetails, GetBillDetailsDTO.class))
                         .collect(Collectors.toList())
                 , HttpStatus.OK
         );
+
+    }
+    @RequestMapping(value = "/bill-details/getOne", method = RequestMethod.GET)
+        public ResponseEntity<?> getOne( @RequestParam @NotNull String billDetailId ) {
+            return new ResponseEntity<>(this.iBillDetailsService.getOne(billDetailId), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/bill-detail/update-amount-product-detail", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateAmountProductDetail(
+            @RequestParam (name ="billDetailId") @NotNull String billDetailId,
+            @RequestParam (name ="amount") @NotNull Integer amount) {
+        GetBillDetailsDTO billDetailsDTO = this.iBillDetailsService.getOne(billDetailId);
+        int oldAmount = billDetailsDTO.getAmount();
+        int newAmountProduct = billDetailsDTO.getProductDetails().getProductDetailAmount()+oldAmount-amount;
+        if(newAmountProduct < 0) {
+            return  new ResponseEntity<>( "Số lượng upadte không hợp lệ!!!"
+                    , HttpStatus.CONFLICT);
+        }
+        billDetailsDTO.getProductDetails().setProductDetailAmount(newAmountProduct);
+        billDetailsDTO.setAmount(amount);
+        BillDetailsDTO billDetailsDTO1 = modelMapper.map(billDetailsDTO, BillDetailsDTO.class);
+        return new ResponseEntity<>(this.iBillDetailsService.save(billDetailsDTO1), HttpStatus.OK);
 
     }
 
