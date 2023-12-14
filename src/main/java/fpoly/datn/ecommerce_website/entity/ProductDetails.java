@@ -51,7 +51,6 @@ public class ProductDetails {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-//    @JsonBackReference
     @JsonIgnoreProperties("productDetails")
     private Products product;
 
