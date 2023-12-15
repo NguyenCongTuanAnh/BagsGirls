@@ -41,6 +41,7 @@ const FormStaffCreate = (props) => {
     }
     if (checkEmail.data === '' && checkSDT.data === '') {
       let add = { ...values, staffCode: generateCustomCode("NV", 5) };
+      console.log(add);
       try {
         const response = await staffAPI.add(add);
         notification.success({
@@ -118,9 +119,9 @@ const FormStaffCreate = (props) => {
                 ]}
               >
                 <Select placeholder="Vui lòng chọn trạng thái!">
-                  <Option value="1">Đang làm</Option>
-                  <Option value="0">Tạm dừng</Option>
-                  <Option value="-1">Nghỉ làm</Option>
+                  <Option value={1}>Hoạt động</Option>
+                  <Option value={0}>Tạm dừng</Option>
+                  <Option value={-1}>Không hoạt động</Option>
                 </Select>
               </Form.Item>
             </Col>

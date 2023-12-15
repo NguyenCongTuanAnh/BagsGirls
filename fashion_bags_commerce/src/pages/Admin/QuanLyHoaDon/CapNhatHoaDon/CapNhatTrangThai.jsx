@@ -84,7 +84,7 @@ function FormCapNhatTrangThai(props) {
             <Modal
                 title={'Tình trạng hóa đơn: ' + currentString(current)}
                 centered
-                visible={visible}
+                open={visible}
                 onCancel={() => setVisible(false)}
                 width={1000}
                 footer={[

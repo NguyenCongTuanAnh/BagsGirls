@@ -14,6 +14,7 @@ function FormCustomerEdit(props) {
   const [getSDT, setSDT] = useState('');
   const [data, setData] = useState(props.customerData);
   const [password, setPassword] = useState(props.customerData.users.password);
+  
   const [form] = useForm();
 
 

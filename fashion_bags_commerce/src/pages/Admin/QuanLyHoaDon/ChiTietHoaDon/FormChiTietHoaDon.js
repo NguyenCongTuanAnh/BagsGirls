@@ -1,5 +1,5 @@
-import { Table, Image, Button, notification, Modal, Card, Row, Col, Popconfirm, Space, Input, InputNumber } from 'antd';
-import { useEffect, useState } from 'react';
+import { Table, Image, Button, notification, Modal, Card, Row, Col, Popconfirm, Space, Input, InputNumber, Form } from 'antd';
+import React, { useEffect, useState } from 'react';
 import styles from './chiTietHoaDon.module.scss';
 import vndFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import { CheckOutlined, DeleteOutlined, DoubleRightOutlined, ExclamationCircleOutlined, MenuFoldOutlined, MinusOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
@@ -8,6 +8,8 @@ import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import billDetailsAPI from '~/api/BillDetailsAPI';
 import FormStaffEdit from '../../Staff/StaffEdit/FormEdit/FormStaffEdit';
 import productDetailsAPI from '~/api/productDetailsAPI';
+const { useForm } = Form;
+
 
 function FormChiTietHoaDon(props) {
     const [totalQuantity, setTotalQuantity] = useState(0);
@@ -18,6 +20,12 @@ function FormChiTietHoaDon(props) {
     const [listBillDetails, setListBillDetais] = useState([]);
     const [newAmount, setNewAmount] = useState([]);
     const [maxAmount, setMaxAmount] = useState([]);
+    // const [amountProductError, setAmountProductError] = useState(0);
+    const [maxAmountProductError, setMaxAmountProductError] = useState(0);
+    const [billDetailIdLoi, setBillDetailIdLoi] = useState('');
+    const [open, setOpen] = useState(false);
+    const [form] = useForm();
+
 
 
     const addItemToNewAmount = (item) => {
@@ -45,8 +53,8 @@ function FormChiTietHoaDon(props) {
     useEffect(() => {
         setReload(false);
         getAllByBillId();
-        calculateTotal();
-        soLuongView();
+        loadLaiTables();
+
     }, [visible, reload, totalQuantity]);
 
     const calculateTotal = () => {
@@ -62,6 +70,26 @@ function FormChiTietHoaDon(props) {
     // const thanhTienView = () => {
     //     return calculateTotal() -
     // }
+    const loadLaiTables = () => {
+        let index = 0;
+        const total = listBillDetails.reduce((totalQty, item) => {
+            setNewAmount(prevAmount => {
+                const updatedAmount = [...prevAmount];
+                updatedAmount[index] = item.amount;
+                return updatedAmount;
+            });
+            setMaxAmount(prevAmount => {
+                const updatedAmount = [...prevAmount];
+                updatedAmount[index] = item.amount + item.productDetails.productDetailAmount;
+                return updatedAmount;
+            });
+            index = index + 1;
+            return totalQty + item.amount;
+        }, 0);
+        setTotalQuantity(total);
+        calculateTotal();
+        soLuongView();
+    }
 
 
     const getAllByBillId = async () => {
@@ -132,18 +160,61 @@ function FormChiTietHoaDon(props) {
     const updateAmountProductDetail = async (billDetailId, amount) => {
         try {
             await billDetailsAPI.updateAmountProductDetail(billDetailId, amount);
-            notification.success({
-                message: 'Thành công',
-                description: 'Sửa thành công số lượng sản phẩm thành: ' + amount.toString(),
-            });
-
+            if (amount === 0) {
+                notification.success({
+                    message: 'Thành công',
+                    description: 'Xóa thành công sản phẩm!!'
+                });
+                setReload(true);
+            } else {
+                notification.success({
+                    message: 'Thành công',
+                    description: 'Sửa thành công số lượng sản phẩm thành: ' + amount.toString(),
+                });
+                setReload(true);
+            }
 
         } catch (error) {
             console.error('Đã xảy ra lỗi: ', error);
         }
     }
 
+    // component Sản phẩm lỗi
 
+    const showComponentSPLoi = (values) => {
+        // setAmountProductError(values.amount);
+        setMaxAmountProductError(values.amount);
+        setBillDetailIdLoi(values.billDetailId);
+        console.log(values);
+        setOpen(true);
+    };
+    const onClose = () => {
+        setOpen(false);
+    };
+    const updateAmountProductError = async (values) => {
+        try {
+            const response = await billDetailsAPI.updateAmountProductError(billDetailIdLoi, values.amountError);
+            if (response.status === 200) {
+                notification.success({
+                    message: 'Thành công',
+                    description: 'Sản phẩm đã được thêm vào hóa đơn hàng lỗi với số lượng là: ' + values.amountError.toString(),
+                });
+                setReload(true);
+                loadLaiTables();
+            }
+            if (values.amountError > maxAmountProductError) {
+                notification.error({
+                    message: 'Không thành công',
+                    description: 'Sản phẩm lỗi không thể nhiều hơn sản phẩm trong đơn hàng! ',
+                });
+            }
+            loadLaiTables();
+            setReload(true);
+            setOpen(false);
+        } catch (error) {
+            console.error('Đã xảy ra lỗi: ', error);
+        }
+    };
 
 
     const columns = [
@@ -196,7 +267,7 @@ function FormChiTietHoaDon(props) {
             render: (text, record, index) => (
                 <Space>
                     <InputNumber
-                        min={1}
+                        min={0}
                         max={Math.floor(maxAmount[index])}
                         step={1}
                         value={newAmount[index]}
@@ -243,12 +314,12 @@ function FormChiTietHoaDon(props) {
             dataIndex: 'billDetailStatus',
             width: '200px',
             key: 'status',
-            render: (status) => {
+            render: (text, record) => {
                 let statusText;
                 let statusClass;
                 let backgroundColor; // Define a variable for text color
 
-                switch (status) {
+                switch (record.billDetailStatus) {
                     case 3:
                         statusText = 'Chờ xác nhận lỗi';
                         statusClass = 'active-status';
@@ -283,33 +354,103 @@ function FormChiTietHoaDon(props) {
                     color: 'white',
                 };
                 return (
-                    <span className={statusClass} style={textStyles}>
-                        {statusText}
-                    </span>
+                    <div>
+                        <span className={statusClass} style={textStyles}>
+                            {statusText}
+                        </span>
+                        <div style={{ marginTop: '15px' }}>Ghi chú: {record.billDetailNote}</div>
+                    </div>
+
                 );
             },
         },
         {
             title: 'Action',
             key: 'action',
-            render: (_, record) => (
-                <Space size="middle">
-                    <Popconfirm
-                        title="Xác nhận"
-                        description="Bạn có chắc chắn muốn cho nhân viên nghỉ làm?"
-                        okText="Đồng ý"
-                        cancelText="Không"
-                        onConfirm={() => {
-                            // deleteHandle(record.staffId, -1, record.staffCode);
-                            // setLoading(true);
-                        }}
-                    //   onCancel={onCancel}
-                    >
-                        <Button type="default" danger icon={<ExclamationCircleOutlined />}>
+            render: (text, record) => (
+                <div>
+                    <Space size="middle">
+                        <Button type="default" danger
+                            onClick={() => {
+                                showComponentSPLoi(record);
+                            }}
+                            icon={<ExclamationCircleOutlined />}>
                             Hàng lỗi
                         </Button>
-                    </Popconfirm>
-                </Space>
+                        <Modal
+                            title="Sản phẩm lỗi"
+                            open={open}
+                            onCancel={onClose}
+                            footer={
+                                <span>
+                                    {/* <Space>
+                                    <Button htmlType="submit" type="primary" className="btn btn-warning">
+                                        Lưu
+                                    </Button>
+                                    <Button onClick={onClose}>Thoát</Button>
+                                </Space> */}
+                                </span>
+                            }
+                        >
+                            <Form form={form} initialValues=
+                                {{
+                                    billDetailId: record.billDetailId,
+                                    amountError: record.amount,
+                                    billDetailNote: record.billDetailNote,
+                                }
+                                }
+                                onFinish={updateAmountProductError} >
+                                <Row gutter={16}>
+                                    <Col span={24}>
+                                        <Form.Item
+                                            name='amountError'
+                                            label="Số lượng sản phẩm lỗi"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: 'Vui lòng điền số lượng sản phẩm lỗi!',
+                                                },
+                                            ]}
+                                        >
+                                            <InputNumber
+                                                min={1}
+                                                max={Math.floor(maxAmountProductError)}
+                                                step={1}
+                                                style={{ width: '70px' }}
+                                            />
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
+                                <Row gutter={16}>
+                                    <Col span={24}>
+                                        <Form.Item
+                                            name='userNote'
+                                            label="Ghi chú"
+                                            rules={[
+                                                {
+                                                    required: true,
+                                                    message: 'Vui lòng điền ghi chú!',
+                                                },
+                                            ]}
+                                        >
+                                            <Input.TextArea rows={4} placeholder='Vui lòng điền ghi chú!' />
+                                        </Form.Item>
+
+                                    </Col>
+                                </Row>
+
+                                <div>
+                                    <Space>
+                                        <Button htmlType="submit" type="primary" className="btn btn-warning">
+                                            Lưu
+                                        </Button>
+                                        <Button onClick={onClose}>Thoát</Button>
+                                    </Space>
+                                </div>
+                            </Form>
+                        </Modal>
+                    </Space>
+                </div>
             ),
 
             width: '150px',
@@ -325,7 +466,7 @@ function FormChiTietHoaDon(props) {
             <Modal
                 title={<h2 style={{ fontSize: '28px', fontWeight: 'bold' }}>Chi tiết hóa đơn: {titleComponent}</h2>}
                 centered
-                visible={visible}
+                open={visible}
                 onCancel={() => setVisible(false)}
                 width={'97%'}
                 height={'90%'}
