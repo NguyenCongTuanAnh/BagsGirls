@@ -18,9 +18,9 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
             " AND ( :status IS NULL OR bd.billDetailStatus != :status ) " )
     List<BillDetails_ChiTiet> findAllByBillId(@Param("billID") String billID, Integer status);
 
-    @Query("SELECT bd FROM  BillDetails bd " +
+    @Query("SELECT bd FROM  BillDetails_ChiTiet bd " +
             "where bd.billDetailId = :billDetailId " )
-    BillDetails findBillDetailsById(@Param("billDetailId") String billDetailId);
+    BillDetails_ChiTiet findBillDetailsById(@Param("billDetailId") String billDetailId);
 
 //    @Query("SELECT bd FROM  BillDetails bd join ProductDetails pd" +
 //            "  on bd.productDetails.productDetailId = pd.productDetailId" +
