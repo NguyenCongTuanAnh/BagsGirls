@@ -12,6 +12,7 @@ import moment from 'moment';
 function ForgotPassword(props) {
   const [messageApi, contextHolder] = message.useMessage();
   const [form] = Form.useForm();
+  const [sdt] = Form.useForm();
   const navigate = useNavigate();
   const [customer, setCustomer] = useState(null);
 
@@ -20,7 +21,7 @@ function ForgotPassword(props) {
   const [codeReiver, setCodeReceiver] = useState(null);
   const [timer, setTimer] = useState(0);
   const [open, setOpen] = useState(false);
-  const [account, setAccount] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState(null);
   const showModal = () => {
     setOpen(true);
   };
@@ -80,12 +81,12 @@ function ForgotPassword(props) {
     setEmail(null);
     setCode(null);
     setCustomer(null);
-    setAccount(null);
+    setPhoneNumber(null);
     setCodeReceiver(null);
 
     setTimeout(() => {
       navigate('/login');
-    }, 3000);
+    }, 0);
   };
   const handleSendCode = () => {
     form
@@ -111,7 +112,8 @@ function ForgotPassword(props) {
       });
   };
   const handleOk = () => {
-    if (account === null) {
+    sdt.submit();
+    if (phoneNumber === null) {
       messageApi.open({
         type: 'error',
         content: 'Vui lòng điền tên account !!!',
@@ -138,10 +140,10 @@ function ForgotPassword(props) {
       return;
     }
 
-    if (customer.users.account !== account) {
+    if (customer.users.phoneNumber !== phoneNumber) {
       messageApi.open({
         type: 'error',
-        content: 'Tên Acount không đúng! vui lòng nhớ lại:))',
+        content: 'SĐT không đúng! vui lòng nhớ lại!',
       });
       return;
     }
@@ -218,7 +220,6 @@ function ForgotPassword(props) {
                   {
                     required: true,
                     message: 'Vui lòng điền Email!',
-                    whitespace: true,
                   },
                   {
                     pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
@@ -246,8 +247,17 @@ function ForgotPassword(props) {
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng điền mật khẩu!',
+                    message: 'Vui lòng điền mã Code!',
+                    whitespace: true,
                   },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (value && value.trim() === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(new Error('Mã code không được có khoảng trắng ở đầu hoặc cuối!'));
+                    },
+                  }),
                 ]}
               >
                 <Row>
@@ -281,6 +291,7 @@ function ForgotPassword(props) {
                   {
                     required: true,
                     message: 'Vui lòng điền mật khẩu!',
+                    whitespace: true,
                   },
                   ({ getFieldValue }) => ({
                     validator(_, value) {
@@ -297,6 +308,14 @@ function ForgotPassword(props) {
                       return Promise.reject(
                         new Error('Mật khẩu trong khoảng 12-30 kí tự, bao gồm ký tự đặc biệt, số và chữ in hoa!'),
                       );
+                    },
+                  }),
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (value && value.trim() === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(new Error('Mật khẩu không được có khoảng trắng ở đầu hoặc cuối!'));
                     },
                   }),
                 ]}
@@ -333,6 +352,14 @@ function ForgotPassword(props) {
                       );
                     },
                   }),
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (value && value.trim() === value) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(new Error('Mật khẩu không được có khoảng trắng ở đầu hoặc cuối!'));
+                    },
+                  }),
                 ]}
               >
                 <Input.Password style={{ width: 400 }} size="large" />
@@ -357,18 +384,36 @@ function ForgotPassword(props) {
               </Popconfirm>
 
               <Modal
-                title="Modal"
+                title="Xác thực Số điện thoại tài khoản"
                 open={open}
                 onOk={handleOk}
                 onCancel={hideModal}
-                okText="Đổi mật khẩu"
+                okText="Xác nhận"
                 cancelText="Hủy"
               >
-                <Input
-                  onChange={(e) => {
-                    setAccount(e.target.value);
-                  }}
-                ></Input>
+                <Form form={sdt} onFinish={() => {}} onFinishFailed={() => {}}>
+                  <Form.Item
+                    label="Số điện thoại"
+                    name="phoneNumber"
+                    rules={[
+                      {
+                        required: true,
+                        message: 'Vui lòng điền SĐT!',
+                        whitespace: true,
+                      },
+                      {
+                        pattern: /^((\+|00)84|0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-6|8-9]|9\d)\d{7}$/,
+                        message: 'Vui lòng nhập số điện thoại hợp lệ!',
+                      },
+                    ]}
+                  >
+                    <Input
+                      onChange={(e) => {
+                        setPhoneNumber(e.target.value);
+                      }}
+                    />
+                  </Form.Item>
+                </Form>
               </Modal>
             </Col>
             <Col span={8}></Col>

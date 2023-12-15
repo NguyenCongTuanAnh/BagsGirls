@@ -141,8 +141,10 @@ public class CustomerRestController {
     }
     @RequestMapping(value = "/customer/searchByKeyword", method = RequestMethod.GET)
     public ResponseEntity<?> findCustomerByKeyword(
-            @RequestParam(name = "keyword") String keyword
+            @RequestParam(name = "keyword", defaultValue = "", required = false) String keyword
     ) {
+
+
         return new ResponseEntity<>
                 (this.customerService.findCustomerByKeyword(keyword), HttpStatus.OK);
     }

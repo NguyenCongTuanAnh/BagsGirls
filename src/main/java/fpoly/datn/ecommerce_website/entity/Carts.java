@@ -1,5 +1,6 @@
 package fpoly.datn.ecommerce_website.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,15 +9,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "carts")
@@ -35,13 +38,15 @@ public class Carts {
     @Column(name = "cart_code")
     private String cartCode;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     @Column(name = "cart_create_time")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private Date cartCreatTime;
+    private LocalDateTime cartCreatTime;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     @Column(name = "cart_payment_time")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private Date cartPaymentTime;
+    private LocalDateTime cartPaymentTime;
 
     @Column(name = "cart_note")
     private String cartNote;

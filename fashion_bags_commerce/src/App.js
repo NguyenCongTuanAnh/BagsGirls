@@ -75,7 +75,7 @@ function App() {
 
           <Route path="/gioi-thieu" element={<AboutPage />} />
           <Route path="/blog" element={<BlogPage />} />
-          <Route path="/thong-ke" element={<ThongKeView />} />
+
           <Route
             path="/profile"
             element={
@@ -92,7 +92,14 @@ function App() {
               </AdminAuth>
             }
           />
-
+          <Route
+            path="/stastistic-view"
+            element={
+              <AdminAuth>
+                <ThongKeView />
+              </AdminAuth>
+            }
+          />
           <Route
             path="/bill-online-view"
             element={

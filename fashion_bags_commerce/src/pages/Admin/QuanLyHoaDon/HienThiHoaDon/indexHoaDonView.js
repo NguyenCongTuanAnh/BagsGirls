@@ -9,7 +9,7 @@ function HoaDonOnlineView() {
   return (
     <Layout style={{ height: '100%', background: '#f4f3f4' }}>
       <Sider width={260} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
-        <Sidebar keyIndex="6" openKey="sub4" />
+        <Sidebar keyIndex="sub3.1" openKey="sub3" />
       </Sider>
       <Layout className="layoutContent">
         <Header className="headerStyle">

@@ -41,100 +41,97 @@ const items = [
       <Link style={{ textDecoration: 'none' }} to={'/sales-counter'}>
         Bán Hàng Tại Quầy
       </Link>,
-      '4',
+      'sub2.1',
     ),
-    getItem('Quản lý Đặt Hàng', '5'),
-
-    getItem('Submenu', 'sub3', <AppstoreOutlined style={{ fontSize: '23px' }} />, []),
   ]),
-  getItem('Quản lý Hóa Đơn', 'sub4', <PaperClipOutlined style={{ fontSize: '23px' }} />, [
+  getItem('Quản lý Hóa Đơn', 'sub3', <PaperClipOutlined style={{ fontSize: '23px' }} />, [
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/bill-online-view'}>
         Hóa đơn online
       </Link>,
-      '6',
+      'sub3.1',
     ),
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/bill-offline-view'}>
         Hóa đơn tại quầy
       </Link>,
-      '7',
+      'sub3.2',
     ),
   ]),
 
-  getItem('Quản lý Sản Phẩm', 'sub999', <CalendarOutlined style={{ fontSize: '23px' }} />, [
+  getItem('Quản lý Sản Phẩm', 'sub4', <CalendarOutlined style={{ fontSize: '23px' }} />, [
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/product-add'}>
         Thêm Sản Phẩm
       </Link>,
-      '10',
+      'sub4.1',
     ),
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/product-viewer'}>
         Danh Sách Sản Phẩm
       </Link>,
-      '11',
+      'sub4.2',
     ),
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/view-productDetails'}>
         Sản Phẩm Chi Tiết
       </Link>,
-      '122',
+      'sub4.3',
     ),
   ]),
-  getItem('Danh mục sản phẩm', 'sub11', <AppstoreOutlined style={{ fontSize: '23px' }} />, [
+  getItem('Danh mục sản phẩm', 'sub5', <AppstoreOutlined style={{ fontSize: '23px' }} />, [
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/color-view'}>
         Màu sắc
       </Link>,
-      '12',
+      'sub5.1',
     ),
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/brand-view'}>
         Thương hiệu
       </Link>,
-      '13',
+      'sub5.2',
     ),
 
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/size-view'}>
         Kích cỡ
       </Link>,
-      '14',
+      'sub5.3',
     ),
 
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/material-view'}>
         Chất liệu
       </Link>,
-      '15',
+      'sub5.4',
     ),
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/type-view'}>
-        Kiểu balo{' '}
+        Kiểu balo
       </Link>,
-      '16',
+      'sub5.5',
     ),
 
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/buckle-type-view'}>
         Kiểu khóa
       </Link>,
-      '17',
+      'sub5.6',
     ),
 
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/compartment-view'}>
         Ngăn
       </Link>,
-      '18',
+      'sub5.7',
     ),
 
     getItem(
       <Link style={{ textDecoration: 'none' }} to={'/producer-view'}>
         Nhà sản xuất
       </Link>,
-      '19',
+      'sub5.8',
     ),
   ]),
   getItem(
@@ -159,25 +156,14 @@ const items = [
     <TeamOutlined style={{ fontSize: '23px' }} />,
   ),
   getItem(
-    <Link style={{ textDecoration: 'none' }} to={'/thong-ke'}>
+    <Link style={{ textDecoration: 'none' }} to={'/stastistic-view'}>
       Thống kê
     </Link>,
     'sub9',
     <BarChartOutlined style={{ fontSize: '23px' }} />,
   ),
-  getItem('Giao Ca', 'sub10', <ContactsOutlined style={{ fontSize: '23px' }} />, [
-    getItem(
-      <Link style={{ textDecoration: 'none' }} to={'/shift-view'}>
-        Danh sách ca làm việc
-      </Link>,
-      '34',
-    ),
-    getItem('Option 10', '35'),
-    getItem('Option 11', '36'),
-    getItem('Option 12', '37'),
-  ]),
 ];
-const rootSubmenuKeys = ['sub1', 'sub2', 'sub4', 'sub5', 'sub6', 'sub7', 'sub8', 'sub9', 'sub10', 'sub11', 'sub999'];
+const rootSubmenuKeys = ['sub1', 'sub2', 'sub4', 'sub5', 'sub6', 'sub7', 'sub8', 'sub9'];
 function Sidebar(props) {
   const { key, keyIndex, openKey } = props;
   const [openKeys, setOpenKeys] = useState([props.openKey]);

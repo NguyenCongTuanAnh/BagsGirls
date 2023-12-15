@@ -171,15 +171,7 @@ public class CustomerServiceImpl implements ICustomerService {
         Customers customers = this.customerRepository.findById(customerId).get();
 
         int addPoint = (int) (totalPrice * Constants.PERCENT_TO_RECEIVE);
-//       if (totalPrice >= Constants.TOTALPRICE_TO_ADD_20POINT){
-//           addPoint = 20;
-//       }else if (totalPrice >= Constants.TOTALPRICE_TO_ADD_10POINT){
-//           addPoint = 10;
-//       }else if (totalPrice >= Constants.TOTALPRICE_TO_ADD_1POINT){
-//           addPoint = 5;
-//       }else{
-//           addPoint = 1;
-//       }
+
        customers.setRankingPoints(addPoint + customers.getRankingPoints());
        customers.setConsumePoints(addPoint + customers.getConsumePoints());
 

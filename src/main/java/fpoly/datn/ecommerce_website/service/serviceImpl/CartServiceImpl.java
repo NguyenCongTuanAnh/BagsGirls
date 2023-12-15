@@ -47,6 +47,8 @@ public class CartServiceImpl implements CartService {
     @Override
     public Carts save(CartDTO cartDTO) {
         Carts cart = modelMapper.map(cartDTO, Carts.class);
+        System.out.println("cart.toString()");
+        System.out.println(cart.toString());
         return repo.save(cart);
     }
 

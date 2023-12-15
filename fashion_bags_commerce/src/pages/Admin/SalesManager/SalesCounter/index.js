@@ -16,11 +16,13 @@ const headerStyle = {
   margin: '10px',
 };
 const contentStyle = {
-  margin: '0 30px 10px 20px',
+  margin: '0px 10px 10px 10px',
+  padding: '10px',
   height: 'fit-content',
   color: 'black',
-  backgroundColor: 'lightblue',
+  backgroundColor: 'white',
   borderRadius: '10px',
+  border: '10px solid lightblue',
 };
 const footerStyle = {
   margin: '0 10px 10px 20px',
@@ -39,7 +41,7 @@ function SalesCounter() {
     <Fragment>
       <Layout style={{ height: '100%', background: 'white' }}>
         <Sider width={260} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
-          <Sidebar keyIndex="sub1" openKey="sub1" />
+          <Sidebar keyIndex="sub2.1" openKey="sub2" />
         </Sider>
         <Layout style={layoutContent}>
           <Header style={headerStyle}>
