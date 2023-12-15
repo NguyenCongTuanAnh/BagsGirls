@@ -112,15 +112,6 @@ function App() {
           />
 
           <Route
-            path="/shift-view"
-            element={
-              <AdminAuth>
-                <ShiftViewer />
-              </AdminAuth>
-            }
-          />
-
-          <Route
             path="/admin"
             element={
               <StaffAuth>
@@ -134,22 +125,6 @@ function App() {
             element={
               <StaffAuth>
                 <ProfilePage />
-              </StaffAuth>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <StaffAuth>
-                <Admin />
-              </StaffAuth>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <StaffAuth>
-                <Admin />
               </StaffAuth>
             }
           />
@@ -251,16 +226,6 @@ function App() {
               </AdminAuth>
             }
           />
-
-          <Route
-            path="/product-add"
-            element={
-              <AdminAuth>
-                <ProductAdd />
-              </AdminAuth>
-            }
-          />
-
           <Route
             path="/compartment-view"
             element={

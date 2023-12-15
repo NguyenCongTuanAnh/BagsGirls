@@ -1,39 +1,15 @@
 import { Layout } from 'antd';
 import Sider from 'antd/es/layout/Sider';
 import { Content, Footer, Header } from 'antd/es/layout/layout';
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import HeaderContent from '~/component/GlobalStyles/layouts/DefaultLayout/Header';
 import Sidebar from '~/component/GlobalStyles/layouts/DefaultLayout/SideBar';
 import ProductAddForm from './ProductAddForm/ProductAddForm';
 import './index.css';
 function ProductAdd() {
-  const headerStyle = {
-    borderLeft: '270px',
-    color: '#fff',
-    height: 'auto',
-    paddingInline: 0,
-    lineHeight: '64px',
-    backgroundColor: 'white',
-    margin: '10px',
-  };
-  const contentStyle = {
-    margin: '0 30px 10px 20px',
-    height: '800px',
-    color: 'black',
-    backgroundColor: 'lightblue',
-    borderRadius: '10px',
-  };
-  const footerStyle = {
-    margin: '0 10px 10px 20px',
-    borderLeft: '270px',
-    color: 'black',
-    backgroundColor: 'white',
-  };
-  const layoutContent = {
-    marginLeft: '270px',
-    flexGrow: '1',
-    backgroundColor: 'white',
-  };
+  useEffect(() => {
+    document.title = 'Thêm Sản phẩm';
+  });
   return (
     <Fragment>
       <Layout className="layout" style={{ height: '100%', background: 'white' }}>

@@ -3,6 +3,7 @@ import Layout, { Content, Header } from 'antd/es/layout/layout';
 import HeaderContent from '~/component/GlobalStyles/layouts/DefaultLayout/Header';
 import Sidebar from '~/component/GlobalStyles/layouts/DefaultLayout/SideBar';
 import ProfileComponent from './ProfileComponent/ProfileComponent';
+import { useEffect } from 'react';
 
 const headerStyle = {
   borderLeft: '270px',
@@ -33,6 +34,9 @@ const layoutContent = {
   backgroundColor: 'white',
 };
 function ProfilePage() {
+  useEffect(() => {
+    document.title = 'Thông tin cá nhân';
+  });
   return (
     <Layout style={{ height: '100%', background: 'white' }}>
       <Sider width={260} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
