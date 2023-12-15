@@ -246,8 +246,6 @@ function FormChiTietHoaDon(props) {
         setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
     }, [calculateTotal()]);
 
-
-
     const columns = [
         {
             key: 'stt',
@@ -297,10 +295,12 @@ function FormChiTietHoaDon(props) {
             width: '130px',
             render: (text, record, index) => (
                 <Space>
+
                     <InputNumber
                         min={0}
                         max={Math.floor(maxAmount[index])}
                         step={1}
+                        disabled={(Math.floor(props.bills.billStatus) === -1) ? true : false}
                         value={newAmount[index]}
                         onChange={(newValue) => {
                             setNewAmount(prevAmount => {
@@ -312,18 +312,26 @@ function FormChiTietHoaDon(props) {
                         }}
                         style={{ width: '55px' }}
                     />
-                    <Button
-                        type="primary"
-                        danger={newAmount[index] <= 0}
-                        disabled={newAmount[index] == null ? true : false}
-                        onClick={() => {
+                    <Popconfirm
+                        title="Xác Nhận"
+                        description="Bạn có chắc muốn thay đổi số lượng sản phẩm?"
+                        okText="Đồng ý"
+                        cancelText="Không"
+                        onConfirm={() => {
                             updateAmountProductDetail(record.billDetailId, newAmount[index]);
                             setReload(true);
                         }}
-                        icon={<CheckOutlined />}
-                        style={{ backgroundColor: newAmount[index] == null ? 'grey' : 'red', color: 'white' }}
                     >
-                    </Button>
+                        <Button
+                            type="primary"
+                            danger={newAmount[index] <= 0}
+                            disabled={(newAmount[index] == null || Math.floor(props.bills.billStatus) === -1) ? true : false}
+                            icon={<CheckOutlined />}
+                            style={{ backgroundColor: (newAmount[index] == null || Math.floor(props.bills.billStatus) === -1) ? 'grey' : 'red', color: 'white' }}
+                        >
+                        </Button>
+                    </Popconfirm>
+
                 </Space>
             ),
         },
@@ -402,6 +410,7 @@ function FormChiTietHoaDon(props) {
                 <div>
                     <Space size="middle">
                         <Button type="default" danger
+                            disabled={(Math.floor(props.bills.billStatus) === -1) ? true : false}
                             onClick={() => {
                                 showComponentSPLoi(record, index);
                             }}
