@@ -11,4 +11,10 @@ public interface CartDetailService {
 
     CartDetailDTO addToCart(CartDetailDTO cartDetailDTO);
 
+    CartDetails updateAmountToCart(String id,int amount);
+
+    Boolean delete(String id);
+
+
+
 }

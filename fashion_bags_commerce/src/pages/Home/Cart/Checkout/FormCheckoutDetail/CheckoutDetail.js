@@ -189,6 +189,7 @@ const CheckoutDetail = () => {
           billCreateDate: currentDateTime,
           billNote: billNote,
           billStatus: 4,
+          billReducedPrice:0,
           billCode: generateCustomCode('Bill', 4),
           billTotalPrice: cartItemsTotal.billTotalPrice,
           productAmount: cartItemsTotal.productAmount,
@@ -210,6 +211,9 @@ const CheckoutDetail = () => {
             productDetailId: item.productDetailId,
           },
           amount: item.quantity,
+          billDetailStatus:1,
+          billDetailNote:null,
+
           price: item.retailPrice,
         }));
         console.log('Cartssss', cartItems);

@@ -1,7 +1,7 @@
 import { MinusOutlined, PlusOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Carousel, Checkbox, notification } from 'antd';
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import BeatLoader from 'react-spinners/ClipLoader';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import cartAPI from '~/api/cartAPI';
@@ -24,8 +24,9 @@ function ShopDetailView() {
   const customerId = localStorage.getItem('customerId');
   const [customeridd, setCustomerId] = useState('');
   const [cartId1, setCartId] = useState('');
-  const { cartId: routeCartId } = useParams();
   const [cartItems, setCartItems] = useState([]);
+  const [cartDetailId, setCartDetailId] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -35,6 +36,7 @@ function ShopDetailView() {
         setCustomerId(customerId);
         setCartId(data.cartId);
         setCartItems(data);
+        setCartDetailId(data?.cartDetailsList?.productDetails?.productDetailId);
       } catch (error) {
         console.error('Error fetching product details:', error);
       }
@@ -42,6 +44,7 @@ function ShopDetailView() {
 
     fetchCart();
   }, [customerId]);
+  console.log('cart', cartItems);
 
   useEffect(() => {
     const fetchProductDetail = async () => {
@@ -60,7 +63,6 @@ function ShopDetailView() {
     fetchProductDetail();
   }, [productId]);
 
-
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(false);
@@ -69,13 +71,15 @@ function ShopDetailView() {
     }, 5000);
   }, []);
 
-  const addToCart = async (product) => {
+  const addToCart = async () => {
+    const amountInDatabase = dataDetail.amount;
+
     const productToAdd = {
       productDetails: {
         productDetailId: dataDetail.productDetailId,
       },
       carts: {
-        cartId: cartItems.cartId,
+        cartId: cartId1, // Use the state value for cartId
       },
       amount: quantity,
     };
@@ -86,8 +90,16 @@ function ShopDetailView() {
         return;
       }
 
-      const response = await cartDetailAPI.save(productToAdd);
+      if (quantity > amountInDatabase) {
+        notification.error({
+          message: 'Thất bại',
+          description: 'Số lượng sản phẩm trong kho không đủ',
+          duration: 3,
+        });
+        return;
+      }
 
+      const response = await cartDetailAPI.save(productToAdd);
       setQuantity(1);
 
       notification.success({
@@ -97,7 +109,6 @@ function ShopDetailView() {
       });
     } catch (error) {
       console.error('Error adding product to cart:', error);
-      // Handle the error scenario (e.g., display an error message)
       notification.error({
         message: 'Lỗi',
         description: 'Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng',
@@ -105,6 +116,59 @@ function ShopDetailView() {
       });
     }
   };
+
+  const renderAddToCartButtonDB = () => {
+    if (!dataDetail || !cartItems || !cartItems.cartDetailsList) {
+      return null;
+    }
+
+    const isProductInCart = cartItems.cartDetailsList.some(
+      (item) => item.productDetails.productDetailId === dataDetail.productDetailId,
+    );
+
+    if (!dataDetail || dataDetail.amount === 0) {
+      return (
+        <div
+          className={styles.button_buy_now_disabled}
+          style={{
+            color: 'gray',
+            fontSize: '25px',
+            background: 'lightgray',
+            borderRadius: '32px',
+            padding: '5px 10px',
+            textAlign: 'center',
+          }}
+        >
+          Hết hàng
+        </div>
+      );
+    } else if (isProductInCart) {
+      return (
+        <div
+          className={styles.button_buy_now_disabled}
+          style={{
+            color: 'gray',
+            fontSize: '25px',
+            background: 'lightgray',
+            borderRadius: '32px',
+            padding: '5px 10px',
+            textAlign: 'center',
+          }}
+        >
+          <ShoppingCartOutlined />
+          Sản phẩm đã có trong giỏ hàng
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.button_buy_now} onClick={addToCart}>
+          <ShoppingCartOutlined />
+          Thêm vào giỏ hàng
+        </div>
+      );
+    }
+  };
+
   const renderAddToCartButton = () => {
     if (!dataDetail) {
       return null;
@@ -126,6 +190,7 @@ function ShopDetailView() {
             background: 'lightgray',
             borderRadius: '32px',
             padding: '5px 10px',
+            textAlign: 'center',
           }}
         >
           Hết hàng
@@ -142,6 +207,7 @@ function ShopDetailView() {
               background: 'lightgray',
               borderRadius: '32px',
               padding: '5px 10px',
+              textAlign: 'center',
             }}
           >
             <ShoppingCartOutlined />
@@ -477,18 +543,24 @@ function ShopDetailView() {
 
               <br></br>
 
-              <Link to="">{renderAddToCartButton()}</Link>
-              <Link to="/cart">
-                <div className={styles.button_buy_now1} onClick={() => addToTemporaryCart(product)}>
-                  Mua ngay
-                </div>
-              </Link>
-
-              <Link to={`/cart/${customerId}`}>
-                <div className={styles.button_buy_now1} onClick={() => addToCart(product)}>
-                  Them vao gio hang
-                </div>
-              </Link>
+              {customerId == null ? (
+                <Link to="">{renderAddToCartButton()}</Link>
+              ) : (
+                <Link to={`/cart/${cartId1}`}>{renderAddToCartButtonDB()}</Link>
+              )}
+              {/* {customerId == null ? (
+                <Link to="/cart">
+                  <div className={styles.button_buy_now1} onClick={() => addToTemporaryCart(product)}>
+                    Mua ngay
+                  </div>
+                </Link>
+              ) : (
+                <Link to={`/cart/${customerId}`}>
+                  <div className={styles.button_buy_now1} onClick={() => addToCart(product)}>
+                    Mua ngay
+                  </div>
+                </Link>
+              )} */}
             </div>
           </div>
         </div>

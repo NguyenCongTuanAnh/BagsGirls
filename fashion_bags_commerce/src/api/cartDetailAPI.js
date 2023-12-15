@@ -15,6 +15,19 @@ const cartDetailAPI = {
           },
         });
       },
+      updateAmount(id, amount) {
+        const url = `api/cart-detail/${id}`;
+        return axiosClient.put(url, { amount }, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+      },
+
+      delete(id) {
+        const url = `api/cart-detail/${id}`;
+        return axiosClient.delete(url);
+      },
 
 
 }

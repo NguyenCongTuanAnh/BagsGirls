@@ -39,7 +39,7 @@ const sizeAPI = {
     });
   },
   delete(id) {
-    const url = `/size?id=${id}`;
+    const url = `api/size?id=${id}`;
     return axiosClient.delete(url);
   },
 };
