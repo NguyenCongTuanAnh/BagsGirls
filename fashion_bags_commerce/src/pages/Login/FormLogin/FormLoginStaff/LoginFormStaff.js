@@ -1,7 +1,7 @@
 import styles from './LoginForm.module.scss';
 import { FacebookOutlined, GooglePlusOutlined } from '@ant-design/icons';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useHistory, useNavigate } from 'react-router-dom';
 import { Button, Form, notification } from 'antd';
 import Checkbox from 'antd/es/checkbox/Checkbox';
@@ -13,6 +13,9 @@ import staffAPI from '~/api/staffAPI';
 import Constants from '~/Utilities/Constants';
 const CryptoJS = require('crypto-js');
 function LoginFormStaff(props) {
+  useEffect(() => {
+    document.title = 'Đăng nhập';
+  });
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
   const navigate = useNavigate();

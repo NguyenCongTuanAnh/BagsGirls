@@ -3,12 +3,14 @@ import { Layout } from 'antd';
 import HeaderContent from '~/component/GlobalStyles/layouts/DefaultLayout/Header';
 
 import TableContent from './Table/Table';
-import FormCustomerCreate from '../CustomerEdit/FormCreate/FormCustomerCreate';
-import FormCustomerCreate1 from '../CustomerEdit/FormCreate/FormCustomerCreate';
+import { useEffect } from 'react';
 
 const { Header, Footer, Sider, Content } = Layout;
 
 function CustomerView() {
+  useEffect(() => {
+    document.title = 'Quản lí Khách hàng';
+  });
   return (
     <Layout style={{ height: '100%', background: '#f4f3f4' }}>
       <Sider width={260} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
@@ -21,8 +23,6 @@ function CustomerView() {
         <Content className="contentStyle">
           <TableContent style={{ boder: 'black solid 1px' }} />
         </Content>
-
-        {/* <Footer className="footerStyle">Đây là component của Footer</Footer> */}
       </Layout>
     </Layout>
   );

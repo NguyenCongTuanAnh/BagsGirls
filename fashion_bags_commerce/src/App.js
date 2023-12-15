@@ -77,7 +77,7 @@ function App() {
 
           <Route path="/gioi-thieu" element={<AboutPage />} />
           <Route path="/blog" element={<BlogPage />} />
-          <Route path="/thong-ke" element={<ThongKeView />} />
+
           <Route
             path="/profile"
             element={
@@ -94,21 +94,19 @@ function App() {
               </AdminAuth>
             }
           />
-
+          <Route
+            path="/stastistic-view"
+            element={
+              <AdminAuth>
+                <ThongKeView />
+              </AdminAuth>
+            }
+          />
           <Route
             path="/bill-online-view"
             element={
               <AdminAuth>
                 <HoaDonOnlineView />
-              </AdminAuth>
-            }
-          />
-
-          <Route
-            path="/shift-view"
-            element={
-              <AdminAuth>
-                <ShiftViewer />
               </AdminAuth>
             }
           />
@@ -127,22 +125,6 @@ function App() {
             element={
               <StaffAuth>
                 <ProfilePage />
-              </StaffAuth>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <StaffAuth>
-                <Admin />
-              </StaffAuth>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <StaffAuth>
-                <Admin />
               </StaffAuth>
             }
           />
@@ -244,16 +226,6 @@ function App() {
               </AdminAuth>
             }
           />
-
-          <Route
-            path="/product-add"
-            element={
-              <AdminAuth>
-                <ProductAdd />
-              </AdminAuth>
-            }
-          />
-
           <Route
             path="/compartment-view"
             element={

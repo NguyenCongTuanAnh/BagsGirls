@@ -43,14 +43,17 @@ public class BillDetailsServiceImpl implements IBillDetailsService {
 
 
     @Override
-    public GetBillDetailsDTO getOne(String id) {
-        BillDetails bill = this.iBillDetailRepository.findBillDetailsById(id);
-        return  modelMapper.map(bill, GetBillDetailsDTO.class);
+    public BillDetailsQDTO getOne(String id) {
+//        BillDetails bill = this.iBillDetailRepository.findBillDetailsById(id);
+        return  modelMapper.map(this.iBillDetailRepository.findBillDetailsById(id), BillDetailsQDTO.class);
     }
 
     @Override
-    public List<BillDetails_ChiTiet> findAllByBillId(String billID, Integer status) {
-        return this.iBillDetailRepository.findAllByBillId(billID, status);
+    public List<BillDetailsQDTO> findAllByBillId(String billID, Integer status) {
+        List<BillDetails_ChiTiet> bills = this.iBillDetailRepository.findAllByBillId(billID, status);
+        return bills.stream()
+                .map(bill -> modelMapper.map(bill, BillDetailsQDTO.class))
+                .collect(Collectors.toList());
     }
 
 
@@ -61,12 +64,12 @@ public class BillDetailsServiceImpl implements IBillDetailsService {
         return modelMapper.map(this.iBillDetailRepository.save(billDetails), BillDetailsDTO.class);
     }
 
-//    @Override
-//    public BillDetailsQDTO updateAmountProduct(BillDetailsQDTO billDetailsQDTO) {
-//        BillDetails billDetails = modelMapper.map(billDetailsQDTO, BillDetails.class);
-//
-//        return modelMapper.map(this.iBillDetailRepository.save(billDetails), BillDetailsQDTO.class);
-//    }
+    @Override
+    public BillDetailsQDTO updateAmountProduct(BillDetailsQDTO billDetailsQDTO) {
+        BillDetails billDetails = modelMapper.map(billDetailsQDTO, BillDetails.class);
+
+        return modelMapper.map(this.iBillDetailRepository.save(billDetails), BillDetailsQDTO.class);
+    }
 
     @Override
     public BillDetailsDTO update(BillDetailsDTO billDetailsDTO) {

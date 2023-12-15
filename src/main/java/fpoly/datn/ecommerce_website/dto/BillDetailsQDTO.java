@@ -1,17 +1,17 @@
 package fpoly.datn.ecommerce_website.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fpoly.datn.ecommerce_website.entity.Bills;
+import fpoly.datn.ecommerce_website.entity.BillsOfQ;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
 import fpoly.datn.ecommerce_website.entity.ProductDetails_BillDetails;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,9 +22,9 @@ import java.util.Date;
 public class BillDetailsQDTO {
     private String billDetailId;
 
-    private String billId;
+    private BillsOfQ bills;
 
-    private ProductDetails_BillDetails productDetails;
+    private ProductDetails productDetails;
 
     private Integer amount;
 

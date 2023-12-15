@@ -63,7 +63,7 @@ public class StaffServiceImpl implements IStaffService {
     @Override
     public Staffs save(StaffDTO1 staffDTO) {
         Staffs staff = modelMapper.map(staffDTO, Staffs.class);
-        staff.setStaffStatus(1);
+        staff.setStaffStatus(staffDTO.getStaffStatus());
         Users userInfo = modelMapper.map(staffDTO, Users.class);
         userInfo.setRole(staffDTO.getUsersRolesRoleName());
         userInfo.setPassword(passwordEncoder.encode(staffDTO.getUsersPassword()));

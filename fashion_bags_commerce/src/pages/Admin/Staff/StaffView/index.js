@@ -5,6 +5,7 @@ import HeaderContent from '~/component/GlobalStyles/layouts/DefaultLayout/Header
 import TableContent from './Table/Table';
 import FormStaffCreate from '../StaffEdit/FormCreate/FormStaffCreate';
 import FormStaffCreate1 from '../StaffEdit/FormCreate/FormStaffCreate';
+import { useEffect } from 'react';
 // import FormstaffCreate from '../staffEdit/FormrCreate/FormstaffCreate';
 
 const { Header, Footer, Sider, Content } = Layout;
@@ -36,6 +37,9 @@ const layoutContent = {
 };
 
 function StaffView() {
+  useEffect(() => {
+    document.title = 'Quản lí Nhân viên';
+  });
   return (
     <Layout style={{ height: '100%', background: '#f4f3f4' }}>
       <Sider width={260} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>

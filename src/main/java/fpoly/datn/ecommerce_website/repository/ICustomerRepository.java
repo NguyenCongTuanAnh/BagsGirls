@@ -46,10 +46,10 @@ import java.util.List;
 //    List<Customers> findByKeyword(String keyword);
 @Query("SELECT c FROM Customers c join Users u on c.users.userId = u.userId ")
 List<Customers> findByKeyword(String keyword);
-    @Query("SELECT c FROM Customers c join Users u on c.users.userId = u.userId " +
-            "where u.fullName LIKE %:keyword% " +
-            "OR u.phoneNumber LIKE %:keyword% " +
-            "OR u.email LIKE %:keyword% ")
+    @Query("SELECT c FROM Customers c " +
+            "where ( :keyword is null or c.users.fullName LIKE %:keyword% ) " +
+            "OR  ( :keyword is null or c.users.phoneNumber LIKE %:keyword% ) " +
+            "OR ( :keyword is null or c.users.email LIKE %:keyword% ) ")
     List<Customers> findCustomerByKeyword(@Param("keyword") String keyword);
 
     @Query("SELECT c, u FROM Customers c join Users u on c.users.userId = u.userId " +

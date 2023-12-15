@@ -128,12 +128,17 @@ function RegisterForm(props) {
                   message: 'Tên không hợp lệ!',
                   pattern: /^[\p{L}\d\s]+$/u,
                   whitespace: true,
+
                   validator: (rule, value) => {
                     if (value && value.trim() !== value) {
                       return Promise.reject('Tên không được chứa khoảng trắng ở hai đầu!');
                     }
                     return Promise.resolve();
                   },
+                },
+                {
+                  pattern: /^[a-zA-ZÀ-ỹà-ỹẠ-Ỹạ-ỹĂăÂâĐđÊêÔôƠơƯư\s]+$/,
+                  message: 'Tên không được phép chứa kí tự đặc biệt và số!',
                 },
               ]}
             >

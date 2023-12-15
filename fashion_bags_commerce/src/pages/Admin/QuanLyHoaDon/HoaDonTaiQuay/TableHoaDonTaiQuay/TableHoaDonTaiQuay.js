@@ -502,7 +502,7 @@ function TableHoaDonTaiQuay() {
       <Card>
         <section>
           <h2 style={{ marginBottom: '10px' }}>
-            <TableOutlined /> Danh sách hóa đơn tại quầy
+            <TableOutlined /> Danh sách hóa đơn
           </h2>
           <Tabs
             defaultActiveKey={status}
