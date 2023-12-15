@@ -34,9 +34,12 @@ public class CartDetails {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String cartDetailId;
 
+
     @ManyToOne
     @JoinColumn(name = "cart_id", referencedColumnName = "cart_id")
     private Carts carts;
+
+
 
     @ManyToOne
     @JoinColumn(name = "product_detail_id", referencedColumnName = "product_detail_id")
@@ -47,3 +50,4 @@ public class CartDetails {
 
 
 }
+

@@ -27,6 +27,7 @@ public final class Constants {
 
     public static final int JWTEXPIRATIONINMS = 604800; // 86400 is 1 day => 86400 * 7 = 604,800 (7 weeks)
     public static final Integer PERCENT_TO_RECEIVE = (10/100); //
+    public static final Double PRICE_TO_ADD_1POINT = 5000.0; //
     public static final Double TOTALPRICE_TO_ADD_1POINT = 500000.0; //
     public static final Double TOTALPRICE_TO_ADD_10POINT = 1000000.0; //
     public static final Double TOTALPRICE_TO_ADD_20POINT = 1500000.0; //

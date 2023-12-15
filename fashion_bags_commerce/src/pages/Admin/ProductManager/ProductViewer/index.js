@@ -9,7 +9,7 @@ function ProductViewer() {
   return (
     <Layout style={{ height: '100%', background: '#f4f3f4' }}>
       <Sider width={260} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
-        <Sidebar keyIndex="11" openKey="sub999" />
+        <Sidebar keyIndex="sub4.2" openKey="sub4" />
       </Sider>
       <Layout className="layoutContent">
         <Header className="headerStyle">

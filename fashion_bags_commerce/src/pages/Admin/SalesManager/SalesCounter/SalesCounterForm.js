@@ -212,36 +212,19 @@ const SalesCounterForm = () => {
     };
 
     useEffect(() => {
-      if (rankingName === 'KH_KIMCUONG') {
-        if (totalPrice >= 4000000) {
-          setDiscountPercentByRankingName(12);
-        } else {
-          setDiscountPercentByRankingName(10);
-        }
+      if (rankingName === 'KH_KIMCUONG' && totalPrice >= 4000000) {
+        setDiscountPercentByRankingName(15);
+      } else if (rankingName === 'KH_KIMCUONG') {
+        setDiscountPercentByRankingName(12);
       } else if (rankingName === 'KH_VANG') {
-        if (totalPrice >= 3000000) {
-          setDiscountPercentByRankingName(10);
-        } else {
-          setDiscountPercentByRankingName(8);
-        }
+        setDiscountPercentByRankingName(10);
       } else if (rankingName === 'KH_BAC') {
-        if (totalPrice >= 2000000) {
-          setDiscountPercentByRankingName(8);
-        } else {
-          setDiscountPercentByRankingName(5);
-        }
+        setDiscountPercentByRankingName(8);
       } else if (rankingName === 'KH_THANTHIET') {
-        if (totalPrice >= 1000000) {
-          setDiscountPercentByRankingName(5);
-        } else {
-          setDiscountPercentByRankingName(2);
-        }
+        setDiscountPercentByRankingName(5);
       } else if (rankingName === 'KH_TIEMNANG') {
-        if (totalPrice >= 500000) {
-          setDiscountPercentByRankingName(2);
-        } else {
-          setDiscountPercentByRankingName(1);
-        }
+        // if (totalPrice >= 500000) {
+        setDiscountPercentByRankingName(2);
       } else {
         setDiscountPercentByRankingName(0);
       }
@@ -1351,7 +1334,7 @@ const SalesCounterForm = () => {
             </Col>
             <Col span={14} style={{ borderLeft: '1px solid', minHeight: '1000px' }} className={styles.form}>
               <div>
-                <h3>Giỏ Hàng</h3>
+                <h3>Sản Phẩm</h3>
               </div>
               <div>
                 <div style={{ width: 'auto' }}>
@@ -1396,28 +1379,35 @@ const SalesCounterForm = () => {
                             ))}
                           </AutoComplete>
                         </Col>
-                        <Col span={4}>
+                        <Col span={5}>
                           <div>
-                            <Modal
-                              title="Quét Mã"
-                              width={250}
-                              open={isModalQROpen}
-                              onOk={handleOk}
-                              onCancel={handleCancel}
-                              closable={false}
-                              okButtonProps={{ hidden: true }}
-                            >
-                              {isModalQROpen ? <QRCodeScanner showScanner={showScanner}></QRCodeScanner> : ''}
-                            </Modal>
-                            <Button
-                              onClick={showModal}
-                              shape="round"
-                              size="large"
-                              type="primary"
-                              icon={<ScanOutlined size={100} />}
-                            >
-                              Mở Scan
-                            </Button>
+                            <Row>
+                              <Col span={5}>
+                                <Modal
+                                  title="Quét Mã"
+                                  width={240}
+                                  open={isModalQROpen}
+                                  onOk={handleOk}
+                                  onCancel={handleCancel}
+                                  closable={false}
+                                  maskClosable={false}
+                                  okButtonProps={{ hidden: true }}
+                                >
+                                  {isModalQROpen ? <QRCodeScanner showScanner={showScanner}></QRCodeScanner> : ''}
+                                </Modal>
+                              </Col>
+                              <Col span={4}>
+                                <Button
+                                  onClick={showModal}
+                                  shape="round"
+                                  size="large"
+                                  type="primary"
+                                  icon={<ScanOutlined size={100} />}
+                                >
+                                  Mở Scan
+                                </Button>
+                              </Col>
+                            </Row>
                           </div>
                         </Col>
                         <Col span={3}>

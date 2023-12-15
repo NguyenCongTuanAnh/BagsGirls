@@ -24,12 +24,11 @@ function Avartar() {
           <img
             alt="avatar shop"
             style={{ width: '180px', height: '160px', borderRadius: '20% 5% 20% 5%', margin: '10px 10px 10px 10px' }}
-            
-            src='https://firebasestorage.googleapis.com/v0/b/bagsgirl-datn.appspot.com/o/Image%2Flogo.png?alt=media&token=5eac10cf-5998-459a-90ab-9ae86c0c631e' 
+            src="https://firebasestorage.googleapis.com/v0/b/bagsgirl-datn.appspot.com/o/Image%2Flogo.png?alt=media&token=5eac10cf-5998-459a-90ab-9ae86c0c631e"
           />
         }
       >
-        <Meta title="Fashions Bags Shop" description={staff ? staff.users.fullName : ''} />
+        <Meta title="Bags Girls Shop" description={staff ? staff.users.fullName : ''} />
       </Card>
     </div>
   );

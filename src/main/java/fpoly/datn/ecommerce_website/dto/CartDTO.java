@@ -1,5 +1,6 @@
 package fpoly.datn.ecommerce_website.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import fpoly.datn.ecommerce_website.entity.Customers;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -20,9 +22,11 @@ public class CartDTO {
 
     private String cartCode;
 
-    private Date createTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
+    private LocalDateTime cartCreatTime;
 
-    private Date paymentTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
+    private LocalDateTime cartPaymentTime;
 
     private String cartNote;
 

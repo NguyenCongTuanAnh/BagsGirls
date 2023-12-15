@@ -3,8 +3,6 @@ import { Layout } from 'antd';
 import HeaderContent from '~/component/GlobalStyles/layouts/DefaultLayout/Header';
 
 import TableContent from './Table/Table';
-import FormCustomerCreate from '../CustomerEdit/FormCreate/FormCustomerCreate';
-import FormCustomerCreate1 from '../CustomerEdit/FormCreate/FormCustomerCreate';
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -21,8 +19,6 @@ function CustomerView() {
         <Content className="contentStyle">
           <TableContent style={{ boder: 'black solid 1px' }} />
         </Content>
-
-        {/* <Footer className="footerStyle">Đây là component của Footer</Footer> */}
       </Layout>
     </Layout>
   );

@@ -5,21 +5,19 @@ import TableContent from './Table/Table';
 import { Fragment } from 'react';
 const { Header, Footer, Sider, Content } = Layout;
 
-
 function MaterialView() {
   return (
     <div style={{ height: '100%', background: '#f4f3f4' }}>
       <Sider width={260} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
-        <Sidebar keyIndex="15" openKey="sub11" />
+        <Sidebar keyIndex="sub5.4" openKey="sub5" />
       </Sider>
-      <div className="layoutContent" >
+      <div className="layoutContent">
         <Header className="headerStyle">
           <HeaderContent titlePage="Danh Sách Chất Liệu" />
         </Header>
         <Content className="contentStyle">
           <TableContent />
         </Content>
-
       </div>
     </div>
   );
