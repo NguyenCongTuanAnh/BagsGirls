@@ -8,11 +8,13 @@ import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import billDetailsAPI from '~/api/BillDetailsAPI';
 import FormStaffEdit from '../../Staff/StaffEdit/FormEdit/FormStaffEdit';
 import productDetailsAPI from '~/api/productDetailsAPI';
+import billsAPI from '~/api/BillApi';
 const { useForm } = Form;
 
 
 function FormChiTietHoaDon(props) {
     const [totalQuantity, setTotalQuantity] = useState(0);
+    const [tongTienThanhToan, setTongTienThanhToan] = useState(0);
     const [visible, setVisible] = useState(false);
     const [reload, setReload] = useState(false);
     const [billId, setBillId] = useState();
@@ -20,14 +22,11 @@ function FormChiTietHoaDon(props) {
     const [listBillDetails, setListBillDetais] = useState([]);
     const [newAmount, setNewAmount] = useState([]);
     const [maxAmount, setMaxAmount] = useState([]);
-    // const [amountProductError, setAmountProductError] = useState(0);
     const [maxAmountProductError, setMaxAmountProductError] = useState(0);
     const [billDetailIdLoi, setBillDetailIdLoi] = useState('');
     const [indexBilldetails, setIndexBilldetails] = useState(0);
     const [open, setOpen] = useState(false);
     const [form] = useForm();
-
-
 
     const addItemToNewAmount = (item) => {
         setNewAmount(prevState => [...prevState, item]);
@@ -36,11 +35,12 @@ function FormChiTietHoaDon(props) {
         setMaxAmount(prevState => [...prevState, item]);
     };
     const showModal = () => {
+
         setBillId(props.bills.billId);
         setNewAmount([]);
         setMaxAmount([]);
         getAllByBillId();
-        // console.log(listBillDetails);
+        // console.log(props);
         setTitleComponent(props.bills.billCode);
         const total = listBillDetails.reduce((totalQty, item) => {
             addItemToNewAmount(item.amount);
@@ -49,20 +49,22 @@ function FormChiTietHoaDon(props) {
         }, 0);
         setTotalQuantity(total);
         setVisible(true);
+        setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
     };
 
     useEffect(() => {
         setReload(false);
         getAllByBillId();
-        // loadLaiTables();
-
+        setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
     }, [visible, reload, totalQuantity]);
 
     const calculateTotal = () => {
         return listBillDetails.reduce((total, item) => {
             return total + item.amount * item.price;
         }, 0);
+
     };
+
     const soLuongView = () => {
         return listBillDetails.reduce((total, item) => {
             return total + item.amount;
@@ -132,6 +134,45 @@ function FormChiTietHoaDon(props) {
             return 'Chưa có hạng';
         }
     }
+    const updateThongTinHoaDon = async () => {
+        console.log(tongTienThanhToan);
+        let updateHoaDon = {
+            billId: props.bills.billId,
+            staff: props.bills.staff,
+            customer: props.bills.customer,
+            voucher: props.bills.voucher,
+            billCode: props.bills.billCode,
+            billCreateDate: props.bills.billCreateDate,
+            billDatePayment: props.bills.billDatePayment,
+            billShipDate: props.bills.billShipDate,
+            billReceiverDate: props.bills.billReceiverDate,
+            billTotalPrice: calculateTotal(),
+            productAmount: soLuongView(),
+            billPriceAfterVoucher: tongTienThanhToan,
+            shippingAddress: props.bills.shippingAddress,
+            billingAddress: props.bills.billingAddress,
+            receiverName: props.bills.receiverName,
+            shipPrice: props.bills.shipPrice,
+            orderEmail: props.bills.orderEmail,
+            orderPhone: props.bills.orderPhone,
+            paymentMethod: props.bills.paymentMethod,
+            billNote: props.bills.billNote,
+            billStatus: props.bills.billStatus,
+            billReducedPrice: props.bills.billReducedPrice
+        };
+        console.log(updateHoaDon);
+        try {
+            await billsAPI.add(updateHoaDon);
+            props.reload();
+        } catch (error) {
+            notification.error({
+                message: 'Lỗi',
+                description: 'Lỗi cập nhật hóa đơn không thành công',
+                duration: 2,
+            });
+            console.log(error);
+        }
+    }
 
     const updateAmountProductDetail = async (billDetailId, amount) => {
         try {
@@ -141,12 +182,14 @@ function FormChiTietHoaDon(props) {
                     message: 'Thành công',
                     description: 'Xóa thành công sản phẩm!!'
                 });
+                setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
                 setReload(true);
             } else {
                 notification.success({
                     message: 'Thành công',
                     description: 'Sửa thành công số lượng sản phẩm thành: ' + amount.toString(),
                 });
+                setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
                 setReload(true);
             }
 
@@ -161,6 +204,7 @@ function FormChiTietHoaDon(props) {
         setIndexBilldetails(index);
         setMaxAmountProductError(values.amount);
         setBillDetailIdLoi(values.billDetailId);
+        // setBill(values);
         console.log(values);
         // console.log(index);
         setOpen(true);
@@ -190,13 +234,18 @@ function FormChiTietHoaDon(props) {
                     description: 'Sản phẩm lỗi không thể nhiều hơn sản phẩm trong đơn hàng! ',
                 });
             }
-
+            setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
             setReload(true);
             setOpen(false);
         } catch (error) {
             console.error('Đã xảy ra lỗi: ', error);
         }
     };
+
+    useEffect(() => {
+        setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
+    }, [calculateTotal()]);
+
 
 
     const columns = [
@@ -450,11 +499,11 @@ function FormChiTietHoaDon(props) {
                 title={<h2 style={{ fontSize: '28px', fontWeight: 'bold' }}>Chi tiết hóa đơn: {titleComponent}</h2>}
                 centered
                 open={visible}
-                onCancel={() => setVisible(false)}
+                onCancel={() => { updateThongTinHoaDon(); setVisible(false) }}
                 width={'97%'}
                 height={'90%'}
                 footer={[
-                    <Button key="cancel" onClick={() => setVisible(false)}>
+                    <Button key="cancel" onClick={() => { updateThongTinHoaDon(); setVisible(false) }}>
                         Hủy
                     </Button>,
                 ]}
