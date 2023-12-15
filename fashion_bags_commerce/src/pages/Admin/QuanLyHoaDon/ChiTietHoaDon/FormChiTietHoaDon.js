@@ -23,6 +23,7 @@ function FormChiTietHoaDon(props) {
     // const [amountProductError, setAmountProductError] = useState(0);
     const [maxAmountProductError, setMaxAmountProductError] = useState(0);
     const [billDetailIdLoi, setBillDetailIdLoi] = useState('');
+    const [indexBilldetails, setIndexBilldetails] = useState(0);
     const [open, setOpen] = useState(false);
     const [form] = useForm();
 
@@ -53,7 +54,7 @@ function FormChiTietHoaDon(props) {
     useEffect(() => {
         setReload(false);
         getAllByBillId();
-        loadLaiTables();
+        // loadLaiTables();
 
     }, [visible, reload, totalQuantity]);
 
@@ -67,31 +68,6 @@ function FormChiTietHoaDon(props) {
             return total + item.amount;
         }, 0);
     };
-    // const thanhTienView = () => {
-    //     return calculateTotal() -
-    // }
-    const loadLaiTables = () => {
-        let index = 0;
-        const total = listBillDetails.reduce((totalQty, item) => {
-            setNewAmount(prevAmount => {
-                const updatedAmount = [...prevAmount];
-                updatedAmount[index] = item.amount;
-                return updatedAmount;
-            });
-            setMaxAmount(prevAmount => {
-                const updatedAmount = [...prevAmount];
-                updatedAmount[index] = item.amount + item.productDetails.productDetailAmount;
-                return updatedAmount;
-            });
-            index = index + 1;
-            return totalQty + item.amount;
-        }, 0);
-        setTotalQuantity(total);
-        calculateTotal();
-        soLuongView();
-    }
-
-
     const getAllByBillId = async () => {
         const response = await billDetailsAPI.getAllByBillId(props.bills.billId, -1);
         const data = response.data;
@@ -181,14 +157,16 @@ function FormChiTietHoaDon(props) {
 
     // component Sản phẩm lỗi
 
-    const showComponentSPLoi = (values) => {
-        // setAmountProductError(values.amount);
+    const showComponentSPLoi = (values, index) => {
+        setIndexBilldetails(index);
         setMaxAmountProductError(values.amount);
         setBillDetailIdLoi(values.billDetailId);
         console.log(values);
+        // console.log(index);
         setOpen(true);
     };
     const onClose = () => {
+        form.resetFields();
         setOpen(false);
     };
     const updateAmountProductError = async (values) => {
@@ -199,8 +177,12 @@ function FormChiTietHoaDon(props) {
                     message: 'Thành công',
                     description: 'Sản phẩm đã được thêm vào hóa đơn hàng lỗi với số lượng là: ' + values.amountError.toString(),
                 });
+                setNewAmount(prevAmount => {
+                    const updatedAmount = [...prevAmount];
+                    updatedAmount[indexBilldetails] = newAmount[indexBilldetails] - values.amountError;
+                    return updatedAmount;
+                });
                 setReload(true);
-                loadLaiTables();
             }
             if (values.amountError > maxAmountProductError) {
                 notification.error({
@@ -208,7 +190,7 @@ function FormChiTietHoaDon(props) {
                     description: 'Sản phẩm lỗi không thể nhiều hơn sản phẩm trong đơn hàng! ',
                 });
             }
-            loadLaiTables();
+
             setReload(true);
             setOpen(false);
         } catch (error) {
@@ -367,12 +349,12 @@ function FormChiTietHoaDon(props) {
         {
             title: 'Action',
             key: 'action',
-            render: (text, record) => (
+            render: (text, record, index) => (
                 <div>
                     <Space size="middle">
                         <Button type="default" danger
                             onClick={() => {
-                                showComponentSPLoi(record);
+                                showComponentSPLoi(record, index);
                             }}
                             icon={<ExclamationCircleOutlined />}>
                             Hàng lỗi
@@ -415,6 +397,7 @@ function FormChiTietHoaDon(props) {
                                             <InputNumber
                                                 min={1}
                                                 max={Math.floor(maxAmountProductError)}
+                                                // defaultValue={1}
                                                 step={1}
                                                 style={{ width: '70px' }}
                                             />
@@ -548,13 +531,13 @@ function FormChiTietHoaDon(props) {
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Giảm giá: </span>
-                                                    <span className={styles.labelName} style={{ marginTop: '10px' }}>{vndFormaterFunc(props.bills.billTotalPrice - props.bills.billPriceAfterVoucher)}</span>
+                                                    <span className={styles.labelName} style={{ marginTop: '10px' }}>{vndFormaterFunc(props.bills.billReducedPrice)}</span>
                                                 </li>{' '}
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Thành tiền: </span>
                                                     <span className={styles.labelName} style={{ color: 'red', fontWeight: 'bold', fontSize: '26px' }}>
-                                                        {vndFormaterFunc(calculateTotal())}
+                                                        {vndFormaterFunc(calculateTotal() - props.bills.billReducedPrice)}
                                                     </span>
                                                 </li>{' '}
                                             </ul>
