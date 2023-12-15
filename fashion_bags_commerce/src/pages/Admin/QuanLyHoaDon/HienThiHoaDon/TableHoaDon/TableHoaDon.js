@@ -491,7 +491,7 @@ function TableHoaDon() {
                       dataSource={data}
                       columns={columns}
                       loading={loading}
-                      rowKey={(record) => record.billCode}
+                      rowKey={(record) => record.billId}
                       loadingIndicator={<div>Loading...</div>}
                       pagination={false}
                     />
