@@ -44,4 +44,10 @@ public class BillDetails {
 
     @Column(name = "price")
     private Double price;
+
+    @Column(name = "bill_detail_status")
+    private Integer billDetailStatus;
+
+    @Column(name = "bill_detail_note")
+    private String billDetailNote;
 }

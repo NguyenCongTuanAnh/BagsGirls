@@ -29,15 +29,18 @@ import lombok.ToString;
 @Setter
 @Getter
 public class CartDetails {
-    @EmbeddedId
-    private CartDetailId id;
+    @Id
+    @Column(name = "cart_detail_id")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String cartDetailId;
 
-    @MapsId("cartId")
+
     @ManyToOne
     @JoinColumn(name = "cart_id", referencedColumnName = "cart_id")
     private Carts carts;
 
-    @MapsId("productDettailId")
+
+
     @ManyToOne
     @JoinColumn(name = "product_detail_id", referencedColumnName = "product_detail_id")
     private ProductDetails productDetails;
@@ -45,8 +48,6 @@ public class CartDetails {
     @Column(name = "amount")
     private Integer amount;
 
-    @Column(name = "price")
-    private Double price;
-
 
 }
+

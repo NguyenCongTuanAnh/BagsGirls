@@ -27,4 +27,9 @@ public class GetBillDetailsDTO {
     private Integer amount;
 
     private Double price;
+
+
+    private Integer billDetailStatus;
+
+    private String billDetailNote;
 }

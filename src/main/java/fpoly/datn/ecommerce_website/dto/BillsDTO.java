@@ -72,4 +72,6 @@ public class BillsDTO {
     private String billNote;
 
     private Integer billStatus;
+
+    private BigDecimal billReducedPrice;
 }

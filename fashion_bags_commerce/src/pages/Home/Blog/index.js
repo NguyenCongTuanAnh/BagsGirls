@@ -3,6 +3,7 @@ import Header from '../Header';
 import Footer from '../Footer';
 import './blog.scss';
 import { RightOutlined } from '@ant-design/icons';
+import MainLayout from '../MainLayout';
 
 const BlogPage = () => {
   // Danh sách bài viết mẫu
@@ -47,10 +48,7 @@ const BlogPage = () => {
   const steps = ['Trang chủ', 'Blog'];
 
   return (
-    <Fragment>
-      <div className="header001">
-        <Header />
-      </div>
+    <MainLayout>
       <div className="blog-container">
         <Breadcrumb steps={steps} />
 
@@ -66,10 +64,7 @@ const BlogPage = () => {
           ))}
         </div>
       </div>
-      <div className="footer_client">
-        <Footer />
-      </div>
-    </Fragment>
+    </MainLayout>
   );
 };
 

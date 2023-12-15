@@ -57,7 +57,7 @@ const SearchPage = (props) => {
                       <span className={styles.productPrice}>
                         <a>
                           <span className={styles.price}>
-                            {product.productDetails ? VNDFormaterFunc(product.productDetails[0].retailPrice) : ''}
+                            {product.productDetails ? VNDFormaterFunc(product.productDetails[0]?.retailPrice) : ''}
                           </span>
                         </a>
                       </span>

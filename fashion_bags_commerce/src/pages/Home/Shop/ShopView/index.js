@@ -32,8 +32,6 @@ function ShopView({ titleContent }) {
     setPagesSize(pageSize);
     setLoadingProducts(true);
 
-    console.log(currentPage);
-    console.log(pageSize);
   };
 
   useEffect(() => {
@@ -63,7 +61,6 @@ function ShopView({ titleContent }) {
         sortOrder,
       );
       const allProducts = response.data.content;
-      console.log(allProducts);
       setData(allProducts);
       setLoadingProducts(false);
       setTotalItem(response.data.totalElements);

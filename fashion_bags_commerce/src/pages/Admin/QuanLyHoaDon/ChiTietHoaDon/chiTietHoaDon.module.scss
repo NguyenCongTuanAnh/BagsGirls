@@ -96,11 +96,11 @@
 }
 
 .title_product {
-    font-weight  : bold;
-    margin-bottom: 5px;
-    font-size    : 16pt;
-    margin-left  : 30px;
-    font-family  : Arial, Helvetica, sans-serif;
+    font-weight     : bold;
+    margin-bottom   : 5px;
+    font-size       : 16pt;
+    // margin-left  : 30px;
+    font-family     : Arial, Helvetica, sans-serif;
 }
 
 .spanTitle {
@@ -108,9 +108,7 @@
     font-weight: bold;
 }
 
-.attr {
-    list-style: none;
-}
+
 
 .body {
     padding: 15px 20px;

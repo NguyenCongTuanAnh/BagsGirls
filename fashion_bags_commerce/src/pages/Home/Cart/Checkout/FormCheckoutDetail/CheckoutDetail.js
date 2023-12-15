@@ -1,17 +1,16 @@
-import React, { useState, useEffect, Fragment, useRef } from 'react'; 
+import { RightOutlined } from '@ant-design/icons';
+import { Result, message } from 'antd';
 import axios from 'axios';
-import './styles.scss';
-import { Link, useLocation } from 'react-router-dom';
-import billsAPI from '~/api/BillApi';
-import billDetailAPI from '~/api/BillDetailsAPI';
 import dayjs from 'dayjs';
-import { Input, Button, notification, Result, message } from 'antd';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import BeatLoader from 'react-spinners/ClipLoader';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
+import billsAPI from '~/api/BillApi';
+import billDetailAPI from '~/api/BillDetailsAPI';
 import productDetailsAPI from '~/api/productDetailsAPI';
-import BeatLoader from 'react-spinners/ClipLoader';
-import { faL } from '@fortawesome/free-solid-svg-icons';
-import { RightOutlined } from '@ant-design/icons';
+import './styles.scss';
 
 const CheckoutDetail = () => {
   const [cartItems, setCartItems] = useState([]);
