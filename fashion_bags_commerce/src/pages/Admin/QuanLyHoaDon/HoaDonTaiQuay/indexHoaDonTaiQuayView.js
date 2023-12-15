@@ -8,7 +8,7 @@ const { Header, Footer, Sider, Content } = Layout;
 
 function HoaDonTaiQuayView() {
   useEffect(() => {
-    document.title = 'Hóa đơn tại quầy';
+    document.title = 'Hóa đơn';
   });
   return (
     <Layout style={{ height: '100%', background: '#f4f3f4' }}>
