@@ -3,13 +3,18 @@ import { EyeFilled, EyeInvisibleOutlined, PlusOutlined } from '@ant-design/icons
 import { Button, Col, Drawer, Form, Input, Row, Select, Radio, notification } from 'antd';
 import staffAPI from '~/api/staffAPI';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
+const { useForm } = Form;
+
 
 const { Option } = Select;
 const FormStaffCreate = (props) => {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(false);
+  const [form] = useForm();
+
 
   const showDrawer = () => {
+    form.resetFields();
     setOpen(true);
   };
   const onClose = () => {
@@ -36,7 +41,6 @@ const FormStaffCreate = (props) => {
     }
     if (checkEmail.data === '' && checkSDT.data === '') {
       let add = { ...values, staffCode: generateCustomCode("NV", 5) };
-      console.log(add);
       try {
         const response = await staffAPI.add(add);
         notification.success({
@@ -78,7 +82,7 @@ const FormStaffCreate = (props) => {
           },
         }}
       >
-        <Form layout="vertical" initialValues={{ 'usersGender': true }} onFinish={addFunc}>
+        <Form layout="vertical" initialValues={{ 'usersGender': true }} onFinish={addFunc} form={form}>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item

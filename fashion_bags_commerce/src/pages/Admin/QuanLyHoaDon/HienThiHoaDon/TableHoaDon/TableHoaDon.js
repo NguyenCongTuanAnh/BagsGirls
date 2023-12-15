@@ -18,6 +18,7 @@ import {
   ClockCircleOutlined,
   CloseCircleOutlined,
   FilterFilled,
+  StarFilled,
   SyncOutlined,
   TableOutlined,
 } from '@ant-design/icons';
@@ -39,7 +40,7 @@ function TableHoaDon() {
   const [loading, setLoading] = useState(true);
   const [PageNum, setPageNum] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [status, setStatus] = useState('0');
+  const [status, setStatus] = useState('');
   const [search, setSearch] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -54,6 +55,7 @@ function TableHoaDon() {
       key: 'stt',
       dataIndex: 'index',
       title: 'STT',
+      // fixed: "left",
       width: '3%',
       render: (text, record, index) => {
         return <span id={record.id}>{(PageNum - 1) * pageSize + (index + 1)}</span>;
@@ -63,7 +65,8 @@ function TableHoaDon() {
       title: 'Mã hóa đơn',
       dataIndex: 'billCode',
       key: 'code',
-      width: '10%'
+      // fixed: "left",
+      width: '5%'
     },
     {
       title: 'Ngày tạo',
@@ -75,15 +78,16 @@ function TableHoaDon() {
         return <span>{formattedDate}</span>;
       },
     },
-
     {
       title: 'Tên khách hàng',
       dataIndex: 'receiverName',
       key: 'receiverName',
-      width: '15%',
+      width: '13%',
       render: (text, record) => {
         if (record.customer == null) {
-          return record.receiverName;
+          return <span>
+            {record.receiverName}
+          </span>;
         } else {
           return record.customer.users.fullName;
         }
@@ -93,7 +97,25 @@ function TableHoaDon() {
       title: 'Số điện thoại',
       dataIndex: 'orderPhone',
       key: 'orderPhone',
+      width: '8%',
+      render: (text, record) => {
+        if (record.customer == null) {
+          return <span>
+            {record.orderPhone}
+          </span>;
+        } else {
+          return record.customer.users.phoneNumber;
+        }
+      },
+    },
+    {
+      title: 'Hạng khách hàng',
+      dataIndex: 'customerRanking',
+      key: 'customerRanking',
       width: '10%',
+      render: (text, record) => {
+        return (setRankKhachHang(record));
+      },
     },
     {
       title: 'Tổng thanh toán',
@@ -102,12 +124,13 @@ function TableHoaDon() {
       render: (price) => {
         return <span>{VNDFormaterFunc(price)}</span>;
       },
-      width: '15%',
+      width: '10%',
     },
 
     {
       title: 'Trạng thái',
       dataIndex: 'billStatus',
+      width: '200px',
       key: 'status',
       render: (status) => {
         let statusText;
@@ -197,6 +220,25 @@ function TableHoaDon() {
       width: 100,
     },
   ];
+  const setRankKhachHang = (values) => {
+    if (values.customer == null) {
+      return (<span>
+        <StarFilled /> Khách hàng lẻ
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_TIEMNANG') {
+      return "Tiềm năng";
+    } else if (values.customer.customerRanking === 'KH_THANTHIET') {
+      return "Thân thiết";
+    } else if (values.customer.customerRanking === 'KH_BAC') {
+      return "Bạc";
+    } else if (values.customer.customerRanking === 'KH_VANG') {
+      return "Vàng";
+    } else if (values.customer.customerRanking === 'KH_KIMCUONG') {
+      return "Kim cương";
+    } else {
+      return 'Chưa có hạng';
+    }
+  }
 
   const hanhDong = (record, capNhat, xoa) => {
     return (
@@ -440,7 +482,7 @@ function TableHoaDon() {
                                 : ''}
                   </span>
                 ),
-                key: id === '1' ? '0' : id === '2' ? '4' : id === '3' ? '3' : id === '4' ? '2' : id === '5' ? '1' : id === '6' ? '-1' : '',
+                key: id === '1' ? '' : id === '2' ? '4' : id === '3' ? '3' : id === '4' ? '2' : id === '5' ? '1' : id === '6' ? '-1' : '',
                 children: (
                   <div style={{ padding: '8px' }}>
                     <span style={{ fontWeight: 500 }}>{/* <TableOutlined /> Danh sách yêu cầu */}</span>
