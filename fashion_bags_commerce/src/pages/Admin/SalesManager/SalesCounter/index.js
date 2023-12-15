@@ -1,7 +1,7 @@
 import { Layout } from 'antd';
 import Sider from 'antd/es/layout/Sider';
 import { Content, Footer, Header } from 'antd/es/layout/layout';
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import HeaderContent from '~/component/GlobalStyles/layouts/DefaultLayout/Header';
 import Sidebar from '~/component/GlobalStyles/layouts/DefaultLayout/SideBar';
 import SalesCounterForm from './SalesCounterForm';
@@ -37,6 +37,9 @@ const layoutContent = {
 };
 
 function SalesCounter() {
+  useEffect(() => {
+    document.title = 'Bán hàng tại quầy';
+  });
   return (
     <Fragment>
       <Layout style={{ height: '100%', background: 'white' }}>
