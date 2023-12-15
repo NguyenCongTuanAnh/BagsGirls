@@ -24,9 +24,8 @@
   border: 1px solid gray;
   height: 50px;
   text-align: center;
-  // border-radius: 20%;
-  // border-bottom: 1px solid #000000;
 
+  margin: 30% 0 0 25%;
   border-radius: 32px;
 }
 .title_attr {
@@ -41,6 +40,7 @@
 .input_amount:hover {
   cursor: not-allowed;
 }
+
 .item_change1 {
   padding: 15px 10px 0 10px;
   border-right: 1px gray solid;
@@ -64,4 +64,29 @@
   border: 1px gray solid;
   border-radius: 32px;
   cursor: pointer;
+}
+.buttonXoa:hover {
+  background-color: red;
+  color: white;
+}
+.buttonXoa {
+  border: 1px red dashed;
+  padding: 10px 50px;
+  background-color: white;
+  color: red;
+  margin: 40% 0 0 0;
+}
+.buttonThanhToan {
+  background-color: white;
+  color: red;
+  font-size: 25px;
+  padding: 10px 20px;
+  border-radius: ̉̉px;
+  border: 1px red dashed;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.buttonThanhToan:hover {
+  background-color: red;
+
+  color: white;
 }

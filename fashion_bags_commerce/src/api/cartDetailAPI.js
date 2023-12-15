@@ -16,8 +16,8 @@ const cartDetailAPI = {
         });
       },
       updateAmount(id, amount) {
-        const url = `api/cart-detail/${id}`;
-        return axiosClient.put(url, { amount }, {
+        const url = `api/cart-detail/${id}?amount=${amount}`;
+        return axiosClient.put(url, amount, {
           headers: {
             'Content-Type': 'application/json',
           },

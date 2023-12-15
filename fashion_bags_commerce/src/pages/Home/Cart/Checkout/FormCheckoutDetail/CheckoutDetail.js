@@ -15,6 +15,7 @@ import './styles.scss';
 const CheckoutDetail = () => {
   const [cartItems, setCartItems] = useState([]);
   const [cart, setCart] = useState([]);
+  const customerId = localStorage.getItem("customerId")
 
   const [loadingPayment, setLoadingPayment] = useState(false); // State for payment loading
   const [messageApi, contextHolder] = message.useMessage();
@@ -189,7 +190,7 @@ const CheckoutDetail = () => {
           billCreateDate: currentDateTime,
           billNote: billNote,
           billStatus: 4,
-          billReducedPrice:0,
+          billReducedPrice: 0,
           billCode: generateCustomCode('Bill', 4),
           billTotalPrice: cartItemsTotal.billTotalPrice,
           productAmount: cartItemsTotal.productAmount,
@@ -211,8 +212,8 @@ const CheckoutDetail = () => {
             productDetailId: item.productDetailId,
           },
           amount: item.quantity,
-          billDetailStatus:1,
-          billDetailNote:null,
+          billDetailStatus: 1,
+          billDetailNote: null,
 
           price: item.retailPrice,
         }));
@@ -589,6 +590,9 @@ const CheckoutDetail = () => {
                     ))}
                   </div>
 
+                  <div className="voucher">
+                    <h3>Voucher:</h3>
+                  </div>
                   <div className="pay">
                     <h3>Phương thức thanh toán:</h3>
                     <br></br>

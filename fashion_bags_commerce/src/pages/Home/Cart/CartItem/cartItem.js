@@ -280,10 +280,26 @@ function CartItem() {
             </div>
           )}
         />
+           <button
+          className={styles.buttonThanhToan}
+          onClick={() => {
+            navigate('/cart/checkout', {
+              state: {
+                totalPrice: calculateTotalAfterVoucher(),
+                voucherPrice: voucherPrice,
+                disCountPercent: voucher.discountPercent,
+                totalQuantity: totalQuantity,
+              },
+            });
+          }}
+        >
+          Tiến hành thanh toán
+        </button>
       </div>
-      {/* tien hanh thanh toan */}
-      <div className={styles.finalCart}>
+      
+      {/* <div className={styles.finalCart}>
         <br />
+
         <div className={styles.content_product_pc}>
           <div className={styles.group_content_product}>
             <div className={styles.body}>
@@ -339,25 +355,9 @@ function CartItem() {
           </div>
         </div>
 
-        <br />
-        <button
-          className={styles.buttonThanhToan}
-          onClick={() => {
-            navigate('/cart/checkout', {
-              state: {
-                totalPrice: calculateTotalAfterVoucher(),
-                voucherPrice: voucherPrice,
-                disCountPercent:voucher.discountPercent,
-                totalQuantity:totalQuantity
-              },
-            });
-          }}
-        >
-          Tiến hành thanh toán
-        </button>
-      </div>
+     
+      </div> */}
 
-      <br></br>
     </div>
   );
 }

@@ -3,10 +3,10 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import cartAPI from '~/api/cartAPI';
 import MainLayout from '../../MainLayout';
 import cartDetailAPI from '~/api/cartDetailAPI';
-import { DoubleRightOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined, DoubleRightOutlined, MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import styles from './tableCart.module.scss';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
-import { notification } from 'antd';
+import { message, notification } from 'antd';
 
 function CartCustomer() {
   const [cartItems, setCartItems] = useState([]);
@@ -63,6 +63,23 @@ function CartCustomer() {
 
   const handleQuantityChange = async (e, cartItem) => {
     const newQuantity = parseInt(e.target.value, 10);
+    const totalAmountProduct = amountProductDetail?.cartDetailsList[0]?.productDetails?.productDetailAmount;
+    if (newQuantity > totalAmountProduct) {
+      notification.error({
+        message: 'Thất bại',
+        description: 'Số lượng sản phẩm đã đạt giới hạn',
+        duration: 3,
+      });
+      // Reset về số lượng ban đầu
+      const updatedCartItems = cartItems.cartDetailsList.map((item) => {
+        if (item.cartDetailId === cartItem.cartDetailId) {
+          return { ...item, amount: cartItem.amount };
+        }
+        return item;
+      });
+      setCartItems({ ...cartItems, cartDetailsList: updatedCartItems });
+      return;
+    }
     const updatedCartItem = { ...cartItem, amount: newQuantity };
     try {
       await cartDetailAPI.update(cartItem.cartDetailId, { amount: newQuantity });
@@ -80,6 +97,15 @@ function CartCustomer() {
 
   const handleIncrement = async (cartItem) => {
     const newQuantity = cartItem.amount + 1;
+    const toltalAmountProduct = amountProductDetail?.cartDetailsList[0]?.productDetails?.productDetailAmount;
+    if (newQuantity > toltalAmountProduct) {
+      notification.error({
+        message: 'Thất bại',
+        description: 'Số lượng sản phẩm đã đạt giới hạn',
+        duration: 3,
+      });
+      return;
+    }
 
     try {
       await updateCartItemQuantity(cartItem.cartDetailId, newQuantity);
@@ -102,10 +128,10 @@ function CartCustomer() {
 
   const updateCartItemQuantity = async (cartDetailId, newQuantity) => {
     try {
-      await cartDetailAPI.updateAmount(cartDetailId, { amount: newQuantity });
+      await cartDetailAPI.updateAmount(cartDetailId, newQuantity);
       const response = await cartAPI.findByIdCustomer(customerId);
-      const data = response.data;
-      setCartItems(data);
+      const updatedCartItems = response.data;
+      setCartItems(updatedCartItems);
     } catch (error) {
       console.error('Error updating cart item:', error);
     }
@@ -114,7 +140,7 @@ function CartCustomer() {
   return (
     <MainLayout>
       {' '}
-      <div className="" style={{ padding: '0 5% 0 5%' }}>
+      <div className="" style={{ padding: '0 5% 0 5%', textAlign: 'center' }}>
         <h2 style={{ color: 'gray', textAlign: 'center' }}>Giỏ hàng của bạn</h2>
         <div style={{ textAlign: 'center' }}>
           <Link to={'/shop'} className={styles.continue_cart}>
@@ -122,7 +148,7 @@ function CartCustomer() {
           </Link>
         </div>
         <table
-          style={{ textAlign: 'center', width: '100%', borderCollapse: 'collapse', margin: 'auto' }}
+          style={{ textAlign: 'center', width: '100%', borderCollapse: 'collapse', margin: 'auto', height: 'auto' }}
           className="table table-bordered"
         >
           <thead>
@@ -140,7 +166,7 @@ function CartCustomer() {
             {cartItems?.cartDetailsList?.map((item, index) => {
               const totalPrice = item.amount * item.productDetails.retailPrice;
               return (
-                <tr key={item.id} style={{ margin: '110px', backgroundColor: 'red' }}>
+                <tr key={item.id} style={{ margin: 'auto', height: 'auto', backgroundColor: 'red' }}>
                   <td>
                     <div>{index + 1}</div>
                   </td>
@@ -170,11 +196,11 @@ function CartCustomer() {
                         <MinusOutlined />
                       </div>
                       <input
+                        type="text"
                         disabled
                         className={styles.input_amount}
                         value={item.amount}
                         onChange={(e) => handleQuantityChange(e, item)}
-                        min={1}
                       />
                       <div className={styles.item_change2} onClick={() => handleIncrement(item)}>
                         <PlusOutlined />
@@ -182,20 +208,15 @@ function CartCustomer() {
                     </div>
                   </td>
 
-                  <td>{item.productDetails.retailPrice} </td>
-                  <td>{totalPrice} </td>
                   <td>
-                    <button
-                      style={{
-                        border: '1px red solid ',
-                        padding: '0px 50px',
-                        background: 'red',
-                        color: 'white',
-                        borderRadius: '12%',
-                      }}
-                      onClick={() => handleDeleteCartItem(item?.cartDetailId)}
-                    >
-                      Xóa
+                    <div style={{ margin: '50% 0 0 15%' }}>{VNDFormaterFunc(item.productDetails.retailPrice)}</div>{' '}
+                  </td>
+                  <td>
+                    <div style={{ margin: '50% 0 0 15%' }}>{VNDFormaterFunc(totalPrice)}</div>{' '}
+                  </td>
+                  <td>
+                    <button className={styles.buttonXoa} onClick={() => handleDeleteCartItem(item?.cartDetailId)}>
+                      <DeleteOutlined /> Xóa
                     </button>
                   </td>
                 </tr>
@@ -204,8 +225,32 @@ function CartCustomer() {
           </tbody>
         </table>
         <div style={{ textAlign: 'center' }}>
-          <h1 style={{ background: 'red', color: 'white' }}>Tổng tiền: {VNDFormaterFunc(calculateTotalPrice())}</h1>
+          <h1
+            style={{
+              border: 'black 1px dashed',
+              background: 'white',
+              color: 'red',
+              padding: '10px 0',
+            }}
+          >
+            Tổng tiền: {VNDFormaterFunc(calculateTotalPrice())}
+          </h1>
         </div>
+        <button
+          className={styles.buttonThanhToan}
+          onClick={() => {
+            navigate('/cart/checkout', {
+              state: {
+                totalPrice: calculateTotalPrice(),
+                // voucherPrice: voucherPrice,
+                // disCountPercent: voucher.discountPercent,
+                // totalQuantity: totalQuantity,
+              },
+            });
+          }}
+        >
+          Tiến hành thanh toán
+        </button>
       </div>
     </MainLayout>
   );

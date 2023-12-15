@@ -17,6 +17,7 @@ function ShopDetailView() {
   const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [dataDetail, setDataDetail] = useState(null);
   const [temporaryCart, setTemporaryCart] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [materialOptions, setMaterialOptions] = useState([]);
   const [defaultMaterial, setDefaultMaterial] = useState(null);
@@ -63,7 +64,6 @@ function ShopDetailView() {
     fetchProductDetail();
   }, [productId]);
 
-  const [loading, setLoading] = useState(false);
   useEffect(() => {
     setLoading(false);
     setTimeout(() => {
@@ -72,6 +72,7 @@ function ShopDetailView() {
   }, []);
 
   const addToCart = async () => {
+    setLoading(true);
     const amountInDatabase = dataDetail.amount;
 
     const productToAdd = {
@@ -101,6 +102,7 @@ function ShopDetailView() {
 
       const response = await cartDetailAPI.save(productToAdd);
       setQuantity(1);
+      
 
       notification.success({
         message: 'Thành công',
@@ -114,6 +116,7 @@ function ShopDetailView() {
         description: 'Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng',
         duration: 3,
       });
+      setLoading(false);
     }
   };
 
@@ -547,6 +550,7 @@ function ShopDetailView() {
                 <Link to="">{renderAddToCartButton()}</Link>
               ) : (
                 <Link to={`/cart/${cartId1}`}>{renderAddToCartButtonDB()}</Link>
+                // <Link to="{`/cart/${cartId1}`}">{renderAddToCartButtonDB()}</Link>
               )}
               {/* {customerId == null ? (
                 <Link to="/cart">
