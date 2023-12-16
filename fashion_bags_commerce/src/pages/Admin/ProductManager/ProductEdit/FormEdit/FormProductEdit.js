@@ -68,11 +68,10 @@ function FormProductEdit(props) {
 
   const start = () => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      fetchProducts(product.productId);
-      props.handleRefresh();
-    }, 1000);
+
+    setLoading(false);
+    fetchProducts(product.productId);
+    props.handleRefresh();
   };
   const fetchProducts = useCallback(async (productId) => {
     setLoading(true);
@@ -82,9 +81,9 @@ function FormProductEdit(props) {
       const data = response.data;
 
       setBaloList(data);
-      setTimeout(() => {
+      if (response.status === 200) {
         setLoading(false);
-      }, 300);
+      }
     } catch (error) {
       console.error('Đã xảy ra lỗi: ', error);
     }
@@ -179,7 +178,7 @@ function FormProductEdit(props) {
           case 1:
             return 'Hoạt Động';
           case 0:
-            return 'Không Hoạt Động';
+            return 'Ngưng Hoạt Động';
           case -1:
             return 'Hủy Hoạt Động';
           default:
@@ -256,7 +255,7 @@ function FormProductEdit(props) {
       setSelectedRowKeys(selectedKeys);
     },
   };
-  const handleDeleteSelected = async () => {
+  const handleDeleteSelected = async (status) => {
     setSelectedRowKeys([]);
     if (selectedRowKeys.length === 0) {
       notification.info({
@@ -268,7 +267,7 @@ function FormProductEdit(props) {
       var isDone = true;
       for (const e of selectedRowKeys) {
         try {
-          const response = await productDetailsAPI.updateStatus(e, -1);
+          const response = await productDetailsAPI.updateStatus(e, status);
           if (response.status !== 200) {
             isDone = false;
           }
@@ -277,7 +276,7 @@ function FormProductEdit(props) {
         }
       }
       if (isDone === true) {
-        start();
+        // start();
         notification.success({
           message: 'Thành công',
           description: 'Đã xóa thành công!!!!',
@@ -447,18 +446,56 @@ function FormProductEdit(props) {
   };
   const DeleteButton = (
     <div>
-      <Popconfirm
-        title="Xác Nhận"
-        description="Bạn Có chắc chắn muốn Sửa?"
-        okText="Đồng ý"
-        cancelText="Không"
-        onConfirm={handleDeleteSelected}
-        onCancel={() => {}}
-      >
-        <Button type="primary" loading={false} disabled={selectedRowKeys.length === 0}>
-          Hủy Hoạt động
-        </Button>
-      </Popconfirm>
+      <Row>
+        <Col span={9}>
+          <Popconfirm
+            title="Xác Nhận"
+            description="Bạn Có chắc chắn sửa Sản phẩm hoạt động?"
+            okText="Đồng ý"
+            cancelText="Không"
+            onConfirm={() => {
+              handleDeleteSelected(1);
+            }}
+            onCancel={() => {}}
+          >
+            <Button type="primary" shape="round" loading={false} disabled={selectedRowKeys.length === 0}>
+              Hoạt động
+            </Button>
+          </Popconfirm>
+        </Col>
+        <Col span={5}>
+          <Popconfirm
+            title="Xác Nhận"
+            description="Bạn Có chắc chắn hủy ?"
+            okText="Đồng ý"
+            cancelText="Không"
+            onConfirm={() => {
+              handleDeleteSelected(-1);
+            }}
+            onCancel={() => {}}
+          >
+            <Button type="primary" danger shape="round" loading={false} disabled={selectedRowKeys.length === 0}>
+              Hủy
+            </Button>
+          </Popconfirm>
+        </Col>
+        <Col span={8}>
+          <Popconfirm
+            title="Xác Nhận"
+            description="Bạn Có chắc chắn sửa hết hàng Sản phẩm?"
+            okText="Đồng ý"
+            cancelText="Không"
+            onConfirm={() => {
+              handleDeleteSelected(0);
+            }}
+            onCancel={() => {}}
+          >
+            <Button type="dashed" danger shape="round" loading={false} disabled={selectedRowKeys.length === 0}>
+              Ngưng Hoạt động
+            </Button>
+          </Popconfirm>
+        </Col>
+      </Row>
     </div>
   );
   return (
@@ -621,10 +658,10 @@ function FormProductEdit(props) {
                 marginBottom: 16,
               }}
             >
-              <div>
+              <div style={{ padding: '10px' }}>
                 <Row>
                   <Col span={2}>
-                    <Button type="primary" onClick={start} loading={loading}>
+                    <Button type="primary" shape="round" onClick={start} loading={loading}>
                       Reload
                     </Button>
                   </Col>
@@ -636,7 +673,14 @@ function FormProductEdit(props) {
                       product={props.product}
                     />
                   </Col>
-                  <Col span={1}>{selectedRowKeys.length === 0 ? null : DeleteButton}</Col>
+                  <Col span={2}></Col>
+                  <Col span={2}></Col>
+                  <Col span={2}></Col>
+                  <Col span={2}></Col>
+                  <Col span={2}></Col>
+                  <Col span={2}></Col>
+                  <Col span={2}></Col>
+                  <Col span={5}>{selectedRowKeys.length === 0 ? null : DeleteButton}</Col>
                 </Row>
               </div>
               <Table

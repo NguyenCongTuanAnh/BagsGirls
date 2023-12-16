@@ -19,7 +19,13 @@ function ProductDetailsAdd(props) {
 
   return (
     <Fragment>
-      <Button style={{ borderColor: 'blue', color: 'blue' }} onClick={showDrawer} icon={<EditOutlined />}>
+      <Button
+        shape="round"
+        size="middle"
+        style={{ borderColor: 'blue', color: 'blue' }}
+        onClick={showDrawer}
+        icon={<EditOutlined />}
+      >
         Sửa
       </Button>
       <Drawer
