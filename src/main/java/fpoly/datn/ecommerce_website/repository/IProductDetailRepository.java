@@ -62,7 +62,8 @@ public Page<ProductDetails> getProductDetailsWithoutDelete(
         @Param("maxRetailPrice") Integer maxRetailPrice,
         @Param("productDetailStatus") Integer productDetailStatus,
         Pageable pageable);
-//@Query("SELECT b from ProductDetails b " +
+
+    //@Query("SELECT b from ProductDetails b " +
 //        " where b.product.productName  LIKE  '%'upper(:productName)'%'")
 //    public Page<ProductDetails> getProductDetailsWithoutDelete(
 //            @Param("productName") String productName,
@@ -79,11 +80,12 @@ public Page<ProductDetails> getProductDetailsWithoutDelete(
             "OR bd.compartment.compartmentName LIKE %:keyword% " +
             "OR bd.buckleType.buckleTypeName LIKE %:keyword% " +
             "OR bd.producer.producerName LIKE %:keyword% " +
-            "OR bd.productDetailDescribe LIKE %:keyword% "
-//            "OR CAST (bd.importPrice as string) LIKE '%':keyword'%'" +
-//            "OR CAST(bd.retailPrice as string) LIKE '%':keyword'%'"
+            "OR bd.productDetailDescribe LIKE %:keyword% " 
+//            "OR bd.importPrice = cast(:keyword as int ) " +
+//            "or (:keyword = '' or (CAST(:keyword AS int) IS NULL AND bd.retailPrice =CAST(:keyword AS int))) "
     )
     List<ProductDetails> findByKeyword(@Param("keyword") String keyword);
+
 
 
 }

@@ -95,6 +95,12 @@ function BaloDetailsPreview(props) {
       sorter: (a, b) => a.compartmentName.localeCompare(b.compartmentName),
     },
     {
+      title: 'Kiểu Khóa',
+      dataIndex: 'buckleTypeName',
+      width: 100,
+      sorter: (a, b) => a.buckleTypeName.localeCompare(b.buckleTypeName),
+    },
+    {
       title: 'NSX',
       dataIndex: 'producerName',
       width: 100,

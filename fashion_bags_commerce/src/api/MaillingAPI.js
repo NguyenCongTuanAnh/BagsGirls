@@ -9,6 +9,14 @@ const MaillingAPI = {
       },
     });
   },
+  notificationHtml(data) {
+    const url = '/send-mail-test';
+    return axiosClient.post(url, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
 };
 
 export default MaillingAPI;
