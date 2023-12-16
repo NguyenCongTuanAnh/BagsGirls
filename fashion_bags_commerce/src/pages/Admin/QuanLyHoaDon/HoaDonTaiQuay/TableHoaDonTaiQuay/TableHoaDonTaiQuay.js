@@ -3,13 +3,17 @@ import {
   Card,
   Col,
   DatePicker,
+  Input,
+  Modal,
   Pagination,
   Popconfirm,
+  Popover,
   Row,
   Select,
   Space,
   Table,
   Tabs,
+  Typography,
   notification,
 
 } from 'antd';
@@ -18,11 +22,13 @@ import {
   ClockCircleOutlined,
   CloseCircleOutlined,
   FilterFilled,
+  ReloadOutlined,
   StarFilled,
+  StarOutlined,
   SyncOutlined,
   TableOutlined,
 } from '@ant-design/icons';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import billsAPI from '~/api/BillApi';
 import staffAPI from '~/api/staffAPI';
 import styles from './index.module.scss';
@@ -32,25 +38,88 @@ import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import productDetailsAPI from '~/api/productDetailsAPI';
 import billDetailsAPI from '~/api/BillDetailsAPI';
 import FormChiTietHoaDon from '../../ChiTietHoaDon/FormChiTietHoaDon';
+import FormCapNhatTrangThai from '../../CapNhatHoaDon/CapNhatTrangThai';
+import customerAPI from '~/api/customerAPI';
 const { RangePicker } = DatePicker;
 
 function TableHoaDonTaiQuay() {
   const [data, setData] = useState([]);
   const [listStaff, setListStaff] = useState([]);
+  const [listCustomer, setListCustomer] = useState([]);
   const [totalItem, setTotalItem] = useState();
   const [loading, setLoading] = useState(true);
-  const [PageNum, setPageNum] = useState(1);
+  const [pageNum, setPageNum] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [status, setStatus] = useState('');
   const [search, setSearch] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [filterStaffName, setFilterStaffName] = useState('');
+  const [filterStaffId, setFilterStaffId] = useState('');
   const [sortList, setSortList] = useState('billCreateDate');
   const [sortOrder, setSortOrder] = useState('DESC');
   const [sortListPlaceHolder, setSortListPlaceHolder] = useState('timeDESC');
+  const typingTimeoutRef = useRef(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCustomerId, setFilterCustomerId] = useState('');
+  const [filterRank, setFilterRank] = useState('');
 
 
+
+
+  const thongTinNhanVien = (values) => {
+    return (
+      <div >
+        <h5 style={{ margin: '10px', fontWeight: 'bold' }}>Nhân viên: {values.staffCode} </h5>
+        <ul >
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Tên: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.users.fullName} </span>
+          </li>
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>SĐT: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.users.phoneNumber} </span>
+          </li>
+        </ul>
+      </div>
+    );
+  }
+  const thongTinKhachHang = (values) => {
+    return (
+      <div >
+        <h5 style={{ margin: '10px', fontWeight: 'bold' }}>Khách hàng: {values.customer.customerCode} </h5>
+        <ul >
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Tên: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.customer.users.fullName} </span>
+          </li>
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>SĐT: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.customer.users.phoneNumber} </span>
+          </li>
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Email: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.customer.users.email} </span>
+          </li>
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.customer.users.address} </span>
+          </li>
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Điểm tiêu dùng: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.customer.consumePoints + ' điểm'} </span>
+          </li>
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Điểm hạng: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.customer.rankingPoints + ' điểm'} </span>
+          </li>
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Hạng: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{rankKhachHangViewHover(values)} </span>
+          </li>
+        </ul>
+      </div>
+    );
+  }
   const columns = [
     {
       key: 'stt',
@@ -58,7 +127,7 @@ function TableHoaDonTaiQuay() {
       title: 'STT',
       width: '3%',
       render: (text, record, index) => {
-        return <span id={record.id}>{(PageNum - 1) * pageSize + (index + 1)}</span>;
+        return <span id={record.id}>{(pageNum - 1) * pageSize + (index + 1)}</span>;
       },
     },
     {
@@ -94,13 +163,19 @@ function TableHoaDonTaiQuay() {
       title: 'Mã nhân viên',
       dataIndex: 'staff',
       key: 'staffCode',
-      width: '5%',
+      width: '7%',
       render: (staff) => {
         if (staff && staff.users) {
-          return staff.staffCode;
+
+          return (
+            <Popover placement="top" content={thongTinNhanVien(staff)} >
+              <Typography.Text>{staff.staffCode}</Typography.Text>
+            </Popover>
+          );
         } else {
           return '';
         }
+
       },
     },
     {
@@ -115,7 +190,11 @@ function TableHoaDonTaiQuay() {
           }
           return record.receiverName;
         } else {
-          return record.customer.users.fullName;
+          return (
+            <Popover placement="top" content={thongTinKhachHang(record)} >
+              <Typography.Text>{record.customer.users.fullName}</Typography.Text>
+            </Popover>
+          );
         }
       },
     },
@@ -132,7 +211,11 @@ function TableHoaDonTaiQuay() {
           return record.orderPhone;
 
         } else {
-          return record.customer.users.phoneNumber;
+          return (
+            <Popover placement="top" content={thongTinKhachHang(record)} >
+              <Typography.Text>{record.customer.users.phoneNumber}</Typography.Text>
+            </Popover>
+          );
         }
       },
     },
@@ -142,7 +225,17 @@ function TableHoaDonTaiQuay() {
       key: 'customerRanking',
       width: '10%',
       render: (text, record) => {
-        return (setRankKhachHang(record));
+        if (record.customer == null) {
+          return <span>
+            {setRankKhachHang(record)}
+          </span>;
+        } else {
+          return (
+            <Popover placement="top" content={thongTinKhachHang(record)} >
+              <Typography.Text>{setRankKhachHang(record)}</Typography.Text>
+            </Popover>
+          );
+        }
       },
     },
     {
@@ -216,50 +309,94 @@ function TableHoaDonTaiQuay() {
       title: 'Hành động',
       key: 'action',
       render: (text, record) => {
-        if (record.billStatus !== -1) {
+        if (record.staff !== null) {
           return (
             <div>
-
               <Space size="middle" style={{ marginTop: '10px' }}>
-                <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
-                {hanhDong(record, false)}
+                {hanhDong(record, false, false, true)}
+                <br></br>
               </Space>
             </div>
           );
         } else {
-          return (
-            <div>
-
-              <Space size="middle" style={{ marginTop: '10px' }}>
-                <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
-                {hanhDong(record, true)}
-              </Space>
-            </div>
-          );
+          if (record.billStatus === 1) {
+            return (
+              <div>
+                <Space size="middle" style={{ marginTop: '10px' }}>
+                  {hanhDong(record, true, true, true)}
+                </Space>
+              </div>
+            );
+          } else if (record.billStatus !== -1) {
+            return (
+              <div>
+                <Space size="middle" style={{ marginTop: '10px' }}>
+                  {hanhDong(record, true, false, false)}
+                </Space>
+              </div>
+            );
+          } else {
+            return (
+              <div>
+                <Space size="middle" style={{ marginTop: '10px' }}>
+                  {hanhDong(record, true, true, true)}
+                </Space>
+              </div>
+            );
+          }
         }
       },
       width: 100,
     },
   ];
 
-  const hanhDong = (record, button) => {
-    return (
-      < Space size="middle" >
-        <Popconfirm
-          title="Xác Nhận"
-          description="Bạn có chắc chắn muốn hủy đơn hàng?"
-          okText="Đồng ý"
-          cancelText="Không"
-          onConfirm={() => {
-            deleteHandle(record.billId, -1, record.billCode);
-            setLoading(true);
-          }}
-          onCancel={onCancel}
-        >
-          <Button disabled={button} type="primary" danger icon={<CloseCircleOutlined />}>Hủy</Button>
-        </Popconfirm>
-      </Space >
-    )
+
+  const hanhDong = (record, online, capNhat, xoa) => {
+    if (online === false) {
+      return (
+        <Space size="middle" >
+          <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+          <Popconfirm
+            title="Xác Nhận"
+            description="Bạn có chắc chắn muốn hủy đơn hàng?"
+            okText="Đồng ý"
+            cancelText="Không"
+            onConfirm={() => {
+              deleteHandle(record.billId, -1, record.billCode);
+              setLoading(true);
+            }}
+            onCancel={onCancel}
+          >
+            <Button disabled={(record.billStatus === -1) ? true : false} type="primary" danger icon={<CloseCircleOutlined />}>Hủy</Button>
+          </Popconfirm>
+        </Space>
+      )
+    } else { //staff === null (là đơn hàng online)
+      return (
+        <div>
+          <Space size="middle" >
+            <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+            <Popconfirm
+              title="Xác Nhận"
+              description="Bạn có chắc chắn muốn hủy đơn hàng?"
+              okText="Đồng ý"
+              cancelText="Không"
+              onConfirm={() => {
+                deleteHandle(record.billId, -1, record.billCode);
+                setLoading(true);
+              }}
+              onCancel={onCancel}
+            >
+              <Button disabled={xoa} type="primary" danger icon={<CloseCircleOutlined />}>Hủy</Button>
+            </Popconfirm>
+          </Space>
+          <div style={{ marginTop: '10px' }}>
+            <FormCapNhatTrangThai disabled={capNhat} status={record} reload={() => setLoading(true)} />
+          </div>
+        </div>
+
+      )
+    }
   };
 
   const updateAmount = async (billId) => {
@@ -318,37 +455,91 @@ function TableHoaDonTaiQuay() {
       value: [dayjs().add(-90, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
     },
   ];
-
+  const rankKhachHangViewHover = (values) => {
+    if (values.customer == null) {
+      return (<span>
+        <StarOutlined /><StarOutlined /><StarOutlined /><StarOutlined /><StarOutlined />
+        Khách hàng lẻ
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_TIEMNANG') {
+      return (<span>
+        <StarFilled /><StarOutlined /><StarOutlined /><StarOutlined /><StarOutlined />  Tiềm năng
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_THANTHIET') {
+      return (<span>
+        <StarFilled /><StarFilled /><StarOutlined /><StarOutlined /><StarOutlined /> Thân thiết
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_BAC') {
+      return (<span>
+        <StarFilled /><StarFilled /><StarFilled /><StarOutlined /><StarOutlined /> Bạc
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_VANG') {
+      return (<span>
+        <StarFilled /><StarFilled /><StarFilled /><StarFilled /><StarOutlined /> Vàng
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_KIMCUONG') {
+      return (<span>
+        <StarFilled /><StarFilled /><StarFilled /><StarFilled /><StarFilled /> Kim cương
+      </span>);
+    } else {
+      return 'Chưa có hạng';
+    }
+  }
   const setRankKhachHang = (values) => {
     if (values.customer == null) {
       return (<span>
-        <StarFilled /> Khách hàng lẻ
+        <StarOutlined /><StarOutlined /><StarOutlined /><StarOutlined /><StarOutlined /><br></br>
+        Khách hàng lẻ
       </span>);
     } else if (values.customer.customerRanking === 'KH_TIEMNANG') {
-      return "Tiềm năng";
+      return (<span>
+        <StarFilled /><StarOutlined /><StarOutlined /><StarOutlined /><StarOutlined /> <br></br> Tiềm năng
+      </span>);
     } else if (values.customer.customerRanking === 'KH_THANTHIET') {
-      return "Thân thiết";
+      return (<span>
+        <StarFilled /><StarFilled /><StarOutlined /><StarOutlined /><StarOutlined /><br></br> Thân thiết
+      </span>);
     } else if (values.customer.customerRanking === 'KH_BAC') {
-      return "Bạc";
+      return (<span>
+        <StarFilled /><StarFilled /><StarFilled /><StarOutlined /><StarOutlined /><br></br> Bạc
+      </span>);
     } else if (values.customer.customerRanking === 'KH_VANG') {
-      return "Vàng";
+      return (<span>
+        <StarFilled /><StarFilled /><StarFilled /><StarFilled /><StarOutlined /><br></br> Vàng
+      </span>);
     } else if (values.customer.customerRanking === 'KH_KIMCUONG') {
-      return "Kim cương";
+      return (<span>
+        <StarFilled /><StarFilled /><StarFilled /><StarFilled /><StarFilled /><br></br> Kim cương
+      </span>);
     } else {
       return 'Chưa có hạng';
     }
   }
 
-  const handleSearchChange = (newFilter) => {
-    if (newFilter === undefined || newFilter.trim().length === 0) {
-      setSearch('');
-      setLoading(true);
-      setPageNum(1);
-    } else {
-      setSearch(newFilter.trim());
-      setLoading(true);
-      setPageNum(1);
+
+
+  // const handleSearchChange = (newFilter) => {
+  //   if (newFilter === undefined || newFilter.trim().length === 0) {
+  //     setSearch('');
+  //     setLoading(true);
+  //     setPageNum(1);
+  //   } else {
+  //     setSearch(newFilter.trim());
+  //     setLoading(true);
+  //     setPageNum(1);
+  //   }
+  // };
+
+  const handleSearchChange = (value) => {
+    setSearchTerm(value.target.value.toString());
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
     }
+    typingTimeoutRef.current = setTimeout(() => {
+      setSearch(value.target.value.trim().toString());
+    }, 500);
+    setLoading(true);
+    setPageNum(1);
   };
 
   const onChangeBill = (e) => {
@@ -364,7 +555,7 @@ function TableHoaDonTaiQuay() {
   const getAllPhanTrangCompartment = async (pageNum, pageSize) => {
     try {
       const response = await billsAPI.getAllBillsOffline(
-        filterStaffName,
+        filterStaffId,
         startDate,
         endDate,
         status,
@@ -387,18 +578,46 @@ function TableHoaDonTaiQuay() {
       const response = await staffAPI.getAllStaffs();
       const list = response.data;
       setListStaff(list);
+      const responseCustomer = await customerAPI.getAllNotPagination();
+      setListCustomer(responseCustomer.data);
+      // console.log(list);
     } catch (error) {
       console.error('Error fetching staff data:', error);
     }
   };
   useEffect(() => {
     getAllStaff();
-    getAllPhanTrangCompartment(PageNum, pageSize);
+    getAllPhanTrangCompartment(pageNum, pageSize);
     setTimeout(() => {
       setLoading(false);
     }, 500);
 
-  }, [loading, search, status, startDate, endDate, filterStaffName, sortList, sortOrder, sortListPlaceHolder]);
+  }, [loading, search, status, startDate, endDate, filterStaffId, filterCustomerId, sortList, sortOrder, sortListPlaceHolder]);
+
+  // lọc theo khách hàng
+  const onChangeKhachHang = (value) => {
+    // trả về customerId
+    setFilterCustomerId(value);
+    // console.log(`selected ${value}`);
+  };
+  const onSearchKhachHang = (value) => {
+    // trả về những kí tự tìm kiếm
+    // console.log('search:', value);
+  };
+  const filterOption = (input, option) =>
+    (option?.children ?? '').toLowerCase().includes(input.trim().toLowerCase());
+
+  const onChangeNhanVien = (value) => {
+    // trả về customerId
+    setFilterStaffId(value);
+    // console.log(`selected ${value}`);
+  };
+  const onSearchNhanVien = (value) => {
+    // trả về những kí tự tìm kiếm
+    // console.log('search:', value);
+  };
+  const filterOptionNhanVien = (input, option) =>
+    (option?.children ?? '').toLowerCase().includes(input.trim().toLowerCase());
   return (
     <div>
       <Card>
@@ -409,28 +628,29 @@ function TableHoaDonTaiQuay() {
             </h2>
           </Row>
           <Row>
-            <Col span={6}>
-              <div style={{ paddingTop: '10px', fontSize: '16px' }}>
+            <Col span={9}>
+              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
                 <span style={{ fontWeight: 500 }}>Ngày tạo</span>
                 <RangePicker className={styles.filter_inputSearch} style={{ marginLeft: '10px' }} presets={rangePresets} onChange={onRangeChange} />
               </div>
             </Col>
-            <Col span={5}>
-              <div style={{ paddingTop: '10px', fontSize: '16px' }}>
-                <span style={{ paddingTop: '20px', fontSize: '16px', fontWeight: 500 }}>
+            <Col span={9}>
+              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
+                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
                   Nhân viên
                   <Select
-                    bordered={false}
-                    style={{ width: '65%', borderBottom: '1px solid #ccc', marginLeft: '10px' }}
-                    onChange={(value) => {
-                      setFilterStaffName(value);
-                    }}
-                    defaultValue=""
+                    showSearch
+                    placeholder="Tìm và lọc hóa đơn theo nhân viên"
+                    optionFilterProp="children"
+                    onChange={onChangeNhanVien}
+                    onSearch={onSearchNhanVien}
+                    filterOption={filterOptionNhanVien}
+                    style={{ marginLeft: '10px', width: '65%' }}
                   >
                     <Select.Option value="">Tất cả</Select.Option>
                     {(listStaff ?? []).map((item, index) => (
                       <Select.Option key={index} value={item.staffCode}>
-                        {item.staffCode}
+                        {item.staffCode + ' - ' + item.usersPhoneNumber + ' - ' + item.usersFullName}
                       </Select.Option>
                     ))}
                   </Select>
@@ -438,8 +658,8 @@ function TableHoaDonTaiQuay() {
               </div>
             </Col>
             <Col span={6}>
-              <div style={{ paddingTop: '10px', fontSize: '16px' }}>
-                <span style={{ paddingTop: '20px', fontSize: '16px', fontWeight: 500 }}>
+              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
+                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
                   Sắp xếp
                   <Select
                     allowClear
@@ -469,12 +689,12 @@ function TableHoaDonTaiQuay() {
                       } else {
                         setSortOrder(null);
                         setSortList(null);
-                        setSortListPlaceHolder('Không');
+                        setSortListPlaceHolder('Không sắp xếp');
                       }
                     }}
                   >
                     <Select.Option key={'0'} value={'0'}>
-                      Không
+                      Không sắp xếp
                     </Select.Option>
                     <Select.Option key={'1'} value={'priceASC'}>
                       Tổng thanh toán tăng dần
@@ -492,18 +712,81 @@ function TableHoaDonTaiQuay() {
                 </span>
               </div>
             </Col>
-
-            <Col span={7}>
-              <SearchForm onSubmit={handleSearchChange} style={{ width: '100%', marginBottom: '10px' }} />
+          </Row>
+          <Row>
+            <Col span={9}>
+              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
+                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
+                  Khách hàng
+                  <Select
+                    showSearch
+                    placeholder="Tìm và lọc hóa đơn theo khách hàng"
+                    optionFilterProp="children"
+                    onChange={onChangeKhachHang}
+                    onSearch={onSearchKhachHang}
+                    filterOption={filterOption}
+                    style={{ marginLeft: '10px', width: '68%' }}
+                  >
+                    <Select.Option value="">Tất cả</Select.Option>
+                    {(listCustomer ?? []).map((item, index) => (
+                      <Select.Option key={index} value={item.customerId}>
+                        {item.customerCode + ' - ' + item.users.phoneNumber + ' - ' + item.users.fullName}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </span>
+              </div>
+            </Col>
+            <Col span={9}>
+              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
+                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
+                  Hạng khách hàng
+                  <Select
+                    // bordered={false}
+                    style={{ width: '40%', marginLeft: '10px' }}
+                    onChange={(value) => {
+                      setFilterRank(value);
+                    }}
+                    value={filterRank}
+                  >
+                    <Select.Option value="">Tất cả</Select.Option>
+                    <Select.Option value="khachHangLe">Khách hàng lẻ</Select.Option>
+                    <Select.Option value="KH_TIEMNANG">Tiềm năng</Select.Option>
+                    <Select.Option value="KH_THANTHIET">Thân thiết</Select.Option>
+                    <Select.Option value="KH_BAC">Bạc</Select.Option>
+                    <Select.Option value="KH_VANG">Vàng</Select.Option>
+                    <Select.Option value="KH_KIMCUONG">Kim cương</Select.Option>
+                  </Select>
+                </span>
+              </div>
             </Col>
           </Row>
         </section>
       </Card>
       <Card>
         <section>
-          <h2 style={{ marginBottom: '10px' }}>
-            <TableOutlined /> Danh sách hóa đơn
-          </h2>
+          <Row style={{ margin: '10px' }}>
+            <Col span={5.5}>
+              <h2 >
+                <TableOutlined /> Danh sách hóa đơn
+              </h2>
+            </Col>
+            <Col span={10}>
+              <Button icon={<ReloadOutlined />} onClick={() => { setLoading(true) }} style={{ marginTop: '7px', marginLeft: '15px' }} loading={loading}></Button>
+            </Col>
+            <Col span={7}>
+              {/* <div className={styles.searchContainer}> */}
+              <Input
+                className={styles.searchIinput}
+                type="text"
+                placeholder="Tìm kiếm thông tin trên hóa đơn"
+                value={searchTerm}
+                onChange={handleSearchChange}
+              ></Input>
+              {/* </div> */}
+            </Col>
+          </Row>
+
           <Tabs
             defaultActiveKey={status}
             onChange={(e) => onChangeBill(e)}
@@ -554,7 +837,7 @@ function TableHoaDonTaiQuay() {
                       total={totalItem}
                       onChange={onChangePage}
                       defaultCurrent={1}
-                      current={PageNum}
+                      current={pageNum}
                       defaultPageSize={pageSize}
                     />
                   </div>
