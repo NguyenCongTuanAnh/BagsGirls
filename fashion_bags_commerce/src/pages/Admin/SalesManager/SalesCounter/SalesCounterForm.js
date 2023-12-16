@@ -730,7 +730,9 @@ const SalesCounterForm = () => {
     };
     const handleCancel = () => {
       setIsModalQROpen(false);
-      html5QrCode.stop();
+      if (html5QrCode?.getState()) {
+        html5QrCode.stop();
+      }
     };
     const handleClearQR = () => {};
     const AddCustomerComponent = () => {
