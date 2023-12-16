@@ -11,11 +11,12 @@ import styles from './tableCart.module.scss';
 function CartItem() {
   const [cartItems, setCartItems] = useState([]);
   const [totalQuantity, setTotalQuantity] = useState(0);
-  const [voucherCode, setVoucherCode] = useState('');
-  const [voucher, setVoucher] = useState('');
+
   const [messageApi, contextHolder] = message.useMessage();
   const [totalPrice, setTotalPrice] = useState(0);
   const [voucherPrice, setVoucherPrice] = useState(0);
+  const [voucherCode, setVoucherCode] = useState('');
+  const [voucher, setVoucher] = useState('');
   const [disCountPercent, setDiscountPercent] = useState(0);
   const [form] = Form.useForm();
   const navigate = useNavigate();
@@ -297,7 +298,7 @@ function CartItem() {
         </button>
       </div>
       
-      {/* <div className={styles.finalCart}>
+      <div className={styles.finalCart}>
         <br />
 
         <div className={styles.content_product_pc}>
@@ -356,7 +357,7 @@ function CartItem() {
         </div>
 
      
-      </div> */}
+      </div>
 
     </div>
   );
