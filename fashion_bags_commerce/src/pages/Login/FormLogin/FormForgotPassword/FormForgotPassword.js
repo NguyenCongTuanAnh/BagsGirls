@@ -105,9 +105,10 @@ function ForgotPassword(props) {
         }
       })
       .catch((errorInfo) => {
+        console.log(errorInfo);
         messageApi.open({
           type: 'error',
-          content: 'Email định dạng không đúng!',
+          content: 'Không gủi được mail!',
         });
       });
   };
