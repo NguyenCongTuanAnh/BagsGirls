@@ -23,11 +23,43 @@ public interface IBillService {
                                           String sortOrder);
 
     Page<BillsDTO> getAllBillsOffline(
-            String filterStaffName,
+            String seacrh,
+            Integer status,
             Date startDate,
             Date endDate,
+            int pageNum,
+            int pageSize,
+            List<String> sortList,
+            String sortOrder
+    );
+    Page<BillsDTO> getAllBillsOfflineOfStaff(
+            String seacrh,
             Integer status,
-            String billCode,
+            Date startDate,
+            Date endDate,
+            String staffCode,
+            int pageNum,
+            int pageSize,
+            List<String> sortList,
+            String sortOrder
+    );
+    Page<BillsDTO> getAllBillsOfflineOfStaffOfCustomer(
+            String seacrh,
+            Integer status,
+            Date startDate,
+            Date endDate,
+            String staffCode,
+            int pageNum,
+            int pageSize,
+            List<String> sortList,
+            String sortOrder
+    );
+
+    Page<BillsDTO> getAllBillsOfflineOfCustomer(
+            String seacrh,
+            Integer status,
+            Date startDate,
+            Date endDate,
             int pageNum,
             int pageSize,
             List<String> sortList,

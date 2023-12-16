@@ -300,7 +300,12 @@ function FormChiTietHoaDon(props) {
                         min={0}
                         max={Math.floor(maxAmount[index])}
                         step={1}
-                        disabled={(Math.floor(props.bills.billStatus) === -1) ? true : false}
+                        disabled={
+                            (newAmount[index] == null
+                                || Math.floor(props.bills.billStatus) === -1
+                                || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
+                                || Math.floor(props.bills.billStatus) === 2
+                            ) ? true : false}
                         value={newAmount[index]}
                         onChange={(newValue) => {
                             setNewAmount(prevAmount => {
@@ -325,9 +330,23 @@ function FormChiTietHoaDon(props) {
                         <Button
                             type="primary"
                             danger={newAmount[index] <= 0}
-                            disabled={(newAmount[index] == null || Math.floor(props.bills.billStatus) === -1) ? true : false}
+                            disabled={
+                                (newAmount[index] == null
+                                    || Math.floor(props.bills.billStatus) === -1
+                                    || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
+                                    || Math.floor(props.bills.billStatus) === 2
+                                ) ? true : false}
                             icon={<CheckOutlined />}
-                            style={{ backgroundColor: (newAmount[index] == null || Math.floor(props.bills.billStatus) === -1) ? 'grey' : 'red', color: 'white' }}
+                            style={
+                                {
+                                    backgroundColor:
+                                        (newAmount[index] == null
+                                            || Math.floor(props.bills.billStatus) === -1
+                                            || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
+                                            || Math.floor(props.bills.billStatus) === 2
+                                        ) ? 'grey' : 'red', color: 'white'
+                                }
+                            }
                         >
                         </Button>
                     </Popconfirm>
@@ -397,7 +416,7 @@ function FormChiTietHoaDon(props) {
                         <span className={statusClass} style={textStyles}>
                             {statusText}
                         </span>
-                        <div style={{ marginTop: '15px' }}>Ghi chú: {record.billDetailNote}</div>
+                        {/* <div style={{ marginTop: '15px' }}>Ghi chú: {record.billDetailNote}</div> */}
                     </div>
 
                 );
@@ -466,7 +485,7 @@ function FormChiTietHoaDon(props) {
                                     <Col span={24}>
                                         <Form.Item
                                             name='userNote'
-                                            label="Ghi chú"
+                                            label="Ghi chú sản phẩm lỗi: "
                                             rules={[
                                                 {
                                                     required: true,

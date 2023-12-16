@@ -67,16 +67,22 @@ public class BillServiceImpl implements IBillService {
     }
 
     @Override
-    public Page<BillsDTO> getAllBillsOffline(String filterStaffName, Date startDate, Date endDate, Integer status, String billCode, int pageNum, int pageSize, List<String> sortList,
-                                             String sortOrder) {
+    public Page<BillsDTO> getAllBillsOffline(
+            String search,
+            Integer status,
+            Date startDate,
+            Date endDate,
+            int pageNum,
+            int pageSize,
+            List<String> sortList,
+            String sortOrder) {
         PageRequest pageable = PageRequest.of(pageNum, pageSize, Sort.by(createSortOrder(sortList, sortOrder)));
 
                 Page<Bills> bills = this.iBillRepository.findAllBillsOffline(
+                        search,
                         status,
                         startDate,
                         endDate,
-                        billCode,
-//                        filterStaffName,
                         pageable
                 );
                 return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
