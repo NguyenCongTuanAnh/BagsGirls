@@ -782,7 +782,7 @@ const SalesCounterForm = () => {
               const response = await customerAPI.add(useradd);
               const mail = {
                 email: values.email,
-                subject: 'Đăng kí tạo khoản Thành Công',
+                subject: 'Đăng kí tạo tài khoản Thành Công',
                 content: `Chúc mừng ${values.fullName} đã đăng kí thành công trở thành Khách hàng Thân Thiết của BagsGirl, Bạn có thể truy cậy Website: http://localhost:3000 của chúng tôi theo dõi cũng như nhận vô vàn khuyến mãi hấp dẫn nhất, Bạn có thể đăng nhập tài khoản bằng Email: ${values.email} - Password: ${password}. Cảm ơn quý khách!!! `,
               };
               const mailResponse = MaillingAPI.notificationCreateCustomer(mail);
