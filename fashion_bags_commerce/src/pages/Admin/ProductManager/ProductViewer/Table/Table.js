@@ -174,7 +174,6 @@ function TableContent() {
   });
 
   const handleTableChange = (pagination, filters, sorter) => {
-    console.log('Various parameters', pagination, filters, sorter);
     setFilteredInfo(filters);
     setSortedInfo(sorter);
   };
@@ -262,9 +261,6 @@ function TableContent() {
   ];
   const onCancel = () => {};
   const reload = () => {
-    console.log('====================================');
-    console.log('ĐÃ Làm MỚI');
-    console.log('====================================');
     setLoading(true);
     getAllBalo(currentPage, pagesSize, productName, productCode, brandName, productStatus, sortList, sortOrder);
     setTimeout(() => {
@@ -300,12 +296,14 @@ function TableContent() {
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
       setProductList(data);
-      // console.log(data);
+
       setTimeout(() => {}, 500);
-      messageApi.success({
-        type: 'success',
-        content: `Đã tìm thấy ${response.data.totalElements} sản phẩm!`,
-      });
+      if (productList.length === 0) {
+        messageApi.success({
+          type: 'success',
+          content: `Đã tìm thấy ${response.data.totalElements} sản phẩm!`,
+        });
+      }
     } catch (error) {
       console.error('Đã xảy ra lỗi: ', error);
     }
@@ -360,7 +358,6 @@ function TableContent() {
       });
     });
 
-    console.log(columns);
     localStorage.setItem('printList', JSON.stringify(newList));
     localStorage.setItem('columnsName', JSON.stringify(columns));
     window.open('/print-table', '_blank');

@@ -61,6 +61,18 @@ function CartCustomer() {
     return totalPrice;
   };
 
+  const calculateTotalAmount = () => {
+    let toltalAmount = 0;
+
+    if (cartItems?.cartDetailsList) {
+      cartItems.cartDetailsList.forEach((item) => {
+        toltalAmount += item.amount;
+      });
+    }
+
+    return toltalAmount;
+  };
+console.log("calculateTotalAmount",calculateTotalAmount());
   const handleQuantityChange = async (e, cartItem) => {
     const newQuantity = parseInt(e.target.value, 10);
     const totalAmountProduct = amountProductDetail?.cartDetailsList[0]?.productDetails?.productDetailAmount;
@@ -241,10 +253,9 @@ function CartCustomer() {
           onClick={() => {
             navigate('/cart/checkout', {
               state: {
-                totalPrice: calculateTotalPrice(),
-                // voucherPrice: voucherPrice,
-                // disCountPercent: voucher.discountPercent,
-                // totalQuantity: totalQuantity,
+                totalPrice1: calculateTotalPrice(),
+                cartItems: cartItems.cartDetailsList,
+                totalAmount: calculateTotalAmount(),
               },
             });
           }}

@@ -8,7 +8,6 @@ import FormProductEdit from '../../ProductEdit/FormEdit/FormProductEdit';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 const { Option } = Select;
 function FormProductViewDetails(props) {
-  // console.log(props.brand);
   const productId = props.product.productId;
   const [open, setOpen] = useState(false);
   const showDrawer = () => {

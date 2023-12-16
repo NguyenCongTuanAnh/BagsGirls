@@ -45,8 +45,9 @@ import ProductDetailsPreviewTable from '../ProductDetailsPreviewTable/ProductDet
 //Function Component
 function ProductDetailsPreviewForm(props) {
   notification.config({
-    getContainer: () => document.getElementById('notification-container2'),
+    getContainer: () => document.getElementById('notification-containerp2'),
   });
+
   const [images, setImages] = useState([]);
   const [isFirst, setIsFirst] = useState(false);
   const [open, setOpen] = useState(false);
@@ -63,7 +64,7 @@ function ProductDetailsPreviewForm(props) {
   const [size, setSize] = useState([]);
   const [type, setType] = useState([]);
   const [downloadedURL, setDownloadedURL] = useState([]);
-
+  const [messageApi, contextHolder] = message.useMessage();
   const viewBaloProps = async () => {
     try {
       const brandData = await brandAPI.getAll();
@@ -130,6 +131,76 @@ function ProductDetailsPreviewForm(props) {
     setOpen(false);
   };
   const handleAddBaloDetails = (values) => {
+    if (values.retailPrice < values.importPrice) {
+      console.log('abc');
+
+      notification.error({
+        message: 'Lỗi',
+        description: 'Giá bán không thể nhỏ hơn Giá nhập!!!',
+        duration: 1,
+      });
+      setIsFirst(false);
+      return;
+    }
+    const keyProduct =
+      values.buckleTypeId +
+      values.colorId +
+      values.compartmentId +
+      values.materialId +
+      values.producerId +
+      values.typeId +
+      values.sizeId +
+      values.brandId;
+    const indexBaloListPreview = baloListPreview.findIndex(
+      (item) =>
+        item.buckleTypeId +
+          item.colorId +
+          item.compartmentId +
+          item.materialId +
+          item.producerId +
+          item.typeId +
+          item.sizeId +
+          item.brandId ===
+        keyProduct,
+    );
+
+    const indexBaloList = baloList.findIndex(
+      (item) =>
+        item.buckleTypeId +
+          item.colorId +
+          item.compartmentId +
+          item.materialId +
+          item.producerId +
+          item.typeId +
+          item.sizeId +
+          item.brandId ===
+        keyProduct,
+    );
+    const indexBaloProps = props.productDetailList.findIndex(
+      (item) =>
+        item.buckleType.buckleTypeId +
+          item.color.colorId +
+          item.compartment.compartmentId +
+          item.material.materialId +
+          item.producer.producerId +
+          item.type.typeId +
+          item.size.sizeId +
+          item.product.brand.brandId ===
+        keyProduct,
+    );
+    console.log(props.productDetailList);
+    console.log(indexBaloProps);
+    if (indexBaloList !== -1 || indexBaloListPreview !== -1 || indexBaloProps !== -1) {
+      console.log('abc');
+      notification.error({
+        message: 'Lỗi',
+        description: 'Các trường thuộc tính này Bạn đa đã thêm trước đó, vui lòng chọn khác!!!',
+        duration: 1,
+      });
+
+      return;
+    }
+    setIsFirst(true);
     const genCodeAuto = generateCustomCode('baloCode', 9);
 
     let addBalo = { ...values, productCode: genCodeAuto };
@@ -137,8 +208,8 @@ function ProductDetailsPreviewForm(props) {
 
     let colorSelected = color.find((option) => option.colorId === values.colorId);
     const colorSelectedName = colorSelected.colorName;
-    let brandSelected = brand.find((option) => option.brandId === values.brandId);
-    const brandSelectedName = brandSelected.brandName;
+
+    const brandSelectedName = props.product.brand.brandName;
     let typeSelected = type.find((option) => option.typeId === values.typeId);
     const typeSelectedName = typeSelected.typeName;
     let materialSelected = material.find((option) => option.materialId === values.materialId);
@@ -165,6 +236,11 @@ function ProductDetailsPreviewForm(props) {
       buckleTypeName: buckleTypeSelectedName,
     };
     setBaloListPreview([...baloListPreview, tempBalo]);
+    notification.success({
+      message: 'Thành Công',
+      description: 'Dữ liệu đã được thêm!!!!',
+      duration: 2,
+    });
   };
   useEffect(() => {
     const handleConvert = () => {
@@ -265,11 +341,6 @@ function ProductDetailsPreviewForm(props) {
     });
   };
   const onConfirm = () => {
-    notification.success({
-      message: 'Thành Công',
-      description: 'Dữ liệu đã được thêm!!!!',
-      duration: 2,
-    });
     setIsFirst(true);
     form.submit();
     setPopconfirmVisible(false);
@@ -278,15 +349,72 @@ function ProductDetailsPreviewForm(props) {
   const onCancel = () => {
     setPopconfirmVisible(false); // Đóng Popconfirm sau khi xác nhận
   };
+  const handleDelete = (product) => {
+    const keyProduct =
+      product.buckleTypeId +
+      product.colorId +
+      product.compartmentId +
+      product.materialId +
+      product.producerId +
+      product.typeId +
+      product.sizeId +
+      product.brandId;
 
+    const indexBaloListPreview = baloListPreview.findIndex(
+      (item) =>
+        item.buckleTypeId +
+          item.colorId +
+          item.compartmentId +
+          item.materialId +
+          item.producerId +
+          item.typeId +
+          item.sizeId +
+          item.brandId ===
+        keyProduct,
+    );
+
+    const indexBaloList = baloList.findIndex(
+      (item) =>
+        item.buckleTypeId +
+          item.colorId +
+          item.compartmentId +
+          item.materialId +
+          item.producerId +
+          item.typeId +
+          item.sizeId +
+          item.brandId ===
+        keyProduct,
+    );
+
+    if (indexBaloListPreview !== -1) {
+      const updatedBaloListPreview = [...baloListPreview];
+      updatedBaloListPreview.splice(indexBaloListPreview, 1);
+      setBaloListPreview(updatedBaloListPreview);
+    }
+
+    if (indexBaloList !== -1) {
+      const updatedBaloList = [...baloList];
+      updatedBaloList.splice(indexBaloList, 1);
+      setBaloList(updatedBaloList);
+
+      notification.success({
+        message: 'Xóa thành công',
+        description: 'Đã thành công!!!',
+        duration: 2,
+      });
+    }
+  };
   return (
     <Fragment>
-      <div id="notification-container2">
+      <div id="notification-containerp2">
+        {contextHolder}
         <div>
           <ProductDetailsPreviewTable
+            product={props.product}
             baloList={baloList}
             baloListPreview={baloListPreview}
             handleRefresh={props.handleRefresh}
+            handleDelete={handleDelete}
           />
         </div>
         <div>
@@ -517,32 +645,7 @@ function ProductDetailsPreviewForm(props) {
                   </Select>
                 </Form.Item>
               </Col>
-              <Col span={8}>
-                <Form.Item
-                  label="Thương Hiệu"
-                  name="brandId"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Vui lòng chọn Thương Hiệu!',
-                    },
-                  ]}
-                >
-                  <Select
-                    disabled={isFirst}
-                    size="large"
-                    style={{
-                      width: 200,
-                    }}
-                  >
-                    {brand.map((o) => (
-                      <Select.Option key={o.brandId} value={o.brandId}>
-                        {o.brandName}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
+              <Col span={8}></Col>
             </Row>
             <Row>
               <Col span={8}>
@@ -640,6 +743,8 @@ function ProductDetailsPreviewForm(props) {
                   <TextArea rows={7} />
                 </Form.Item>
               </Col>
+              <Col span={8}></Col>
+              <Col span={8}></Col>
             </Row>
           </div>
           <Form.Item
@@ -650,7 +755,7 @@ function ProductDetailsPreviewForm(props) {
           >
             <Row>
               <Col span={4}></Col>
-              <Col span={4}>
+              <Col span={5}>
                 <Popconfirm
                   getPopupContainer={(triggerNode) => triggerNode.parentNode}
                   title="Xác Nhận"
@@ -660,7 +765,9 @@ function ProductDetailsPreviewForm(props) {
                   onConfirm={onConfirm}
                   onCancel={onCancel}
                 >
-                  <Button type="primary">Thêm Chi Tiết Balo</Button>
+                  <Button type="primary" shape="round" size="large">
+                    Thêm Chi Tiết Balo
+                  </Button>
                 </Popconfirm>
               </Col>
               <Col span={4}>
@@ -673,7 +780,9 @@ function ProductDetailsPreviewForm(props) {
                   onConfirm={resetForm}
                   onCancel={onCancel}
                 >
-                  <Button type="primary">ResetForm</Button>
+                  <Button type="dashed" shape="round" size="large">
+                    ResetForm
+                  </Button>
                 </Popconfirm>
               </Col>
             </Row>

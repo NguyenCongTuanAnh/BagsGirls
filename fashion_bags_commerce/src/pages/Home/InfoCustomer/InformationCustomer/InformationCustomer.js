@@ -47,7 +47,7 @@ function AddressCustomer() {
   }, []);
 
   const handleConfirmation = async () => {
-    if (!fullName || !phoneNumber || !birthDay || !selectedProvince || !selectedDistrict || !selectedWard || !address) {
+    if (!fullName || !phoneNumber || !selectedProvince || !selectedDistrict || !selectedWard || !address) {
       notification.error({
         message: 'Lỗi',
         description: 'Vui lòng nhập đầy đủ thông tin',
@@ -55,13 +55,13 @@ function AddressCustomer() {
       });
 
       // Fill out the empty fields for easier correction
-      if (!fullName) setFullName(customerInfo?.users?.fullName || '');
-      if (!phoneNumber) setPhoneNumber(customerInfo?.users?.phoneNumber || '');
-      if (!birthDay) setBirthDay(customerInfo?.users?.birthDay || '');
-      if (!selectedProvince) setSelectedProvince(customerInfo?.users?.provinceCode || '');
-      if (!selectedDistrict) setSelectedDistrict(customerInfo?.users?.districtCode || '');
-      if (!selectedWard) setSelectedWard(customerInfo?.users?.wardCode || '');
-      if (!address) setAddress(customerInfo?.users?.address || '');
+      // if (!fullName) setFullName(customerInfo?.users?.fullName || '');
+      // if (!phoneNumber) setPhoneNumber(customerInfo?.users?.phoneNumber || '');
+      // if (!birthDay) setBirthDay(customerInfo?.users?.birthDay || '');
+      // if (!selectedProvince) setSelectedProvince(customerInfo?.users?.provinceCode || '');
+      // if (!selectedDistrict) setSelectedDistrict(customerInfo?.users?.districtCode || '');
+      // if (!selectedWard) setSelectedWard(customerInfo?.users?.wardCode || '');
+      // if (!address) setAddress(customerInfo?.users?.address || '');
 
       return;
     }
@@ -97,6 +97,8 @@ function AddressCustomer() {
         customerRanking: customer.customerRanking,
         rankingPoints: customer.rankingPoints,
         customerStatus: customer.customerStatus,
+        consumePoints: 0,
+
         users: {
           userId: user.userId,
           fullName: user.fullName,
@@ -208,9 +210,9 @@ function AddressCustomer() {
             <p style={{ fontSize: '15px' }}>
               <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Email:</span> {customer.users.email}
             </p>
-            <p style={{ fontSize: '15px' }}>
+            {/* <p style={{ fontSize: '15px' }}>
               <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Ngày sinh:</span> {customerInfo.users.birthDay}
-            </p>
+            </p> */}
             <p style={{ fontSize: '15px' }}>
               <span style={{ fontSize: '17px', fontWeight: 'bold' }}>Địa chỉ:</span> {customerInfo.users.address}
             </p>
@@ -276,7 +278,7 @@ function AddressCustomer() {
               </div>
             </div>
 
-            <div className="infor-custom-container">
+            {/* <div className="infor-custom-container">
               <div className="infor-custom-lable-name">
                 Ngày sinh<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
               </div>
@@ -286,10 +288,10 @@ function AddressCustomer() {
                   type="date"
                   value={birthDay}
                   onChange={(e) => setBirthDay(e.target.value)} // Handle changes to fullName
-                  placeholder="Họ và tên"
+                  placeholder="Ngày Sinh"
                 />
               </div>
-            </div>
+            </div> */}
 
             <div className="infor-custom-container">
               <div className="infor-custom-lable-name">
