@@ -81,10 +81,11 @@ public class BillRestController {
             @RequestParam(name = "page", required = false, defaultValue = "0") Integer pageNum,
             @RequestParam(name = "size", required = false, defaultValue = "10") Integer pageSize,
             @RequestParam(name ="status", required = false) Integer status,
-            @RequestParam(name ="billCode", required = false, defaultValue = "") String billCode,
+//            @RequestParam(name ="billCode", required = false, defaultValue = "") String billCode,
             @RequestParam(name ="startDate", required = false, defaultValue = "0001-01-01") String startDateStr,
             @RequestParam(name ="endDate", required = false, defaultValue = "9999-01-01") String endDateStr,
-            @RequestParam(name ="filterStaffName", required = false, defaultValue = "") String filterStaffName,
+            @RequestParam(name ="search", required = false, defaultValue = "") String search,
+            @RequestParam(name ="staffCode", required = false, defaultValue = "") String staffCode,
             @RequestParam(defaultValue = "billCreateDate") List<String> sortList,
             @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder
     ) {
@@ -92,7 +93,11 @@ public class BillRestController {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date startDate = dateFormat.parse(startDateStr);
             Date endDate = dateFormat.parse(endDateStr);
-            return new ResponseEntity<>(this.billService.getAllBillsOffline( filterStaffName, startDate, endDate, status, billCode, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+            if(staffCode.length() != 0){
+                return new ResponseEntity<>(this.billService.getAllBillsOfflineOfStaff( search, status, startDate, endDate, staffCode, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(this.billService.getAllBillsOffline( search, status, startDate, endDate, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+
         } catch (ParseException e) {
             e.printStackTrace();
             return new ResponseEntity<>("Lỗi khi chuyển đổi ngày", HttpStatus.BAD_REQUEST);

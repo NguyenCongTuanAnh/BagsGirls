@@ -1,6 +1,10 @@
 import axiosClient from './axiosClient';
 
 const customerAPI = {
+  getAllNotPagination() {
+    const url = 'api/customer/';
+    return axiosClient.get(url);
+  },
   getAll(pageNum, pageSize) {
     const url = 'api/customer/pagination';
     return axiosClient.get(url, {

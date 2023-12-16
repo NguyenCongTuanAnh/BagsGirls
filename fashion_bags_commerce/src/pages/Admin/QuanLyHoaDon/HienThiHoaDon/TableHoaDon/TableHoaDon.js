@@ -5,11 +5,13 @@ import {
   DatePicker,
   Pagination,
   Popconfirm,
+  Popover,
   Row,
   Select,
   Space,
   Table,
   Tabs,
+  Typography,
   notification,
 
 } from 'antd';
@@ -19,6 +21,7 @@ import {
   CloseCircleOutlined,
   FilterFilled,
   StarFilled,
+  StarOutlined,
   SyncOutlined,
   TableOutlined,
 } from '@ant-design/icons';
@@ -49,7 +52,126 @@ function TableHoaDon() {
   const [sortListPlaceHolder, setSortListPlaceHolder] = useState('timeDESC');
 
 
+  const thongTinKhachHang = (values) => {
+    return (
+      <div >
+        <h5 style={{ margin: '10px', fontWeight: 'bold' }}>Khách hàng: {values.customer.customerCode} </h5>
+        <ul >
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Tên: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.customer.users.fullName} </span>
+          </li>
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>SĐT: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.customer.users.phoneNumber} </span>
+          </li>
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Email: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.customer.users.email} </span>
+          </li>
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.customer.users.address} </span>
+          </li>
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Điểm tiêu dùng: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.customer.consumePoints + ' điểm'} </span>
+          </li>
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Điểm hạng: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.rankingPoints + ' điểm'} </span>
+          </li>
+          <li >
+            <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Hạng: </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{rankKhachHangViewHover(values)} </span>
+          </li>
+        </ul>
+      </div>
+    );
+  }
+  const rankKhachHangViewHover = (values) => {
+    if (values.customer == null) {
+      return (<span>
+        <StarOutlined /><StarOutlined /><StarOutlined /><StarOutlined /><StarOutlined />
+        Khách hàng lẻ
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_TIEMNANG') {
+      return (<span>
+        <StarFilled /><StarOutlined /><StarOutlined /><StarOutlined /><StarOutlined />  Tiềm năng
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_THANTHIET') {
+      return (<span>
+        <StarFilled /><StarFilled /><StarOutlined /><StarOutlined /><StarOutlined /> Thân thiết
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_BAC') {
+      return (<span>
+        <StarFilled /><StarFilled /><StarFilled /><StarOutlined /><StarOutlined /> Bạc
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_VANG') {
+      return (<span>
+        <StarFilled /><StarFilled /><StarFilled /><StarFilled /><StarOutlined /> Vàng
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_KIMCUONG') {
+      return (<span>
+        <StarFilled /><StarFilled /><StarFilled /><StarFilled /><StarFilled /> Kim cương
+      </span>);
+    } else {
+      return 'Chưa có hạng';
+    }
+  }
+  const setRankKhachHang = (values) => {
+    if (values.customer == null) {
+      return (<span>
+        <StarOutlined /><StarOutlined /><StarOutlined /><StarOutlined /><StarOutlined /><br></br>
+        Khách hàng lẻ
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_TIEMNANG') {
+      return (<span>
+        <StarFilled /><StarOutlined /><StarOutlined /><StarOutlined /><StarOutlined /> <br></br> Tiềm năng
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_THANTHIET') {
+      return (<span>
+        <StarFilled /><StarFilled /><StarOutlined /><StarOutlined /><StarOutlined /><br></br> Thân thiết
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_BAC') {
+      return (<span>
+        <StarFilled /><StarFilled /><StarFilled /><StarOutlined /><StarOutlined /><br></br> Bạc
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_VANG') {
+      return (<span>
+        <StarFilled /><StarFilled /><StarFilled /><StarFilled /><StarOutlined /><br></br> Vàng
+      </span>);
+    } else if (values.customer.customerRanking === 'KH_KIMCUONG') {
+      return (<span>
+        <StarFilled /><StarFilled /><StarFilled /><StarFilled /><StarFilled /><br></br> Kim cương
+      </span>);
+    } else {
+      return 'Chưa có hạng';
+    }
+  }
+  const hanhDong = (record, capNhat, xoa) => {
+    return (
+      <div>
+        <Space size="middle" >
+          <FormCapNhatTrangThai disabled={capNhat} status={record} reload={() => setLoading(true)} />
+          <Popconfirm
+            title="Xác Nhận"
+            description="Bạn có chắc chắn muốn hủy đơn hàng?"
+            okText="Đồng ý"
+            cancelText="Không"
+            onConfirm={() => {
+              deleteHandle(record.billId, -1, record.billCode);
+              setLoading(true);
+            }}
+            onCancel={onCancel}
+          >
+            <Button disabled={xoa} type="primary" danger icon={<CloseCircleOutlined />}>Hủy</Button>
+          </Popconfirm>
+        </Space>
+      </div>
 
+    )
+  };
   const columns = [
     {
       key: 'stt',
@@ -89,7 +211,11 @@ function TableHoaDon() {
             {record.receiverName}
           </span>;
         } else {
-          return record.customer.users.fullName;
+          return (
+            <Popover placement="top" content={thongTinKhachHang(record)} >
+              <Typography.Text>{record.customer.users.fullName}</Typography.Text>
+            </Popover>
+          );
         }
       },
     },
@@ -104,7 +230,12 @@ function TableHoaDon() {
             {record.orderPhone}
           </span>;
         } else {
-          return record.customer.users.phoneNumber;
+          return (
+            <Popover placement="top" content={thongTinKhachHang(record)} >
+              <Typography.Text>{record.customer.users.phoneNumber}</Typography.Text>
+            </Popover>
+          );
+          // return record.customer.users.phoneNumber;
         }
       },
     },
@@ -114,7 +245,18 @@ function TableHoaDon() {
       key: 'customerRanking',
       width: '10%',
       render: (text, record) => {
-        return (setRankKhachHang(record));
+        if (record.customer == null) {
+          return <span>
+            {setRankKhachHang(record)}
+          </span>;
+        } else {
+          return (
+            <Popover placement="top" content={thongTinKhachHang(record)} >
+              <Typography.Text>{setRankKhachHang(record)}</Typography.Text>
+            </Popover>
+          );
+        }
+        // return (setRankKhachHang(record));
       },
     },
     {
@@ -208,7 +350,6 @@ function TableHoaDon() {
         } else {
           return (
             <div>
-
               <Space size="middle" style={{ marginTop: '10px' }}>
                 <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
                 {hanhDong(record, true, true)}
@@ -220,46 +361,8 @@ function TableHoaDon() {
       width: 100,
     },
   ];
-  const setRankKhachHang = (values) => {
-    if (values.customer == null) {
-      return (<span>
-        <StarFilled /> Khách hàng lẻ
-      </span>);
-    } else if (values.customer.customerRanking === 'KH_TIEMNANG') {
-      return "Tiềm năng";
-    } else if (values.customer.customerRanking === 'KH_THANTHIET') {
-      return "Thân thiết";
-    } else if (values.customer.customerRanking === 'KH_BAC') {
-      return "Bạc";
-    } else if (values.customer.customerRanking === 'KH_VANG') {
-      return "Vàng";
-    } else if (values.customer.customerRanking === 'KH_KIMCUONG') {
-      return "Kim cương";
-    } else {
-      return 'Chưa có hạng';
-    }
-  }
 
-  const hanhDong = (record, capNhat, xoa) => {
-    return (
-      < Space size="middle" >
-        <FormCapNhatTrangThai disabled={capNhat} status={record} reload={() => setLoading(true)} />
-        <Popconfirm
-          title="Xác Nhận"
-          description="Bạn có chắc chắn muốn hủy đơn hàng?"
-          okText="Đồng ý"
-          cancelText="Không"
-          onConfirm={() => {
-            deleteHandle(record.billId, -1, record.billCode);
-            setLoading(true);
-          }}
-          onCancel={onCancel}
-        >
-          <Button disabled={xoa} type="primary" danger icon={<CloseCircleOutlined />}>Hủy</Button>
-        </Popconfirm>
-      </Space >
-    )
-  };
+
   const updateAmount = async (billId) => {
     const list = await billDetailsAPI.getAllByBillId(billId);
     if (Array.isArray(list.data)) {
@@ -415,12 +518,12 @@ function TableHoaDon() {
                       } else {
                         setSortOrder(null);
                         setSortList(null);
-                        setSortListPlaceHolder('Không');
+                        setSortListPlaceHolder('Không sắp xếp');
                       }
                     }}
                   >
                     <Select.Option key={'0'} value={'0'}>
-                      Không
+                      Không sắp xếp
                     </Select.Option>
                     <Select.Option key={'1'} value={'priceASC'}>
                       Tổng thanh toán tăng dần

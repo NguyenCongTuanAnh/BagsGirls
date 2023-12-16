@@ -13,7 +13,7 @@ function HoaDonTaiQuayView() {
   return (
     <Layout style={{ height: '100%', background: '#f4f3f4' }}>
       <Sider width={260} style={{ background: '#fff', zIndex: '999', position: 'fixed', overflowY: 'auto' }}>
-        <Sidebar keyIndex="sub3.2" openKey="sub3" />
+        <Sidebar keyIndex="7" openKey="sub3" />
       </Sider>
       <Layout className="layoutContent">
         <Header className="headerStyle">
