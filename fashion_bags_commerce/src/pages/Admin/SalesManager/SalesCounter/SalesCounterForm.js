@@ -1467,6 +1467,9 @@ const SalesCounterForm = () => {
                                   ' - ' +
                                   VNDFormaterFunc(option.retailPrice) +
                                   ' - ' +
+                                  option.productDetailAmount +
+                                  ' cái' +
+                                  ' - ' +
                                   option.size.sizeName +
                                   ' - ' +
                                   option.color.colorName +
