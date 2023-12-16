@@ -693,6 +693,8 @@ const CheckoutDetail = () => {
                               placeholder="Họ và tên"
                               required
                               style={{ flex: 1 }}
+                              pattern="(?!^[0-9]*$)[a-zA-Z0-9]+"
+                              title="Tên phải chứa ít nhất một ký tự chữ và không chứa kí tự đặc biệt"
                             />
                           </div>
                           <div className="customInput">
@@ -706,7 +708,7 @@ const CheckoutDetail = () => {
                               onChange={(e) => setPhoneNumber(e.target.value)}
                               placeholder="Số điện thoại"
                               pattern="(?:\+84|0)(?:\d){9,10}$"
-                              title="vui lòng nhập số điện thoại hợp lệ"
+                              title="vui lòng nhập số điện thoại hợp lệ và tối đa là 10 số"
                               required
                               style={{ flex: 1 }}
                             />
@@ -806,6 +808,8 @@ const CheckoutDetail = () => {
                             onChange={(e) => setAddress(e.target.value)}
                             placeholder="Điền rõ thông tin số nhà, tên đường"
                             required
+                            pattern="^[a-zA-Z0-9\s]+$"
+                            title="Địa chỉ không được chứa kí tự đặc biệt"
                           />
                         </div>
                         <div className="customInput">
@@ -955,7 +959,7 @@ const CheckoutDetail = () => {
                             setFullName(customerData.users.fullName);
                             setPhoneNumber(customerData.users.phoneNumber);
                             setEmail(customerData.users.email);
-                            setAddress(customerData.users.address)
+                            setAddress(customerData.users.address);
                           }}
                         >
                           Xác nhận địa chỉ
