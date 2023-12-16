@@ -263,9 +263,6 @@ function TableContent() {
   const reload = () => {
     setLoading(true);
     getAllBalo(currentPage, pagesSize, productName, productCode, brandName, productStatus, sortList, sortOrder);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
   };
   useEffect(() => {
     handleLoading();
@@ -283,6 +280,7 @@ function TableContent() {
     sortOrder,
   ) => {
     try {
+      setLoading(true);
       const response = await baloAPI.getAll(
         pageNum,
         pageSize,
@@ -297,7 +295,9 @@ function TableContent() {
       setTotalItem(response.data.totalElements);
       setProductList(data);
 
-      setTimeout(() => {}, 500);
+      if (response.status === 200) {
+        setLoading(false);
+      }
       if (productList.length === 0) {
         messageApi.success({
           type: 'success',

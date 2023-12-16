@@ -15,6 +15,7 @@ import {
   Spin,
   Table,
   Typography,
+  message,
   notification,
 } from 'antd';
 import { useEffect, useState, useContext, useRef, Fragment, useCallback } from 'react';
@@ -34,6 +35,7 @@ import sizeAPI from '~/api/propertitesBalo/sizeAPI';
 import typeAPI from '~/api/propertitesBalo/typeAPI';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import NumberFormaterFunc from '~/Utilities/NumberFormaterFunc';
+import { ready } from 'jquery';
 
 function ProductDetailsViewer() {
   const [productList, setProductList] = useState([]);
@@ -76,17 +78,8 @@ function ProductDetailsViewer() {
   const [productDetailStatus, setProductDetailStatus] = useState(null);
   const [sortList, setSortList] = useState(null);
   const [sortOrder, setSortOrder] = useState(null);
-
-  const [colorNamePlaceHolder, setColorNamePlaceHolder] = useState('Màu Sắc');
-  const [typeNamePlaceHolder, setTypeNamePlaceHolder] = useState('Kiểu Balo');
-  const [materialNamePlaceHolder, setMaterialNamePlaceHolder] = useState('Chất Liệu');
-  const [sizeNamePlaceHolder, setSizeNamePlaceHolder] = useState('Size Balo');
-  const [brandNamePlaceHolder, setBrandNamePlaceHolder] = useState('Thương Hiệu');
-  const [compartmentNamePlaceHolder, setCompartmentNamePlaceHolder] = useState('Kiểu Ngăn');
-  const [producerNamePlaceHolder, setProducerNamePlaceHolder] = useState('NSX');
-  const [buckleTypeNamePlaceHolder, setBuckleTypeNamePlaceHolder] = useState('Kiểu Khóa');
-  const [productDetailStatusPlaceHolder, setProductDetailStatusPlaceHolder] = useState('Tình Trạng');
   const [sortListPlaceHolder, setSortListPlaceHolder] = useState(null);
+  const [messageApi, contextHolder] = message.useMessage();
 
   const searchInput = useRef(null);
 
@@ -112,60 +105,8 @@ function ProductDetailsViewer() {
       console.error('Đã xảy ra lỗi: ', error);
     }
   };
-  const loggerFilter = useCallback(() => {
-    console.log('====================================');
-    console.log('currentPage: ' + currentPage);
-    console.log('currentPage: ' + pagesSize);
-    console.log('productName: ' + productName);
-    console.log('productCode: ' + productCode);
-    console.log('colorName: ' + colorName);
-    console.log('typeName: ' + typeName);
-    console.log('materialName: ' + materialName);
-    console.log('sizeName: ' + sizeName);
-    console.log('brandName: ' + brandName);
-    console.log('compartmentName: ' + compartmentName);
-    console.log('producerName: ' + producerName);
-    console.log('buckleTypeName: ' + buckleTypeName);
-    console.log('productDetailDescribe: ' + productDetailDescribe);
-    console.log('minProductDetailAmount: ' + minProductDetailAmount);
-    console.log('maxProductDetailAmount: ' + maxProductDetailAmount);
-    console.log('minImportPrice: ' + minImportPrice);
-    console.log('maxImportPrice: ' + maxImportPrice);
-    console.log('minRetailPrice: ' + minRetailPrice);
-    console.log('maxImportPrice: ' + maxRetailPrice);
-    console.log('productDetailStatus: ' + productDetailStatus);
-    console.log('sortOrder:  ' + sortOrder);
-    console.log('sortList: ' + sortList);
-    console.log('====================================');
-  }, [
-    currentPage,
-    pagesSize,
-    productName,
-    productCode,
-    colorName,
-    typeName,
-    materialName,
-    sizeName,
-    brandName,
-    compartmentName,
-    producerName,
-    buckleTypeName,
-    productDetailDescribe,
-    minProductDetailAmount,
-    maxProductDetailAmount,
-    minImportPrice,
-    maxImportPrice,
-    minRetailPrice,
-    maxRetailPrice,
-    productDetailStatus,
-    sortOrder,
-    sortList,
-  ]);
+
   useEffect(() => {
-    loggerFilter();
-  }, [loggerFilter]);
-  useEffect(() => {
-    loggerFilter();
     viewBaloProps();
   }, []);
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -286,7 +227,6 @@ function ProductDetailsViewer() {
   });
 
   const handleTableChange = (pagination, filters, sorter) => {
-    console.log('Various parameters', pagination, filters, sorter);
     setFilteredInfo(filters);
     setSortedInfo(sorter);
   };
@@ -334,14 +274,14 @@ function ProductDetailsViewer() {
       title: 'STT',
       dataIndex: 'index',
       key: 'index',
-      width: 50,
+      width: 60,
       fixed: 'left',
       render: (text, record, index) => <span>{(currentPage - 1) * pagesSize + index + 1}</span>,
     },
     {
       title: 'Mã Balo',
       dataIndex: ['product', 'productCode'],
-      width: 150,
+      width: 170,
       fixed: 'left',
       sorter: (a, b) => a.product.productCode.localeCompare(b.product.ButtonproductCode),
       ...getColumnSearchProps('product', 'productCode'),
@@ -362,35 +302,35 @@ function ProductDetailsViewer() {
     {
       title: 'Màu Sắc',
       dataIndex: ['color', 'colorName'],
-      width: 100,
+      width: 150,
       sorter: (a, b) => a.color.colorName.localeCompare(b.color.colorName),
       ...getColumnSearchProps('color', 'colorName'),
     },
     {
       title: 'Kiểu Balo',
       dataIndex: ['type', 'typeName'],
-      width: 170,
+      width: 150,
       sorter: (a, b) => a.type.typeName.localeCompare(b.type.typeName),
       ...getColumnSearchProps('type', 'typeName'),
     },
     {
       title: 'Chất Liệu',
       dataIndex: ['material', 'materialName'],
-      width: 100,
+      width: 150,
       sorter: (a, b) => a.material.materialName.localeCompare(b.material.materialName),
       ...getColumnSearchProps('type', 'typeName'),
     },
     {
       title: 'Size Balo',
       dataIndex: ['size', 'sizeName'],
-      width: 100,
+      width: 150,
       sorter: (a, b) => a.size.sizeName.localeCompare(b.size.sizeName),
       ...getColumnSearchProps('type', 'typeName'),
     },
     {
       title: 'Thương Hiệu',
       dataIndex: ['product', 'brand', 'brandName'],
-      width: 100,
+      width: 150,
       sorter: (a, b) => a.product.brand.brandName.localeCompare(b.product.brandbrandName),
       ...getColumnSearchProps('product', 'brand', 'brandName'),
     },
@@ -444,7 +384,7 @@ function ProductDetailsViewer() {
     {
       title: 'Trạng Thái',
       dataIndex: 'productDetailStatus',
-      width: 130,
+      width: 180,
       fixed: 'right',
       sorter: (a, b) => a.productDetailStatus - b.productDetailStatus,
       render: (productDetailStatus) => {
@@ -459,7 +399,9 @@ function ProductDetailsViewer() {
                 }
                 title="Tình Trạng"
               >
-                <Button type="primary">Còn Hàng</Button>
+                <Button type="primary" shape="round">
+                  Còn Hàng
+                </Button>
               </Popover>
             );
           case 0:
@@ -473,7 +415,7 @@ function ProductDetailsViewer() {
                 title="Tình Trạng"
               >
                 {' '}
-                <Button type="primary" danger>
+                <Button type="primary" danger shape="round">
                   Hết Hàng
                 </Button>
               </Popover>
@@ -488,7 +430,7 @@ function ProductDetailsViewer() {
                 }
                 title="Tình Trạng"
               >
-                <Button>Ngưng Hoạt Động</Button>
+                <Button shape="round">Ngưng Hoạt Động</Button>
               </Popover>
             );
           default:
@@ -499,7 +441,6 @@ function ProductDetailsViewer() {
   ];
   const onCancel = () => {};
   const reload = () => {
-    setLoading(true);
     getAllBalo(
       currentPage,
       pagesSize,
@@ -524,9 +465,6 @@ function ProductDetailsViewer() {
       sortList,
       sortOrder,
     );
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
   };
   const getAllBalo = useCallback(
     async (
@@ -554,6 +492,7 @@ function ProductDetailsViewer() {
       sortOrder,
     ) => {
       try {
+        setLoading(true);
         const response = await productDetailsAPI.getAll(
           currentPage,
           pagesSize,
@@ -581,7 +520,14 @@ function ProductDetailsViewer() {
         const data = response.data.content;
         setTotalItem(response.data.totalElements);
         setProductList(data);
-        setTimeout(() => {}, 500);
+        if (response.status === 200) {
+          setLoading(false);
+        } else {
+          messageApi.open({
+            type: 'loading',
+            content: 'Đang cố lấy data......',
+          });
+        }
       } catch (error) {
         console.error('Đã xảy ra lỗi: ', error);
       }
@@ -712,10 +658,6 @@ function ProductDetailsViewer() {
     handleLoading();
   };
   const onHandlePageNum = (current, pageSize) => {
-    console.log('====================================');
-    console.log(current);
-    console.log(pageSize);
-    console.log('====================================');
     setCurrentPage(current);
     setPagesSize(pageSize);
     getAllBalo(
@@ -762,16 +704,6 @@ function ProductDetailsViewer() {
     var maxRetailPriceTemp = '';
 
     const handleFilt = () => {
-      console.log('====================================');
-      console.log(productNameTemp);
-      console.log(productDetailDescribeTemp);
-      console.log(minProductDetailAmountTemp);
-      console.log(maxProductDetailAmountTemp);
-      console.log(minImportPriceTemp);
-      console.log(maxImportPriceTemp);
-      console.log(minRetailPriceTemp);
-      console.log(maxRetailPriceTemp);
-      console.log('====================================');
       setProductCode(productCodeTemp);
       setProductName(productNameTemp);
       setProductDetailDescribe(productDetailDescribeTemp);
@@ -784,6 +716,7 @@ function ProductDetailsViewer() {
     };
     return (
       <Fragment>
+        {contextHolder}
         <Form>
           <Row>
             <Col span={24}>
@@ -837,7 +770,6 @@ function ProductDetailsViewer() {
                   parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
                   onChange={(value) => {
                     minProductDetailAmountTemp = value;
-                    console.log(value);
                   }}
                 />
 
@@ -855,7 +787,6 @@ function ProductDetailsViewer() {
                   parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
                   onChange={(value) => {
                     maxProductDetailAmountTemp = value;
-                    console.log(value);
                   }}
                 />
               </Form.Item>
@@ -874,7 +805,6 @@ function ProductDetailsViewer() {
                   parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
                   onChange={(value) => {
                     minImportPriceTemp = value;
-                    console.log(value);
                   }}
                 />
 
@@ -892,7 +822,6 @@ function ProductDetailsViewer() {
                   parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
                   onChange={(value) => {
                     maxImportPriceTemp = value;
-                    console.log(value);
                   }}
                 />
               </Form.Item>
@@ -911,7 +840,6 @@ function ProductDetailsViewer() {
                   parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
                   onChange={(value) => {
                     minRetailPriceTemp = value;
-                    console.log(value);
                   }}
                 />
                 <span> </span>
@@ -927,7 +855,6 @@ function ProductDetailsViewer() {
                   parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
                   onChange={(value) => {
                     maxRetailPriceTemp = value;
-                    console.log(value);
                   }}
                 />
               </Form.Item>

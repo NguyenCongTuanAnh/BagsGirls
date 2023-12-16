@@ -149,49 +149,32 @@ function ProductDetailsPreviewForm(props) {
       values.materialId +
       values.producerId +
       values.typeId +
-      values.sizeId +
-      values.brandId;
-    const indexBaloListPreview = baloListPreview.findIndex(
-      (item) =>
-        item.buckleTypeId +
-          item.colorId +
-          item.compartmentId +
-          item.materialId +
-          item.producerId +
-          item.typeId +
-          item.sizeId +
-          item.brandId ===
-        keyProduct,
-    );
+      values.sizeId;
 
-    const indexBaloList = baloList.findIndex(
+    const mangMoi = props.productDetailList.map((obj) => ({
+      buckleTypeId: obj.buckleType.buckleTypeId,
+      colorId: obj.color.colorId,
+      compartmentId: obj.compartment.compartmentId,
+      materialId: obj.material.materialId,
+      producerId: obj.producer.producerId,
+      typeId: obj.type.typeId,
+      sizeId: obj.size.sizeId,
+    }));
+    const newArr = [...mangMoi, ...baloList, ...baloListPreview];
+
+    const indexBaloProps = newArr.findIndex(
       (item) =>
-        item.buckleTypeId +
+        (
+          item.buckleTypeId +
           item.colorId +
           item.compartmentId +
           item.materialId +
           item.producerId +
           item.typeId +
-          item.sizeId +
-          item.brandId ===
-        keyProduct,
+          item.sizeId
+        ).toLowerCase() === keyProduct.toLowerCase(),
     );
-    const indexBaloProps = props.productDetailList.findIndex(
-      (item) =>
-        item.buckleType.buckleTypeId +
-          item.color.colorId +
-          item.compartment.compartmentId +
-          item.material.materialId +
-          item.producer.producerId +
-          item.type.typeId +
-          item.size.sizeId +
-          item.product.brand.brandId ===
-        keyProduct,
-    );
-    console.log(props.productDetailList);
-    console.log(indexBaloProps);
-    if (indexBaloList !== -1 || indexBaloListPreview !== -1 || indexBaloProps !== -1) {
-      console.log('abc');
+    if (indexBaloProps !== -1) {
       notification.error({
         message: 'Lỗi',
         description: 'Các trường thuộc tính này Bạn đa đã thêm trước đó, vui lòng chọn khác!!!',
@@ -201,7 +184,7 @@ function ProductDetailsPreviewForm(props) {
       return;
     }
     setIsFirst(true);
-    const genCodeAuto = generateCustomCode('baloCode', 9);
+    const genCodeAuto = generateCustomCode('BaloCode', 9);
 
     let addBalo = { ...values, productCode: genCodeAuto };
     setBaloList([...baloList, addBalo]);

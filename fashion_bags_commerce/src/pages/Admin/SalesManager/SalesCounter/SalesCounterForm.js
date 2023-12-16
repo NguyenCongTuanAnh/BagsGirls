@@ -529,10 +529,12 @@ const SalesCounterForm = () => {
             totalPrice + totalPrice * VAT - voucherPrice - totalPrice * (discountPercentByRankingName / 100),
           shippingAddress: null,
           billingAddress: null,
-          receiverName: customer.users.fullName,
+          receiverName: customer ? customer.users.fullName : null,
           shipPrice: 0,
-          orderEmail: customer.users.email,
-          orderPhone: customer.users.phoneNumber,
+          billReducedPrice:
+            totalPrice + totalPrice * VAT - voucherPrice - totalPrice * (discountPercentByRankingName / 100),
+          orderEmail: customer ? customer.users.email : null,
+          orderPhone: customer ? customer.users.phoneNumber : null,
           paymentMethod: values.paymentMethod,
           billNote: values.billNote,
           billStatus: 1,
@@ -1236,7 +1238,7 @@ const SalesCounterForm = () => {
                         <Row>
                           <Col span={12}>
                             <Form.Item className={styles.item} label="Địa chỉ" name="address">
-                              <TextArea readOnly rows={3} placeholder="Địa Chỉ Chi tiết" maxLength={6} />
+                              <TextArea readOnly rows={3} placeholder="Địa Chỉ Chi tiết" maxLength={1000} showCount />
                             </Form.Item>
                           </Col>
                         </Row>
@@ -1318,7 +1320,7 @@ const SalesCounterForm = () => {
                           },
                         ]}
                       >
-                        <TextArea rows={3} placeholder="Ghi chú" maxLength={6} />
+                        <TextArea rows={3} placeholder="Ghi chú" maxLength={1000} showCount />
                       </Form.Item>
                     </Col>
                   </Row>

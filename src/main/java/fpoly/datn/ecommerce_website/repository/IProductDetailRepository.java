@@ -80,7 +80,7 @@ public Page<ProductDetails> getProductDetailsWithoutDelete(
             "OR bd.compartment.compartmentName LIKE %:keyword% " +
             "OR bd.buckleType.buckleTypeName LIKE %:keyword% " +
             "OR bd.producer.producerName LIKE %:keyword% " +
-            "OR bd.productDetailDescribe LIKE %:keyword% " 
+            "OR bd.productDetailDescribe LIKE %:keyword% "
 //            "OR bd.importPrice = cast(:keyword as int ) " +
 //            "or (:keyword = '' or (CAST(:keyword AS int) IS NULL AND bd.retailPrice =CAST(:keyword AS int))) "
     )
