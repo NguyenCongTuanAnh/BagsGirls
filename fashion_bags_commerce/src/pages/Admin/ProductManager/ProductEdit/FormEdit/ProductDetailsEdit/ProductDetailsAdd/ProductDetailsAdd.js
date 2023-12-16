@@ -23,7 +23,7 @@ function ProductDetailsAdd(props) {
         Sửa
       </Button>
       <Drawer
-        title={'Edit - '}
+        title={'Edit - ' + props.product.productCode}
         width={1600}
         onClose={onClose}
         open={open}
@@ -32,17 +32,12 @@ function ProductDetailsAdd(props) {
             paddingBottom: 80,
           },
         }}
-        extra={
-          <Space>
-            <Button onClick={'onClose'} type="primary">
-              Thoát
-            </Button>
-          </Space>
-        }
+        extra={<Space></Space>}
       >
         <h1>Thông tin Balo</h1>
         <hr />
         <ProductDetailsPreviewForm
+          product={props.product}
           productDetailList={props.productDetailList}
           brand={props.brand}
           handleRefresh={props.handleRefresh}

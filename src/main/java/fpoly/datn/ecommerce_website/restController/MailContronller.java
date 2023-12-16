@@ -21,4 +21,10 @@ public class MailContronller {
       Boolean isSuccess =  iMailSendService.notificationCreateCustomer(mail);
         return new ResponseEntity<>(isSuccess, HttpStatus.OK);
     }
+    @RequestMapping(value = "/send-mail-test", method = RequestMethod.POST)
+    public ResponseEntity<?> sendMailTest(
+            @RequestBody Mail mail) {
+        Boolean isSuccess =  iMailSendService.notificationTest(mail);
+        return new ResponseEntity<>(isSuccess, HttpStatus.OK);
+    }
 }
