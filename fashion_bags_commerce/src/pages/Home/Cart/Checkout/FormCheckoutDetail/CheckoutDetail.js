@@ -691,7 +691,7 @@ const CheckoutDetail = () => {
                               value={fullName}
                               onChange={(e) => setFullName(e.target.value)}
                               placeholder="Họ và tên"
-                              // required
+                              required
                               style={{ flex: 1 }}
                             />
                           </div>
@@ -707,7 +707,7 @@ const CheckoutDetail = () => {
                               placeholder="Số điện thoại"
                               pattern="(?:\+84|0)(?:\d){9,10}$"
                               title="vui lòng nhập số điện thoại hợp lệ"
-                              // required
+                              required
                               style={{ flex: 1 }}
                             />
                           </div>
@@ -721,7 +721,7 @@ const CheckoutDetail = () => {
                               placeholder="Nhập email"
                               pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
                               title="vui lòng nhập email hợp lệ"
-                              // required
+                              required
                               style={{ flex: 1 }}
                             />
                           </div>
@@ -736,7 +736,7 @@ const CheckoutDetail = () => {
                               value={selectedProvince}
                               id="selectedProvince"
                               onChange={handleProvinceChange}
-                              // required
+                              required
                               style={{ flex: 1 }}
                               className="inputLabel"
                             >
@@ -759,7 +759,7 @@ const CheckoutDetail = () => {
                               id="selectedDistrict"
                               className="inputLabel"
                               onChange={handleDistrictChange}
-                              // required
+                              required
                               style={{ flex: 1 }}
                             >
                               <option disabled value="">
@@ -780,7 +780,7 @@ const CheckoutDetail = () => {
                               value={selectedWard}
                               id="selectedWard"
                               onChange={handleWardChange}
-                              // required
+                              required
                               style={{ flex: 1 }}
                               className="inputLabel"
                             >
@@ -805,7 +805,7 @@ const CheckoutDetail = () => {
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
                             placeholder="Điền rõ thông tin số nhà, tên đường"
-                            // required
+                            required
                           />
                         </div>
                         <div className="customInput">
@@ -851,7 +851,7 @@ const CheckoutDetail = () => {
                               placeholder="Số điện thoại"
                               pattern="(?:\+84|0)(?:\d){9,10}$"
                               title="vui lòng nhập số điện thoại hợp lệ"
-                              // required
+                              required
                               style={{ flex: 1 }}
                             />
                           </div>
@@ -866,7 +866,7 @@ const CheckoutDetail = () => {
                               value={selectedProvince}
                               id="selectedProvince"
                               onChange={handleProvinceChange}
-                              // required
+                              required
                               style={{ flex: 1 }}
                               className="inputLabel"
                             >
@@ -889,7 +889,7 @@ const CheckoutDetail = () => {
                               id="selectedDistrict"
                               className="inputLabel"
                               onChange={handleDistrictChange}
-                              // required
+                              required
                               style={{ flex: 1 }}
                             >
                               <option disabled value="">
@@ -910,7 +910,7 @@ const CheckoutDetail = () => {
                               value={selectedWard}
                               id="selectedWard"
                               onChange={handleWardChange}
-                              // required
+                              required
                               style={{ flex: 1 }}
                               className="inputLabel"
                             >
@@ -935,7 +935,7 @@ const CheckoutDetail = () => {
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
                             placeholder="Điền rõ thông tin số nhà, tên đường"
-                            // required
+                            required
                           />
                         </div>
                         <div className="customInput">
