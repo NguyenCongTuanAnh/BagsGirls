@@ -49,6 +49,7 @@ List<Customers> findByKeyword(String keyword);
     @Query("SELECT c FROM Customers c " +
             "where ( :keyword is null or c.users.fullName LIKE %:keyword% ) " +
             "OR  ( :keyword is null or c.users.phoneNumber LIKE %:keyword% ) " +
+            "OR  ( :keyword is null or c.customerCode LIKE %:keyword% ) " +
             "OR ( :keyword is null or c.users.email LIKE %:keyword% ) ")
     List<Customers> findCustomerByKeyword(@Param("keyword") String keyword);
 

@@ -1301,7 +1301,6 @@ const SalesCounterForm = () => {
                                 label: 'Chuyển Khoản',
                               },
                             ]}
-                            onChange={handleTonggleSelectChange}
                           ></Select>
                         </Form.Item>
                       </Col>
@@ -1467,6 +1466,9 @@ const SalesCounterForm = () => {
                                 {option.product.productName +
                                   ' - ' +
                                   VNDFormaterFunc(option.retailPrice) +
+                                  ' - ' +
+                                  option.productDetailAmount +
+                                  ' cái' +
                                   ' - ' +
                                   option.size.sizeName +
                                   ' - ' +
