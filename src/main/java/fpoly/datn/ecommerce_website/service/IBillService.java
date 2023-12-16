@@ -4,6 +4,7 @@ import fpoly.datn.ecommerce_website.dto.BillsDTO;
 import fpoly.datn.ecommerce_website.dto.BillsQDTO;
 import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.entity.Customers;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Ranking;
 import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
@@ -37,7 +38,7 @@ public interface IBillService {
             Integer status,
             Date startDate,
             Date endDate,
-            String staffCode,
+            String staffId,
             int pageNum,
             int pageSize,
             List<String> sortList,
@@ -48,7 +49,8 @@ public interface IBillService {
             Integer status,
             Date startDate,
             Date endDate,
-            String staffCode,
+            String staffId,
+            Ranking customerRanking,
             int pageNum,
             int pageSize,
             List<String> sortList,
