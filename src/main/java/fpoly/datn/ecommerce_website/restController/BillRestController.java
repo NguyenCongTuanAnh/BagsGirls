@@ -1,16 +1,10 @@
 package fpoly.datn.ecommerce_website.restController;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import fpoly.datn.ecommerce_website.dto.BillsDTO;
 import fpoly.datn.ecommerce_website.entity.Bills;
-import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.service.IBillService;
-import jakarta.persistence.TemporalType;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.data.jpa.repository.Temporal;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import org.springframework.data.domain.Sort;
 
@@ -27,7 +21,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 import java.util.Map;
@@ -62,6 +55,8 @@ public class BillRestController {
             @RequestParam(name ="search", defaultValue = "") String search,
             @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
             @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr,
+            @RequestParam(name = "customerRanking", required = false) String customerRanking,
+            @RequestParam(name = "customerPhoneNumber", defaultValue = "") String customerPhoneNumber,
             @RequestParam(defaultValue = "billCreateDate") List<String> sortList,
             @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder
     ) {
@@ -69,7 +64,7 @@ public class BillRestController {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date startDate = dateFormat.parse(startDateStr);
             Date endDate = dateFormat.parse(endDateStr);
-            return new ResponseEntity<>(this.billService.getAllBillsPagination( startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+            return new ResponseEntity<>(this.billService.getAllBillsOnline(customerPhoneNumber, customerRanking,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
         } catch (ParseException e) {
             e.printStackTrace();
             return new ResponseEntity<>("Lỗi khi chuyển đổi ngày", HttpStatus.BAD_REQUEST);
