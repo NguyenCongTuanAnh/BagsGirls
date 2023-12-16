@@ -2,6 +2,7 @@ package fpoly.datn.ecommerce_website.service.serviceImpl;
 
 import fpoly.datn.ecommerce_website.dto.BillsDTO;
 import fpoly.datn.ecommerce_website.entity.Bills;
+import fpoly.datn.ecommerce_website.infrastructure.constant.Ranking;
 import fpoly.datn.ecommerce_website.repository.IBillRepository;
 import fpoly.datn.ecommerce_website.service.IBillService;
 import org.modelmapper.ModelMapper;
@@ -77,7 +78,6 @@ public class BillServiceImpl implements IBillService {
             List<String> sortList,
             String sortOrder) {
         PageRequest pageable = PageRequest.of(pageNum, pageSize, Sort.by(createSortOrder(sortList, sortOrder)));
-
                 Page<Bills> bills = this.iBillRepository.findAllBillsOffline(
                         search,
                         status,
@@ -86,6 +86,48 @@ public class BillServiceImpl implements IBillService {
                         pageable
                 );
                 return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
+    }
+
+    @Override
+    public Page<BillsDTO> getAllBillsOfflineOfStaff(String seacrh, Integer status, Date startDate, Date endDate, String staffId, int pageNum, int pageSize, List<String> sortList, String sortOrder) {
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, Sort.by(createSortOrder(sortList, sortOrder)));
+        Page<Bills> bills = this.iBillRepository.findAllBillsOfflineOfStaff(
+                seacrh,
+                status,
+                startDate,
+                endDate,
+                staffId,
+                pageable
+        );
+        return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
+    }
+
+    @Override
+    public Page<BillsDTO> getAllBillsOfflineOfStaffOfCustomer(String seacrh, Integer status, Date startDate, Date endDate, String staffId, Ranking customerRanking, int pageNum, int pageSize, List<String> sortList, String sortOrder) {
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, Sort.by(createSortOrder(sortList, sortOrder)));
+        Page<Bills> bills = this.iBillRepository.findAllBillsOfflineOfStaffOfCustomer(
+                seacrh,
+                status,
+                startDate,
+                endDate,
+                staffId,
+                customerRanking,
+                pageable
+        );
+        return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
+    }
+
+    @Override
+    public Page<BillsDTO> getAllBillsOfflineOfCustomer(String seacrh, Integer status, Date startDate, Date endDate, int pageNum, int pageSize, List<String> sortList, String sortOrder) {
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, Sort.by(createSortOrder(sortList, sortOrder)));
+        Page<Bills> bills = this.iBillRepository.findAllBillsOfflineOfCustomer(
+                seacrh,
+                status,
+                startDate,
+                endDate,
+                pageable
+        );
+        return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
     }
 
     @Override
