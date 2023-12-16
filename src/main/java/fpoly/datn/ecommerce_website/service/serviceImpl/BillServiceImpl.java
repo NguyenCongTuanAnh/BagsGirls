@@ -60,11 +60,35 @@ public class BillServiceImpl implements IBillService {
     }
 
     @Override
-    public Page<BillsDTO> getAllBillsPagination( Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize,List<String> sortList,
-                                                 String sortOrder) {
+    public Page<BillsDTO> getAllBillsOnline(String customerPhoneNumber, String customerRanking, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize, List<String> sortList,
+                                            String sortOrder) {
         PageRequest pageable = PageRequest.of(pageNum, pageSize, Sort.by(createSortOrder(sortList, sortOrder)));
-            Page<Bills> bills = this.iBillRepository.findAllBillsBySearchStatus(startDate, endDate, status, search, pageable);
+        if(customerRanking.length() == 0){ // get all bill online
+            if(customerPhoneNumber.length() == 0 || customerPhoneNumber == null){
+                // trường hợp không chọn Hạng và cũng không chọn khách hàng
+                Page<Bills> bills = this.iBillRepository.findAllBillsOnline(startDate, endDate, status, search, pageable);
+                return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
+            }
+            else{
+                // trường hợp không chọn hạng nhưng chọn khách hàng
+                Page<Bills> bills = this.iBillRepository.findAllBillsOnlineCustomerId(customerPhoneNumber, startDate, endDate, status, search, pageable);
+                return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
+            }
+        }else if (customerRanking.equalsIgnoreCase("khachHangLe")){
+            // trường hợp chọn hạng khách hàng lẻ
+            Page<Bills> bills = this.iBillRepository.findAllBillsOnlineKhachHangLe(startDate, endDate, status, search, pageable);
             return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
+        }else{
+            Ranking mappingRank = Ranking.valueOf(customerRanking);
+            //tất cả trường hợp chọn cả hạng và không chọn khách hàng
+            if(customerPhoneNumber.length() == 0 || customerPhoneNumber == null){
+                Page<Bills> bills = this.iBillRepository.findAllBillsOnlineCustomerRanking( mappingRank,startDate, endDate, status, search, pageable);
+                return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
+            }
+            Page<Bills> bills = this.iBillRepository.findAllBillsOnlineCustomerRankingAndCustomerId(customerPhoneNumber, mappingRank,startDate, endDate, status, search, pageable);
+            return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
+        }
+
     }
 
     @Override

@@ -3,6 +3,7 @@ import {
   Card,
   Col,
   DatePicker,
+  Input,
   Pagination,
   Popconfirm,
   Popover,
@@ -20,12 +21,13 @@ import {
   ClockCircleOutlined,
   CloseCircleOutlined,
   FilterFilled,
+  ReloadOutlined,
   StarFilled,
   StarOutlined,
   SyncOutlined,
   TableOutlined,
 } from '@ant-design/icons';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import billsAPI from '~/api/BillApi';
 import styles from './index.module.scss';
 import SearchForm from '~/Utilities/FormSearch/SearchForm';
@@ -35,10 +37,12 @@ import FormCapNhatTrangThai from '../../CapNhatHoaDon/CapNhatTrangThai';
 import productDetailsAPI from '~/api/productDetailsAPI';
 import billDetailsAPI from '~/api/BillDetailsAPI';
 import FormChiTietHoaDon from '../../ChiTietHoaDon/FormChiTietHoaDon';
+import customerAPI from '~/api/customerAPI';
 const { RangePicker } = DatePicker;
 
 function TableHoaDon() {
   const [data, setData] = useState([]);
+  const [listCustomer, setListCustomer] = useState([]);
   const [totalItem, setTotalItem] = useState();
   const [loading, setLoading] = useState(true);
   const [PageNum, setPageNum] = useState(1);
@@ -50,6 +54,12 @@ function TableHoaDon() {
   const [sortList, setSortList] = useState('billCreateDate');
   const [sortOrder, setSortOrder] = useState('DESC');
   const [sortListPlaceHolder, setSortListPlaceHolder] = useState('timeDESC');
+  const [searchTerm, setSearchTerm] = useState('');
+  const typingTimeoutRef = useRef(null);
+  const [customerPhoneNumber, setCustomerPhoneNumber] = useState('');
+  const [filterRank, setFilterRank] = useState('');
+
+
 
 
   const thongTinKhachHang = (values) => {
@@ -79,7 +89,7 @@ function TableHoaDon() {
           </li>
           <li >
             <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Điểm hạng: </span>
-            <span style={{ color: 'red', fontSize: '16px' }}>{values.rankingPoints + ' điểm'} </span>
+            <span style={{ color: 'red', fontSize: '16px' }}>{values.customer.rankingPoints + ' điểm'} </span>
           </li>
           <li >
             <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Hạng: </span>
@@ -213,7 +223,7 @@ function TableHoaDon() {
         } else {
           return (
             <Popover placement="top" content={thongTinKhachHang(record)} >
-              <Typography.Text>{record.customer.users.fullName}</Typography.Text>
+              <Typography.Text>{record.receiverName}</Typography.Text>
             </Popover>
           );
         }
@@ -232,7 +242,7 @@ function TableHoaDon() {
         } else {
           return (
             <Popover placement="top" content={thongTinKhachHang(record)} >
-              <Typography.Text>{record.customer.users.phoneNumber}</Typography.Text>
+              <Typography.Text>{record.orderPhone}</Typography.Text>
             </Popover>
           );
           // return record.customer.users.phoneNumber;
@@ -421,16 +431,16 @@ function TableHoaDon() {
     },
   ];
 
-  const handleSearchChange = (newFilter) => {
-    if (newFilter === undefined || newFilter.trim().length === 0) {
-      setSearch('');
-      setLoading(true);
-      setPageNum(1);
-    } else {
-      setSearch(newFilter.trim());
-      setLoading(true);
-      setPageNum(1);
+  const handleSearchChange = (value) => {
+    setSearchTerm(value.target.value.toString());
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
     }
+    typingTimeoutRef.current = setTimeout(() => {
+      setSearch(value.target.value.trim().toString());
+    }, 500);
+    setLoading(true);
+    setPageNum(1);
   };
 
   const onChangeBill = (e) => {
@@ -452,6 +462,8 @@ function TableHoaDon() {
         search,
         pageNum,
         pageSize,
+        filterRank,
+        customerPhoneNumber,
         sortList,
         sortOrder,
         sortListPlaceHolder
@@ -463,13 +475,63 @@ function TableHoaDon() {
       console.error('Đã xảy ra lỗi: ', error);
     }
   };
+
+  const getAllCustomer = async () => {
+    try {
+      const responseCustomer = await customerAPI.getAllNotPagination();
+      setListCustomer(responseCustomer.data);
+    } catch (error) {
+      console.error('Error fetching staff data:', error);
+    }
+  };
+  const renderCustomerOptions = () => {
+    return (
+      <>
+        <Select.Option value=''>Tất cả</Select.Option>
+        {(listCustomer ?? []).map((item, index) => {
+          if (filterRank === '' || filterRank === item.customerRanking) {
+            return (
+              <Select.Option key={index} value={item.users.phoneNumber}>
+                {item.customerCode + ' - ' + item.users.phoneNumber + ' - ' + item.users.fullName}
+              </Select.Option>
+            );
+          }
+          return null;
+        })}
+      </>
+    );
+  };
+
+
   useEffect(() => {
+    getAllCustomer();
     getAllPhanTrangCompartment(PageNum, pageSize);
+    // console.log('Khách hàng: ' + filterRank + customerPhoneNumber);
     setTimeout(() => {
       setLoading(false);
     }, 500);
+    // console.log(filterRank + filterCustomerId);
 
-  }, [loading, search, status, startDate, endDate, sortList, sortOrder, sortListPlaceHolder]);
+  }, [loading, search, status, startDate, endDate, sortList, sortOrder, customerPhoneNumber, filterRank, sortListPlaceHolder]);
+
+  useEffect(() => {
+    renderCustomerOptions();
+  }, [filterRank]);
+
+  // lọc theo khách hàng
+  const onChangeKhachHang = (value) => {
+    // trả về customerId
+    setCustomerPhoneNumber(value);
+    // console.log(`selected ${value}`);
+  };
+  const onSearchKhachHang = (value) => {
+    // trả về những kí tự tìm kiếm
+    // console.log('search:', value);
+  };
+  const filterOption = (input, option) =>
+    (option?.children ?? '').toLowerCase().includes(input.trim().toLowerCase());
+
+
   return (
     <div>
       <Card>
@@ -480,15 +542,15 @@ function TableHoaDon() {
             </h2>
           </Row>
           <Row>
-            <Col span={7}>
-              <div style={{ paddingTop: '10px', fontSize: '16px' }}>
-                <span style={{ fontWeight: 500 }}>Khoảng ngày</span>
-                <RangePicker className={styles.filter_inputSearch} style={{ marginLeft: '10px' }} presets={rangePresets} onChange={onRangeChange} />
+            <Col span={9}>
+              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
+                <span style={{ fontWeight: 500 }}>Ngày tạo</span>
+                <RangePicker placeholder={['Ngày bắt đầu', 'Ngày kết thúc']} className={styles.filter_inputSearch} style={{ marginLeft: '10px' }} presets={rangePresets} onChange={onRangeChange} />
               </div>
             </Col>
             <Col span={7}>
-              <div style={{ paddingTop: '10px', fontSize: '16px' }}>
-                <span style={{ paddingTop: '20px', fontSize: '16px', fontWeight: 500 }}>
+              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
+                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
                   Sắp xếp
                   <Select
                     allowClear
@@ -541,19 +603,77 @@ function TableHoaDon() {
                 </span>
               </div>
             </Col>
-
-
-            <Col span={10}>
-              <SearchForm onSubmit={handleSearchChange} style={{ width: '100%', marginBottom: '10px' }} />
+          </Row>
+          <Row style={{ marginTop: '10px' }}>
+            <Col span={9}>
+              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
+                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
+                  Hạng khách hàng
+                  <Select
+                    placeholder="Lọc theo hạng khách hàng"
+                    style={{ width: '40%', marginLeft: '10px' }}
+                    onChange={(value) => {
+                      setFilterRank(value);
+                      setCustomerPhoneNumber('');
+                    }}
+                  >
+                    <Select.Option value="">Tất cả</Select.Option>
+                    <Select.Option value="khachHangLe">Khách hàng lẻ</Select.Option>
+                    <Select.Option value="KH_TIEMNANG">Tiềm năng</Select.Option>
+                    <Select.Option value="KH_THANTHIET">Thân thiết</Select.Option>
+                    <Select.Option value="KH_BAC">Bạc</Select.Option>
+                    <Select.Option value="KH_VANG">Vàng</Select.Option>
+                    <Select.Option value="KH_KIMCUONG">Kim cương</Select.Option>
+                  </Select>
+                </span>
+              </div>
+            </Col>
+            <Col span={9}>
+              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
+                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
+                  Khách hàng
+                  <Select
+                    showSearch
+                    placeholder="Tìm và lọc hóa đơn theo khách hàng"
+                    optionFilterProp="children"
+                    disabled={(filterRank === 'khachHangLe') ? true : false}
+                    onChange={onChangeKhachHang}
+                    onSearch={onSearchKhachHang}
+                    filterOption={filterOption}
+                    value={customerPhoneNumber}
+                    style={{ marginLeft: '10px', width: '68%' }}
+                  >
+                    {renderCustomerOptions()}
+                  </Select>
+                </span>
+              </div>
             </Col>
           </Row>
         </section>
       </Card>
       <Card>
         <section>
-          <h2 style={{ marginBottom: '10px' }}>
-            <TableOutlined /> Danh sách hóa đơn online
-          </h2>
+          <Row style={{ margin: '10px' }}>
+            <Col span={5.5}>
+              <h2 >
+                <TableOutlined /> Danh sách hóa đơn online
+              </h2>
+            </Col>
+            <Col span={10}>
+              <Button icon={<ReloadOutlined />} onClick={() => { setLoading(true) }} style={{ marginTop: '7px', marginLeft: '15px' }} loading={loading}></Button>
+            </Col>
+            <Col span={7}>
+              {/* <div className={styles.searchContainer}> */}
+              <Input
+                className={styles.searchIinput}
+                type="text"
+                placeholder="Tìm kiếm thông tin trên hóa đơn"
+                value={searchTerm}
+                onChange={handleSearchChange}
+              ></Input>
+              {/* </div> */}
+            </Col>
+          </Row>
           <Tabs
             defaultActiveKey={status}
             onChange={(e) => onChangeBill(e)}

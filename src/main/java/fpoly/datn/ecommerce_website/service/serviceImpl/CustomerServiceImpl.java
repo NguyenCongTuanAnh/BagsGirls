@@ -172,12 +172,10 @@ public class CustomerServiceImpl implements ICustomerService {
     public CustomerDTO updatePointByTotalPrice(String customerId, Double totalPrice) {
         Customers customers = this.customerRepository.findById(customerId).get();
 
-
         int addPoint = (int) (totalPrice * Constants.PERCENT_TO_RECEIVE);
 
        customers.setRankingPoints(addPoint + customers.getRankingPoints());
        customers.setConsumePoints(addPoint + customers.getConsumePoints());
-
 
         if (customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHKC) {
             customers.setCustomerRanking(Ranking.KH_KIMCUONG);

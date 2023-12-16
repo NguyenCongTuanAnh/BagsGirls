@@ -62,6 +62,8 @@ function TableHoaDonTaiQuay() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCustomerId, setFilterCustomerId] = useState('');
   const [filterRank, setFilterRank] = useState('');
+  const [defaultCustomerValue, setDefaultCustomerValue] = useState('');
+
 
 
 
@@ -166,7 +168,6 @@ function TableHoaDonTaiQuay() {
       width: '7%',
       render: (staff) => {
         if (staff && staff.users) {
-
           return (
             <Popover placement="top" content={thongTinNhanVien(staff)} >
               <Typography.Text>{staff.staffCode}</Typography.Text>
@@ -192,7 +193,7 @@ function TableHoaDonTaiQuay() {
         } else {
           return (
             <Popover placement="top" content={thongTinKhachHang(record)} >
-              <Typography.Text>{record.customer.users.fullName}</Typography.Text>
+              <Typography.Text>{record.receiverName}</Typography.Text>
             </Popover>
           );
         }
@@ -213,7 +214,7 @@ function TableHoaDonTaiQuay() {
         } else {
           return (
             <Popover placement="top" content={thongTinKhachHang(record)} >
-              <Typography.Text>{record.customer.users.phoneNumber}</Typography.Text>
+              <Typography.Text>{record.orderPhone}</Typography.Text>
             </Popover>
           );
         }
@@ -585,6 +586,29 @@ function TableHoaDonTaiQuay() {
       console.error('Error fetching staff data:', error);
     }
   };
+
+  const renderCustomerOptions = () => {
+    return (
+      <>
+        <Select.Option value={''}>Tất cả</Select.Option>
+        {(listCustomer ?? []).map((item, index) => {
+          if (filterRank === '' || filterRank === item.customerRanking) {
+            return (
+              <Select.Option key={index} value={item.customerId}>
+                {item.customerCode + ' - ' + item.users.phoneNumber + ' - ' + item.users.fullName}
+              </Select.Option>
+            );
+          }
+          return null;
+        })}
+      </>
+    );
+  };
+
+  useEffect(() => {
+    renderCustomerOptions();
+  }, [filterRank]);
+
   useEffect(() => {
     getAllStaff();
     getAllPhanTrangCompartment(pageNum, pageSize);
@@ -631,7 +655,7 @@ function TableHoaDonTaiQuay() {
             <Col span={9}>
               <div style={{ paddingTop: '10px', fontSize: '18px' }}>
                 <span style={{ fontWeight: 500 }}>Ngày tạo</span>
-                <RangePicker className={styles.filter_inputSearch} style={{ marginLeft: '10px' }} presets={rangePresets} onChange={onRangeChange} />
+                <RangePicker placeholder={['Ngày bắt đầu', 'Ngày kết thúc']} className={styles.filter_inputSearch} style={{ marginLeft: '10px' }} presets={rangePresets} onChange={onRangeChange} />
               </div>
             </Col>
             <Col span={9}>
@@ -717,37 +741,14 @@ function TableHoaDonTaiQuay() {
             <Col span={9}>
               <div style={{ paddingTop: '10px', fontSize: '18px' }}>
                 <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
-                  Khách hàng
-                  <Select
-                    showSearch
-                    placeholder="Tìm và lọc hóa đơn theo khách hàng"
-                    optionFilterProp="children"
-                    onChange={onChangeKhachHang}
-                    onSearch={onSearchKhachHang}
-                    filterOption={filterOption}
-                    style={{ marginLeft: '10px', width: '68%' }}
-                  >
-                    <Select.Option value="">Tất cả</Select.Option>
-                    {(listCustomer ?? []).map((item, index) => (
-                      <Select.Option key={index} value={item.customerId}>
-                        {item.customerCode + ' - ' + item.users.phoneNumber + ' - ' + item.users.fullName}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </span>
-              </div>
-            </Col>
-            <Col span={9}>
-              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
-                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
                   Hạng khách hàng
                   <Select
-                    // bordered={false}
+                    placeholder="Lọc theo hạng khách hàng"
                     style={{ width: '40%', marginLeft: '10px' }}
                     onChange={(value) => {
                       setFilterRank(value);
+                      setFilterCustomerId('');
                     }}
-                    value={filterRank}
                   >
                     <Select.Option value="">Tất cả</Select.Option>
                     <Select.Option value="khachHangLe">Khách hàng lẻ</Select.Option>
@@ -756,6 +757,26 @@ function TableHoaDonTaiQuay() {
                     <Select.Option value="KH_BAC">Bạc</Select.Option>
                     <Select.Option value="KH_VANG">Vàng</Select.Option>
                     <Select.Option value="KH_KIMCUONG">Kim cương</Select.Option>
+                  </Select>
+                </span>
+              </div>
+            </Col>
+            <Col span={9}>
+              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
+                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
+                  Khách hàng
+                  <Select
+                    showSearch
+                    placeholder="Tìm và lọc hóa đơn theo khách hàng"
+                    optionFilterProp="children"
+                    disabled={(filterRank === 'khachHangLe') ? true : false}
+                    onChange={onChangeKhachHang}
+                    onSearch={onSearchKhachHang}
+                    filterOption={filterOption}
+                    value={filterCustomerId}
+                    style={{ marginLeft: '10px', width: '68%' }}
+                  >
+                    {renderCustomerOptions()}
                   </Select>
                 </span>
               </div>
