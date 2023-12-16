@@ -70,8 +70,23 @@ function App() {
           <Route path="/search" element={<SearchPage />} />
           <Route path="/shop/detail/:productId" element={<ShopDetail />} />
           <Route path="/cart" element={<CartView />} />
-          <Route path="/cart/:cartId" element={<CartCustomer />} />
+          <Route
+            path="/cart/:cartId"
+            element={
+              <CustomerGuard>
+                <CartCustomer />
+              </CustomerGuard>
+            }
+          />
           <Route path="/cart/checkout" element={<Checkout />} />
+          <Route
+            path="/cart/checkout/:customerId"
+            element={
+              <CustomerGuard>
+                <Checkout />
+              </CustomerGuard>
+            }
+          />
           <Route path="/unauthorized" element={<UnAuthorPage />} />
           <Route path="/print-table" element={<PrintTableComponent />} />
 

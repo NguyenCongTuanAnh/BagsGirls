@@ -552,19 +552,20 @@ function ShopDetailView() {
                 <Link to={`/cart/${cartId1}`}>{renderAddToCartButtonDB()}</Link>
                 // <Link to="{`/cart/${cartId1}`}">{renderAddToCartButtonDB()}</Link>
               )}
-              {/* {customerId == null ? (
+              {customerId == null ? (
                 <Link to="/cart">
                   <div className={styles.button_buy_now1} onClick={() => addToTemporaryCart(product)}>
                     Mua ngay
                   </div>
                 </Link>
               ) : (
-                <Link to={`/cart/${customerId}`}>
-                  <div className={styles.button_buy_now1} onClick={() => addToCart(product)}>
-                    Mua ngay
-                  </div>
-                </Link>
-              )} */}
+                // <Link to={`/cart/${customerId}`}>
+                //   <div className={styles.button_buy_now1} onClick={() => addToCart(product)}>
+                //     Mua ngay
+                //   </div>
+                // </Link>
+                <div></div>
+              )}
             </div>
           </div>
         </div>

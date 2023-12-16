@@ -72,7 +72,7 @@ function CartCustomer() {
 
     return toltalAmount;
   };
-console.log("calculateTotalAmount",calculateTotalAmount());
+  console.log('calculateTotalAmount', calculateTotalAmount());
   const handleQuantityChange = async (e, cartItem) => {
     const newQuantity = parseInt(e.target.value, 10);
     const totalAmountProduct = amountProductDetail?.cartDetailsList[0]?.productDetails?.productDetailAmount;
@@ -248,20 +248,39 @@ console.log("calculateTotalAmount",calculateTotalAmount());
             Tổng tiền: {VNDFormaterFunc(calculateTotalPrice())}
           </h1>
         </div>
-        <button
-          className={styles.buttonThanhToan}
-          onClick={() => {
-            navigate('/cart/checkout', {
-              state: {
-                totalPrice1: calculateTotalPrice(),
-                cartItems: cartItems.cartDetailsList,
-                totalAmount: calculateTotalAmount(),
-              },
-            });
-          }}
-        >
-          Tiến hành thanh toán
-        </button>
+        {cartDetailId.length != 0 ? (
+          <button
+            className={styles.buttonThanhToan}
+            onClick={() => {
+              navigate(`/cart/checkout/${customerId}`, {
+                state: {
+                  totalPrice1: calculateTotalPrice(),
+                  cartItems: cartItems.cartDetailsList,
+                  totalAmount: calculateTotalAmount(),
+                },
+              });
+            }}
+          >
+            Tiến hành thanh toán
+          </button>
+        ) : (
+          <div>
+             <button
+            className={styles.buttonThanhToan}
+            onClick={() => {
+              navigate(`/cart/checkout/${customerId}`, {
+                state: {
+                  totalPrice1: calculateTotalPrice(),
+                  cartItems: cartItems.cartDetailsList,
+                  totalAmount: calculateTotalAmount(),
+                },
+              });
+            }}
+          >
+            Tiến hành thanh toán
+          </button>
+          </div>
+        )}
       </div>
     </MainLayout>
   );
