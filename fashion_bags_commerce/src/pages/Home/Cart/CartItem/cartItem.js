@@ -286,7 +286,7 @@ function CartItem() {
           onClick={() => {
             navigate('/cart/checkout', {
               state: {
-                totalPrice: calculateTotalAfterVoucher(),
+                totalPrice: calculateTotal(),
                 voucherPrice: voucherPrice,
                 disCountPercent: voucher.discountPercent,
                 totalQuantity: totalQuantity,
@@ -298,7 +298,7 @@ function CartItem() {
         </button>
       </div>
       
-      <div className={styles.finalCart}>
+      {/* <div className={styles.finalCart}>
         <br />
 
         <div className={styles.content_product_pc}>
@@ -357,7 +357,7 @@ function CartItem() {
         </div>
 
      
-      </div>
+      </div> */}
 
     </div>
   );
