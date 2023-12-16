@@ -46,6 +46,8 @@ function FormProductEdit(props) {
     getContainer: () => document.getElementById('notification-container'),
   });
   const [form] = Form.useForm();
+  const [isFirst, setIsFirst] = useState(false);
+
   const [open, setOpen] = useState(false);
   const [product, setProduct] = useState(props.product);
   const [brand, setBrand] = useState([]);
@@ -199,7 +201,7 @@ function FormProductEdit(props) {
       fixed: 'right',
       width: 150,
       sorter: (a, b) => a.retailPrice - b.retailPrice,
-      render: (retailPrice) => VNDFormaterFunc(retailPrice),
+      render: (retailPrice) => VNDFormaterFunc(retailPrice) + ' / Cái',
     },
     {
       title: 'Số Lượng',
@@ -233,11 +235,13 @@ function FormProductEdit(props) {
     };
     try {
       const response = await productAPI.update(editBalo);
-      notification.success({
-        message: 'Thành công',
-        description: 'Sửa thành công',
-        duration: 2,
-      });
+
+      if (response.status === 200) {
+        message.success('Sửa thành công');
+        props.handleRefresh();
+      } else {
+        message.error('Sửa không thành công!!!');
+      }
     } catch (error) {
       notification.error({
         message: 'Lỗi',
@@ -320,8 +324,6 @@ function FormProductEdit(props) {
         err = '';
       }
       if (tempList.length !== 0 && err === '') {
-        console.log(tempList);
-        console.log('TH');
         handleUploadImage(tempList);
       }
     }
@@ -409,11 +411,10 @@ function FormProductEdit(props) {
   const handleChange = ({ fileList: newFileList }) => {
     const deletedFiles = imageList.filter((oldFile) => !newFileList.some((newFile) => newFile.uid === oldFile.uid));
     handleDeleteImage(deletedFiles[0]);
-    console.log(newFileList);
+
     setImageList(newFileList);
   };
   const handleDeleteImage = async (file) => {
-    console.log(file);
     const desertRef1 = ref(storage, 'mulitpleFiles/' + file.name);
     deleteObject(desertRef1)
       .then(async () => {
@@ -452,9 +453,7 @@ function FormProductEdit(props) {
         okText="Đồng ý"
         cancelText="Không"
         onConfirm={handleDeleteSelected}
-        onCancel={() => {
-          console.log('abc');
-        }}
+        onCancel={() => {}}
       >
         <Button type="primary" loading={false} disabled={selectedRowKeys.length === 0}>
           Hủy Hoạt động
@@ -464,6 +463,7 @@ function FormProductEdit(props) {
   );
   return (
     <Fragment>
+      {contextHolder}
       <div id="notification-container">
         {contextHolder}
         <Button style={{ borderColor: 'blue', color: 'blue' }} onClick={showDrawer} icon={<EditOutlined />}>
@@ -479,13 +479,7 @@ function FormProductEdit(props) {
               paddingBottom: 80,
             },
           }}
-          extra={
-            <Space>
-              <Button onClick={onClose} type="primary">
-                Thoát
-              </Button>
-            </Space>
-          }
+          extra={<div></div>}
         >
           <h1>Thông tin Balo</h1>
           <div>
@@ -495,9 +489,7 @@ function FormProductEdit(props) {
               okText="Đồng ý"
               cancelText="Không"
               onConfirm={handleEdit}
-              onCancel={() => {
-                console.log('abc');
-              }}
+              onCancel={() => {}}
             >
               <Button type="primary" loading={false}>
                 Sửa Balo
@@ -637,7 +629,12 @@ function FormProductEdit(props) {
                     </Button>
                   </Col>
                   <Col span={2}>
-                    <ProductDetailsAdd productDetailList={baloList} brand={props.brand} handleRefresh={start} />
+                    <ProductDetailsAdd
+                      productDetailList={baloList}
+                      brand={props.brand}
+                      handleRefresh={start}
+                      product={props.product}
+                    />
                   </Col>
                   <Col span={1}>{selectedRowKeys.length === 0 ? null : DeleteButton}</Col>
                 </Row>

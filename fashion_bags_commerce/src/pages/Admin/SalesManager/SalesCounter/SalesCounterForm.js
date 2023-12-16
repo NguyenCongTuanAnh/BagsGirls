@@ -127,7 +127,15 @@ const SalesCounterForm = () => {
     const [rankingName, setRankingName] = useState('');
     const [discountPercentByRankingName, setDiscountPercentByRankingName] = useState();
     const navigate = useNavigate();
-
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const onSelectChange = (selectedKeys) => {
+      setSelectedRowKeys(selectedKeys);
+      console.log(selectedKeys);
+    };
+    const rowSelection = {
+      selectedRowKeys,
+      onChange: onSelectChange,
+    };
     let html5QrCode;
     const soundEffect = new Audio(`/audio/beep.mp3`);
 
@@ -173,21 +181,12 @@ const SalesCounterForm = () => {
           setSelectedItems(updatedItems);
 
           setTotalPrice(calculateTotalPrice(updatedItems));
-          notification.success({
-            message: 'Thành Công',
-            description: 'Số lượng đã được Update!!!!',
-            duration: 2,
-          });
+          messageApi.success('Số lượng đã được Update!');
         } else {
           const newItem = { ...item, cartAmount: 1 };
           setSelectedItems(selectedItems.concat(newItem));
           setTotalPrice(calculateTotalPrice(selectedItems.concat(newItem)));
-
-          notification.success({
-            message: 'Thành Công',
-            description: 'Sản Phẩm đã được thêm!!!!',
-            duration: 2,
-          });
+          messageApi.success('Sản Phẩm đã được thêm!');
         }
       }
     };
@@ -378,6 +377,7 @@ const SalesCounterForm = () => {
       if (value === 1) {
         setCustomer(null);
         setCustomerId(null);
+        form.resetFields();
         setVisible(false);
       }
     };
@@ -396,18 +396,118 @@ const SalesCounterForm = () => {
     };
     const onHandleAddBill = async (values) => {
       var currentDate = new Date();
-      var formattedDate = dayjs(currentDate).subtract(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
+      var formattedDate = dayjs(currentDate).format('YYYY-MM-DD HH:mm:ss');
       if (customer == null && visible === true) {
         messageApi.error('Vui lòng Chọn Khách lẻ hoặc Điền KH Thân Thiết!!!');
       } else if (selectedItems.length === 0) {
         messageApi.error('Vui lòng thêm sản phẩm!!!');
       } else {
+        if (customer !== null) {
+          const dataSource = [
+            {
+              key: '1',
+              name: 'John Doe',
+              age: 30,
+              address: '1234 Street, City',
+            },
+            {
+              key: '2',
+              name: 'Jane Smith',
+              age: 25,
+              address: '5678 Street, City',
+            },
+          ];
+          const emailContent = `
+          <html>
+            <head>
+              <title>Thông tin đơn hàng</title>
+            </head>
+            <style>
+        
+          
+          </style>
+            <body>
+              <h1>Thông tin đơn hàng</h1>
+              <h4>Mã Bill: ${values.billCode} - ${formattedDate}</h4>
+              <table border="1" style="border-collapse: collapse; width: 100%; padding: 10px;">
+              <thead>
+                <tr>
+                  <th style="padding: 8px; text-align: center;">Mã Sản phẩm</th>
+                  <th style="padding: 8px; text-align: center;">Tên Balo</th>
+                  <th style="padding: 8px; text-align: center;">Màu Sắc</th>
+                  <th style="padding: 8px; text-align: center;">Size Balo</th>
+                  <th style="padding: 8px; text-align: center;">Giá Bán</th>
+                  <th style="padding: 8px; text-align: center;">Số Lượng</th>
+                  <th style="padding: 8px; text-align: center;">Thành tiền</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${selectedItems
+                  .map(
+                    (record) => `
+                  <tr key=${record.product.productId}>
+                    <td style="padding: 8px; text-align: center;">${record.productDetailId}</td>
+                    <td style="padding: 8px; text-align: center;">${record.product.productName}</td>
+                    <td style="padding: 8px; text-align: center;">${record.color.colorName}</td>
+                    <td style="padding: 8px; text-align: center;">${record.size.sizeName}</td>
+                    <td style="padding: 8px; text-align: center;">${VNDFormaterFunc(record.retailPrice)} / cái</td>
+                    <td style="padding: 8px; text-align: center;">${record.cartAmount} cái</td>
+                    <td style="padding: 8px; text-align: center;">${VNDFormaterFunc(
+                      record.cartAmount * record.retailPrice,
+                    )}</td>
+                  </tr>
+                `,
+                  )
+                  .join('')}
+              </tbody>
+            </table>
+            <div>
+                <div>
+                <h3>* Tổng tiền Sản Phẩm (1): + ${VNDFormaterFunc(totalPrice)}</h3>
+                </div>
+                <div>
+                <h3>
+                * Thuế VAT ${VAT * 100}% (2): + ${VNDFormaterFunc(totalPrice * VAT)}
+                </h3>
+                <h3>
+                * Voucher (${voucher.voucherCode || 'nếu có'}) (giảm ${
+            voucher.discountPercent || 0
+          } %) (3): - ${VNDFormaterFunc(voucherPrice)}
+              </h3>
+              </div>
+                <div>
+        
+                </div>
+                    <div>
+                      <h3>
+                        * Hạng Khách Hàng (${rankingName || 'nếu có'}) (- ${discountPercentByRankingName || ''} %) (4): 
+                      - ${VNDFormaterFunc(totalPrice * (discountPercentByRankingName / 100))}</h3>
+                    </div>
+                <div >
+                 <h2>Tổng Tiền (1 - 2 + 3) = 
+                  ${VNDFormaterFunc(
+                    totalPrice + totalPrice * VAT - voucherPrice - totalPrice * (discountPercentByRankingName / 100),
+                  )}
+              </h2>
+                </div>
+          </div>
+            </body>
+          </html>
+        `;
+
+          const mail = {
+            email: customer.users.email,
+            subject: 'Cảm ơn đã mua hàng',
+            content: emailContent,
+          };
+          const mailResponse = MaillingAPI.notificationHtml(mail);
+        }
         notification.success({
           message: 'Thành Công',
           description: `Đã hoàn thành đơn hàng`,
           duration: 2,
         });
-        console.log(voucher);
+
         let addBill = {
           staff: {
             staffId: staff.staffId,
@@ -450,11 +550,7 @@ const SalesCounterForm = () => {
           const updatePoint = await customerAPI.updatePoint(customerId, totalPrice);
           console.log(updatePoint.data);
         }
-        if (voucher) {
-          console.log('====================================');
-          console.log(voucher);
-          console.log('====================================');
-        }
+
         var isErr = false;
         await Promise.all(
           selectedItems.map(async (o) => {
@@ -492,6 +588,7 @@ const SalesCounterForm = () => {
           });
         }
         handleResetScreen();
+        console.log(customer);
       }
 
       setBillInfo(values);
@@ -664,6 +761,7 @@ const SalesCounterForm = () => {
             messageApi.destroy();
           } else {
             const useradd = {
+              customerCode: generateCustomCode('KH', 6),
               customerStatus: 1,
               consumePoints: 0,
               rankingPoints: 0,
@@ -680,9 +778,8 @@ const SalesCounterForm = () => {
               const response = await customerAPI.add(useradd);
               const mail = {
                 email: values.email,
-                subject: 'Đăng kí tại khoản Thành Công',
-                content: `Chúc mừng ${values.fullName} đã đăng kí thành công trở thành Khách hàng Thân Thiết của BagsGirl, Bạn có thể truy cậy Website: http://localhost:3000 của chúng tôi theo dõi cũng như nhận vô vàn khuyến mãi hấp dẫn nhất,
-                 Bạn có thể đăng nhập tài khoản bằng Email: ${values.email} - Password: ${password}. Cảm ơn quý khách!!! `,
+                subject: 'Đăng kí tạo khoản Thành Công',
+                content: `Chúc mừng ${values.fullName} đã đăng kí thành công trở thành Khách hàng Thân Thiết của BagsGirl, Bạn có thể truy cậy Website: http://localhost:3000 của chúng tôi theo dõi cũng như nhận vô vàn khuyến mãi hấp dẫn nhất, Bạn có thể đăng nhập tài khoản bằng Email: ${values.email} - Password: ${password}. Cảm ơn quý khách!!! `,
               };
               const mailResponse = MaillingAPI.notificationCreateCustomer(mail);
 
@@ -825,6 +922,7 @@ const SalesCounterForm = () => {
       setTotalAmount(0);
       setSelectedItems([]);
       form.resetFields();
+      setCustomer(null);
       setProductCode(generateCustomCode('HD', 9));
       messageApi.open({
         type: 'success',
@@ -1366,7 +1464,7 @@ const SalesCounterForm = () => {
                               <Option key={option.productDetailId} value={option.productDetailId}>
                                 {option.product.productName +
                                   ' - ' +
-                                  option.retailPrice +
+                                  VNDFormaterFunc(option.retailPrice) +
                                   ' - ' +
                                   option.size.sizeName +
                                   ' - ' +
@@ -1434,6 +1532,7 @@ const SalesCounterForm = () => {
                       record.product.productName &&
                       record.productDetailId
                     }
+                    rowSelection={rowSelection}
                     dataSource={selectedItems}
                     columns={columns}
                     style={{ marginTop: '20px' }}

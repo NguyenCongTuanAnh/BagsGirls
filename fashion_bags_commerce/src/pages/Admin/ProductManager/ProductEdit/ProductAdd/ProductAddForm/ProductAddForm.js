@@ -188,10 +188,7 @@ function ProductAddForm() {
           item.brandId ===
         keyProduct,
     );
-    console.log('====================================');
-    console.log(indexBaloList);
-    console.log(indexBaloListPreview);
-    console.log('====================================');
+
     if (indexBaloList !== -1 || indexBaloListPreview !== -1) {
       messageApi.open({
         type: 'error',

@@ -34,4 +34,21 @@ public class EmailSendServiceImpl implements IMailSendService {
         return true;
     }
 
+    @Override
+    public Boolean notificationTest(Mail mail) {
+        try {
+            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true,"UTF-8");
+
+            mimeMessageHelper.setFrom(fromEmail);
+            mimeMessageHelper.setTo(mail.getEmail());
+
+            mimeMessageHelper.setSubject(mail.getSubject());
+            mimeMessageHelper.setText(mail.getContent(),true);
+            javaMailSender.send(mimeMessage);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
+        return true;
+    }
 }

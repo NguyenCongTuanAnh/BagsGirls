@@ -66,6 +66,12 @@ function ProductDetailsPreviewTable(props) {
       sorter: (a, b) => a.compartmentName.localeCompare(b.compartmentName),
     },
     {
+      title: 'Kiểu Khóa',
+      dataIndex: 'buckleTypeName',
+      width: 100,
+      sorter: (a, b) => a.buckleTypeName.localeCompare(b.buckleTypeName),
+    },
+    {
       title: 'NSX',
       dataIndex: 'producerName',
       width: 100,
@@ -75,7 +81,7 @@ function ProductDetailsPreviewTable(props) {
     {
       title: 'Mô Tả',
       dataIndex: 'productDetailDescribe',
-      width: 500,
+      width: 300,
       sorter: (a, b) => a.productDetailDescribe.localeCompare(b.productDetailDescribe),
     },
     {
@@ -88,32 +94,44 @@ function ProductDetailsPreviewTable(props) {
       title: 'Giá Nhập',
       dataIndex: 'importPrice',
       fixed: 'right',
-      width: 100,
+      width: 120,
       sorter: (a, b) => a.importPrice - b.importPrice,
       render: (text, record) => (
-        <InputNumber value={text} onChange={(value) => handleEditChange(value, record.productCode, 'importPrice')} />
+        <InputNumber
+          value={text}
+          onChange={(value) => handleEditChange(value, record.productCode, 'importPrice')}
+          formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
+        />
       ),
     },
     {
       title: 'Giá Bán',
       dataIndex: 'retailPrice',
       fixed: 'right',
-      width: 100,
+      width: 120,
       sorter: (a, b) => a.retailPrice - b.retailPrice,
       render: (text, record) => (
-        <InputNumber value={text} onChange={(value) => handleEditChange(value, record.productCode, 'retailPrice')} />
+        <InputNumber
+          value={text}
+          onChange={(value) => handleEditChange(value, record.productCode, 'retailPrice')}
+          formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
+        />
       ),
     },
     {
       title: 'Số Lượng',
       dataIndex: 'baloDetailAmount',
       fixed: 'right',
-      width: 100,
+      width: 120,
       sorter: (a, b) => a.baloDetailAmount - b.baloDetailAmount,
       render: (text, record) => (
         <InputNumber
           value={text}
           onChange={(value) => handleEditChange(value, record.productCode, 'baloDetailAmount')}
+          formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
         />
       ),
     },
@@ -122,6 +140,7 @@ function ProductDetailsPreviewTable(props) {
       key: 'action',
       width: 100,
       fixed: 'right',
+      render: (text, record) => <Button onClick={() => props.handleDelete(record)}>Xóa</Button>,
     },
   ];
 
@@ -129,15 +148,14 @@ function ProductDetailsPreviewTable(props) {
     setBaloList(props.baloList);
     setBaloListPreview(props.baloListPreview);
   }, [props.baloList, props.baloListPreview]);
+
   const handleEditChange = (value, key, field) => {
     if (value <= 0) {
       message.error('Giá trị không hợp lệ ! (giá trị sẽ không thay đổi)');
     } else {
       const newData = [...baloListPreview];
       const target = newData.find((item) => item.productCode === key);
-      // console.log(key);
-      // console.log(target);
-      // console.log(newData);
+
       if (target) {
         target[field] = value;
         setBaloListPreview(newData);
@@ -173,7 +191,7 @@ function ProductDetailsPreviewTable(props) {
           baloDetailAmount,
         }) => ({
           product: {
-            buckleTyproductIdpeId: productId,
+            productId: props.product.productId,
           },
           buckleType: {
             buckleTypeId: buckleTypeId,
@@ -206,18 +224,15 @@ function ProductDetailsPreviewTable(props) {
       );
 
       try {
-        const id = tempBalo.productId;
-
         var isDoneSuccess = true;
         for (const element of baloDetails) {
           var addElement = {
             ...element,
             product: {
-              productId: id,
+              productId: props.product.productId,
             },
           };
-          console.log('Dây là detail add');
-          console.log(addElement);
+
           const response2 = await baloDetailsAPI.add(addElement);
           if (response2.status !== 200) {
             isDoneSuccess = false;
@@ -236,7 +251,7 @@ function ProductDetailsPreviewTable(props) {
         console.log(error);
         notification.error({
           message: 'Lỗi',
-          description: 'Vui lòng xác nhận',
+          description: 'Đã có lỗi',
           duration: 2,
         });
       }
@@ -252,7 +267,7 @@ function ProductDetailsPreviewTable(props) {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-    }, 1000);
+    }, 500);
   };
   useEffect(() => {
     start();
@@ -269,7 +284,7 @@ function ProductDetailsPreviewTable(props) {
         >
           <div className={styles.handleButton}>
             <div>
-              <Button type="primary" onClick={start} loading={loading}>
+              <Button type="primary" onClick={start} loading={loading} shape="round" size="large">
                 Reload
               </Button>
             </div>
@@ -277,13 +292,13 @@ function ProductDetailsPreviewTable(props) {
               <Popconfirm
                 getPopupContainer={(triggerNode) => triggerNode.parentNode}
                 title="Xác Nhận"
-                description="Bạn Có chắc chắn muốn Thêm?"
+                description="Bạn Có chắc chắn muốn lưu?"
                 okText="Đồng ý"
                 cancelText="Không"
                 onConfirm={save}
                 onCancel={start}
               >
-                <Button type="primary" loading={loading}>
+                <Button type="primary" loading={loading} shape="round" size="large">
                   Lưu
                 </Button>
               </Popconfirm>
