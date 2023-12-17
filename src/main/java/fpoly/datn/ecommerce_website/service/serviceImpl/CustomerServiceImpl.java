@@ -182,9 +182,10 @@ if(customers.getConsumePoints() > 0){
     public CustomerDTO updatePointByTotalPrice(String customerId, Double totalPrice) {
         Customers customers = this.customerRepository.findById(customerId).get();
 
-        int addPoint = (int) (totalPrice * Constants.PERCENT_TO_RECEIVE);
-
-       customers.setRankingPoints(addPoint + customers.getRankingPoints());
+        int addPoint = (int) (totalPrice / 10000);
+        System.out.println("addPoint");
+        System.out.println(addPoint);
+       customers.setRankingPoints( (addPoint + customers.getRankingPoints()));
        customers.setConsumePoints(addPoint + customers.getConsumePoints());
 
         if (customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHKC) {
