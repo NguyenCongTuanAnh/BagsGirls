@@ -48,7 +48,7 @@ function SalesCounter() {
         </Sider>
         <Layout style={layoutContent}>
           <Header style={headerStyle}>
-            <HeaderContent titlePage="Trang Dashboard" />
+            <HeaderContent titlePage="Bán hàng tại quầy" />
           </Header>
           <Content style={contentStyle}>
             <SalesCounterForm />

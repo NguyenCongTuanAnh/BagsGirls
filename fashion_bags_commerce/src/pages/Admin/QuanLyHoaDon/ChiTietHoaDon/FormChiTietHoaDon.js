@@ -49,13 +49,13 @@ function FormChiTietHoaDon(props) {
         }, 0);
         setTotalQuantity(total);
         setVisible(true);
-        setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
+        setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice + props.bills.shipPrice);
     };
 
     useEffect(() => {
         setReload(false);
         getAllByBillId();
-        setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
+        setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice + props.bills.shipPrice);
     }, [visible, reload, totalQuantity]);
 
     const calculateTotal = () => {
@@ -603,18 +603,23 @@ function FormChiTietHoaDon(props) {
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Giá trị hàng hóa: </span>
-                                                    <span className={styles.labelName} style={{ marginTop: '10px' }}>{vndFormaterFunc(calculateTotal())}</span>
+                                                    <span className={styles.labelName} >{vndFormaterFunc(calculateTotal())}</span>
                                                 </li>
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Giảm giá: </span>
-                                                    <span className={styles.labelName} style={{ marginTop: '10px' }}>{vndFormaterFunc(props.bills.billReducedPrice)}</span>
+                                                    <span className={styles.labelName} >{vndFormaterFunc(props.bills.billReducedPrice)}</span>
+                                                </li>{' '}
+                                                <hr></hr>
+                                                <li className={styles.productDetailItem}>
+                                                    <span className={styles.label}>Tiền ship: </span>
+                                                    <span className={styles.labelName} >{vndFormaterFunc(props.bills.shipPrice)}</span>
                                                 </li>{' '}
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Thành tiền: </span>
                                                     <span className={styles.labelName} style={{ color: 'red', fontWeight: 'bold', fontSize: '26px' }}>
-                                                        {vndFormaterFunc(calculateTotal() - props.bills.billReducedPrice)}
+                                                        {vndFormaterFunc(calculateTotal() - props.bills.billReducedPrice + props.bills.shipPrice)}
                                                     </span>
                                                 </li>{' '}
                                             </ul>

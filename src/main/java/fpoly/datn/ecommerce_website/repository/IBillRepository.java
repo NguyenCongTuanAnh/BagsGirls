@@ -2,6 +2,7 @@ package fpoly.datn.ecommerce_website.repository;
 
 import fpoly.datn.ecommerce_website.dto.BillsDTO;
 import fpoly.datn.ecommerce_website.dto.BillsQDTO;
+import fpoly.datn.ecommerce_website.dto.TopCustomersDTO;
 import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.infrastructure.constant.Ranking;
@@ -21,126 +22,219 @@ import java.util.List;
 @Repository
 public interface IBillRepository extends JpaRepository<Bills, String> {
 
-//    @Query(value = "SELECT b FROM Bills b WHERE " +
-//            " (b.billCode LIKE %:search% " +
-//            " OR b.orderPhone LIKE %:search% " +
-//            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
-//            " OR b.receiverName LIKE %:search% " +
-//            " OR :search IS NULL ) " +
-//            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-//            " AND b.staff IS NOT NULL " +
-//            " AND b.staff.users.fullName LIKE %:filterStaffName% "
-//            )
-//    Page<Bills> findAllBillOffNotSearch(
-//            @Param("startDate") Date startDate,
-//            @Param("endDate") Date endDate,
-//            @Param("search") String search,
-//            @Param("filterStaffName") String filterStaffName,
-//            Pageable pageable);
+    // getAll bill  với tất cả đơn hàng
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) "
+    )
+    Page<Bills> findAllBills(
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
 
-//    @Query(value = "SELECT b FROM Bills b WHERE" +
-//            " ( :status IS NULL OR b.billStatus = :status ) " +
-//            " AND (b.billCode LIKE %:search% " +
-//            " OR b.orderPhone LIKE %:search% " +
-//            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
-//            " OR b.receiverName LIKE %:search% " +
-//            " OR %:search% IS NULL ) " +
-//            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-//            " AND b.staff IS NOT NULL " +
-//            " AND b.staff.users.fullName LIKE %:filterStaffName% "
-//            )
-//    Page<Bills> findAllBillOffStatusNotSearch(
-//            @Param("startDate") Date startDate,
-//            @Param("endDate") Date endDate,
-//            @Param("status") Integer status,
-//            @Param("search") String search,
-//            @Param("filterStaffName") String filterStaffName,
-//            Pageable pageable);
-//            "  (b.customer IS NULL OR b.customer IS NOT NULL) " +
-//            " AND (b.staff IS NULL OR b.staff IS NOT NULL) " +
-//            " AND (b.billCode LIKE %:search% " +
-//            " OR b.orderPhone LIKE %:search% " +
-//            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
-//            " OR b.receiverName LIKE %:search% " +
-//            " OR (b.customer IS NOT NULL AND b.customer.users.fullName LIKE %:search%) " +
-//            " OR (b.customer IS NOT NULL AND b.customer.users.phoneNumber LIKE %:search%) " +
+    // getAll bill với tất cả đơn hàng của customerId
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) "
+
+    )
+    Page<Bills> findAllBillsCustomerId(
+            @Param("customerId") String customerId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // getAll bill với khách hàng đã đăng nhập
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) "
+
+    )
+    Page<Bills> findAllBillsCustomerRanking(
+            @Param("customerRanking") Ranking customerRanking,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // getAll bill với khách hàng đã đăng nhập
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) "
+    )
+    Page<Bills> findAllBillsCustomerRankingAndCustomerId(
+            @Param("customerId") String customerId,
+            @Param("customerRanking") Ranking customerRanking,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // getAll bill với hạng khách hàng lẻ
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND b.customer IS NULL "
+    )
+    Page<Bills> findAllBillsKhachHangLe(
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // getAll bill khi lọc cả nhân viên
 
     // Tất cả hóa đơn
-    @Query(value = "SELECT b FROM Bills b " +
-            " WHERE ( :status IS NULL OR b.billStatus = :status ) " +
-            " AND ( b.billCreateDate BETWEEN :startDate AND :endDate ) " +
-            " AND ( :search IS NULL OR b.billCode like %:search% " +
+    // getAll bill  với tất cả đơn hàng
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
             " OR b.orderPhone LIKE %:search% " +
             " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
-            " OR b.receiverName LIKE %:search% ) "
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) "
     )
-    Page<Bills> findAllBillsOffline(
-            @Param("search") String search,
-            @Param("status") Integer status,
+    Page<Bills> findAllBillsOfStaff(
+            @Param("staffId") String staffId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
             Pageable pageable);
 
-    // Tất cả hóa đơn với trường hợp có nhân viên
-    @Query(value = "SELECT b FROM Bills b " +
-            " WHERE ( :status IS NULL OR b.billStatus = :status ) " +
-            " AND ( b.billCreateDate BETWEEN :startDate AND :endDate ) " +
-            " AND ( :search IS NULL OR b.billCode like %:search% " +
+    // getAll bill với tất cả đơn hàng của customerId
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
             " OR b.orderPhone LIKE %:search% " +
-            " OR b.staff.staffCode LIKE %:search% " +
             " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
-            " OR b.receiverName LIKE %:search% ) " +
-            " AND ( :staffCode IS NULL OR b.staff.staffCode like %:staffCode% ) "
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) "
+
     )
-    Page<Bills> findAllBillsOfflineOfStaff(
-            @Param("search") String search,
-            @Param("status") Integer status,
+    Page<Bills> findAllBillsCustomerIdOfStaff(
+            @Param("staffId") String staffId,
+            @Param("customerId") String customerId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
-            @Param("staffCode") String staffCode,
+            @Param("status") Integer status,
+            @Param("search") String search,
             Pageable pageable);
 
-//     Tất cả hóa đơn với trường hợp có nhân viên và có khách hàng
-    @Query(value = "SELECT b FROM Bills b " +
-            " WHERE ( :status IS NULL OR b.billStatus = :status ) " +
-            " AND ( b.billCreateDate BETWEEN :startDate AND :endDate ) " +
-            " AND ( :search IS NULL OR b.billCode like %:search% " +
+    // getAll bill với khách hàng đã đăng nhập
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
             " OR b.orderPhone LIKE %:search% " +
-            " OR b.customer.customerCode LIKE %:search% " +
-            " OR b.customer.users.phoneNumber LIKE %:search% " +
-            " OR b.customer.users.email LIKE %:search% " +
-            " OR b.staff.staffCode LIKE %:search% " +
             " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
-            " OR b.receiverName LIKE %:search% ) " +
-            " AND ( :staffCode IS NULL OR b.staff.staffCode like %:staffCode% ) " +
-            " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) "
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) "
+
     )
-    Page<Bills> findAllBillsOfflineOfStaffOfCustomer(
-            @Param("search") String search,
-            @Param("status") Integer status,
-            @Param("startDate") Date startDate,
-            @Param("endDate") Date endDate,
-            @Param("staffCode") String staffCode,
+    Page<Bills> findAllBillsCustomerRankingOfStaff(
+            @Param("staffId") String staffId,
             @Param("customerRanking") Ranking customerRanking,
-            Pageable pageable);
-
-    //     Tất cả hóa đơn với trường hợp có khách hàng nhưng không có nhân viên
-    @Query(value = "SELECT b FROM Bills b " +
-            " WHERE ( :status IS NULL OR b.billStatus = :status ) " +
-            " AND ( b.billCreateDate BETWEEN :startDate AND :endDate ) " +
-            " AND ( :search IS NULL OR b.billCode like %:search% " +
-            " OR b.customer.customerCode LIKE %:search% " +
-            " OR b.customer.users.phoneNumber LIKE %:search% " +
-            " OR b.customer.users.email LIKE %:search% " +
-            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
-            " OR b.receiverName LIKE %:search% ) "
-    )
-    Page<Bills> findAllBillsOfflineOfCustomer(
-            @Param("search") String search,
-            @Param("status") Integer status,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
             Pageable pageable);
+
+    // getAll bill với khách hàng đã đăng nhập
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) "
+    )
+    Page<Bills> findAllBillsCustomerRankingAndCustomerIdOfStaff(
+            @Param("staffId") String staffId,
+            @Param("customerId") String customerId,
+            @Param("customerRanking") Ranking customerRanking,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // getAll bill với hạng khách hàng lẻ
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND b.customer IS NULL " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) "
+    )
+    Page<Bills> findAllBillsKhachHangLeOfStaff(
+            @Param("staffId") String staffId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+
+
+
+
+    ///////////////////////////////////////////////////// Hóa đơn online
 
 
     // getAll bill online với tất cả đơn hàng
@@ -170,11 +264,11 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " or :search IS NULL ) " +
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-            " AND ( :customerPhoneNumber IS NULL OR b.customer.users.phoneNumber = :customerPhoneNumber ) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
             " AND b.staff IS NULL "
     )
     Page<Bills> findAllBillsOnlineCustomerId(
-            @Param("customerPhoneNumber") String customerPhoneNumber,
+            @Param("customerId") String customerId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
             @Param("status") Integer status,
@@ -211,11 +305,11 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
-            " AND ( :customerPhoneNumber IS NULL OR b.customer.users.phoneNumber = :customerPhoneNumber ) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
             " AND b.staff IS NULL "
     )
     Page<Bills> findAllBillsOnlineCustomerRankingAndCustomerId(
-            @Param("customerPhoneNumber") String customerPhoneNumber,
+            @Param("customerId") String customerId,
             @Param("customerRanking") Ranking customerRanking,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -243,47 +337,257 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             Pageable pageable);
 
 
-    List<Bills> findByBillCreateDateBetween(Date startDate, Date endDate);
+    ////////////////////////////////////////////////////////////////////// Get bill offline
+
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND b.staff IS NOT NULL "
+    )
+    Page<Bills> findAllBillsOffline(
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // getAll bill với tất cả đơn hàng của customerId
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
+            " AND b.staff IS NOT NULL "
+
+    )
+    Page<Bills> findAllBillsCustomerIdOffline(
+            @Param("customerId") String customerId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // getAll bill với khách hàng đã đăng nhập
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
+            " AND b.staff IS NOT NULL "
+
+    )
+    Page<Bills> findAllBillsCustomerRankingOffline(
+            @Param("customerRanking") Ranking customerRanking,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // getAll bill với khách hàng đã đăng nhập
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
+            " AND b.staff IS NOT NULL "
+    )
+    Page<Bills> findAllBillsCustomerRankingAndCustomerIdOffline(
+            @Param("customerId") String customerId,
+            @Param("customerRanking") Ranking customerRanking,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // getAll bill với hạng khách hàng lẻ
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND b.customer IS NULL " +
+            " AND b.staff IS NOT NULL "
+    )
+    Page<Bills> findAllBillsKhachHangLeOffline(
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // Tất cả hóa đơn
+    // getAll bill  với tất cả đơn hàng
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) " +
+            " AND b.staff IS NOT NULL "
+    )
+    Page<Bills> findAllBillsOfStaffOffline(
+            @Param("staffId") String staffId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // getAll bill với tất cả đơn hàng của customerId
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) " +
+            " AND b.staff IS NOT NULL "
+
+    )
+    Page<Bills> findAllBillsCustomerIdOfStaffOffline(
+            @Param("staffId") String staffId,
+            @Param("customerId") String customerId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // getAll bill với khách hàng đã đăng nhập
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) " +
+            " AND b.staff IS NOT NULL "
+
+    )
+    Page<Bills> findAllBillsCustomerRankingOfStaffOffline(
+            @Param("staffId") String staffId,
+            @Param("customerRanking") Ranking customerRanking,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // getAll bill với khách hàng đã đăng nhập
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) " +
+            " AND b.staff IS NOT NULL "
+    )
+    Page<Bills> findAllBillsCustomerRankingAndCustomerIdOfStaffOffline(
+            @Param("staffId") String staffId,
+            @Param("customerId") String customerId,
+            @Param("customerRanking") Ranking customerRanking,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // getAll bill với hạng khách hàng lẻ
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            " ( b.billCode LIKE %:search% " +
+            " OR b.orderPhone LIKE %:search% " +
+            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
+            " OR b.receiverName LIKE %:search% " +
+            " or :search IS NULL ) " +
+            " AND ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND b.customer IS NULL " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) " +
+            " AND b.staff IS NOT NULL "
+    )
+    Page<Bills> findAllBillsKhachHangLeOfStaffOffline(
+            @Param("staffId") String staffId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+
+
 
     @Query("SELECT COALESCE(SUM(b.billTotalPrice), 0) FROM Bills b WHERE CAST(b.billCreateDate AS date) = CAST(:date AS date)")
     BigDecimal calculateTotalSalesForDate(@Param("date") LocalDate date);
 
 
-//    @Query(value = " SELECT b FROM Bills b  WHERE b.billStatus = :status " +
-//            " AND ( b.billCode LIKE %:search% " +
-//            " OR b.orderPhone LIKE %:search% " +
-//            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
-//            " OR b.receiverName LIKE %:search% " +
-//            " OR b.customer IS NULL " +
-//            " OR (b.customer IS NOT NULL AND b.customer.users.fullName LIKE %:search%) " +
-//            " OR (b.customer IS NOT NULL AND b.customer.users.phoneNumber LIKE %:search%) " +
-//            " OR :search IS NULL ) " +
-//            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-//            " AND b.staff IS NOT NULL " +
-//            " AND b.staff.users.fullName LIKE %:filterStaffName% "
-//             )
-//    Page<Bills> findAllBillsOfflineStatus(
-//            @Param("startDate") Date startDate,
-//            @Param("endDate") Date endDate,
-//            @Param("status") Integer status,
-//            @Param("search") String search,
-//            @Param("filterStaffName") String filterStaffName,
-//            Pageable pageable);
+
+    ////////////////////////////////// Thống kê
+
+    List<Bills> findByBillCreateDateBetween(Date startDate, Date endDate);
+
+
+    @Query("SELECT SUM(b.billPriceAfterVoucher) FROM Bills b WHERE " +
+            "MONTH(b.billCreateDate) = MONTH(CURRENT_DATE) AND YEAR(b.billCreateDate) = YEAR(CURRENT_DATE) AND " +
+            "b.billCreateDate <= CURRENT_DATE")
+    BigDecimal calculateTotalPriceThisMonth();
+
+    @Query("SELECT SUM(b.billPriceAfterVoucher) FROM Bills b WHERE " +
+            "MONTH(b.billCreateDate) = MONTH(CURRENT_DATE) - 1 AND YEAR(b.billCreateDate) = YEAR(CURRENT_DATE) AND " +
+            "b.billCreateDate <= CURRENT_DATE")
+    BigDecimal calculateTotalPriceLastMonth();
+
+    @Query(" SELECT FORMAT(b.billCreateDate, 'yyyy-MM-dd') AS formatted_date, " +
+            " SUM(b.billPriceAfterVoucher) " +
+            " FROM Bills b WHERE MONTH(b.billCreateDate) = :month " +
+            " AND YEAR(b.billCreateDate) = :year " +
+            " GROUP BY FORMAT(b.billCreateDate, 'yyyy-MM-dd') " )
+    List<Object[]> findTotalPricesByDay(@Param("month") String month, @Param("year") String year);
+
+    @Query("SELECT NEW fpoly.datn.ecommerce_website.dto.TopCustomersDTO(b.customer.customerId, b.customer.users.fullName, b.customer.users.phoneNumber, SUM(b.billPriceAfterVoucher)) " +
+            "FROM Bills b " +
+            "GROUP BY b.customer.customerId, b.customer.users.fullName, b.customer.users.phoneNumber " +
+            "ORDER BY SUM(b.billPriceAfterVoucher) DESC")
+    List<TopCustomersDTO> findTopCustomersByTotalPrice(Pageable pageable);
 
 
 
-//    @Query(value = "SELECT b FROM Bills b WHERE " +
-//            " (b.billCode LIKE %:search% " +
-//            " OR b.orderPhone LIKE %:search% " +
-//            " OR CAST(b.billPriceAfterVoucher AS string) like %:search% " +
-//            " OR b.receiverName LIKE %:search% " +
-//            " OR :search IS NULL ) " +
-//            " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-//            " AND b.staff IS NULL "
-//             )
-//    Page<Bills> findAllBillsBySearch(
-//            @Param("startDate") Date startDate,
-//            @Param("endDate") Date endDate,
-//            @Param("search") String search,
-//            Pageable pageable);
+
 }

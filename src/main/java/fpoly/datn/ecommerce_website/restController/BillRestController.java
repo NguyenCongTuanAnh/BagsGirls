@@ -56,7 +56,7 @@ public class BillRestController {
             @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
             @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr,
             @RequestParam(name = "customerRanking", required = false) String customerRanking,
-            @RequestParam(name = "customerPhoneNumber", defaultValue = "") String customerPhoneNumber,
+            @RequestParam(name = "customerId", defaultValue = "") String customerId,
             @RequestParam(defaultValue = "billCreateDate") List<String> sortList,
             @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder
     ) {
@@ -64,7 +64,7 @@ public class BillRestController {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date startDate = dateFormat.parse(startDateStr);
             Date endDate = dateFormat.parse(endDateStr);
-            return new ResponseEntity<>(this.billService.getAllBillsOnline(customerPhoneNumber, customerRanking,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+            return new ResponseEntity<>(this.billService.getAllBillsOnline(customerId, customerRanking,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
         } catch (ParseException e) {
             e.printStackTrace();
             return new ResponseEntity<>("Lỗi khi chuyển đổi ngày", HttpStatus.BAD_REQUEST);
@@ -73,14 +73,16 @@ public class BillRestController {
 
     @RequestMapping(value = "/bills/bill-offline", method = RequestMethod.GET)
     public ResponseEntity<?> getAllBillsOffline(
-            @RequestParam(name = "page", required = false, defaultValue = "0") Integer pageNum,
-            @RequestParam(name = "size", required = false, defaultValue = "10") Integer pageSize,
+            @RequestParam(name = "page", defaultValue = "0") Integer pageNum,
+            @RequestParam(name = "size", defaultValue = "10") Integer pageSize,
             @RequestParam(name ="status", required = false) Integer status,
-//            @RequestParam(name ="billCode", required = false, defaultValue = "") String billCode,
-            @RequestParam(name ="startDate", required = false, defaultValue = "0001-01-01") String startDateStr,
-            @RequestParam(name ="endDate", required = false, defaultValue = "9999-01-01") String endDateStr,
-            @RequestParam(name ="search", required = false, defaultValue = "") String search,
-            @RequestParam(name ="staffCode", required = false, defaultValue = "") String staffCode,
+            @RequestParam(name ="search", defaultValue = "") String search,
+            @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
+            @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr,
+            @RequestParam(name = "customerRanking", required = false) String customerRanking,
+            @RequestParam(name = "customerId", defaultValue = "") String customerId,
+            @RequestParam(name = "staffId", defaultValue = "") String staffId,
+            @RequestParam(name = "loaiHoaDon", defaultValue = "") String loaiHoaDon,
             @RequestParam(defaultValue = "billCreateDate") List<String> sortList,
             @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder
     ) {
@@ -88,11 +90,13 @@ public class BillRestController {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date startDate = dateFormat.parse(startDateStr);
             Date endDate = dateFormat.parse(endDateStr);
-            if(staffCode.length() != 0){
-                return new ResponseEntity<>(this.billService.getAllBillsOfflineOfStaff( search, status, startDate, endDate, staffCode, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+            if(loaiHoaDon.equalsIgnoreCase("offline")){
+                return new ResponseEntity<>(this.billService.getAllBillsOffline(staffId, customerId, customerRanking,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+            }else if(loaiHoaDon.equalsIgnoreCase("online")){
+                return new ResponseEntity<>(this.billService.getAllBillsOnline(customerId, customerRanking,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+            }else{
+                return new ResponseEntity<>(this.billService.getAllBills(staffId, customerId, customerRanking,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
             }
-            return new ResponseEntity<>(this.billService.getAllBillsOffline( search, status, startDate, endDate, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
-
         } catch (ParseException e) {
             e.printStackTrace();
             return new ResponseEntity<>("Lỗi khi chuyển đổi ngày", HttpStatus.BAD_REQUEST);

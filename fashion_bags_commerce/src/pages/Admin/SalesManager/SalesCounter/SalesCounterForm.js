@@ -71,7 +71,7 @@ const SalesCounterForm = () => {
       setItems([
         ...items,
         {
-          label: 'HĐ' + newActiveKey,
+          label: 'Hóa Đơn ' + newActiveKey,
           children: <Content tabNum={newActiveKey} />,
           key: newActiveKey,
         },
@@ -123,6 +123,8 @@ const SalesCounterForm = () => {
     const [prevCode, setPrevCode] = useState('');
     const [productCode, setProductCode] = useState(generateCustomCode('HD', 9));
     const [voucherCode, setVoucherCode] = useState('');
+    const [consumePoints, setConsumePoints] = useState(0);
+    const [consumePointsReicer, setConsumePointsReceiver] = useState(0);
     const [voucher, setVoucher] = useState('');
     const [rankingName, setRankingName] = useState('');
     const [discountPercentByRankingName, setDiscountPercentByRankingName] = useState();
@@ -202,11 +204,14 @@ const SalesCounterForm = () => {
       console.log('====================================');
       console.log(item);
       console.log('====================================');
+      setConsumePointsReceiver(item.consumePoints);
       form.setFieldsValue({
         fullName: item.users.fullName,
         phoneNumber: item.users.phoneNumber,
         address: item.users.address,
         rankingName: item.customerRanking,
+        email: item.users.email,
+        consumePoints: item.consumePoints,
       });
     };
 
@@ -401,22 +406,17 @@ const SalesCounterForm = () => {
         messageApi.error('Vui lòng Chọn Khách lẻ hoặc Điền KH Thân Thiết!!!');
       } else if (selectedItems.length === 0) {
         messageApi.error('Vui lòng thêm sản phẩm!!!');
+      } else if (
+        totalPrice +
+          totalPrice * VAT -
+          voucherPrice -
+          totalPrice * (discountPercentByRankingName / 100) -
+          consumePoints * 500 <
+        0
+      ) {
+        messageApi.error('Không thể hoàn thành do áp dụng giảm giá quá mức!!!!');
       } else {
         if (customer !== null) {
-          const dataSource = [
-            {
-              key: '1',
-              name: 'John Doe',
-              age: 30,
-              address: '1234 Street, City',
-            },
-            {
-              key: '2',
-              name: 'Jane Smith',
-              age: 25,
-              address: '5678 Street, City',
-            },
-          ];
           const emailContent = `
           <html>
             <head>
@@ -483,10 +483,23 @@ const SalesCounterForm = () => {
                         * Hạng Khách Hàng (${rankingName || 'nếu có'}) (- ${discountPercentByRankingName || ''} %) (4): 
                       - ${VNDFormaterFunc(totalPrice * (discountPercentByRankingName / 100))}</h3>
                     </div>
+                    
+                    <div>
+                              <h3>
+                                Điểm tiêu dùng (${consumePointsReicer || 'nếu có'}) (- ${
+            consumePoints + 'Điểm' || ''
+          } ) (4):
+                                - ${VNDFormaterFunc(consumePoints * 500)}
+                              </h3>
+                            </div>
                 <div >
                  <h2>Tổng Tiền (1 - 2 + 3) = 
                   ${VNDFormaterFunc(
-                    totalPrice + totalPrice * VAT - voucherPrice - totalPrice * (discountPercentByRankingName / 100),
+                    totalPrice +
+                      totalPrice * VAT -
+                      voucherPrice -
+                      totalPrice * (discountPercentByRankingName / 100) -
+                      consumePoints * 500,
                   )}
               </h2>
                 </div>
@@ -526,13 +539,22 @@ const SalesCounterForm = () => {
           billTotalPrice: totalPrice,
           productAmount: handleCacuTotalAmount(),
           billPriceAfterVoucher:
-            totalPrice + totalPrice * VAT - voucherPrice - totalPrice * (discountPercentByRankingName / 100),
+            totalPrice +
+            totalPrice * VAT -
+            voucherPrice -
+            totalPrice * (discountPercentByRankingName / 100) -
+            consumePoints * 500,
           shippingAddress: null,
           billingAddress: null,
           receiverName: customer ? customer.users.fullName : null,
           shipPrice: 0,
           billReducedPrice:
-            totalPrice + totalPrice * VAT - voucherPrice - totalPrice * (discountPercentByRankingName / 100),
+            totalPrice -
+            (totalPrice +
+              totalPrice * VAT -
+              voucherPrice -
+              totalPrice * (discountPercentByRankingName / 100) -
+              consumePoints * 500),
           orderEmail: customer ? customer.users.email : null,
           orderPhone: customer ? customer.users.phoneNumber : null,
           paymentMethod: values.paymentMethod,
@@ -550,7 +572,7 @@ const SalesCounterForm = () => {
         const addedBill = await handleAddBills(addBill);
         if (visible) {
           const updatePoint = await customerAPI.updatePoint(customerId, totalPrice);
-          console.log(updatePoint.data);
+          const updateConsumePoint = await customerAPI.updateConsumePoint(customerId, consumePoints);
         }
 
         var isErr = false;
@@ -871,7 +893,7 @@ const SalesCounterForm = () => {
                 },
               ]}
             >
-              <Input type="tel"></Input>
+              <Input></Input>
             </Form.Item>
             <Form.Item
               label="Email"
@@ -928,6 +950,8 @@ const SalesCounterForm = () => {
       form.resetFields();
       setCustomer(null);
       setProductCode(generateCustomCode('HD', 9));
+      setConsumePoints(0);
+      setConsumePointsReceiver(0);
       messageApi.open({
         type: 'success',
         content: 'Đã làm mới Hóa Đơn!!!',
@@ -954,6 +978,9 @@ const SalesCounterForm = () => {
       setDiscountPercent(0);
       setVoucher('');
       setVoucherPrice(0);
+    };
+    const handleCancelConsumePoints = () => {
+      setConsumePoints(0);
     };
     const handleApplyVoucherCode = async () => {
       if (voucherCode === '') {
@@ -1243,6 +1270,14 @@ const SalesCounterForm = () => {
                               <TextArea readOnly rows={3} placeholder="Địa Chỉ Chi tiết" maxLength={1000} showCount />
                             </Form.Item>
                           </Col>
+                          <Col span={12}>
+                            <Form.Item className={styles.item} label="Email" name="email">
+                              <Input readOnly rows={3} placeholder="Email" />
+                            </Form.Item>
+                            <Form.Item className={styles.item} label="Điểm tiêu dùng" name="consumePoints">
+                              <Input readOnly rows={3} placeholder="Điểm tiêu dùng" />
+                            </Form.Item>
+                          </Col>
                         </Row>
                       </div>
                     )}
@@ -1308,7 +1343,48 @@ const SalesCounterForm = () => {
                       </Col>
                     </Row>
                   </div>
+                  {visible && (
+                    <div>
+                      <Row>
+                        <Col span={12}>
+                          <Form.Item
+                            label="Đổi điểm"
+                            name="consumePointChange"
+                            className={styles.item}
+                            rules={[
+                              {
+                                required: false,
+                                message: 'Điểm không hợp lệ!',
+                                whitespace: true,
+                              },
+                            ]}
+                          >
+                            <Row>
+                              <Col span={18}>
+                                <InputNumber
+                                  style={{ width: '215px' }}
+                                  onChange={(e) => {
+                                    if (totalPrice === 0) {
+                                      messageApi.error('Vui lòng Chọn chọn sản phẩm!!!');
+                                      return;
+                                    }
+                                    setConsumePoints(e);
+                                  }}
+                                  enterButton="Search"
+                                  min={0}
+                                  max={consumePointsReicer}
+                                />
+                              </Col>
 
+                              <Col span={6}>
+                                <Button onClick={handleCancelConsumePoints}>Hủy</Button>
+                              </Col>
+                            </Row>
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    </div>
+                  )}
                   <Row>
                     <Col span={24}>
                       <Form.Item
@@ -1372,20 +1448,45 @@ const SalesCounterForm = () => {
                     </Row>
 
                     {visible && (
-                      <Row>
-                        <Col span={18}>
-                          <div className={styles.item}>
-                            <h6>
-                              Hạng Khách Hàng ({rankingName || 'nếu có'}) (- {discountPercentByRankingName || ''} %) (4)
-                            </h6>
-                          </div>
-                        </Col>
-                        <Col span={6}>
-                          <div>
-                            <h6>- {VNDFormaterFunc(totalPrice * (discountPercentByRankingName / 100))}</h6>
-                          </div>
-                        </Col>
-                      </Row>
+                      <div>
+                        <Row>
+                          <Col span={18}>
+                            <div className={styles.item}>
+                              <h6>
+                                Hạng Khách Hàng ({rankingName || 'nếu có'}) (- {discountPercentByRankingName || ''} %)
+                                (4)
+                              </h6>
+                            </div>
+                          </Col>
+                          <Col span={6}>
+                            <div>
+                              <h6>- {VNDFormaterFunc(totalPrice * (discountPercentByRankingName / 100))}</h6>
+                            </div>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Col span={18}>
+                            <div className={styles.item}>
+                              <h6>
+                                Đổi Điểm ({consumePointsReicer || 'nếu có'}) (- {consumePoints + ' Điểm' || ''} ) ( tối
+                                đa:{' '}
+                                {(totalPrice +
+                                  totalPrice * VAT -
+                                  voucherPrice -
+                                  totalPrice * (discountPercentByRankingName / 100) -
+                                  consumePoints * 500) /
+                                  500}{' '}
+                                Points) (4)
+                              </h6>
+                            </div>
+                          </Col>
+                          <Col span={6}>
+                            <div>
+                              <h6>- {VNDFormaterFunc(consumePoints * 500)}</h6>
+                            </div>
+                          </Col>
+                        </Row>
+                      </div>
                     )}
 
                     <Row>
@@ -1402,7 +1503,8 @@ const SalesCounterForm = () => {
                               totalPrice +
                                 totalPrice * VAT -
                                 voucherPrice -
-                                totalPrice * (discountPercentByRankingName / 100),
+                                totalPrice * (discountPercentByRankingName / 100) -
+                                consumePoints * 500,
                             )}
                           </h3>
                         </div>

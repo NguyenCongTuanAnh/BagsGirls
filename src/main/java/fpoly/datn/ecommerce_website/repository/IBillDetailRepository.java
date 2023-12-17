@@ -1,9 +1,9 @@
 package fpoly.datn.ecommerce_website.repository;
 
-import fpoly.datn.ecommerce_website.dto.BillDetailsQDTO;
-import fpoly.datn.ecommerce_website.dto.GetBillDetailsDTO;
+import fpoly.datn.ecommerce_website.dto.TopProductsDTO;
 import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.entity.BillDetails_ChiTiet;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,4 +26,14 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
 //            "  on bd.productDetails.productDetailId = pd.productDetailId" +
 //            " join Products p on pd.product.productId = p.productId where bd.bills.billId = :billID")
 //    List<BillDetails> findAllBillDetailsById(@Param("billID") String billID);
+
+    @Query("SELECT NEW fpoly.datn.ecommerce_website.dto.TopProductsDTO( " +
+            " product.images, product.productCode, product.productName, productDetails.retailPrice, SUM(billDetail.amount)) " +
+            " FROM BillDetails_ChiTiet billDetail " +
+            " JOIN billDetail.productDetails productDetails " +
+            " JOIN productDetails.product product " +
+            " WHERE billDetail.billDetailStatus <> -1 " + // Sử dụng <> thay vì !=
+            " GROUP BY product.productCode, product.productName " +
+            " ORDER BY SUM(billDetail.amount) DESC ")
+    List<TopProductsDTO> findTopProductsByTotalAmount(Pageable pageable);
 }

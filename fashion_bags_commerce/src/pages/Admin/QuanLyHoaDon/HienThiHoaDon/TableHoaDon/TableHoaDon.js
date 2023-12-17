@@ -206,7 +206,7 @@ function TableHoaDon() {
       width: '12%',
       sorter: (a, b) => a.billCreateDate.localeCompare(b.billCreateDate),
       render: (date) => {
-        const formattedDate = dayjs(date).add(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
+        const formattedDate = dayjs(date).format('HH:mm:ss DD-MM-YYYY');
         return <span>{formattedDate}</span>;
       },
     },
@@ -412,22 +412,25 @@ function TableHoaDon() {
   };
 
   const rangePresets = [
-
+    {
+      label: 'Hôm nay',
+      value: [dayjs(), dayjs().add(1, 'd')],
+    },
     {
       label: '7 ngày qua',
-      value: [dayjs().add(-7, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
+      value: [dayjs().add(-7, 'd'), dayjs().add(1, 'd')],
     },
     {
       label: '14 ngày qua',
-      value: [dayjs().add(-14, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
+      value: [dayjs().add(-14, 'd'), dayjs().add(1, 'd')],
     },
     {
       label: '30 ngày qua',
-      value: [dayjs().add(-30, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
+      value: [dayjs().add(-30, 'd'), dayjs().add(1, 'd')],
     },
     {
       label: '90 ngày qua',
-      value: [dayjs().add(-90, 'd').add(7, 'h'), dayjs().add(1, 'd').add(7, 'h')],
+      value: [dayjs().add(-90, 'd'), dayjs().add(1, 'd')],
     },
   ];
 
@@ -491,7 +494,7 @@ function TableHoaDon() {
         {(listCustomer ?? []).map((item, index) => {
           if (filterRank === '' || filterRank === item.customerRanking) {
             return (
-              <Select.Option key={index} value={item.users.phoneNumber}>
+              <Select.Option key={index} value={item.customerId}>
                 {item.customerCode + ' - ' + item.users.phoneNumber + ' - ' + item.users.fullName}
               </Select.Option>
             );

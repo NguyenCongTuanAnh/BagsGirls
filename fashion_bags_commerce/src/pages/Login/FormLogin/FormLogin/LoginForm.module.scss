@@ -4,7 +4,7 @@
   min-height: 100vh;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: black;
   background-image: url(https://i.imgur.com/UCi1xKd.png);
 }
 .title {
@@ -18,19 +18,22 @@
   display: flex;
   flex-direction: column;
 }
-
-@media screen and (min-width: 600px) {
-  .authFormContainer {
-    padding: 5rem;
-    border: 3px solid white;
-    border-radius: 10px;
-    margin: 0.5rem;
-  }
+.titleLabel {
+  color: black;
 }
 
-.label {
-  text-align: left;
-  padding: 0.25rem 0;
+.authFormContainer {
+  width: 500px;
+  padding: 10px;
+  border: 3px solid white;
+  border-radius: 10px;
+  margin: 10px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 10px auto;
 }
 
 .input {
@@ -54,7 +57,7 @@
 
 .linkBtn {
   background: none;
-  color: white;
+  color: black;
   margin: 15px;
   border: none;
   text-decoration: underline;
@@ -63,6 +66,6 @@
   margin: 15px;
   background: none;
   border: none;
-  color: white;
+  color: black;
   text-decoration: underline;
 }

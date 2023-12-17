@@ -1,7 +1,6 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
 import fpoly.datn.ecommerce_website.dto.CustomerDTO;
-import fpoly.datn.ecommerce_website.dto.CustomerDTO1;
 import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Users;
 import fpoly.datn.ecommerce_website.infrastructure.constant.Constants;
@@ -169,12 +168,24 @@ public class CustomerServiceImpl implements ICustomerService {
     }
 
     @Override
+    public Customers updateConsumePoint(String customerId, int updateConsumePoint) {
+        Customers customers = this.customerRepository.findById(customerId).get();
+if(customers.getConsumePoints() > 0){
+    customers.setConsumePoints(customers.getConsumePoints() - updateConsumePoint);
+}
+
+        this.customerRepository.save(customers);
+        return customers;
+    }
+
+    @Override
     public CustomerDTO updatePointByTotalPrice(String customerId, Double totalPrice) {
         Customers customers = this.customerRepository.findById(customerId).get();
 
-        int addPoint = (int) (totalPrice * Constants.PERCENT_TO_RECEIVE);
-
-       customers.setRankingPoints(addPoint + customers.getRankingPoints());
+        int addPoint = (int) (totalPrice / 10000);
+        System.out.println("addPoint");
+        System.out.println(addPoint);
+       customers.setRankingPoints( (addPoint + customers.getRankingPoints()));
        customers.setConsumePoints(addPoint + customers.getConsumePoints());
 
         if (customers.getRankingPoints() >= Constants.POINTS_TO_UP_KHKC) {

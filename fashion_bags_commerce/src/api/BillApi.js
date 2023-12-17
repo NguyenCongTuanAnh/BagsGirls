@@ -21,7 +21,7 @@ const billsAPI = {
         page: pageNum - 1,
         size: pageSize,
         customerRanking: filterRank,
-        customerPhoneNumber: customerPhoneNumber,
+        customerId: customerPhoneNumber,
         sortList: sortList,
         sortOrder: sortOrder,
         sortListPlaceHolder: sortListPlaceHolder
@@ -29,17 +29,20 @@ const billsAPI = {
     });
   },
 
-  getAllBillsOffline(filterStaffName, startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder, sortListPlaceHolder) {
+  getAllBillsOffline(loaiHoaDon, filterStaffCode, startDate, endDate, status, search, pageNum, pageSize, filterRank, customerPhoneNumber, sortList, sortOrder, sortListPlaceHolder) {
     const url = 'api/bills/bill-offline';
     return axiosClient.get(url, {
       params: {
-        filterStaffName: filterStaffName,
+        loaiHoaDon: loaiHoaDon,
+        staffId: filterStaffCode,
         startDate: startDate,
         endDate: endDate,
         search: search,
         status: status,
         page: pageNum - 1,
         size: pageSize,
+        customerRanking: filterRank,
+        customerId: customerPhoneNumber,
         sortList: sortList,
         sortOrder: sortOrder,
         sortListPlaceHolder: sortListPlaceHolder
