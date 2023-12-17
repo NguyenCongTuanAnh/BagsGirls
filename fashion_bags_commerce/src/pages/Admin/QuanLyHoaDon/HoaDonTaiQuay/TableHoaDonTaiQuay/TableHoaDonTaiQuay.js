@@ -54,15 +54,16 @@ function TableHoaDonTaiQuay() {
   const [search, setSearch] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [filterStaffId, setFilterStaffId] = useState('');
+  const [filterStaffCode, setFilterStaffCode] = useState('');
   const [sortList, setSortList] = useState('billCreateDate');
   const [sortOrder, setSortOrder] = useState('DESC');
   const [sortListPlaceHolder, setSortListPlaceHolder] = useState('timeDESC');
   const typingTimeoutRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterCustomerId, setFilterCustomerId] = useState('');
+  const [customerPhoneNumber, setCustomerPhoneNumber] = useState('');
   const [filterRank, setFilterRank] = useState('');
   const [defaultCustomerValue, setDefaultCustomerValue] = useState('');
+  const [loaiHoaDon, setLoaiHoaDon] = useState('');
 
 
 
@@ -556,13 +557,16 @@ function TableHoaDonTaiQuay() {
   const getAllPhanTrangCompartment = async (pageNum, pageSize) => {
     try {
       const response = await billsAPI.getAllBillsOffline(
-        filterStaffId,
+        loaiHoaDon,
+        filterStaffCode,
         startDate,
         endDate,
         status,
         search,
         pageNum,
         pageSize,
+        filterRank,
+        customerPhoneNumber,
         sortList,
         sortOrder,
         sortListPlaceHolder
@@ -590,11 +594,11 @@ function TableHoaDonTaiQuay() {
   const renderCustomerOptions = () => {
     return (
       <>
-        <Select.Option value={''}>Tất cả</Select.Option>
+        <Select.Option value=''>Tất cả</Select.Option>
         {(listCustomer ?? []).map((item, index) => {
           if (filterRank === '' || filterRank === item.customerRanking) {
             return (
-              <Select.Option key={index} value={item.customerId}>
+              <Select.Option key={index} value={item.users.phoneNumber}>
                 {item.customerCode + ' - ' + item.users.phoneNumber + ' - ' + item.users.fullName}
               </Select.Option>
             );
@@ -605,23 +609,25 @@ function TableHoaDonTaiQuay() {
     );
   };
 
+
   useEffect(() => {
     renderCustomerOptions();
   }, [filterRank]);
 
   useEffect(() => {
+
     getAllStaff();
     getAllPhanTrangCompartment(pageNum, pageSize);
     setTimeout(() => {
       setLoading(false);
     }, 500);
 
-  }, [loading, search, status, startDate, endDate, filterStaffId, filterCustomerId, sortList, sortOrder, sortListPlaceHolder]);
+  }, [loading, search, status, startDate, endDate, filterStaffCode, customerPhoneNumber, loaiHoaDon, filterRank, sortList, sortOrder, sortListPlaceHolder]);
 
   // lọc theo khách hàng
   const onChangeKhachHang = (value) => {
     // trả về customerId
-    setFilterCustomerId(value);
+    setCustomerPhoneNumber(value);
     // console.log(`selected ${value}`);
   };
   const onSearchKhachHang = (value) => {
@@ -633,7 +639,7 @@ function TableHoaDonTaiQuay() {
 
   const onChangeNhanVien = (value) => {
     // trả về customerId
-    setFilterStaffId(value);
+    setFilterStaffCode(value);
     // console.log(`selected ${value}`);
   };
   const onSearchNhanVien = (value) => {
@@ -652,13 +658,33 @@ function TableHoaDonTaiQuay() {
             </h2>
           </Row>
           <Row>
-            <Col span={9}>
+            <Col span={7}>
               <div style={{ paddingTop: '10px', fontSize: '18px' }}>
                 <span style={{ fontWeight: 500 }}>Ngày tạo</span>
                 <RangePicker placeholder={['Ngày bắt đầu', 'Ngày kết thúc']} className={styles.filter_inputSearch} style={{ marginLeft: '10px' }} presets={rangePresets} onChange={onRangeChange} />
               </div>
             </Col>
             <Col span={9}>
+              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
+                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
+                  Loại hóa đơn
+                  <Select
+                    placeholder="Lọc theo loại hóa đơn"
+                    style={{ width: '40%', marginLeft: '10px' }}
+                    onChange={(value) => {
+                      setLoaiHoaDon(value);
+                      setFilterStaffCode('');
+                    }}
+                  >
+                    <Select.Option value="">Tất cả</Select.Option>
+                    <Select.Option value="offline">Tại quầy</Select.Option>
+                    <Select.Option value="online">Online</Select.Option>
+
+                  </Select>
+                </span>
+              </div>
+            </Col>
+            <Col span={8}>
               <div style={{ paddingTop: '10px', fontSize: '18px' }}>
                 <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
                   Nhân viên
@@ -669,6 +695,7 @@ function TableHoaDonTaiQuay() {
                     onChange={onChangeNhanVien}
                     onSearch={onSearchNhanVien}
                     filterOption={filterOptionNhanVien}
+                    disabled={(loaiHoaDon === 'online') ? true : false}
                     style={{ marginLeft: '10px', width: '65%' }}
                   >
                     <Select.Option value="">Tất cả</Select.Option>
@@ -681,7 +708,53 @@ function TableHoaDonTaiQuay() {
                 </span>
               </div>
             </Col>
-            <Col span={6}>
+
+          </Row>
+          <Row>
+            <Col span={7}>
+              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
+                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
+                  Hạng khách hàng
+                  <Select
+                    placeholder="Lọc theo hạng khách hàng"
+                    style={{ width: '40%', marginLeft: '10px' }}
+                    onChange={(value) => {
+                      setFilterRank(value);
+                      setCustomerPhoneNumber('');
+                    }}
+                  >
+                    <Select.Option value="">Tất cả</Select.Option>
+                    <Select.Option value="khachHangLe">Khách hàng lẻ</Select.Option>
+                    <Select.Option value="KH_TIEMNANG">Tiềm năng</Select.Option>
+                    <Select.Option value="KH_THANTHIET">Thân thiết</Select.Option>
+                    <Select.Option value="KH_BAC">Bạc</Select.Option>
+                    <Select.Option value="KH_VANG">Vàng</Select.Option>
+                    <Select.Option value="KH_KIMCUONG">Kim cương</Select.Option>
+                  </Select>
+                </span>
+              </div>
+            </Col>
+            <Col span={9}>
+              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
+                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
+                  Khách hàng
+                  <Select
+                    showSearch
+                    placeholder="Tìm và lọc hóa đơn theo khách hàng"
+                    optionFilterProp="children"
+                    disabled={(filterRank === 'khachHangLe') ? true : false}
+                    onChange={onChangeKhachHang}
+                    onSearch={onSearchKhachHang}
+                    filterOption={filterOption}
+                    value={customerPhoneNumber}
+                    style={{ marginLeft: '10px', width: '68%' }}
+                  >
+                    {renderCustomerOptions()}
+                  </Select>
+                </span>
+              </div>
+            </Col>
+            <Col span={7}>
               <div style={{ paddingTop: '10px', fontSize: '18px' }}>
                 <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
                   Sắp xếp
@@ -732,51 +805,6 @@ function TableHoaDonTaiQuay() {
                     <Select.Option key={'4'} value={'timeDESC'}>
                       Thời gian giảm dần
                     </Select.Option>
-                  </Select>
-                </span>
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={9}>
-              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
-                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
-                  Hạng khách hàng
-                  <Select
-                    placeholder="Lọc theo hạng khách hàng"
-                    style={{ width: '40%', marginLeft: '10px' }}
-                    onChange={(value) => {
-                      setFilterRank(value);
-                      setFilterCustomerId('');
-                    }}
-                  >
-                    <Select.Option value="">Tất cả</Select.Option>
-                    <Select.Option value="khachHangLe">Khách hàng lẻ</Select.Option>
-                    <Select.Option value="KH_TIEMNANG">Tiềm năng</Select.Option>
-                    <Select.Option value="KH_THANTHIET">Thân thiết</Select.Option>
-                    <Select.Option value="KH_BAC">Bạc</Select.Option>
-                    <Select.Option value="KH_VANG">Vàng</Select.Option>
-                    <Select.Option value="KH_KIMCUONG">Kim cương</Select.Option>
-                  </Select>
-                </span>
-              </div>
-            </Col>
-            <Col span={9}>
-              <div style={{ paddingTop: '10px', fontSize: '18px' }}>
-                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
-                  Khách hàng
-                  <Select
-                    showSearch
-                    placeholder="Tìm và lọc hóa đơn theo khách hàng"
-                    optionFilterProp="children"
-                    disabled={(filterRank === 'khachHangLe') ? true : false}
-                    onChange={onChangeKhachHang}
-                    onSearch={onSearchKhachHang}
-                    filterOption={filterOption}
-                    value={filterCustomerId}
-                    style={{ marginLeft: '10px', width: '68%' }}
-                  >
-                    {renderCustomerOptions()}
                   </Select>
                 </span>
               </div>
