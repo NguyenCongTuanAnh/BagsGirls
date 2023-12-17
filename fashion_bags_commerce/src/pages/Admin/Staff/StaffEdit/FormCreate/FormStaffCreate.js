@@ -40,7 +40,7 @@ const FormStaffCreate = (props) => {
       });
     }
     if (checkEmail.data === '' && checkSDT.data === '') {
-      let add = { ...values, staffCode: generateCustomCode("NV", 5) };
+      let add = { ...values, staffCode: generateCustomCode("NV", 6) };
       console.log(add);
       try {
         const response = await staffAPI.add(add);

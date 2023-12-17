@@ -56,7 +56,7 @@ public class BillRestController {
             @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
             @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr,
             @RequestParam(name = "customerRanking", required = false) String customerRanking,
-            @RequestParam(name = "customerPhoneNumber", defaultValue = "") String customerPhoneNumber,
+            @RequestParam(name = "customerId", defaultValue = "") String customerId,
             @RequestParam(defaultValue = "billCreateDate") List<String> sortList,
             @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder
     ) {
@@ -64,7 +64,7 @@ public class BillRestController {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date startDate = dateFormat.parse(startDateStr);
             Date endDate = dateFormat.parse(endDateStr);
-            return new ResponseEntity<>(this.billService.getAllBillsOnline(customerPhoneNumber, customerRanking,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+            return new ResponseEntity<>(this.billService.getAllBillsOnline(customerId, customerRanking,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
         } catch (ParseException e) {
             e.printStackTrace();
             return new ResponseEntity<>("Lỗi khi chuyển đổi ngày", HttpStatus.BAD_REQUEST);
@@ -80,8 +80,8 @@ public class BillRestController {
             @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
             @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr,
             @RequestParam(name = "customerRanking", required = false) String customerRanking,
-            @RequestParam(name = "customerPhoneNumber", defaultValue = "") String customerPhoneNumber,
-            @RequestParam(name = "staffCode", defaultValue = "") String staffCode,
+            @RequestParam(name = "customerId", defaultValue = "") String customerId,
+            @RequestParam(name = "staffId", defaultValue = "") String staffId,
             @RequestParam(name = "loaiHoaDon", defaultValue = "") String loaiHoaDon,
             @RequestParam(defaultValue = "billCreateDate") List<String> sortList,
             @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder
@@ -91,11 +91,11 @@ public class BillRestController {
             Date startDate = dateFormat.parse(startDateStr);
             Date endDate = dateFormat.parse(endDateStr);
             if(loaiHoaDon.equalsIgnoreCase("offline")){
-                return new ResponseEntity<>(this.billService.getAllBillsOffline(staffCode, customerPhoneNumber, customerRanking,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+                return new ResponseEntity<>(this.billService.getAllBillsOffline(staffId, customerId, customerRanking,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
             }else if(loaiHoaDon.equalsIgnoreCase("online")){
-                return new ResponseEntity<>(this.billService.getAllBillsOnline(customerPhoneNumber, customerRanking,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+                return new ResponseEntity<>(this.billService.getAllBillsOnline(customerId, customerRanking,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
             }else{
-                return new ResponseEntity<>(this.billService.getAllBills(staffCode, customerPhoneNumber, customerRanking,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+                return new ResponseEntity<>(this.billService.getAllBills(staffId, customerId, customerRanking,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
             }
         } catch (ParseException e) {
             e.printStackTrace();
