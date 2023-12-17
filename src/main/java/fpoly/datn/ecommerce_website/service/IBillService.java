@@ -20,13 +20,13 @@ public interface IBillService {
 
     Page<BillsDTO> getPagination(int pageNum, int pageSize);
 
-    Page<BillsDTO> getAllBillsOnline(String customerPhoneNumber, String customerRanking, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize, List<String> sortList,
+    Page<BillsDTO> getAllBillsOnline(String customerId, String customerRanking, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize, List<String> sortList,
                                      String sortOrder);
 
-    Page<BillsDTO> getAllBills(String staffCode, String customerPhoneNumber, String customerRanking, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize, List<String> sortList,
+    Page<BillsDTO> getAllBills(String staffId, String customerId, String customerRanking, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize, List<String> sortList,
                                       String sortOrder);
 
-    Page<BillsDTO> getAllBillsOffline(String staffCode, String customerPhoneNumber, String customerRanking, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize, List<String> sortList,
+    Page<BillsDTO> getAllBillsOffline(String staffId, String customerId, String customerRanking, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize, List<String> sortList,
                                String sortOrder);
 
 

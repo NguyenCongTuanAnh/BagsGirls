@@ -21,7 +21,7 @@ const billsAPI = {
         page: pageNum - 1,
         size: pageSize,
         customerRanking: filterRank,
-        customerPhoneNumber: customerPhoneNumber,
+        customerId: customerPhoneNumber,
         sortList: sortList,
         sortOrder: sortOrder,
         sortListPlaceHolder: sortListPlaceHolder
@@ -34,7 +34,7 @@ const billsAPI = {
     return axiosClient.get(url, {
       params: {
         loaiHoaDon: loaiHoaDon,
-        filterStaffCode: filterStaffCode,
+        staffId: filterStaffCode,
         startDate: startDate,
         endDate: endDate,
         search: search,
@@ -42,7 +42,7 @@ const billsAPI = {
         page: pageNum - 1,
         size: pageSize,
         customerRanking: filterRank,
-        customerPhoneNumber: customerPhoneNumber,
+        customerId: customerPhoneNumber,
         sortList: sortList,
         sortOrder: sortOrder,
         sortListPlaceHolder: sortListPlaceHolder

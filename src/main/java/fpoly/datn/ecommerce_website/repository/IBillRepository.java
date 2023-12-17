@@ -47,11 +47,11 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " or :search IS NULL ) " +
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-            " AND ( :customerPhoneNumber IS NULL OR b.customer.users.phoneNumber = :customerPhoneNumber ) "
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) "
 
     )
     Page<Bills> findAllBillsCustomerId(
-            @Param("customerPhoneNumber") String customerPhoneNumber,
+            @Param("customerId") String customerId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
             @Param("status") Integer status,
@@ -88,10 +88,10 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
-            " AND ( :customerPhoneNumber IS NULL OR b.customer.users.phoneNumber = :customerPhoneNumber ) "
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) "
     )
     Page<Bills> findAllBillsCustomerRankingAndCustomerId(
-            @Param("customerPhoneNumber") String customerPhoneNumber,
+            @Param("customerId") String customerId,
             @Param("customerRanking") Ranking customerRanking,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -132,10 +132,10 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " or :search IS NULL ) " +
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-            " AND ( :staffCode IS NULL OR b.staff.staffCode = :staffCode ) "
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) "
     )
     Page<Bills> findAllBillsOfStaff(
-            @Param("staffCode") String staffCode,
+            @Param("staffId") String staffId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
             @Param("status") Integer status,
@@ -151,13 +151,13 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " or :search IS NULL ) " +
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-            " AND ( :customerPhoneNumber IS NULL OR b.customer.users.phoneNumber = :customerPhoneNumber ) " +
-            " AND ( :staffCode IS NULL OR b.staff.staffCode = :staffCode ) "
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) "
 
     )
     Page<Bills> findAllBillsCustomerIdOfStaff(
-            @Param("staffCode") String staffCode,
-            @Param("customerPhoneNumber") String customerPhoneNumber,
+            @Param("staffId") String staffId,
+            @Param("customerId") String customerId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
             @Param("status") Integer status,
@@ -174,11 +174,11 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
-            " AND ( :staffCode IS NULL OR b.staff.staffCode = :staffCode ) "
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) "
 
     )
     Page<Bills> findAllBillsCustomerRankingOfStaff(
-            @Param("staffCode") String staffCode,
+            @Param("staffId") String staffId,
             @Param("customerRanking") Ranking customerRanking,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -196,12 +196,12 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
-            " AND ( :customerPhoneNumber IS NULL OR b.customer.users.phoneNumber = :customerPhoneNumber ) " +
-            " AND ( :staffCode IS NULL OR b.staff.staffCode = :staffCode ) "
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) "
     )
     Page<Bills> findAllBillsCustomerRankingAndCustomerIdOfStaff(
-            @Param("staffCode") String staffCode,
-            @Param("customerPhoneNumber") String customerPhoneNumber,
+            @Param("staffId") String staffId,
+            @Param("customerId") String customerId,
             @Param("customerRanking") Ranking customerRanking,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -219,10 +219,10 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND b.customer IS NULL " +
-            " AND ( :staffCode IS NULL OR b.staff.staffCode = :staffCode ) "
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) "
     )
     Page<Bills> findAllBillsKhachHangLeOfStaff(
-            @Param("staffCode") String staffCode,
+            @Param("staffId") String staffId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
             @Param("status") Integer status,
@@ -263,11 +263,11 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " or :search IS NULL ) " +
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-            " AND ( :customerPhoneNumber IS NULL OR b.customer.users.phoneNumber = :customerPhoneNumber ) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
             " AND b.staff IS NULL "
     )
     Page<Bills> findAllBillsOnlineCustomerId(
-            @Param("customerPhoneNumber") String customerPhoneNumber,
+            @Param("customerId") String customerId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
             @Param("status") Integer status,
@@ -304,11 +304,11 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
-            " AND ( :customerPhoneNumber IS NULL OR b.customer.users.phoneNumber = :customerPhoneNumber ) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
             " AND b.staff IS NULL "
     )
     Page<Bills> findAllBillsOnlineCustomerRankingAndCustomerId(
-            @Param("customerPhoneNumber") String customerPhoneNumber,
+            @Param("customerId") String customerId,
             @Param("customerRanking") Ranking customerRanking,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -364,12 +364,12 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " or :search IS NULL ) " +
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-            " AND ( :customerPhoneNumber IS NULL OR b.customer.users.phoneNumber = :customerPhoneNumber ) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
             " AND b.staff IS NOT NULL "
 
     )
     Page<Bills> findAllBillsCustomerIdOffline(
-            @Param("customerPhoneNumber") String customerPhoneNumber,
+            @Param("customerId") String customerId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
             @Param("status") Integer status,
@@ -407,11 +407,11 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
-            " AND ( :customerPhoneNumber IS NULL OR b.customer.users.phoneNumber = :customerPhoneNumber ) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
             " AND b.staff IS NOT NULL "
     )
     Page<Bills> findAllBillsCustomerRankingAndCustomerIdOffline(
-            @Param("customerPhoneNumber") String customerPhoneNumber,
+            @Param("customerId") String customerId,
             @Param("customerRanking") Ranking customerRanking,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -448,11 +448,11 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " or :search IS NULL ) " +
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-            " AND ( :staffCode IS NULL OR b.staff.staffCode = :staffCode ) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) " +
             " AND b.staff IS NOT NULL "
     )
     Page<Bills> findAllBillsOfStaffOffline(
-            @Param("staffCode") String staffCode,
+            @Param("staffId") String staffId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
             @Param("status") Integer status,
@@ -468,14 +468,14 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " or :search IS NULL ) " +
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
-            " AND ( :customerPhoneNumber IS NULL OR b.customer.users.phoneNumber = :customerPhoneNumber ) " +
-            " AND ( :staffCode IS NULL OR b.staff.staffCode = :staffCode ) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) " +
             " AND b.staff IS NOT NULL "
 
     )
     Page<Bills> findAllBillsCustomerIdOfStaffOffline(
-            @Param("staffCode") String staffCode,
-            @Param("customerPhoneNumber") String customerPhoneNumber,
+            @Param("staffId") String staffId,
+            @Param("customerId") String customerId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
             @Param("status") Integer status,
@@ -492,12 +492,12 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
-            " AND ( :staffCode IS NULL OR b.staff.staffCode = :staffCode ) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) " +
             " AND b.staff IS NOT NULL "
 
     )
     Page<Bills> findAllBillsCustomerRankingOfStaffOffline(
-            @Param("staffCode") String staffCode,
+            @Param("staffId") String staffId,
             @Param("customerRanking") Ranking customerRanking,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -515,13 +515,13 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND ( :customerRanking IS NULL OR b.customer.customerRanking = :customerRanking ) " +
-            " AND ( :customerPhoneNumber IS NULL OR b.customer.users.phoneNumber = :customerPhoneNumber ) " +
-            " AND ( :staffCode IS NULL OR b.staff.staffCode = :staffCode ) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) " +
             " AND b.staff IS NOT NULL "
     )
     Page<Bills> findAllBillsCustomerRankingAndCustomerIdOfStaffOffline(
-            @Param("staffCode") String staffCode,
-            @Param("customerPhoneNumber") String customerPhoneNumber,
+            @Param("staffId") String staffId,
+            @Param("customerId") String customerId,
             @Param("customerRanking") Ranking customerRanking,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -539,11 +539,11 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND b.customer IS NULL " +
-            " AND ( :staffCode IS NULL OR b.staff.staffCode = :staffCode ) " +
+            " AND ( :staffId IS NULL OR b.staff.staffId = :staffId ) " +
             " AND b.staff IS NOT NULL "
     )
     Page<Bills> findAllBillsKhachHangLeOfStaffOffline(
-            @Param("staffCode") String staffCode,
+            @Param("staffId") String staffId,
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
             @Param("status") Integer status,

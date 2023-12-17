@@ -43,7 +43,7 @@ const FormCustomerCreate = (props) => {
     if (checkEmail.data === '' && checkSDT.data === '') {
       let add = {
         ...values,
-        customerCode: generateCustomCode("KH", 7),
+        customerCode: generateCustomCode("KH", 6),
         rankingPoints: 0,
         consumePoints: 0,
         users: {
