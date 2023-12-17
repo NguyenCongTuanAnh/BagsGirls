@@ -2,6 +2,7 @@ package fpoly.datn.ecommerce_website.repository;
 
 import fpoly.datn.ecommerce_website.dto.BillsDTO;
 import fpoly.datn.ecommerce_website.dto.BillsQDTO;
+import fpoly.datn.ecommerce_website.dto.TopCustomersDTO;
 import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.infrastructure.constant.Ranking;
@@ -552,10 +553,41 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
 
 
 
-    List<Bills> findByBillCreateDateBetween(Date startDate, Date endDate);
 
     @Query("SELECT COALESCE(SUM(b.billTotalPrice), 0) FROM Bills b WHERE CAST(b.billCreateDate AS date) = CAST(:date AS date)")
     BigDecimal calculateTotalSalesForDate(@Param("date") LocalDate date);
+
+
+
+    ////////////////////////////////// Thống kê
+
+    List<Bills> findByBillCreateDateBetween(Date startDate, Date endDate);
+
+
+    @Query("SELECT SUM(b.billPriceAfterVoucher) FROM Bills b WHERE " +
+            "MONTH(b.billCreateDate) = MONTH(CURRENT_DATE) AND YEAR(b.billCreateDate) = YEAR(CURRENT_DATE) AND " +
+            "b.billCreateDate <= CURRENT_DATE")
+    BigDecimal calculateTotalPriceThisMonth();
+
+    @Query("SELECT SUM(b.billPriceAfterVoucher) FROM Bills b WHERE " +
+            "MONTH(b.billCreateDate) = MONTH(CURRENT_DATE) - 1 AND YEAR(b.billCreateDate) = YEAR(CURRENT_DATE) AND " +
+            "b.billCreateDate <= CURRENT_DATE")
+    BigDecimal calculateTotalPriceLastMonth();
+
+    @Query(" SELECT FORMAT(b.billCreateDate, 'yyyy-MM-dd') AS formatted_date, " +
+            " SUM(b.billPriceAfterVoucher) " +
+            " FROM Bills b WHERE MONTH(b.billCreateDate) = :month " +
+            " AND YEAR(b.billCreateDate) = :year " +
+            " GROUP BY FORMAT(b.billCreateDate, 'yyyy-MM-dd') " )
+    List<Object[]> findTotalPricesByDay(@Param("month") String month, @Param("year") String year);
+
+    @Query("SELECT NEW fpoly.datn.ecommerce_website.dto.TopCustomersDTO(b.customer.customerId, b.customer.users.fullName, b.customer.users.phoneNumber, SUM(b.billPriceAfterVoucher)) " +
+            "FROM Bills b " +
+            "GROUP BY b.customer.customerId, b.customer.users.fullName, b.customer.users.phoneNumber " +
+            "ORDER BY SUM(b.billPriceAfterVoucher) DESC")
+    List<TopCustomersDTO> findTopCustomersByTotalPrice(Pageable pageable);
+
+
 
 
 }
