@@ -32,6 +32,9 @@ public interface ICustomerService {
 
     Customers findByEmail(String mail);
 
+
+    Customers updateConsumePoint(String customerId, int updateConsumePoint);
+
     CustomerDTO updatePointByTotalPrice(String customerId, Double totalPrice);
 
     boolean changePassword(String id, String oldPassword, String newPassword);

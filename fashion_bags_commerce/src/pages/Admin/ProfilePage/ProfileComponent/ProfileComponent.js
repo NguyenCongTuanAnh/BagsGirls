@@ -315,8 +315,6 @@ function ProfileComponent() {
     }, [timer]);
 
     const sendCodeToEmail = async () => {
-      // Gửi mã code đến email ở đây
-      // Cập nhật state và thiết lập thời gian đếm ngược
       const generatedCode = generateCustomCode('', 6);
       const mail = {
         email: users.email,

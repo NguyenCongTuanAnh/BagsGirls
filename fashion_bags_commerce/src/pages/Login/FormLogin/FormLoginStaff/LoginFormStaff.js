@@ -92,12 +92,6 @@ function LoginFormStaff(props) {
         <h2 className={styles.title}>Đăng nhập</h2>
         <Form
           name="basic"
-          labelCol={{
-            span: 8,
-          }}
-          wrapperCol={{
-            span: 16,
-          }}
           style={{
             maxWidth: 600,
           }}
@@ -123,7 +117,7 @@ function LoginFormStaff(props) {
               },
             ]}
           >
-            <Input />
+            <Input width={300} size="large" />
           </Form.Item>
 
           <Form.Item
@@ -154,18 +148,7 @@ function LoginFormStaff(props) {
               }),
             ]}
           >
-            <Input.Password />
-          </Form.Item>
-
-          <Form.Item
-            name="remember"
-            valuePropName="checked"
-            wrapperCol={{
-              offset: 8,
-              span: 16,
-            }}
-          >
-            <Checkbox>Remember me</Checkbox>
+            <Input.Password width={300} size="large" />
           </Form.Item>
 
           <Form.Item
@@ -174,14 +157,23 @@ function LoginFormStaff(props) {
               span: 16,
             }}
           >
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" size="large" shape="round" htmlType="submit">
               Submit
             </Button>
           </Form.Item>
         </Form>
 
-        <Button className={styles.linkBtn} onClick={() => navigate('/signup')}>
-          Bạn đã chưa có tài khoản? Đăng kí ở đây!!!
+        <Button
+          className={styles.linkBtn}
+          onClick={() => {
+            notification.error({
+              message: 'Lỗi',
+              description: 'Vui lòng liên hệ với admin để đổi mật khẩu!!!',
+              duration: 2,
+            });
+          }}
+        >
+          Quên mật khẩu???
         </Button>
       </div>
     </div>

@@ -1,7 +1,6 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
 import fpoly.datn.ecommerce_website.dto.CustomerDTO;
-import fpoly.datn.ecommerce_website.dto.CustomerDTO1;
 import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Users;
 import fpoly.datn.ecommerce_website.infrastructure.constant.Constants;
@@ -165,6 +164,17 @@ public class CustomerServiceImpl implements ICustomerService {
     public Customers findByEmail(String mail) {
         Customers customers = this.customerRepository.findByEmail(mail);
 
+        return customers;
+    }
+
+    @Override
+    public Customers updateConsumePoint(String customerId, int updateConsumePoint) {
+        Customers customers = this.customerRepository.findById(customerId).get();
+if(customers.getConsumePoints() > 0){
+    customers.setConsumePoints(customers.getConsumePoints() - updateConsumePoint);
+}
+
+        this.customerRepository.save(customers);
         return customers;
     }
 

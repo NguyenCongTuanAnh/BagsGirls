@@ -157,6 +157,14 @@ public class CustomerRestController {
         return new ResponseEntity<>
                 (this.customerRepository.findByEmail(email), HttpStatus.OK);
     }
+    @RequestMapping(value = "/customer/updateConsumePoint", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateConsumePopint(
+            @RequestParam(name = "customerId") String customerId,
+            @RequestParam(name = "consumePoints") int consumePoints
+    ) {
+        return new ResponseEntity<>
+                (this.customerService.updateConsumePoint(customerId,consumePoints ), HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/customer/findByPhoneNumber", method = RequestMethod.GET)
     public ResponseEntity<?> findByPhoneNumber(
