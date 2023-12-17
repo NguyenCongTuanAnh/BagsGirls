@@ -202,29 +202,31 @@ function CartCustomer() {
                       {item.productDetails.material.materialName}
                     </div>{' '}
                   </td>
-                  <td>
-                    <div className={styles.book_number}>
-                      <div className={styles.item_change1} onClick={() => handleDecrement(item)}>
-                        <MinusOutlined />
-                      </div>
-                      <input
-                        type="text"
-                        disabled
-                        className={styles.input_amount}
-                        value={item.amount}
-                        onChange={(e) => handleQuantityChange(e, item)}
-                      />
-                      <div className={styles.item_change2} onClick={() => handleIncrement(item)}>
-                        <PlusOutlined />
+                  <td style={{ textAlign: 'center' }}>
+                    <div style={{ padding: '80px 0 0 90px' }}>
+                      <div className={styles.book_number}>
+                        <div className={styles.item_change1} onClick={() => handleDecrement(item)}>
+                          <MinusOutlined />
+                        </div>
+                        <input
+                          type="text"
+                          disabled
+                          className={styles.input_amount}
+                          value={item.amount}
+                          onChange={(e) => handleQuantityChange(e, item)}
+                        />
+                        <div className={styles.item_change2} onClick={() => handleIncrement(item)}>
+                          <PlusOutlined />
+                        </div>
                       </div>
                     </div>
                   </td>
 
                   <td>
-                    <div style={{ margin: '50% 0 0 15%' }}>{VNDFormaterFunc(item.productDetails.retailPrice)}</div>{' '}
+                    <div style={{ margin: '80px 0 0 0' }}>{VNDFormaterFunc(item.productDetails.retailPrice)}</div>{' '}
                   </td>
                   <td>
-                    <div style={{ margin: '50% 0 0 15%' }}>{VNDFormaterFunc(totalPrice)}</div>{' '}
+                    <div style={{ margin: '80px 0 0 0' }}>{VNDFormaterFunc(totalPrice)}</div>{' '}
                   </td>
                   <td>
                     <button className={styles.buttonXoa} onClick={() => handleDeleteCartItem(item?.cartDetailId)}>
@@ -257,6 +259,7 @@ function CartCustomer() {
                   totalPrice1: calculateTotalPrice(),
                   cartItems: cartItems.cartDetailsList,
                   totalAmount: calculateTotalAmount(),
+
                 },
               });
             }}
@@ -265,20 +268,21 @@ function CartCustomer() {
           </button>
         ) : (
           <div>
-             <button
-            className={styles.buttonThanhToan}
-            onClick={() => {
-              navigate(`/cart/checkout/${customerId}`, {
-                state: {
-                  totalPrice1: calculateTotalPrice(),
-                  cartItems: cartItems.cartDetailsList,
-                  totalAmount: calculateTotalAmount(),
-                },
-              });
-            }}
-          >
-            Tiến hành thanh toán
-          </button>
+            <button
+              className={styles.buttonThanhToan}
+              onClick={() => {
+                navigate(`/cart/checkout/${customerId}`, {
+                  state: {
+                    totalPrice1: calculateTotalPrice(),
+                    cartItems: cartItems.cartDetailsList,
+                    totalAmount: calculateTotalAmount(),
+                    infoCustomer: cartItems,
+                  },
+                });
+              }}
+            >
+              Tiến hành thanh toán
+            </button>
           </div>
         )}
       </div>

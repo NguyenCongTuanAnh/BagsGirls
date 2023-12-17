@@ -1,7 +1,9 @@
 import { RightOutlined } from '@ant-design/icons';
-import { Form, Result, message } from 'antd';
+import { Form, Result, message, notification } from 'antd';
+import Search from 'antd/es/input/Search';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import moment from 'moment/moment';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import BeatLoader from 'react-spinners/ClipLoader';
@@ -9,20 +11,21 @@ import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import billsAPI from '~/api/BillApi';
 import billDetailAPI from '~/api/BillDetailsAPI';
-import productDetailsAPI from '~/api/productDetailsAPI';
-import './styles.scss';
-import { getCustomer } from '~/api/auth/helper/UserCurrent';
-import AddressCustomer from '~/pages/Home/InfoCustomer/InformationCustomer/InformationCustomer';
 import customerAPI from '~/api/customerAPI';
+import productDetailsAPI from '~/api/productDetailsAPI';
 import voucherAPI from '~/api/voucherAPI';
-import moment from 'moment/moment';
-import Search from 'antd/es/input/Search';
+import './styles.scss';
+import { faL } from '@fortawesome/free-solid-svg-icons';
 
 const CheckoutDetail = () => {
   const [cartItems, setCartItems] = useState([]);
   const [cart, setCart] = useState([]);
   const customerId = localStorage.getItem('customerId');
   const [address1, setAddress1] = useState(null);
+  const [thongTinKH, setThongTinKH] = useState(null);
+
+  const [anThongTinDiaChi, setAnThongTinDiaChi] = useState(false);
+  const [anThongTinDiaChi1, setAnThongTinDiaChi1] = useState(true);
 
   // const addressFromLocalStorage = { address };
   const displayInformationSection = address1 === null;
@@ -53,6 +56,9 @@ const CheckoutDetail = () => {
       console.log(data);
       setCustomerData(data);
       setAddress1(data.users.address || '');
+      // if(data.users.address){
+
+      // }
     } catch (error) {
       console.error('Error fetching customer data:', error);
     }
@@ -60,7 +66,7 @@ const CheckoutDetail = () => {
 
   useEffect(() => {
     getOneCustomer(customerId);
-  });
+  }, []);
 
   const handleApplyVoucherCode = async () => {
     console.log(voucherCode);
@@ -92,7 +98,7 @@ const CheckoutDetail = () => {
             setDiscountPercent(voucher.discountPercent);
             const calculatedVoucherPrice = calculateTotal() * (voucher.discountPercent / 100) || voucherPrice;
             setVoucherPrice(calculatedVoucherPrice);
-            const discountedTotalPrice = calculateTotal() - calculatedVoucherPrice;
+            const discountedTotalPrice = calculateTotal() - calculatedVoucherPrice + shippingFee;
             setTotalPrice(discountedTotalPrice);
             console.log('tong bill khi ap dung voucher', discountedTotalPrice);
 
@@ -153,7 +159,7 @@ const CheckoutDetail = () => {
             setDiscountPercent(voucher.discountPercent);
             const calculatedVoucherPrice = calculateTotalCustomer() * (voucher.discountPercent / 100) || voucherPrice;
             setVoucherPrice(calculatedVoucherPrice);
-            const discountedTotalPrice = calculateTotalCustomer() - calculatedVoucherPrice;
+            const discountedTotalPrice = calculateTotalCustomer() - calculatedVoucherPrice + shippingFee;
             setTotalPrice(discountedTotalPrice);
             console.log('tong bill khi ap dung voucher', discountedTotalPrice);
 
@@ -249,19 +255,62 @@ const CheckoutDetail = () => {
     console.log('storeCartDetail', storeCartDetail);
     console.log('totalPrice', totalPrice);
   }, []);
+  const handleFullNameChange = (e) => {
+    const inputValue = e.target.value;
+    const trimmedValue = inputValue.replace(/^\s/, ''); // Loại bỏ dấu cách đầu tiên
 
+    // Kiểm tra nếu có ký tự đặc biệt
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    const containsSpecialChar = specialCharRegex.test(trimmedValue);
+
+    if (!containsSpecialChar) {
+      setFullName(trimmedValue); // Cập nhật giá trị vào state nếu không chứa ký tự đặc biệt
+    }
+  };
+
+  const handleAddressChange = (e) => {
+    const inputValue = e.target.value;
+    const trimmedValue = inputValue.replace(/^\s/, ''); // Loại bỏ dấu cách đầu tiên
+
+    // Kiểm tra nếu có ký tự đặc biệt
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    const containsSpecialChar = specialCharRegex.test(trimmedValue);
+
+    if (!containsSpecialChar) {
+      setAddress(trimmedValue);
+    }
+  };
+  const handleAddressChangeOld = (e) => {
+    const inputValue = e.target.value;
+    const trimmedValue = inputValue.replace(/^\s/, ''); // Loại bỏ dấu cách đầu tiên
+
+    // Kiểm tra nếu có ký tự đặc biệt
+
+    setAddress1(location.state.infoCustomer.customers.users.address);
+  };
   const [submittedData, setSubmittedData] = useState(null);
 
-  const host = 'https://provinces.open-api.vn/api/';
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [selectedWard, setSelectedWard] = useState('');
+  const [shippingFee, setShippingFee] = useState(0);
+  const token = '96b259e7-9ca7-11ee-b394-8ac29577e80e';
+  const shopId = '4773374';
+
+  const handleResetDropdowns = () => {
+    setSelectedProvince('');
+    setSelectedDistrict('');
+    setSelectedWard('');
+  };
+
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
+  const [fullAddress, setFullAddres] = useState('');
+  const [addressFinal, setAddressFinal] = useState('');
   const [email, setEmail] = useState('');
   const [billNote, setBillNote] = useState('');
   const [billCreateDate, setBillCreateDate] = useState('');
@@ -269,17 +318,25 @@ const CheckoutDetail = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const getNameFromCode = (code, list) => {
-      const selectedItem = list.find((item) => item.code === +code);
-      return selectedItem ? selectedItem.name : '';
-    };
-    const selectedProvinceName = getNameFromCode(selectedProvince, provinces);
-    const selectedDistrictName = getNameFromCode(selectedDistrict, districts);
-    const selectedWardName = getNameFromCode(selectedWard, wards);
-
-    const fullAddress = `${address} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`;
-
     try {
+      let selectedProvinceName = '';
+      let selectedDistrictName = '';
+      let selectedWardName = '';
+
+      if (selectedProvince && provinces.length > 0) {
+        selectedProvinceName =
+          provinces.find((province) => province.ProvinceID === +selectedProvince)?.ProvinceName || '';
+      }
+      if (selectedDistrict && districts.length > 0) {
+        selectedDistrictName =
+          districts.find((district) => district.DistrictID === +selectedDistrict)?.DistrictName || '';
+      }
+      if (selectedWard && wards.length > 0) {
+        selectedWardName = wards.find((ward) => ward.WardCode === selectedWard)?.WardName || '';
+      }
+
+      const fullAddress = `${address} - ${selectedProvinceName} - ${selectedDistrictName} - ${selectedWardName}`;
+
       const data = {
         fullName,
         phoneNumber,
@@ -291,53 +348,64 @@ const CheckoutDetail = () => {
         selectedWard,
         fullAddress,
       };
+
+      setFullAddres(fullAddress);
       setDisplayAddress(true);
       setDisplayInformation(false);
       setSubmittedData(data);
-      console.log('dia chi', data);
-      console.log('tinh', selectedProvinceName);
-      console.log('huyen', selectedDistrictName);
-      console.log('xa', selectedWardName);
     } catch (error) {
       console.error('Error submitting information:', error);
     }
   };
+
   const handleSubmit1 = async (event) => {
     event.preventDefault();
 
-    const getNameFromCode = (code, list) => {
-      const selectedItem = list.find((item) => item.code === +code);
-      return selectedItem ? selectedItem.name : '';
-    };
-    const selectedProvinceName = getNameFromCode(selectedProvince, provinces);
-    const selectedDistrictName = getNameFromCode(selectedDistrict, districts);
-    const selectedWardName = getNameFromCode(selectedWard, wards);
-
-    const fullAddress = `${address} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`;
-
     try {
+      let selectedProvinceName = '';
+      let selectedDistrictName = '';
+      let selectedWardName = '';
+
+      if (selectedProvince && provinces.length > 0) {
+        selectedProvinceName =
+          provinces.find((province) => province.ProvinceID === +selectedProvince)?.ProvinceName || '';
+      }
+      if (selectedDistrict && districts.length > 0) {
+        selectedDistrictName =
+          districts.find((district) => district.DistrictID === +selectedDistrict)?.DistrictName || '';
+      }
+      if (selectedWard && wards.length > 0) {
+        selectedWardName = wards.find((ward) => ward.WardCode === selectedWard)?.WardName || '';
+      }
+
+      const fullAddressText = ` -  ${selectedWardName} - ${selectedDistrictName} -${selectedProvinceName}`;
+      const combinedAddress = address + fullAddressText;
+
       const data = {
         fullName,
         phoneNumber,
-        address,
+        address: combinedAddress,
         email,
         billNote,
         selectedProvince,
         selectedDistrict,
         selectedWard,
-        fullAddress,
+        fullAddress: fullAddressText,
       };
-      setFullName(customerData.users.fullName);
-      setPhoneNumber(customerData.users.phoneNumber);
-      setEmail(customerData.users.email);
+      // setFullName(customerData.users.fullName);
+      // setPhoneNumber(customerData.users.phoneNumber);
+      // setEmail(customerData.users.email);
+      setFullAddres(fullAddressText);
+      setAddress(combinedAddress);
       setDisplayAddress(true);
       setDisplayInformation(false);
       setSubmittedData(data);
-      console.log('dia chi', data);
-      console.log('tinh', selectedProvinceName);
-      console.log('huyen', selectedDistrictName);
-      console.log('xa', selectedWardName);
-      console.log('hoTenCustomer', fullName);
+      console.log('Thông tin địa chỉ:', data);
+      console.log('Tỉnh:', selectedProvinceName);
+      console.log('Quận:', selectedDistrictName);
+      console.log('Xã:', selectedWardName);
+      console.log('Họ và tên:', fullName);
+      console.log('Địa chỉ hoàn chỉnh:', combinedAddress);
     } catch (error) {
       console.error('Error submitting information:', error);
     }
@@ -362,7 +430,7 @@ const CheckoutDetail = () => {
     setLoadingPayment(true);
     setTimeout(async () => {
       const currentTime = new Date();
-      const currentDateTime = dayjs(currentTime).subtract(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
+      const currentDateTime = dayjs(currentTime).format('YYYY-MM-DD HH:mm:ss');
       setBillCreateDate(currentDateTime);
       if (!fullName || !phoneNumber || !selectedProvince || !selectedDistrict || !selectedWard || !address) {
         console.log('Vui lòng điền đầy đủ thông tin');
@@ -375,15 +443,23 @@ const CheckoutDetail = () => {
         setLoadingPayment(true);
       }
 
-      const getNameFromCode = (code, list) => {
-        const selectedItem = list.find((item) => item.code === +code);
-        return selectedItem ? selectedItem.name : '';
-      };
-      const selectedProvinceName = getNameFromCode(selectedProvince, provinces);
-      const selectedDistrictName = getNameFromCode(selectedDistrict, districts);
-      const selectedWardName = getNameFromCode(selectedWard, wards);
+      let selectedProvinceName = '';
+      let selectedDistrictName = '';
+      let selectedWardName = '';
 
-      const fullAddress = `${address} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`;
+      if (selectedProvince && provinces.length > 0) {
+        selectedProvinceName =
+          provinces.find((province) => province.ProvinceID === +selectedProvince)?.ProvinceName || '';
+      }
+      if (selectedDistrict && districts.length > 0) {
+        selectedDistrictName =
+          districts.find((district) => district.DistrictID === +selectedDistrict)?.DistrictName || '';
+      }
+      if (selectedWard && wards.length > 0) {
+        selectedWardName = wards.find((ward) => ward.WardCode === selectedWard)?.WardName || '';
+      }
+
+      const fullAddress = `${address} - ${selectedProvinceName} - ${selectedDistrictName} - ${selectedWardName}`;
 
       const cartItemsTotal = cartItems.reduce(
         (acc, item) => {
@@ -402,13 +478,13 @@ const CheckoutDetail = () => {
           billCreateDate: currentDateTime,
           billNote: billNote,
           billStatus: 4,
-          billReducedPrice: 0,
-          billCode: generateCustomCode('Bill', 4),
+          billCode: generateCustomCode('HĐ', 9),
           billTotalPrice: location?.state?.totalPrice,
           productAmount: location?.state?.totalQuantity,
           billPriceAfterVoucher: totalPrice || location?.state?.totalPrice,
+          billReducedPrice: voucherPrice,
         };
-        console.log('11111111111111111', billData);
+        console.log('BilLData', billData);
         const response = await billsAPI.add(billData);
         console.log('Billsssss', response.data);
 
@@ -469,6 +545,7 @@ const CheckoutDetail = () => {
         setCustomerData(data);
 
         setAddress1(data.users.address || '');
+        setThongTinKH(data.users || '');
       })
       .catch((error) => {
         console.error('Error fetching customer data:', error);
@@ -477,9 +554,9 @@ const CheckoutDetail = () => {
     setLoadingPayment(true);
     setTimeout(async () => {
       const currentTime = new Date();
-      const currentDateTime = dayjs(currentTime).subtract(7, 'hour').format('YYYY-MM-DD HH:mm:ss');
+      const currentDateTime = dayjs(currentTime).format('YYYY-MM-DD HH:mm:ss');
       setBillCreateDate(currentDateTime);
-      if (!fullName || !phoneNumber || !selectedProvince || !selectedDistrict || !selectedWard || !address) {
+      if (phoneNumber) {
         console.log('Vui lòng điền đầy đủ thông tin');
         setLoadingPayment(false);
         return messageApi.open({
@@ -490,37 +567,45 @@ const CheckoutDetail = () => {
         setLoadingPayment(true);
       }
 
-      const getNameFromCode = (code, list) => {
-        const selectedItem = list.find((item) => item.code === +code);
-        return selectedItem ? selectedItem.name : '';
-      };
-      const selectedProvinceName = getNameFromCode(selectedProvince, provinces);
-      const selectedDistrictName = getNameFromCode(selectedDistrict, districts);
-      const selectedWardName = getNameFromCode(selectedWard, wards);
-
-      const fullAddress = `${address} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`;
-
       try {
+        let selectedProvinceName = '';
+        let selectedDistrictName = '';
+        let selectedWardName = '';
+
+        if (selectedProvince && provinces.length > 0) {
+          selectedProvinceName =
+            provinces.find((province) => province.ProvinceID === +selectedProvince)?.ProvinceName || '';
+        }
+        if (selectedDistrict && districts.length > 0) {
+          selectedDistrictName =
+            districts.find((district) => district.DistrictID === +selectedDistrict)?.DistrictName || '';
+        }
+        if (selectedWard && wards.length > 0) {
+          selectedWardName = wards.find((ward) => ward.WardCode === selectedWard)?.WardName || '';
+        }
+
+        const fullAddressText = `- ${selectedWardName}- ${selectedDistrictName} -  ${selectedProvinceName}`;
+        const combinedAddress = address + fullAddressText;
         const billData = {
           receiverName: fullName,
           orderPhone: phoneNumber,
           orderEmail: email,
-          shippingAddress: fullAddress,
+          shippingAddress: address1 + combinedAddress,
           billCreateDate: currentDateTime,
           billNote: billNote,
           billStatus: 4,
-          billReducedPrice: 0,
-          billCode: generateCustomCode('Bill', 4),
+          billReducedPrice: voucherPrice + shippingFee,
+          billCode: generateCustomCode('HĐ', 9),
           billTotalPrice: location?.state?.totalPrice1,
           productAmount: location?.state?.totalAmount,
           billPriceAfterVoucher: totalPrice || location?.state?.totalPrice1,
           customer: {
             customerId: customerId,
             users: {
-              fullName: fullName,
-              phoneNumber: phoneNumber,
-              email: email,
-              address: fullAddress,
+              fullName: thongTinKH?.fullName,
+              phoneNumber: thongTinKH?.phoneNumber,
+              email: thongTinKH?.email,
+              address:address1,
             },
           },
         };
@@ -582,54 +667,108 @@ const CheckoutDetail = () => {
   };
 
   useEffect(() => {
-    axios
-      .get(`${host}?depth=1`)
-      .then((response) => {
-        setProvinces(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching provinces:', error);
-      });
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://online-gateway.ghn.vn/shiip/public-api/master-data/province', {
+          headers: {
+            token: `${token}`,
+            'Content-Type': 'application/json; charset=utf-8',
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setProvinces(data.data);
+        } else {
+          console.error('Failed to fetch data');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const handleProvinceChange = (event) => {
-    const provinceName = event.target.value;
-    console.log('tinh', provinceName);
-    setSelectedProvince(provinceName);
-    setSelectedDistrict('');
-    setSelectedWard('');
+  const handleProvinceChange = async (e) => {
+    const selectedProvinceId = e.target.value;
+    setSelectedProvince(selectedProvinceId);
+    setDistricts([]);
+    setWards([]);
+    setShippingFee(0);
 
-    axios
-      .get(`${host}p/${provinceName}?depth=2`)
-      .then((response) => {
-        setDistricts(response.data.districts);
-      })
-      .catch((error) => {
-        console.error('Error fetching districts:', error);
-      });
+    try {
+      const response = await fetch(
+        `https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id=${selectedProvinceId}`,
+        {
+          headers: {
+            token: `${token}`,
+            'Content-Type': 'application/json; charset=utf-8',
+          },
+        },
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setDistricts(data.data);
+      } else {
+        console.error('Failed to fetch districts');
+      }
+    } catch (error) {
+      console.error('Error fetching districts:', error);
+    }
   };
 
-  const handleDistrictChange = (event) => {
-    const districtCode = event.target.value;
-    console.log('huyen', districtCode);
-    setSelectedDistrict(districtCode);
-    setSelectedWard('');
+  const handleDistrictChange = async (e) => {
+    const selectedDistrictId = e.target.value;
+    setSelectedDistrict(selectedDistrictId);
 
-    axios
-      .get(`${host}d/${districtCode}?depth=2`)
-      .then((response) => {
-        setWards(response.data.wards);
-      })
-      .catch((error) => {
-        console.error('Error fetching wards:', error);
-      });
+    try {
+      const response = await fetch(
+        `https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id=${selectedDistrictId}`,
+        {
+          headers: {
+            token: `${token}`,
+            'Content-Type': 'application/json; charset=utf-8',
+          },
+        },
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setWards(data.data);
+      } else {
+        console.error('Failed to fetch wards');
+      }
+    } catch (error) {
+      console.error('Error fetching wards:', error);
+    }
   };
 
-  const handleWardChange = (event) => {
-    const wardCode = event.target.value;
-    console.log('xa', wardCode);
+  const handleWardChange = async (e) => {
+    const selectedWardCode = e.target.value;
+    setSelectedWard(selectedWardCode);
 
-    setSelectedWard(wardCode);
+    try {
+      if (selectedDistrict && selectedWardCode) {
+        const response = await fetch(
+          `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?service_id=53321&insurance_value=1000000&coupon&to_district_id=${selectedDistrict}&from_district_id=1482&weight=500&from_ward_code=11008&to_ward_code=${selectedWardCode}&length=30&width=15&height=40`,
+          {
+            headers: {
+              token: `${token}`,
+              'Content-Type': 'application/json; charset=utf-8',
+              shop_id: `${shopId}`,
+            },
+          },
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setShippingFee(data.data.total);
+        } else {
+          console.error('Failed to fetch shipping fee');
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching shipping fee:', error);
+    }
   };
 
   return (
@@ -660,6 +799,7 @@ const CheckoutDetail = () => {
                           setDisplayInformation(true);
                           setDisplayAddress(false);
                           setDisplayOrder(false);
+                          setAddress('');
                         }}
                         className="changleAddress"
                       >
@@ -673,12 +813,6 @@ const CheckoutDetail = () => {
                   <div>
                     {customerId == null ? (
                       <div>
-                        {/* <p>
-                        Bạn đã có tài khoản?{' '}
-                        <span>
-                          <Link to={'/login'}>Đăng nhập</Link>
-                        </span>
-                      </p> */}
                         <br></br>
                         <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
                           <div className="customInput">
@@ -689,12 +823,11 @@ const CheckoutDetail = () => {
                               className="inputLabel"
                               type="text"
                               value={fullName}
-                              onChange={(e) => setFullName(e.target.value)}
+                              onChange={handleFullNameChange}
                               placeholder="Họ và tên"
-                              required
                               style={{ flex: 1 }}
-                              pattern="(?!^[0-9]*$)[a-zA-Z0-9]+"
                               title="Tên phải chứa ít nhất một ký tự chữ và không chứa kí tự đặc biệt"
+                              required
                             />
                           </div>
                           <div className="customInput">
@@ -714,7 +847,9 @@ const CheckoutDetail = () => {
                             />
                           </div>
                           <div className="customInput">
-                            <label>Email</label>
+                            <label>
+                              Email<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                            </label>
                             <input
                               className="inputLabel"
                               type="email"
@@ -738,65 +873,60 @@ const CheckoutDetail = () => {
                               value={selectedProvince}
                               id="selectedProvince"
                               onChange={handleProvinceChange}
-                              required
-                              style={{ flex: 1 }}
                               className="inputLabel"
+                              required
                             >
-                              <option disabled value="">
-                                Tỉnh/ Thành phố
-                              </option>
+                              <option value="">Chọn tỉnh/thành phố</option>
                               {provinces.map((province) => (
-                                <option key={province.code} value={province.code}>
-                                  {province.name}
+                                <option key={province.ProvinceID} value={province.ProvinceID}>
+                                  {province.ProvinceName}
                                 </option>
                               ))}
                             </select>
                           </div>
+
                           <div className="customInput">
                             <label>
                               Quận/ Huyện<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
                             </label>
                             <select
+                              onChange={handleDistrictChange}
                               value={selectedDistrict}
                               id="selectedDistrict"
+                              disabled={!selectedProvince}
                               className="inputLabel"
-                              onChange={handleDistrictChange}
                               required
-                              style={{ flex: 1 }}
                             >
-                              <option disabled value="">
-                                Quận/ Huyện
-                              </option>
+                              <option value="">Chọn quận/huyện</option>
                               {districts.map((district) => (
-                                <option key={district.code} value={district.code}>
-                                  {district.name}
+                                <option key={district.DistrictID} value={district.DistrictID}>
+                                  {district.DistrictName}
                                 </option>
                               ))}
                             </select>
                           </div>
                           <div className="customInput">
                             <label>
-                              Phường/ Xã/ Thị trấn<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                              Phường/ Xã<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
                             </label>
                             <select
+                              onChange={handleWardChange}
                               value={selectedWard}
                               id="selectedWard"
-                              onChange={handleWardChange}
-                              required
-                              style={{ flex: 1 }}
+                              disabled={!selectedDistrict}
                               className="inputLabel"
+                              required
                             >
-                              <option disabled value="">
-                                Phường/ Xã/ Thị trấn
-                              </option>
+                              <option value="">Chọn phường/xã</option>
                               {wards.map((ward) => (
-                                <option key={ward.code} value={ward.code}>
-                                  {ward.name}
+                                <option key={ward.WardCode} value={ward.WardCode}>
+                                  {ward.WardName}
                                 </option>
                               ))}
                             </select>
                           </div>
                         </div>
+                        <div>Phí vận chuyển: {shippingFee}</div>
                         <div className="customInput">
                           <label>
                             Địa chỉ<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
@@ -805,10 +935,9 @@ const CheckoutDetail = () => {
                             className="inputLabel"
                             type="text"
                             value={address}
-                            onChange={(e) => setAddress(e.target.value)}
+                            onChange={handleAddressChange}
                             placeholder="Điền rõ thông tin số nhà, tên đường"
                             required
-                            pattern="^[a-zA-Z0-9\s]+$"
                             title="Địa chỉ không được chứa kí tự đặc biệt"
                           />
                         </div>
@@ -828,8 +957,9 @@ const CheckoutDetail = () => {
                       </div>
                     ) : (
                       <div>
+                        <h1>hello</h1>
                         <br></br>
-                        {/* <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
                           <div className="customInput">
                             <label>
                               Họ và tên<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
@@ -837,10 +967,12 @@ const CheckoutDetail = () => {
                             <input
                               className="inputLabel"
                               type="text"
-                              value={fullName}
-                              onChange={(e) => setFullName(e.target.value)}
+                              value={fullName || location.state.infoCustomer.customers.users.fullName}
+                              onChange={handleFullNameChange}
                               placeholder="Họ và tên"
                               style={{ flex: 1 }}
+                              title="Tên phải chứa ít nhất một ký tự chữ và không chứa kí tự đặc biệt"
+                              required
                             />
                           </div>
                           <div className="customInput">
@@ -848,122 +980,240 @@ const CheckoutDetail = () => {
                               Số điện thoại<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
                             </label>
                             <input
+                              disabled
                               className="inputLabel"
                               type="text"
-                              value={phoneNumber}
+                              value={phoneNumber || location.state.infoCustomer.customers.users.phoneNumber}
                               onChange={(e) => setPhoneNumber(e.target.value)}
                               placeholder="Số điện thoại"
                               pattern="(?:\+84|0)(?:\d){9,10}$"
-                              title="vui lòng nhập số điện thoại hợp lệ"
+                              title="vui lòng nhập số điện thoại hợp lệ và tối đa là 10 số"
                               required
                               style={{ flex: 1 }}
                             />
                           </div>
-                        </div> */}
-
-                        <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
                           <div className="customInput">
                             <label>
-                              Tỉnh/ Thành phố<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                              Email<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
                             </label>
-                            <select
-                              value={selectedProvince}
-                              id="selectedProvince"
-                              onChange={handleProvinceChange}
+                            <input
+                              disabled
+                              className="inputLabel"
+                              type="email"
+                              value={email || location.state.infoCustomer.customers.users.email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              placeholder="Nhập email"
+                              pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                              title="vui lòng nhập email hợp lệ"
                               required
                               style={{ flex: 1 }}
-                              className="inputLabel"
-                            >
-                              <option disabled value="">
-                                Tỉnh/ Thành phố
-                              </option>
-                              {provinces.map((province) => (
-                                <option key={province.code} value={province.code}>
-                                  {province.name}
-                                </option>
-                              ))}
-                            </select>
+                            />
                           </div>
-                          <div className="customInput">
-                            <label>
-                              Quận/ Huyện<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
-                            </label>
-                            <select
-                              value={selectedDistrict}
-                              id="selectedDistrict"
-                              className="inputLabel"
-                              onChange={handleDistrictChange}
-                              required
-                              style={{ flex: 1 }}
-                            >
-                              <option disabled value="">
-                                Quận/ Huyện
-                              </option>
-                              {districts.map((district) => (
-                                <option key={district.code} value={district.code}>
-                                  {district.name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                          <div className="customInput">
-                            <label>
-                              Phường/ Xã/ Thị trấn<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
-                            </label>
-                            <select
-                              value={selectedWard}
-                              id="selectedWard"
-                              onChange={handleWardChange}
-                              required
-                              style={{ flex: 1 }}
-                              className="inputLabel"
-                            >
-                              <option disabled value="">
-                                Phường/ Xã/ Thị trấn
-                              </option>
-                              {wards.map((ward) => (
-                                <option key={ward.code} value={ward.code}>
-                                  {ward.name}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                        <div className="customInput">
-                          <label>
-                            Địa chỉ<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
-                          </label>
-                          <input
-                            className="inputLabel"
-                            type="text"
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                            placeholder="Điền rõ thông tin số nhà, tên đường"
-                            required
-                          />
-                        </div>
-                        <div className="customInput">
-                          <label>Ghi chú</label>
-                          <textarea
-                            className="textarea"
-                            rows={3}
-                            value={billNote}
-                            onChange={(e) => setBillNote(e.target.value)}
-                            placeholder="Ghi chú của khách hàng"
-                          />
                         </div>
 
-                        <br></br>
-                        <button
-                          onClick={() => {
-                            setFullName(customerData.users.fullName);
-                            setPhoneNumber(customerData.users.phoneNumber);
-                            setEmail(customerData.users.email);
-                            setAddress(customerData.users.address);
-                          }}
-                        >
-                          Xác nhận địa chỉ
-                        </button>
+                        {anThongTinDiaChi && (
+                          <div>
+                            <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
+                              <div className="customInput">
+                                <label>
+                                  Tỉnh/ Thành phố<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                                </label>
+                                <select
+                                  value={selectedProvince}
+                                  id="selectedProvince"
+                                  onChange={handleProvinceChange}
+                                  className="inputLabel"
+                                  required
+                                >
+                                  <option value="">Chọn tỉnh/thành phố</option>
+                                  {provinces.map((province) => (
+                                    <option key={province.ProvinceID} value={province.ProvinceID}>
+                                      {province.ProvinceName}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+
+                              <div className="customInput">
+                                <label>
+                                  Quận/ Huyện<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                                </label>
+                                <select
+                                  onChange={handleDistrictChange}
+                                  value={selectedDistrict}
+                                  id="selectedDistrict"
+                                  disabled={!selectedProvince}
+                                  className="inputLabel"
+                                  required
+                                >
+                                  <option value="">Chọn quận/huyện</option>
+                                  {districts.map((district) => (
+                                    <option key={district.DistrictID} value={district.DistrictID}>
+                                      {district.DistrictName}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                              <div className="customInput">
+                                <label>
+                                  Phường/ Xã<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                                </label>
+                                <select
+                                  onChange={handleWardChange}
+                                  value={selectedWard}
+                                  id="selectedWard"
+                                  disabled={!selectedDistrict}
+                                  className="inputLabel"
+                                  required
+                                >
+                                  <option value="">Chọn phường/xã</option>
+                                  {wards.map((ward) => (
+                                    <option key={ward.WardCode} value={ward.WardCode}>
+                                      {ward.WardName}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
+                            </div>
+                            <div>Phí vận chuyển: {shippingFee}</div>
+                            <div className="customInput">
+                              <label>
+                                Địa chỉ
+                                <span style={{ color: '#ff0000', fontWeight: 'bold' }}>
+                                  {' '}
+                                  *
+                                  <p
+                                    className="thayDoiDiaChiNhanHang"
+                                    style={{ float: 'right' }}
+                                    onClick={() => {
+                                      setAnThongTinDiaChi(false);
+                                      setAnThongTinDiaChi1(true);
+                                      setAddress('');
+                                      handleResetDropdowns();
+                                    }}
+                                  >
+                                    Lấy địa chỉ gốc
+                                  </p>
+                                </span>
+                              </label>
+                              <input
+                                className="inputLabel"
+                                type="text"
+                                value={address}
+                                onChange={handleAddressChange}
+                                placeholder="Điền rõ thông tin số nhà, tên đường"
+                                required
+                                title="Địa chỉ không được chứa kí tự đặc biệt"
+                              />
+                            </div>
+                            <div className="customInput">
+                              <label>Ghi chú</label>
+                              <textarea
+                                className="textarea"
+                                rows={3}
+                                value={billNote}
+                                onChange={(e) => setBillNote(e.target.value)}
+                                placeholder="Ghi chú của khách hàng"
+                              />
+                            </div>
+
+                            <br></br>
+                            <button
+                              onClick={() => {
+                                setAddress1(address);
+                              }}
+                            >
+                              Giao đến địa chỉ mới
+                            </button>
+                          </div>
+                        )}
+
+                        {anThongTinDiaChi1 && (
+                          <div>
+                            {displayInformationSection ? (
+                              <div className="customInput">
+                                <label>
+                                  Địa chỉ
+                                  <span style={{ color: '#ff0000', fontWeight: 'bold' }}>
+                                    {' '}
+                                    *{' '}
+                                    <p
+                                      className="thayDoiDiaChiNhanHang"
+                                      style={{ float: 'right' }}
+                                      onClick={() => {
+                                        setAnThongTinDiaChi(true);
+                                        setAnThongTinDiaChi1(false);
+                                      }}
+                                    >
+                                      Thay đổi địa chỉ
+                                    </p>{' '}
+                                  </span>
+                                </label>
+                                <input
+                                  className="inputLabel"
+                                  type="text"
+                                  disabled
+                                  value={location.state.infoCustomer.customers.users.address}
+                                  onChange={handleAddressChangeOld}
+                                  placeholder="Điền rõ thông tin số nhà, tên đường"
+                                  required
+                                  title="Địa chỉ không được chứa kí tự đặc biệt"
+                                />
+                              </div>
+                            ) : (
+                              <div className="customInput">
+                                <label>
+                                  Địa chỉ
+                                  <span style={{ color: '#ff0000', fontWeight: 'bold' }}>
+                                    {' '}
+                                    *{' '}
+                                    <p
+                                      className="thayDoiDiaChiNhanHang"
+                                      style={{ float: 'right' }}
+                                      onClick={() => {
+                                        setAnThongTinDiaChi(true);
+                                        setAnThongTinDiaChi1(false);
+                                        setAddress('');
+                                      }}
+                                    >
+                                      Thay đổi địa chỉ
+                                    </p>{' '}
+                                  </span>
+                                </label>
+                                <input
+                                  className="inputLabel"
+                                  type="text"
+                                  disabled
+                                  value={location.state.infoCustomer.customers.users.address}
+                                  onChange={handleAddressChangeOld}
+                                  placeholder="Điền rõ thông tin số nhà, tên đường"
+                                  required
+                                  title="Địa chỉ không được chứa kí tự đặc biệt"
+                                />
+                              </div>
+                            )}
+                            <div className="customInput">
+                              <label>Ghi chú</label>
+                              <textarea
+                                className="textarea"
+                                rows={3}
+                                value={billNote}
+                                onChange={(e) => setBillNote(e.target.value)}
+                                placeholder="Ghi chú của khách hàng"
+                              />
+                            </div>
+
+                            <br></br>
+                            <button
+                              onClick={() => {
+                                setAddress1(location.state.infoCustomer.customers.users.address);
+
+                              }}
+                            >
+                              Giao đến địa chỉ này gốc
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -994,24 +1244,24 @@ const CheckoutDetail = () => {
                   <h4>Thông tin nhận hàng:</h4>
                   <p>
                     <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Người nhận:</span>{' '}
-                    {submittedData?.fullName || ''}
+                    {fullName || location.state.infoCustomer.customers.users.fullName}
                   </p>
                   <p>
                     <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Số điện thoại:</span>{' '}
-                    {submittedData?.phoneNumber || ''}
+                    {phoneNumber || location.state.infoCustomer.customers.users.phoneNumber}
                   </p>
                   <p>
-                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ:</span>{' '}
-                    {submittedData?.fullAddress || ''}
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ:</span> {address1} {fullAddress}
                   </p>
                   <p>
-                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Email:</span> {submittedData?.email || ''}
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Email:</span>{' '}
+                    {email || location.state.infoCustomer.customers.users.email}
                   </p>
                   <p>
-                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Ghi Chú:</span>{' '}
-                    {submittedData?.billNote || ''}
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Ghi Chú:</span> {billNote}
                   </p>
                 </div>
+
                 <br></br>
                 <button
                   onClick={() => {
@@ -1205,10 +1455,13 @@ const CheckoutDetail = () => {
                         - {VNDFormaterFunc(voucherPrice || 0)}
                       </span>
                       <br></br>
-                      Tổng thanh toán (2) + (4):{' '}
+                      (5) Phí ship:{' '}
+                      <span style={{ color: 'darkred', fontSize: '20px' }}> {VNDFormaterFunc(shippingFee)}</span>
+                      <br></br>
+                      Tổng thanh toán (2) + (4) + (5):{' '}
                       <span style={{ color: 'red', fontWeight: 'bold', fontSize: '25px' }}>
                         {' '}
-                        {VNDFormaterFunc(totalPrice || location?.state?.totalPrice1)}
+                        {VNDFormaterFunc(totalPrice || location?.state?.totalPrice1 + shippingFee)}
                       </span>
                       <br />
                     </div>
@@ -1223,7 +1476,7 @@ const CheckoutDetail = () => {
                         {VNDFormaterFunc(location?.state?.totalPrice || 0)}
                       </span>
                       <br></br>
-                      (3) Voucher (%):{' '}
+                      (3) Voucher giảm (%):{' '}
                       <span style={{ color: 'darkred', fontSize: '20px' }}> {disCountPercent || 0} %</span>
                       <br></br>
                       (4) Giảm tiền:{' '}
@@ -1232,10 +1485,13 @@ const CheckoutDetail = () => {
                         - {VNDFormaterFunc(voucherPrice || 0)}
                       </span>
                       <br></br>
-                      Tổng thanh toán (2) + (4):{' '}
+                      (5) Phí ship:{' '}
+                      <span style={{ color: 'darkred', fontSize: '20px' }}> {VNDFormaterFunc(shippingFee)}</span>
+                      <br />
+                      Tổng thanh toán (2) + (4) + (5):{' '}
                       <span style={{ color: 'red', fontWeight: 'bold', fontSize: '25px' }}>
                         {' '}
-                        {VNDFormaterFunc(totalPrice || location?.state?.totalPrice)}
+                        {VNDFormaterFunc(totalPrice || location?.state?.totalPrice + shippingFee)}
                       </span>
                       <br />
                     </div>

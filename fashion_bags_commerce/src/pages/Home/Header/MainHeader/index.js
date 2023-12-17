@@ -10,6 +10,7 @@ import UserProfile from './UserProfile';
 
 function MainHeader() {
   const [cartCount, setCartCount] = useState(0); // Mặc định là 0
+  const [cartCountInDb, setCartCountInDb] = useState(0); // Mặc định là 0
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Đặt mặc định là false khi chưa đăng nhập
   const [customerId, setCustomerId] = useState(null);
@@ -25,6 +26,7 @@ function MainHeader() {
     const parsedCart = storedCart ? JSON.parse(storedCart) : [];
     const totalCount = parsedCart.reduce((acc, item) => acc + item.quantity, 0);
     setCartCount(totalCount);
+    setCartCountInDb(0)
 
     const customerTokenString = localStorage.getItem('customerDecodeString');
     if (customerTokenString) {
@@ -161,7 +163,7 @@ function MainHeader() {
                 </Link>
               ) : (
                 <Link to={`/cart/${customer}`}>
-                  <Badge className={styles.cartBadge} count={cartCount}>
+                  <Badge className={styles.cartBadge} count={cartCountInDb}>
                     <ShoppingCartOutlined className={styles.cartIcon} />
                   </Badge>
                 </Link>
