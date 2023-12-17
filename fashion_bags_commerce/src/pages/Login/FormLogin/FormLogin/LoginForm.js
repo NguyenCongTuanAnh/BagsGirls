@@ -1,9 +1,7 @@
 import styles from './LoginForm.module.scss';
-import { FacebookOutlined, GooglePlusOutlined } from '@ant-design/icons';
-
 import React, { useState } from 'react';
 import { Link, useHistory, useNavigate } from 'react-router-dom';
-import { Button, Form, notification } from 'antd';
+import { Button, Col, Form, Row, notification } from 'antd';
 import Checkbox from 'antd/es/checkbox/Checkbox';
 import Input from 'antd/es/input/Input';
 import axios from 'axios';
@@ -97,15 +95,6 @@ function LoginForm(props) {
         <h2 className={styles.title}>Đăng nhập</h2>
         <Form
           name="basic"
-          labelCol={{
-            span: 8,
-          }}
-          wrapperCol={{
-            span: 16,
-          }}
-          style={{
-            maxWidth: 600,
-          }}
           initialValues={{
             remember: true,
           }}
@@ -128,7 +117,7 @@ function LoginForm(props) {
               },
             ]}
           >
-            <Input />
+            <Input size="large" width={300} />
           </Form.Item>
 
           <Form.Item
@@ -159,18 +148,7 @@ function LoginForm(props) {
               }),
             ]}
           >
-            <Input.Password />
-          </Form.Item>
-
-          <Form.Item
-            name="remember"
-            valuePropName="checked"
-            wrapperCol={{
-              offset: 8,
-              span: 16,
-            }}
-          >
-            <Checkbox>Remember me</Checkbox>
+            <Input.Password width={300} size="large" />
           </Form.Item>
 
           <Form.Item
@@ -179,18 +157,23 @@ function LoginForm(props) {
               span: 16,
             }}
           >
-            <Button type="primary" htmlType="submit">
+            <Button size="large" shape="round" type="primary" htmlType="submit">
               Submit
             </Button>
           </Form.Item>
         </Form>
-
-        <Button type="link" className={styles.linkBtn} onClick={() => navigate('/signup')}>
-          Đăng kí tài khoản?
-        </Button>
-        <Button className={styles.linkBtn} onClick={() => navigate('/forget-password')}>
-          Quên mật khẩu?
-        </Button>
+        <Row>
+          <Col span={12}>
+            <Button type="link" className={styles.linkBtn} onClick={() => navigate('/signup')}>
+              Đăng kí tài khoản?
+            </Button>
+          </Col>
+          <Col span={12}>
+            <Button className={styles.linkBtn} onClick={() => navigate('/forget-password')}>
+              Quên mật khẩu?
+            </Button>
+          </Col>
+        </Row>
       </div>
     </div>
   );

@@ -99,6 +99,10 @@ const customerAPI = {
     const url = `api/customer/updatePoint?customerId=${customerID}&totalPrice=${totalPrice}`;
     return axiosClient.put(url);
   },
+  updateConsumePoint(customerID, consumePoints) {
+    const url = `api/customer/updateConsumePoint?customerId=${customerID}&consumePoints=${consumePoints}`;
+    return axiosClient.put(url);
+  },
 };
 
 export default customerAPI;

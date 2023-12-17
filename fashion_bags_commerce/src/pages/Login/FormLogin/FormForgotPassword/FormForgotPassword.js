@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import styles from '../../indexLogin.module.scss';
+import React, { Fragment, useEffect, useState } from 'react';
+import styles from './LoginForm.module.scss';
 import { Button, Col, Form, Input, Modal, Popconfirm, Row, message } from 'antd';
 import staffAPI from '~/api/staffAPI';
 import { covertObjectToDecode, getStaff } from '~/api/auth/helper/UserCurrent';
@@ -206,225 +206,221 @@ function ForgotPassword(props) {
     }
   };
   return (
-    <div className={styles.authFormContainer}>
+    <Fragment>
       {contextHolder}
-      <h2 className={styles.title}>Quên mật khẩu</h2>
-      <div>
-        <Form layout="vertical" form={form} onFinish={(values) => handleChangPassword(values)} initialValues={{}}>
-          <Row>
-            <Col span={8}></Col>
-            <Col span={8}>
-              <Form.Item
-                label="Email"
-                name="passwordEmail"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng điền Email!',
-                  },
-                  {
-                    pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                    message: 'Vui lòng nhập địa chỉ email hợp lệ!',
-                  },
-                ]}
-              >
-                <Input
-                  size="large"
-                  width={200}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                ></Input>
-              </Form.Item>
-            </Col>
-            <Col span={8}></Col>
-          </Row>
-          <Row>
-            <Col span={8}></Col>
-            <Col span={8}>
-              <Form.Item
-                label="Mã code"
-                name="code"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng điền mã Code!',
-                    whitespace: true,
-                  },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (value && value.trim() === value) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(new Error('Mã code không được có khoảng trắng ở đầu hoặc cuối!'));
-                    },
-                  }),
-                ]}
-              >
+      <div className={styles.formLoginne}>
+        <div className={styles.authFormContainer}>
+          <h2 className={styles.title}>Quên mật khẩu</h2>
+          <div className={styles.registerForm}>
+            <div>
+              <Form layout="vertical" form={form} onFinish={(values) => handleChangPassword(values)} initialValues={{}}>
                 <Row>
-                  {' '}
-                  <Col span={20}>
-                    <Input
-                      size="large"
-                      width={200}
-                      onChange={(e) => {
-                        setCodeReceiver(e.target.value);
-                      }}
-                    ></Input>
-                  </Col>
-                  <Col span={4}>
-                    <Button size="large" disabled={timer} onClick={handleSendCode}>
-                      {timer || 'Gửi mã'}
-                    </Button>
+                  <Col span={24}>
+                    <Form.Item
+                      label="Email"
+                      name="passwordEmail"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng điền Email!',
+                        },
+                        {
+                          pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                          message: 'Vui lòng nhập địa chỉ email hợp lệ!',
+                        },
+                      ]}
+                    >
+                      <Input
+                        size="large"
+                        width={200}
+                        onChange={(e) => {
+                          setEmail(e.target.value);
+                        }}
+                      ></Input>
+                    </Form.Item>
                   </Col>
                 </Row>
-              </Form.Item>
-            </Col>
-            <Col span={8}></Col>
-          </Row>
-          <Row>
-            <Col span={8}></Col>
-            <Col span={8}>
-              <Form.Item
-                label="Mật Khẩu"
-                name="password"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng điền mật khẩu!',
-                    whitespace: true,
-                  },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (
-                        value &&
-                        value.length >= 12 &&
-                        value.length <= 30 &&
-                        /[\W_]/.test(value) &&
-                        /[A-Z]/.test(value) &&
-                        /\d/.test(value)
-                      ) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error('Mật khẩu trong khoảng 12-30 kí tự, bao gồm ký tự đặc biệt, số và chữ in hoa!'),
-                      );
-                    },
-                  }),
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (value && value.trim() === value) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(new Error('Mật khẩu không được có khoảng trắng ở đầu hoặc cuối!'));
-                    },
-                  }),
-                ]}
-              >
-                <Input.Password style={{ width: 400 }} size="large" />
-              </Form.Item>
-            </Col>
-            <Col span={8}></Col>
-          </Row>
-          <Row>
-            <Col span={8}></Col>
-            <Col span={8}>
-              <Form.Item
-                label="Nhập lại Mật Khẩu"
-                name="rePassword"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng nhập lại mật khẩu!',
-                  },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (
-                        value &&
-                        value.length >= 12 &&
-                        /[\W_]/.test(value) &&
-                        /[A-Z]/.test(value) &&
-                        /\d/.test(value)
-                      ) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error('Mật khẩu cần ít nhất 12 ký tự, bao gồm ký tự đặc biệt, số và chữ in hoa!'),
-                      );
-                    },
-                  }),
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (value && value.trim() === value) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(new Error('Mật khẩu không được có khoảng trắng ở đầu hoặc cuối!'));
-                    },
-                  }),
-                ]}
-              >
-                <Input.Password style={{ width: 400 }} size="large" />
-              </Form.Item>
-            </Col>
-            <Col span={8}></Col>
-          </Row>
-          <Row>
-            <Col span={8}></Col>
-            <Col span={8}>
-              <Popconfirm
-                title="Xác Nhận"
-                description="Bạn chắc chắn muốn đổi ?"
-                onConfirm={handleClickChangePassword}
-                onCancel={() => {}}
-                okText="Có"
-                cancelText="Không"
-              >
-                <Button size="large" shape="round" type="primary">
-                  Đổi mật khẩu
-                </Button>
-              </Popconfirm>
+                <Row>
+                  <Col span={24}>
+                    <Form.Item
+                      label="Mã code"
+                      name="code"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng điền mã Code!',
+                          whitespace: true,
+                        },
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value && value.trim() === value) {
+                              return Promise.resolve();
+                            }
+                            return Promise.reject(new Error('Mã code không được có khoảng trắng ở đầu hoặc cuối!'));
+                          },
+                        }),
+                      ]}
+                    >
+                      <Row>
+                        {' '}
+                        <Col span={20}>
+                          <Input
+                            size="large"
+                            width={200}
+                            onChange={(e) => {
+                              setCodeReceiver(e.target.value);
+                            }}
+                          ></Input>
+                        </Col>
+                        <Col span={4}>
+                          <Button size="large" disabled={timer} onClick={handleSendCode}>
+                            {timer || 'Gửi mã'}
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={8}>
+                    <Form.Item
+                      label="Mật Khẩu"
+                      name="password"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng điền mật khẩu!',
+                          whitespace: true,
+                        },
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (
+                              value &&
+                              value.length >= 12 &&
+                              value.length <= 30 &&
+                              /[\W_]/.test(value) &&
+                              /[A-Z]/.test(value) &&
+                              /\d/.test(value)
+                            ) {
+                              return Promise.resolve();
+                            }
+                            return Promise.reject(
+                              new Error('Mật khẩu trong khoảng 12-30 kí tự, bao gồm ký tự đặc biệt, số và chữ in hoa!'),
+                            );
+                          },
+                        }),
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value && value.trim() === value) {
+                              return Promise.resolve();
+                            }
+                            return Promise.reject(new Error('Mật khẩu không được có khoảng trắng ở đầu hoặc cuối!'));
+                          },
+                        }),
+                      ]}
+                    >
+                      <Input.Password style={{ width: 400 }} size="large" />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={8}>
+                    <Form.Item
+                      label="Nhập lại Mật Khẩu"
+                      name="rePassword"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Vui lòng nhập lại mật khẩu!',
+                        },
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (
+                              value &&
+                              value.length >= 12 &&
+                              /[\W_]/.test(value) &&
+                              /[A-Z]/.test(value) &&
+                              /\d/.test(value)
+                            ) {
+                              return Promise.resolve();
+                            }
+                            return Promise.reject(
+                              new Error('Mật khẩu cần ít nhất 12 ký tự, bao gồm ký tự đặc biệt, số và chữ in hoa!'),
+                            );
+                          },
+                        }),
+                        ({ getFieldValue }) => ({
+                          validator(_, value) {
+                            if (value && value.trim() === value) {
+                              return Promise.resolve();
+                            }
+                            return Promise.reject(new Error('Mật khẩu không được có khoảng trắng ở đầu hoặc cuối!'));
+                          },
+                        }),
+                      ]}
+                    >
+                      <Input.Password style={{ width: 400 }} size="large" />
+                    </Form.Item>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col span={8}>
+                    <Popconfirm
+                      title="Xác Nhận"
+                      description="Bạn chắc chắn muốn đổi ?"
+                      onConfirm={handleClickChangePassword}
+                      onCancel={() => {}}
+                      okText="Có"
+                      cancelText="Không"
+                    >
+                      <Button size="large" shape="round" type="primary">
+                        Đổi mật khẩu
+                      </Button>
+                    </Popconfirm>
 
-              <Modal
-                title="Xác thực Số điện thoại tài khoản"
-                open={open}
-                onOk={handleOk}
-                onCancel={hideModal}
-                okText="Xác nhận"
-                cancelText="Hủy"
-              >
-                <Form form={sdt} onFinish={() => {}} onFinishFailed={() => {}}>
-                  <Form.Item
-                    label="Số điện thoại"
-                    name="phoneNumber"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Vui lòng điền SĐT!',
-                        whitespace: true,
-                      },
-                      {
-                        pattern: /^((\+|00)84|0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-6|8-9]|9\d)\d{7}$/,
-                        message: 'Vui lòng nhập số điện thoại hợp lệ!',
-                      },
-                    ]}
-                  >
-                    <Input
-                      onChange={(e) => {
-                        setPhoneNumber(e.target.value);
-                      }}
-                    />
-                  </Form.Item>
-                </Form>
-              </Modal>
-            </Col>
-            <Col span={8}></Col>
-          </Row>
-        </Form>
+                    <Modal
+                      title="Xác thực Số điện thoại tài khoản"
+                      open={open}
+                      onOk={handleOk}
+                      onCancel={hideModal}
+                      okText="Xác nhận"
+                      cancelText="Hủy"
+                    >
+                      <Form form={sdt} onFinish={() => {}} onFinishFailed={() => {}}>
+                        <Form.Item
+                          label="Số điện thoại"
+                          name="phoneNumber"
+                          rules={[
+                            {
+                              required: true,
+                              message: 'Vui lòng điền SĐT!',
+                              whitespace: true,
+                            },
+                            {
+                              pattern: /^((\+|00)84|0)(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-6|8-9]|9\d)\d{7}$/,
+                              message: 'Vui lòng nhập số điện thoại hợp lệ!',
+                            },
+                          ]}
+                        >
+                          <Input
+                            onChange={(e) => {
+                              setPhoneNumber(e.target.value);
+                            }}
+                          />
+                        </Form.Item>
+                      </Form>
+                    </Modal>
+                  </Col>
+                </Row>
+              </Form>
+            </div>
+            <Button className={styles.linkBtn} type="link" onClick={() => navigate('/login')}>
+              Đăng nhập ở đây!!!
+            </Button>
+          </div>
+        </div>
       </div>
-      <button className={styles.linkBtn} onClick={() => navigate('/login')}>
-        Bạn đã có tài khoản? Đăng nhập ở đây!!!
-      </button>
-    </div>
+    </Fragment>
   );
 }
 export default ForgotPassword;
