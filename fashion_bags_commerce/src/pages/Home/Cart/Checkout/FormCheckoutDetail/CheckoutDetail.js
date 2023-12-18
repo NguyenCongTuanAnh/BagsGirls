@@ -5,7 +5,7 @@ import axios from 'axios';
 import dayjs from 'dayjs';
 import moment from 'moment/moment';
 import { Fragment, useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import BeatLoader from 'react-spinners/ClipLoader';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
@@ -24,8 +24,9 @@ const CheckoutDetail = () => {
   const [address1, setAddress1] = useState(null);
   const [thongTinKH, setThongTinKH] = useState(null);
 
-  const [anThongTinDiaChi, setAnThongTinDiaChi] = useState(false);
-  const [anThongTinDiaChi1, setAnThongTinDiaChi1] = useState(true);
+  const [anThongTinDiaChi, setAnThongTinDiaChi] = useState(true);
+  const [anThongTinDiaChi1, setAnThongTinDiaChi1] = useState(false);
+  const navigate = useNavigate();
 
   // const addressFromLocalStorage = { address };
   const displayInformationSection = address1 === null;
@@ -297,6 +298,7 @@ const CheckoutDetail = () => {
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [selectedWard, setSelectedWard] = useState('');
   const [shippingFee, setShippingFee] = useState(0);
+  const [shipPrice, setShipPrice] = useState(0);
   const token = '96b259e7-9ca7-11ee-b394-8ac29577e80e';
   const shopId = '4773374';
 
@@ -437,7 +439,7 @@ const CheckoutDetail = () => {
         setLoadingPayment(false);
         return messageApi.open({
           type: 'error',
-          content: 'Vui lòng chọn Xác nhận địa chỉ',
+          content: 'Vui lòng nhập đầy đủ thông tin địa chỉ',
         });
       } else {
         setLoadingPayment(true);
@@ -484,6 +486,7 @@ const CheckoutDetail = () => {
           billPriceAfterVoucher: totalPrice || location?.state?.totalPrice,
           billReducedPrice: voucherPrice,
         };
+
         console.log('BilLData', billData);
         const response = await billsAPI.add(billData);
         console.log('Billsssss', response.data);
@@ -556,12 +559,12 @@ const CheckoutDetail = () => {
       const currentTime = new Date();
       const currentDateTime = dayjs(currentTime).format('YYYY-MM-DD HH:mm:ss');
       setBillCreateDate(currentDateTime);
-      if (phoneNumber) {
+      if (!address) {
         console.log('Vui lòng điền đầy đủ thông tin');
         setLoadingPayment(false);
         return messageApi.open({
           type: 'error',
-          content: 'Vui lòng chọn Xác nhận địa chỉ',
+          content: 'Vui lòng nhập đầy đủ thông tin địa chỉ',
         });
       } else {
         setLoadingPayment(true);
@@ -586,15 +589,19 @@ const CheckoutDetail = () => {
 
         const fullAddressText = `- ${selectedWardName}- ${selectedDistrictName} -  ${selectedProvinceName}`;
         const combinedAddress = address + fullAddressText;
+
         const billData = {
-          receiverName: fullName,
-          orderPhone: phoneNumber,
-          orderEmail: email,
-          shippingAddress: address1 + combinedAddress,
+          receiverName: location.state?.infoCustomer?.customers?.users?.fullName || fullName,
+          orderPhone: location.state?.infoCustomer?.customers?.users?.phoneNumber || phoneNumber,
+          orderEmail: location.state?.infoCustomer?.customers?.users?.email || email,
+          shippingAddress: address1 ? address1 : combinedAddress,
+          billingAddress: address ? combinedAddress : address1,
+
           billCreateDate: currentDateTime,
           billNote: billNote,
           billStatus: 4,
-          billReducedPrice: voucherPrice + shippingFee,
+          billReducedPrice: voucherPrice,
+          shipPrice: shippingFee,
           billCode: generateCustomCode('HĐ', 9),
           billTotalPrice: location?.state?.totalPrice1,
           productAmount: location?.state?.totalAmount,
@@ -605,10 +612,13 @@ const CheckoutDetail = () => {
               fullName: thongTinKH?.fullName,
               phoneNumber: thongTinKH?.phoneNumber,
               email: thongTinKH?.email,
-              address:address1,
+              address: address1,
             },
           },
         };
+        setAddressFinal(combinedAddress);
+        setFullAddres(fullAddressText);
+        setShipPrice(shippingFee);
         console.log('11111111111111111', billData);
         const response = await billsAPI.add(billData);
         console.log('Billsssss', response.data);
@@ -791,7 +801,7 @@ const CheckoutDetail = () => {
             <div style={{ width: '100%' }}>
               <Fragment>
                 <div>
-                  <h1>Thông tin người đặt hàng</h1>
+                  <h1>Thông tin người đặt && nhận hàng</h1>
                   {!displayInformation && (
                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'end' }}>
                       <div
@@ -967,6 +977,7 @@ const CheckoutDetail = () => {
                             <input
                               className="inputLabel"
                               type="text"
+                              // disabled
                               value={fullName || location.state.infoCustomer.customers.users.fullName}
                               onChange={handleFullNameChange}
                               placeholder="Họ và tên"
@@ -980,7 +991,7 @@ const CheckoutDetail = () => {
                               Số điện thoại<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
                             </label>
                             <input
-                              disabled
+                              // disabled
                               className="inputLabel"
                               type="text"
                               value={phoneNumber || location.state.infoCustomer.customers.users.phoneNumber}
@@ -1011,159 +1022,137 @@ const CheckoutDetail = () => {
                           </div>
                         </div>
 
-                        {anThongTinDiaChi && (
-                          <div>
-                            <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
-                              <div className="customInput">
-                                <label>
-                                  Tỉnh/ Thành phố<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
-                                </label>
-                                <select
-                                  value={selectedProvince}
-                                  id="selectedProvince"
-                                  onChange={handleProvinceChange}
-                                  className="inputLabel"
-                                  required
-                                >
-                                  <option value="">Chọn tỉnh/thành phố</option>
-                                  {provinces.map((province) => (
-                                    <option key={province.ProvinceID} value={province.ProvinceID}>
-                                      {province.ProvinceName}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
+                        {/* {location.state?.infoCustomer?.customers?.users.address == '' ? ():() } */}
 
-                              <div className="customInput">
-                                <label>
-                                  Quận/ Huyện<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
-                                </label>
-                                <select
-                                  onChange={handleDistrictChange}
-                                  value={selectedDistrict}
-                                  id="selectedDistrict"
-                                  disabled={!selectedProvince}
-                                  className="inputLabel"
-                                  required
-                                >
-                                  <option value="">Chọn quận/huyện</option>
-                                  {districts.map((district) => (
-                                    <option key={district.DistrictID} value={district.DistrictID}>
-                                      {district.DistrictName}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                              <div className="customInput">
-                                <label>
-                                  Phường/ Xã<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
-                                </label>
-                                <select
-                                  onChange={handleWardChange}
-                                  value={selectedWard}
-                                  id="selectedWard"
-                                  disabled={!selectedDistrict}
-                                  className="inputLabel"
-                                  required
-                                >
-                                  <option value="">Chọn phường/xã</option>
-                                  {wards.map((ward) => (
-                                    <option key={ward.WardCode} value={ward.WardCode}>
-                                      {ward.WardName}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
-                            </div>
-                            <div>Phí vận chuyển: {shippingFee}</div>
-                            <div className="customInput">
-                              <label>
-                                Địa chỉ
-                                <span style={{ color: '#ff0000', fontWeight: 'bold' }}>
-                                  {' '}
-                                  *
-                                  <p
-                                    className="thayDoiDiaChiNhanHang"
-                                    style={{ float: 'right' }}
-                                    onClick={() => {
-                                      setAnThongTinDiaChi(false);
-                                      setAnThongTinDiaChi1(true);
-                                      setAddress('');
-                                      handleResetDropdowns();
-                                    }}
+                        <div>
+                          {anThongTinDiaChi && (
+                            <div>
+                              <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
+                                <div className="customInput">
+                                  <label>
+                                    Tỉnh/ Thành phố<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                                  </label>
+                                  <select
+                                    value={selectedProvince}
+                                    id="selectedProvince"
+                                    onChange={handleProvinceChange}
+                                    className="inputLabel"
+                                    required
                                   >
-                                    Lấy địa chỉ gốc
-                                  </p>
-                                </span>
-                              </label>
-                              <input
-                                className="inputLabel"
-                                type="text"
-                                value={address}
-                                onChange={handleAddressChange}
-                                placeholder="Điền rõ thông tin số nhà, tên đường"
-                                required
-                                title="Địa chỉ không được chứa kí tự đặc biệt"
-                              />
-                            </div>
-                            <div className="customInput">
-                              <label>Ghi chú</label>
-                              <textarea
-                                className="textarea"
-                                rows={3}
-                                value={billNote}
-                                onChange={(e) => setBillNote(e.target.value)}
-                                placeholder="Ghi chú của khách hàng"
-                              />
-                            </div>
+                                    <option value="">Chọn tỉnh/thành phố</option>
+                                    {provinces.map((province) => (
+                                      <option key={province.ProvinceID} value={province.ProvinceID}>
+                                        {province.ProvinceName}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
 
-                            <br></br>
-                            <button
-                              onClick={() => {
-                                setAddress1(address);
-                              }}
-                            >
-                              Giao đến địa chỉ mới
-                            </button>
-                          </div>
-                        )}
-
-                        {anThongTinDiaChi1 && (
-                          <div>
-                            {displayInformationSection ? (
+                                <div className="customInput">
+                                  <label>
+                                    Quận/ Huyện<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                                  </label>
+                                  <select
+                                    onChange={handleDistrictChange}
+                                    value={selectedDistrict}
+                                    id="selectedDistrict"
+                                    disabled={!selectedProvince}
+                                    className="inputLabel"
+                                    required
+                                  >
+                                    <option value="">Chọn quận/huyện</option>
+                                    {districts.map((district) => (
+                                      <option key={district.DistrictID} value={district.DistrictID}>
+                                        {district.DistrictName}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                                <div className="customInput">
+                                  <label>
+                                    Phường/ Xã<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
+                                  </label>
+                                  <select
+                                    onChange={handleWardChange}
+                                    value={selectedWard}
+                                    id="selectedWard"
+                                    disabled={!selectedDistrict}
+                                    className="inputLabel"
+                                    required
+                                  >
+                                    <option value="">Chọn phường/xã</option>
+                                    {wards.map((ward) => (
+                                      <option key={ward.WardCode} value={ward.WardCode}>
+                                        {ward.WardName}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
+                              </div>
+                              <div>Phí vận chuyển: {shippingFee}</div>
                               <div className="customInput">
                                 <label>
-                                  Địa chỉ
+                                  Địa chỉ người nhận:
                                   <span style={{ color: '#ff0000', fontWeight: 'bold' }}>
                                     {' '}
-                                    *{' '}
+                                    *
                                     <p
                                       className="thayDoiDiaChiNhanHang"
-                                      style={{ float: 'right' }}
+                                      style={{ float: 'right', fontSize: '17px' }}
                                       onClick={() => {
-                                        setAnThongTinDiaChi(true);
-                                        setAnThongTinDiaChi1(false);
+                                        setAnThongTinDiaChi(false);
+                                        setAnThongTinDiaChi1(true);
+                                        setAddress('');
+                                        handleResetDropdowns();
                                       }}
                                     >
-                                      Thay đổi địa chỉ
-                                    </p>{' '}
+                                      Lấy địa chỉ của bạn:
+                                      <span
+                                        style={{ color: 'black', padding: ' 0 0 0 10px', textDecoration: 'underline' }}
+                                      >
+                                        {location.state.infoCustomer?.customers?.users?.address}
+                                      </span>
+                                    </p>
                                   </span>
                                 </label>
                                 <input
                                   className="inputLabel"
                                   type="text"
-                                  disabled
-                                  value={location.state.infoCustomer.customers.users.address}
-                                  onChange={handleAddressChangeOld}
+                                  value={address}
+                                  onChange={handleAddressChange}
                                   placeholder="Điền rõ thông tin số nhà, tên đường"
                                   required
                                   title="Địa chỉ không được chứa kí tự đặc biệt"
                                 />
                               </div>
-                            ) : (
+                              <div className="customInput">
+                                <label>Ghi chú</label>
+                                <textarea
+                                  className="textarea"
+                                  rows={3}
+                                  value={billNote}
+                                  onChange={(e) => setBillNote(e.target.value)}
+                                  placeholder="Ghi chú của khách hàng"
+                                />
+                              </div>
+
+                              <br></br>
+                              <button
+                                onClick={() => {
+                                  setAddress1(address);
+                                  setAddress1(location.state.infoCustomer?.customers?.users?.address);
+                                }}
+                              >
+                                Giao đến địa chỉ mới
+                              </button>
+                            </div>
+                          )}
+
+                          {anThongTinDiaChi1 && (
+                            <div>
                               <div className="customInput">
                                 <label>
-                                  Địa chỉ
+                                  Địa chỉ của bạn:
                                   <span style={{ color: '#ff0000', fontWeight: 'bold' }}>
                                     {' '}
                                     *{' '}
@@ -1176,44 +1165,65 @@ const CheckoutDetail = () => {
                                         setAddress('');
                                       }}
                                     >
-                                      Thay đổi địa chỉ
+                                      Thay đổi địa chỉ người nhận
                                     </p>{' '}
                                   </span>
                                 </label>
-                                <input
-                                  className="inputLabel"
-                                  type="text"
-                                  disabled
-                                  value={location.state.infoCustomer.customers.users.address}
-                                  onChange={handleAddressChangeOld}
-                                  placeholder="Điền rõ thông tin số nhà, tên đường"
-                                  required
-                                  title="Địa chỉ không được chứa kí tự đặc biệt"
+
+                                <div style={{ width: '100%' }}>
+                                  <input
+                                    className="inputLabel"
+                                    style={{ width: '85%' }}
+                                    type="text"
+                                    disabled
+                                    value={location.state.infoCustomer.customers.users.address}
+                                    onChange={handleAddressChangeOld}
+                                    placeholder="Bạn chưa có địa chỉ"
+                                    required
+                                    title="Địa chỉ không được chứa kí tự đặc biệt"
+                                  />
+                                  <span
+                                    style={{
+                                      // position: 'absolute',
+                                      top: '50%',
+                                      transform: 'translateY(-50%)',
+                                      left: '10px',
+                                      color: 'blue',
+                                      textDecoration: 'underline',
+                                      cursor: 'pointer',
+                                      padding: '0 0 0 30px',
+                                    }}
+                                    onClick={() => {
+                                      navigate('/profile');
+                                    }}
+                                  >
+                                    Cập nhật thông tin
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="customInput">
+                                <label>Ghi chú</label>
+                                <textarea
+                                  className="textarea"
+                                  rows={3}
+                                  value={billNote}
+                                  onChange={(e) => setBillNote(e.target.value)}
+                                  placeholder="Ghi chú của khách hàng"
                                 />
                               </div>
-                            )}
-                            <div className="customInput">
-                              <label>Ghi chú</label>
-                              <textarea
-                                className="textarea"
-                                rows={3}
-                                value={billNote}
-                                onChange={(e) => setBillNote(e.target.value)}
-                                placeholder="Ghi chú của khách hàng"
-                              />
+
+                              <br></br>
+                              <button
+                                onClick={() => {
+                                  setAddress1(location.state.infoCustomer.customers.users.address);
+                                  setAddress(location.state.infoCustomer.customers.users.address);
+                                }}
+                              >
+                                Giao đến địa chỉ này gốc
+                              </button>
                             </div>
-
-                            <br></br>
-                            <button
-                              onClick={() => {
-                                setAddress1(location.state.infoCustomer.customers.users.address);
-
-                              }}
-                            >
-                              Giao đến địa chỉ này gốc
-                            </button>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1251,7 +1261,11 @@ const CheckoutDetail = () => {
                     {phoneNumber || location.state.infoCustomer.customers.users.phoneNumber}
                   </p>
                   <p>
-                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ:</span> {address1} {fullAddress}
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ Người Đặt:</span> {address1}{' '}
+                    {fullAddress}
+                  </p>
+                  <p>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ Người Nhận:</span> {address}
                   </p>
                   <p>
                     <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Email:</span>{' '}
@@ -1491,7 +1505,7 @@ const CheckoutDetail = () => {
                       Tổng thanh toán (2) + (4) + (5):{' '}
                       <span style={{ color: 'red', fontWeight: 'bold', fontSize: '25px' }}>
                         {' '}
-                        {VNDFormaterFunc(totalPrice || location?.state?.totalPrice + shippingFee)}
+                        {VNDFormaterFunc(totalPrice + shippingFee || location?.state?.totalPrice + shipPrice)}
                       </span>
                       <br />
                     </div>
