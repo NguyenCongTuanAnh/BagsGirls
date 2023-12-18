@@ -372,6 +372,7 @@ function ProductAddForm() {
     setFileList(fileLists);
   };
   const handlePreview = async (file) => {
+    console.log(file);
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj);
     }
@@ -384,44 +385,7 @@ function ProductAddForm() {
     return false;
   };
   const filterOption = (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
-  const [fileList1, setFileList1] = useState([
-    {
-      uid: '-1',
-      name: 'image.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-2',
-      name: 'image.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-3',
-      name: 'image.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-4',
-      name: 'image.png',
-      status: 'done',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-xxx',
-      percent: 50,
-      name: 'image.png',
-      status: 'uploading',
-      url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-    },
-    {
-      uid: '-5',
-      name: 'image.png',
-      status: 'error',
-    },
-  ]);
+  const [fileList1, setFileList1] = useState([]);
   const addPropsHandle = async (values) => {
     const namePropsList = Object.keys(values);
     const nameProps = namePropsList[0];
@@ -542,7 +506,7 @@ function ProductAddForm() {
         </div>
       ),
     });
-
+  const handleCancel = () => setPreviewOpen(false);
   const handleDelete = (product) => {
     const keyProduct =
       product.buckleTypeId +
@@ -597,7 +561,7 @@ function ProductAddForm() {
       });
     }
   };
-
+  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
   return (
     <div className="contentStyle222">
       {contextHolder}
@@ -1124,12 +1088,14 @@ function ProductAddForm() {
             </Col>
             <Col span={16} className={styles.dragger}>
               <Dragger
-                fileList={fileList1}
+                fileList={fileList}
+                listType="picture-card"
                 multiple
                 name="files"
-                showUploadList={false}
+                showUploadList={true}
                 onPreview={handlePreview}
                 beforeUpload={beforeUpload}
+                onChange={handleChange}
                 height={'90%'}
                 style={{ width: '80%' }}
               >
@@ -1138,7 +1104,7 @@ function ProductAddForm() {
                 </p>
                 <p className="ant-upload-text">Kéo thả hình ảnh vào đây</p>
               </Dragger>
-              <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={'handleCancel'}>
+              <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
                 <img
                   alt="example"
                   style={{
