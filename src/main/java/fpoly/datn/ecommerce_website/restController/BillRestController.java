@@ -103,6 +103,20 @@ public class BillRestController {
         }
     }
 
+
+    @RequestMapping(value = "/bills/customer", method = RequestMethod.GET)
+    public ResponseEntity<?> getAllBillOfCustomer(
+            @RequestParam(name = "page", defaultValue = "0") Integer pageNum,
+            @RequestParam(name = "size", defaultValue = "5") Integer pageSize,
+            @RequestParam(name ="status", required = false) Integer status,
+            @RequestParam(name = "customerId", defaultValue = "") String customerId,
+            @RequestParam(defaultValue = "billCreateDate") List<String> sortList,
+            @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder
+    ) {
+            return new ResponseEntity<>(this.billService.getAllBillsCustomer(customerId, status, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+
+    }
+
     @RequestMapping(value = "/bills/update-status", method = RequestMethod.PUT)
     public ResponseEntity<Bills> updateStatus(@RequestParam String id, @RequestParam int status) {
         return new ResponseEntity<>(billService.updateStatus(id, status),

@@ -216,6 +216,13 @@ public class BillServiceImpl implements IBillService {
     }
 
     @Override
+    public Page<BillsDTO> getAllBillsCustomer(String customerId, Integer status, int pageNum, int pageSize, List<String> sortList, String sortOrder) {
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, Sort.by(createSortOrder(sortList, sortOrder)));
+        Page<Bills> bills = this.iBillRepository.findAllBillsCustomer(customerId, status, pageable);
+        return bills.map(bill -> modelMapper.map(bill, BillsDTO.class));
+    }
+
+    @Override
     public Bills updateStatus(String id, Integer status) {
         Bills bill = iBillRepository.findById(id).get();
         bill.setBillStatus(status);

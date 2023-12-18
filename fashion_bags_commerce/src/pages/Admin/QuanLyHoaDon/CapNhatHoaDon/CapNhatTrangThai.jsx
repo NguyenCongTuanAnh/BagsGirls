@@ -78,7 +78,7 @@ function FormCapNhatTrangThai(props) {
 
     return (
         <>
-            <Button type="primary" disabled={props.disabled} onClick={showModal} icon={<ReloadOutlined />}>
+            <Button type="primary" style={{ width: '120px' }} disabled={props.disabled} onClick={showModal} icon={<ReloadOutlined />}>
                 Trạng thái
             </Button>
             <Modal

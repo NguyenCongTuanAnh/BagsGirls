@@ -28,7 +28,7 @@ public interface IBillService {
 
     Page<BillsDTO> getAllBillsOffline(String staffId, String customerId, String customerRanking, Date startDate, Date endDate, Integer status, String search, int pageNum, int pageSize, List<String> sortList,
                                String sortOrder);
-
+    Page<BillsDTO> getAllBillsCustomer(String customerId, Integer status, int pageNum, int pageSize, List<String> sortList, String sortOrder );
 
     Bills updateStatus(String id, Integer status);
 

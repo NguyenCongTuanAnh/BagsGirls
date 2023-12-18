@@ -14,7 +14,7 @@ function FormCustomerEdit(props) {
   const [getSDT, setSDT] = useState('');
   const [data, setData] = useState(props.customerData);
   const [password, setPassword] = useState(props.customerData.users.password);
-  
+
   const [form] = useForm();
 
 
@@ -118,7 +118,7 @@ function FormCustomerEdit(props) {
         description: 'Dữ liệu đã được thay đổi thành công',
         duration: 2,
       });
-      setData(...data,);
+      // setData(...data,);
       onClose();
 
       // Đóng Modal sau khi thêm thành công

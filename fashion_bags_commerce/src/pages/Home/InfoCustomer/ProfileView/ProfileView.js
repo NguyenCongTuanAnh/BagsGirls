@@ -6,6 +6,7 @@ import './profile.css';
 import AddressCustomer from '../InformationCustomer/InformationCustomer';
 import { getCustomer } from '~/api/auth/helper/UserCurrent';
 import ChanglePassword from '../FormChanglePassword/ChanglePassword';
+import FormBillOfCustomer from '../FormBillOfCustomer/FormBillOfCustomer';
 function ProfileView() {
   const location = useLocation();
   const { TabPane } = Tabs;
@@ -93,7 +94,7 @@ function ProfileView() {
                 }
                 key="5"
               >
-                Nội dung tab đơn hàng
+                <FormBillOfCustomer></FormBillOfCustomer>
               </TabPane>
             </Tabs>
           </div>
