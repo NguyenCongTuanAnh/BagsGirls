@@ -29,6 +29,11 @@ const cartDetailAPI = {
         return axiosClient.delete(url);
       },
 
+      clearCartDetail(cartId) {
+        const url = `api/all-cart-detail/${cartId}`;
+        return axiosClient.delete(url);
+      },
+
 
 }
 

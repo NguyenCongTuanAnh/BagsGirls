@@ -74,6 +74,15 @@ public class CartDetailRescontroller {
         }
     }
 
+    @DeleteMapping("/all-cart-detail/{cartId}")
+    public ResponseEntity<String> deleteAllCartDetailsByCartId(@PathVariable String cartId) {
+        boolean deleted = cartDetailService.deleteAllCartDetail(cartId);
+        if (deleted) {
+            return ResponseEntity.ok("Deleted all CartDetails for cartId: " + cartId);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No CartDetails found for cartId: " + cartId);
+    }
+
 
 }
 

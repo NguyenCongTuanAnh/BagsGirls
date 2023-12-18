@@ -16,6 +16,7 @@ import productDetailsAPI from '~/api/productDetailsAPI';
 import voucherAPI from '~/api/voucherAPI';
 import './styles.scss';
 import { faL } from '@fortawesome/free-solid-svg-icons';
+import cartDetailAPI from '~/api/cartDetailAPI';
 
 const CheckoutDetail = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -26,7 +27,9 @@ const CheckoutDetail = () => {
 
   const [anThongTinDiaChi, setAnThongTinDiaChi] = useState(true);
   const [anThongTinDiaChi1, setAnThongTinDiaChi1] = useState(false);
+  const [cartId, setCartId] = useState('');
   const navigate = useNavigate();
+  
 
   // const addressFromLocalStorage = { address };
   const displayInformationSection = address1 === null;
@@ -50,6 +53,8 @@ const CheckoutDetail = () => {
 
   const [customerData, setCustomerData] = useState([]);
 
+  
+
   const getOneCustomer = async () => {
     try {
       const response = await customerAPI.getOne(customerId);
@@ -57,13 +62,12 @@ const CheckoutDetail = () => {
       console.log(data);
       setCustomerData(data);
       setAddress1(data.users.address || '');
-      // if(data.users.address){
 
-      // }
     } catch (error) {
       console.error('Error fetching customer data:', error);
     }
   };
+
 
   useEffect(() => {
     getOneCustomer(customerId);
@@ -659,6 +663,8 @@ const CheckoutDetail = () => {
             await updateProductDetailAmount(item.productDetails.productDetailId, item.amount);
           }),
         );
+        const cartIdne = location?.state?.cartId;
+        setCartId(cartIdne)
         console.log('bilsssssss:', response.data);
         console.log('BilLDetails:', responseBillDetails);
         setOrderSuccess(true);
@@ -667,6 +673,8 @@ const CheckoutDetail = () => {
           type: 'success',
           content: 'Thanh toán thành công',
         });
+        clearAllCartDetail(cartIdne);
+
       } catch (error) {
         setLoadingPayment(false);
         setTimeout(() => setLoadingPayment(true), 200);
@@ -674,6 +682,14 @@ const CheckoutDetail = () => {
       }
       setLoadingPayment(false);
     }, 500);
+  };
+const clearAllCartDetail = async (cartId) => {
+    console.log('cartId',cartId);
+    try {
+      await cartDetailAPI.clearCartDetail(cartId);
+    } catch (error) {
+      console.error('Error deleting cart item:', error);
+    }
   };
 
   useEffect(() => {

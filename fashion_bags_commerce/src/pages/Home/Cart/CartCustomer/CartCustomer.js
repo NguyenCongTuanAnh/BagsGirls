@@ -11,6 +11,7 @@ import { message, notification } from 'antd';
 function CartCustomer() {
   const [cartItems, setCartItems] = useState([]);
   const [cartId, setCartId] = useState('');
+  const [cartId1, setCartId1] = useState('');
   const [cartDetailId, setCartDetailId] = useState('');
   const [amountProductDetail, setAmountProductDetail] = useState(0);
 
@@ -25,6 +26,7 @@ function CartCustomer() {
         const data = response.data;
         setCartItems(data);
         setCartId(customerId);
+        setCartId1(data.cartId);
         setAmountProductDetail(data);
       } catch (error) {
         console.error('Error fetching product details:', error);
@@ -264,6 +266,7 @@ function CartCustomer() {
                       cartItems: cartItems.cartDetailsList,
                       totalAmount: calculateTotalAmount(),
                       infoCustomer: cartItems,
+                      cartId: cartId1,
                     },
                   });
                 }}

@@ -65,11 +65,8 @@ public class CartDetailServiceImpl implements CartDetailService {
 
     @Override
     public Boolean deleteAllCartDetail(String cartId) {
-        // Tìm tất cả các CartDetails có cartId tương ứng
         List<CartDetails> cartDetailsList = iCartDetailRepository.findByCartId(cartId);
-
         if (!cartDetailsList.isEmpty()) {
-            // Xóa tất cả các CartDetails tìm được
             iCartDetailRepository.deleteAll(cartDetailsList);
             return true;
         } else {
