@@ -115,7 +115,7 @@ function CartItem() {
     localStorage.setItem('temporaryCart', JSON.stringify(updatedCart));
 
     if (updatedCart.length === 0) {
-      window.location.reload();
+      // window.location.reload();
     }
   };
 
@@ -261,104 +261,62 @@ function CartItem() {
     <div className="" style={{ padding: '0 5% 0 5%' }}>
       {contextHolder}
       <div>
-        <Link to={'/shop'} className={styles.continue_cart}>
-          Tiếp tục mua sắm <DoubleRightOutlined />
-        </Link>
-        <Table
-          bordered
-          style={{ textAlign: 'center' }}
-          className={styles.table_cart_item}
-          dataSource={cartItems}
-          columns={columns}
-          rowKey="productName"
-          footer={() => (
+        <h2 style={{ color: 'gray', textAlign: 'center' }}>Giỏ hàng</h2>
+
+        <div style={{ textAlign: 'center' }}>
+          <Link to={'/shop'} className={styles.continue_cart}>
+            Tiếp tục mua sắm <DoubleRightOutlined />
+          </Link>
+        </div>
+        <div className="" style={{ padding: '0 5% 0 5%' }}>
+          {contextHolder}
+          {cartItems.length === 0 ? (
+            // Kiểm tra nếu giỏ hàng trống
+            <div style={{ textAlign: 'center', marginTop: '50px' }}>
+              <h2 style={{ color: 'gray' }}>Bạn chưa có sản phẩm nào trong giỏ hàng..</h2>
+              <img
+                src="https://theme.hstatic.net/1000197303/1001046599/14/empty-cart-desktop.png?v=7097"
+                style={{ width: '25%', height: '25%' }}
+              ></img>
+            </div>
+          ) : (
             <div>
-              <h3>
-                <span>
-                  Tổng tiền: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
-                </span>
-              </h3>
+              <Table
+                bordered
+                style={{ textAlign: 'center' }}
+                className={styles.table_cart_item}
+                dataSource={cartItems}
+                columns={columns}
+                rowKey="productName"
+                footer={() => (
+                  <div>
+                    <h3>
+                      <span>
+                        Tổng tiền: <span style={{ color: 'red' }}> {VNDFormaterFunc(calculateTotal())}</span>
+                      </span>
+                    </h3>
+                  </div>
+                )}
+              />
+              <button
+                className={styles.buttonThanhToan}
+                onClick={() => {
+                  navigate('/cart/checkout', {
+                    state: {
+                      totalPrice: calculateTotal(),
+                      voucherPrice: voucherPrice,
+                      disCountPercent: voucher.discountPercent,
+                      totalQuantity: totalQuantity,
+                    },
+                  });
+                }}
+              >
+                Tiến hành thanh toán
+              </button>
             </div>
           )}
-        />
-           <button
-          className={styles.buttonThanhToan}
-          onClick={() => {
-            navigate('/cart/checkout', {
-              state: {
-                totalPrice: calculateTotal(),
-                voucherPrice: voucherPrice,
-                disCountPercent: voucher.discountPercent,
-                totalQuantity: totalQuantity,
-              },
-            });
-          }}
-        >
-          Tiến hành thanh toán
-        </button>
-      </div>
-      
-      {/* <div className={styles.finalCart}>
-        <br />
-
-        <div className={styles.content_product_pc}>
-          <div className={styles.group_content_product}>
-            <div className={styles.body}>
-              <div className={styles.body_ct}>
-                <ul className="list-oppr">
-                  <li className={styles.productDetailItem}>
-                    <span className={styles.label}>Số lượng: </span>
-                    <span className={styles.labelName}>
-                      <span style={{ color: 'red', fontSize: '30px' }}>{totalQuantity}</span> Sản phẩm
-                    </span>
-                  </li>
-                  <hr />
-                  <li className={styles.productDetailItem}>
-                    <span className={styles.label}>Giá trị hàng hóa: </span>
-                    <span className={styles.labelName}>{vndFormaterFunc(calculateTotal())}</span>
-                  </li>
-                  <hr />
-                  <li className={styles.productDetailItem}>
-                    <span className={styles.label}>Mã giảm giá: </span>
-                    <Form layout="vertical">
-                      <Form.Item>
-                        <Search
-                          onChange={(e) => {
-                            setVoucherCode(e.target.value);
-                          }}
-                          enterButton="Áp dụng"
-                          onSearch={handleApplyVoucherCode}
-                          value={voucherCode}
-                          placeholder="(Nếu có)"
-                        />
-                      </Form.Item>
-                    </Form>
-                  </li>
-                  <hr />
-                  <li className={styles.productDetailItem}>
-                    <span className={styles.label}>Giảm tiền: </span>
-                    <span className={styles.labelName}>
-                      <div className={styles.item}>
-                        <h6>- {VNDFormaterFunc(voucherPrice)}</h6>
-                      </div>
-                    </span>
-                  </li>
-                  <hr />
-                  <li className={styles.productDetailItem}>
-                    <span className={styles.label}>Thành tiền: </span>
-                    <span className={styles.labelName} style={{ color: 'red', fontWeight: 'bold', fontSize: '30px' }}>
-                      {calculateTotalAfterVoucher()}
-                    </span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
         </div>
-
-     
-      </div> */}
-
+      </div>
     </div>
   );
 }

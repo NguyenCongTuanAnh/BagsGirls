@@ -46,57 +46,11 @@ function CartView() {
     <div>
       {customerId == null ? (
         <MainLayout>
-          <h1 className={styles.titleCart}>
-            <Breadcrumb steps={steps} />
-          </h1>
-          <div>
-            {cartItems.length === 0 ? (
-              <div style={{ textAlign: 'center' }}>
-                <img
-                  src="https://theme.hstatic.net/1000197303/1001046599/14/empty-cart-desktop.png?v=7097"
-                  style={{ width: '25%', height: '25%' }}
-                ></img>
-
-                <h3 style={{ color: 'gray', margin: '50px 0 0 0' }}>Bạn chưa có sản phẩm nào trong giỏ hàng.. </h3>
-                <Link to={'/shop'} className={styles.continue_cart}>
-                  <span>
-                    Tiếp tục mua sắm <DoubleRightOutlined />
-                  </span>
-                </Link>
-              </div>
-            ) : (
-              <div style={{ textAlign: 'center' }}>
-                <CartItem />
-              </div>
-            )}
-          </div>
+          <CartItem />
         </MainLayout>
       ) : (
         <MainLayout>
-          <div>
-            <h2 style={{ color: 'gray', textAlign: 'center' }}>Giỏ hàng của bạn</h2>
-
-            {cartItems.length === 0 ? (
-              <div style={{ textAlign: 'center' }}>
-                <Link to={'/shop'} className={styles.continue_cart}>
-                  <span>
-                    Tiếp tục mua sắm <DoubleRightOutlined />
-                  </span>
-                </Link>
-                <h3 style={{ color: 'gray', margin: '0px 0 0 0' }}>Bạn chưa có sản phẩm nào trong giỏ hàng.. </h3>
-
-                <br></br>
-                <img
-                  src="https://theme.hstatic.net/1000197303/1001046599/14/empty-cart-desktop.png?v=7097"
-                  style={{ width: '25%', height: '25%' }}
-                ></img>
-              </div>
-            ) : (
-              <div style={{ textAlign: 'center' }}>
-                <CartCustomer />
-              </div>
-            )}
-          </div>
+          <CartCustomer />
         </MainLayout>
       )}
     </div>
