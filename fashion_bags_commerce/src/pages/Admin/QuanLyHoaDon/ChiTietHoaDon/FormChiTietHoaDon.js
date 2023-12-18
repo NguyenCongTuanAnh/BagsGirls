@@ -17,64 +17,102 @@ function FormChiTietHoaDon(props) {
     const [tongTienThanhToan, setTongTienThanhToan] = useState(0);
     const [visible, setVisible] = useState(false);
     const [reload, setReload] = useState(false);
-    const [billId, setBillId] = useState();
     const [titleComponent, setTitleComponent] = useState();
     const [listBillDetails, setListBillDetais] = useState([]);
-    const [newAmount, setNewAmount] = useState([]);
-    const [maxAmount, setMaxAmount] = useState([]);
     const [maxAmountProductError, setMaxAmountProductError] = useState(0);
     const [billDetailIdLoi, setBillDetailIdLoi] = useState('');
     const [indexBilldetails, setIndexBilldetails] = useState(0);
+    const [amountBill, setAmountBill] = useState(0);
+    const [totalPriceBill, settotalPriceBill] = useState(0);
     const [open, setOpen] = useState(false);
     const [form] = useForm();
+    const [updateBill, setUpdateBill] = useState(false);
+    const [billDetailProductError, setBillDetailProductError] = useState([]);
+    const [newAmountBillDetail, setNewAmountBillDetail] = useState(0);
 
-    const addItemToNewAmount = (item) => {
-        setNewAmount(prevState => [...prevState, item]);
-    };
-    const addItemToMaxAmount = (item) => {
-        setMaxAmount(prevState => [...prevState, item]);
-    };
     const showModal = () => {
-
-        setBillId(props.bills.billId);
-        setNewAmount([]);
-        setMaxAmount([]);
         getAllByBillId();
-        // console.log(props);
         setTitleComponent(props.bills.billCode);
         const total = listBillDetails.reduce((totalQty, item) => {
-            addItemToNewAmount(item.amount);
-            addItemToMaxAmount(item.amount + item.productDetails.productDetailAmount);
-            return totalQty + item.amount;
+            if (item.billDetailStatus === 1 || item.billDetailStatus === 0) {
+                return totalQty + item.amount;
+            } else {
+                return totalQty;
+            }
         }, 0);
         setTotalQuantity(total);
         setVisible(true);
-        setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice + props.bills.shipPrice);
     };
 
     useEffect(() => {
         setReload(false);
         getAllByBillId();
-        setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice + props.bills.shipPrice);
     }, [visible, reload, totalQuantity]);
 
-    const calculateTotal = () => {
-        return listBillDetails.reduce((total, item) => {
-            return total + item.amount * item.price;
-        }, 0);
 
-    };
-
-    const soLuongView = () => {
-        return listBillDetails.reduce((total, item) => {
-            return total + item.amount;
-        }, 0);
-    };
     const getAllByBillId = async () => {
         const response = await billDetailsAPI.getAllByBillId(props.bills.billId, -1);
         const data = response.data;
         setListBillDetais(data);
-
+        const total = data.reduce((totalQty, item) => {
+            if (item.billDetailStatus === 1 || item.billDetailStatus === 0) {
+                return totalQty + item.amount * item.price;
+            } else {
+                return totalQty;
+            }
+        }, 0);
+        const productAmount = data.reduce((totalQty, item) => {
+            if (item.billDetailStatus === 1 || item.billDetailStatus === 0) {
+                return totalQty + item.amount;
+            } else {
+                return totalQty;
+            }
+        }, 0);
+        if (total === 0) {
+            setTongTienThanhToan(0);
+        } else {
+            setTongTienThanhToan(total - props.bills.billReducedPrice + props.bills.shipPrice);
+        }
+        setAmountBill(productAmount);
+        settotalPriceBill(total);
+        let updateHoaDon = {
+            billId: props.bills.billId,
+            staff: props.bills.staff,
+            customer: props.bills.customer,
+            voucher: props.bills.voucher,
+            billCode: props.bills.billCode,
+            billCreateDate: props.bills.billCreateDate,
+            billDatePayment: props.bills.billDatePayment,
+            billShipDate: props.bills.billShipDate,
+            billReceiverDate: props.bills.billReceiverDate,
+            billTotalPrice: total,
+            productAmount: productAmount,
+            billPriceAfterVoucher: (total === 0 ? 0 : (total - props.bills.billReducedPrice + props.bills.shipPrice)),
+            shippingAddress: props.bills.shippingAddress,
+            billingAddress: props.bills.billingAddress,
+            receiverName: props.bills.receiverName,
+            shipPrice: props.bills.shipPrice,
+            orderEmail: props.bills.orderEmail,
+            orderPhone: props.bills.orderPhone,
+            paymentMethod: props.bills.paymentMethod,
+            billNote: props.bills.billNote,
+            billStatus: props.bills.billStatus,
+            billReducedPrice: props.bills.billReducedPrice
+        };
+        if (updateBill) {
+            setUpdateBill(false);
+            try {
+                await billsAPI.add(updateHoaDon);
+                props.reload();
+            } catch (error) {
+                notification.error({
+                    message: 'Lỗi',
+                    description: 'Lỗi cập nhật hóa đơn không thành công',
+                    duration: 2,
+                });
+                console.log(error);
+            }
+        }
     };
     const setTenNhanVien = () => {
         if (props.bills.staff == null) {
@@ -103,10 +141,7 @@ function FormChiTietHoaDon(props) {
         } else {
             return props.bills.orderPhone;
         }
-        //if (props.bills.customer == null)
-        //  else if (props.bills.customer != null) {
-        //     return props.bills.customer.users.phoneNumber;
-        // }
+
     }
     const setDiaChiKhachHang = () => {
         if (props.bills.customer == null && props.bills.shippingAddress == null) {
@@ -114,9 +149,7 @@ function FormChiTietHoaDon(props) {
         } else {
             return props.bills.shippingAddress;
         }
-        //  else if (props.bills.customer != null) {
-        //     return props.bills.customer.users.address;
-        // }
+
     }
     const setRankKhachHang = () => {
         if (props.bills.customer == null) {
@@ -135,45 +168,6 @@ function FormChiTietHoaDon(props) {
             return 'Chưa có hạng';
         }
     }
-    const updateThongTinHoaDon = async () => {
-        console.log(tongTienThanhToan);
-        let updateHoaDon = {
-            billId: props.bills.billId,
-            staff: props.bills.staff,
-            customer: props.bills.customer,
-            voucher: props.bills.voucher,
-            billCode: props.bills.billCode,
-            billCreateDate: props.bills.billCreateDate,
-            billDatePayment: props.bills.billDatePayment,
-            billShipDate: props.bills.billShipDate,
-            billReceiverDate: props.bills.billReceiverDate,
-            billTotalPrice: calculateTotal(),
-            productAmount: soLuongView(),
-            billPriceAfterVoucher: tongTienThanhToan,
-            shippingAddress: props.bills.shippingAddress,
-            billingAddress: props.bills.billingAddress,
-            receiverName: props.bills.receiverName,
-            shipPrice: props.bills.shipPrice,
-            orderEmail: props.bills.orderEmail,
-            orderPhone: props.bills.orderPhone,
-            paymentMethod: props.bills.paymentMethod,
-            billNote: props.bills.billNote,
-            billStatus: props.bills.billStatus,
-            billReducedPrice: props.bills.billReducedPrice
-        };
-        console.log(updateHoaDon);
-        try {
-            await billsAPI.add(updateHoaDon);
-            props.reload();
-        } catch (error) {
-            notification.error({
-                message: 'Lỗi',
-                description: 'Lỗi cập nhật hóa đơn không thành công',
-                duration: 2,
-            });
-            console.log(error);
-        }
-    }
 
     const updateAmountProductDetail = async (billDetailId, amount) => {
         try {
@@ -183,21 +177,21 @@ function FormChiTietHoaDon(props) {
                     message: 'Thành công',
                     description: 'Xóa thành công sản phẩm!!'
                 });
-                setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
                 setReload(true);
             } else {
                 notification.success({
                     message: 'Thành công',
                     description: 'Sửa thành công số lượng sản phẩm thành: ' + amount.toString(),
                 });
-                setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
                 setReload(true);
             }
+            setUpdateBill(true);
 
         } catch (error) {
             console.error('Đã xảy ra lỗi: ', error);
         }
     }
+
 
     // component Sản phẩm lỗi
 
@@ -205,15 +199,14 @@ function FormChiTietHoaDon(props) {
         setIndexBilldetails(index);
         setMaxAmountProductError(values.amount);
         setBillDetailIdLoi(values.billDetailId);
-        // setBill(values);
-        console.log(values);
-        // console.log(index);
+        setBillDetailProductError(values);
         setOpen(true);
     };
     const onClose = () => {
         form.resetFields();
         setOpen(false);
     };
+
     const updateAmountProductError = async (values) => {
         try {
             const response = await billDetailsAPI.updateAmountProductError(billDetailIdLoi, values.amountError);
@@ -222,30 +215,58 @@ function FormChiTietHoaDon(props) {
                     message: 'Thành công',
                     description: 'Sản phẩm đã được thêm vào hóa đơn hàng lỗi với số lượng là: ' + values.amountError.toString(),
                 });
-                setNewAmount(prevAmount => {
-                    const updatedAmount = [...prevAmount];
-                    updatedAmount[indexBilldetails] = newAmount[indexBilldetails] - values.amountError;
-                    return updatedAmount;
-                });
-                setReload(true);
+                setNewAmountBillDetail(newAmountBillDetail - values.amountError);
+                // lỗi hết
+                if (values.amountError === maxAmountProductError) {
+                    let newBillDetailObject = {
+                        billDetailId: billDetailProductError.billDetailId,
+                        amount: values.amountError,
+                        billDetailNote: values.billDetailNote,
+                        billDetailStatus: -2,
+                        bills: {
+                            billId: billDetailProductError.bills.billId,
+                        },
+                        price: billDetailProductError.price,
+                        productDetails: {
+                            productDetailId: billDetailProductError.productDetails.productDetailId,
+                        }
+                    };
+                    await billDetailsAPI.add(newBillDetailObject); // Use the created object in the API call
+                    setUpdateBill(true);
+                    setReload(true);
+                } else {
+                    let newBillDetailObject = {
+                        amount: values.amountError,
+                        billDetailNote: values.billDetailNote,
+                        billDetailStatus: -2,
+                        bills: {
+                            billId: billDetailProductError.bills.billId,
+                        },
+                        price: billDetailProductError.price,
+                        productDetails: {
+                            productDetailId: billDetailProductError.productDetails.productDetailId,
+                        }
+                    };
+                    await billDetailsAPI.add(newBillDetailObject); // Use the created object in the API call
+                    setUpdateBill(true);
+                    setReload(true);
+                }
+
             }
+
             if (values.amountError > maxAmountProductError) {
                 notification.error({
                     message: 'Không thành công',
                     description: 'Sản phẩm lỗi không thể nhiều hơn sản phẩm trong đơn hàng! ',
                 });
             }
-            setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
+
             setReload(true);
             setOpen(false);
         } catch (error) {
             console.error('Đã xảy ra lỗi: ', error);
         }
     };
-
-    useEffect(() => {
-        setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
-    }, [calculateTotal()]);
 
     const columns = [
         {
@@ -294,66 +315,76 @@ function FormChiTietHoaDon(props) {
             dataIndex: 'amount',
             key: 'amount',
             width: '130px',
-            render: (text, record, index) => (
-                <Space>
-
-                    <InputNumber
-                        min={0}
-                        max={Math.floor(maxAmount[index])}
-                        step={1}
-                        disabled={
-                            (newAmount[index] == null
-                                || Math.floor(props.bills.billStatus) === -1
-                                || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
-                                || Math.floor(props.bills.billStatus) === 2
-                            ) ? true : false}
-                        value={newAmount[index]}
-                        onChange={(newValue) => {
-                            setNewAmount(prevAmount => {
-                                const updatedAmount = [...prevAmount];
-                                updatedAmount[index] = newValue;
-                                return updatedAmount;
-                            });
-                            // console.log(newAmount);
-                        }}
-                        style={{ width: '55px' }}
-                    />
-                    <Popconfirm
-                        title="Xác Nhận"
-                        description="Bạn có chắc muốn thay đổi số lượng sản phẩm?"
-                        okText="Đồng ý"
-                        cancelText="Không"
-                        onConfirm={() => {
-                            updateAmountProductDetail(record.billDetailId, newAmount[index]);
-                            setReload(true);
-                        }}
-                    >
-                        <Button
-                            type="primary"
-                            danger={newAmount[index] <= 0}
+            render: (text, record, index) => {
+                let newAmount = record.amount;
+                let maxAmount = record.amount + record.productDetails.productDetailAmount;
+                // setNewAmountBillDetail(record.amount);
+                return (
+                    <Space>
+                        <InputNumber
+                            min={0}
+                            max={Math.floor(maxAmount)}
+                            step={1}
                             disabled={
-                                (newAmount[index] == null
+                                (newAmount === null
                                     || Math.floor(props.bills.billStatus) === -1
                                     || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
                                     || Math.floor(props.bills.billStatus) === 2
+                                    || Math.floor(props.bills.billStatus) === -2
                                 ) ? true : false}
-                            icon={<CheckOutlined />}
-                            style={
-                                {
-                                    backgroundColor:
-                                        (newAmount[index] == null
-                                            || Math.floor(props.bills.billStatus) === -1
-                                            || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
-                                            || Math.floor(props.bills.billStatus) === 2
-                                        ) ? 'grey' : 'red', color: 'white'
-                                }
-                            }
-                        >
-                        </Button>
-                    </Popconfirm>
+                            defaultValue={record.amount}
+                            onChange={(newValue) => {
 
-                </Space>
-            ),
+                                if (newValue === null) {
+                                    newAmount = 0;
+                                    // setNewAmountBillDetail(0);
+                                } else {
+                                    newAmount = newValue;
+                                    // setNewAmountBillDetail(newValue);
+                                }
+                            }}
+                            style={{ width: '55px' }}
+                        />
+                        <Popconfirm
+                            title="Xác Nhận"
+                            description=<span>Bạn có muốn thay đổi số lượng sản phẩm ??  </span>
+                            okText="Đồng ý"
+                            cancelText="Không"
+                            onConfirm={() => {
+                                updateAmountProductDetail(record.billDetailId, newAmount);
+                                setReload(true);
+                            }}
+                        >
+                            <Button
+                                type="primary"
+                                danger={newAmount <= 0}
+                                disabled={
+                                    (newAmount === null
+                                        || Math.floor(props.bills.billStatus) === -1
+                                        || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
+                                        || Math.floor(props.bills.billStatus) === 2
+                                        || Math.floor(props.bills.billStatus) === -2
+                                    ) ? true : false}
+                                icon={<CheckOutlined />}
+                                style={
+                                    {
+                                        backgroundColor:
+                                            (newAmount === null
+                                                || Math.floor(props.bills.billStatus) === -1
+                                                || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
+                                                || Math.floor(props.bills.billStatus) === 2
+                                                || Math.floor(props.bills.billStatus) === -2
+                                            ) ? 'grey' : 'red', color: 'white'
+                                    }
+                                }
+                            >
+                            </Button>
+                        </Popconfirm>
+
+                    </Space>
+                );
+
+            },
         },
         {
             title: 'Giá',
@@ -379,22 +410,22 @@ function FormChiTietHoaDon(props) {
                 let backgroundColor; // Define a variable for text color
 
                 switch (record.billDetailStatus) {
-                    case 3:
-                        statusText = 'Chờ xác nhận lỗi';
-                        statusClass = 'active-status';
-                        backgroundColor = '#ffcc00';
-                        break;
-                    case 2:
-                        statusText = 'Đã xác nhận lỗi';
-                        statusClass = 'inactiveStatus';
-                        backgroundColor = '#66cc66';
-                        break;
                     case 1:
                         statusText = 'Không lỗi';
                         statusClass = 'inactiveStatus';
                         backgroundColor = '#3399ff';
                         break;
+                    case 0:
+                        statusText = 'Chờ xác nhận lỗi';
+                        statusClass = 'active-status';
+                        backgroundColor = '#ffcc00';
+                        break;
                     case -1:
+                        statusText = 'Đã hủy';
+                        statusClass = 'other-status';
+                        backgroundColor = '#ff3333';
+                        break;
+                    case -2:
                         statusText = 'Hàng lỗi';
                         statusClass = 'other-status';
                         backgroundColor = '#ff3333';
@@ -416,8 +447,10 @@ function FormChiTietHoaDon(props) {
                     <div>
                         <span className={statusClass} style={textStyles}>
                             {statusText}
+                            <br></br>
+
                         </span>
-                        {/* <div style={{ marginTop: '15px' }}>Ghi chú: {record.billDetailNote}</div> */}
+                        <div style={{ marginTop: '15px' }}>Ghi chú: {record.billDetailNote}</div>
                     </div>
 
                 );
@@ -443,12 +476,7 @@ function FormChiTietHoaDon(props) {
                             onCancel={onClose}
                             footer={
                                 <span>
-                                    {/* <Space>
-                                    <Button htmlType="submit" type="primary" className="btn btn-warning">
-                                        Lưu
-                                    </Button>
-                                    <Button onClick={onClose}>Thoát</Button>
-                                </Space> */}
+
                                 </span>
                             }
                         >
@@ -485,7 +513,7 @@ function FormChiTietHoaDon(props) {
                                 <Row gutter={16}>
                                     <Col span={24}>
                                         <Form.Item
-                                            name='userNote'
+                                            name='billDetailNote'
                                             label="Ghi chú sản phẩm lỗi: "
                                             rules={[
                                                 {
@@ -528,13 +556,13 @@ function FormChiTietHoaDon(props) {
                 title={<h2 style={{ fontSize: '28px', fontWeight: 'bold' }}>Chi tiết hóa đơn: {titleComponent}</h2>}
                 centered
                 open={visible}
-                onCancel={() => { updateThongTinHoaDon(); setVisible(false) }}
+                onCancel={() => { setVisible(false) }}
                 width={'97%'}
                 height={'90%'}
                 footer={[
-                    <Button key="cancel" onClick={() => { updateThongTinHoaDon(); setVisible(false) }}>
+                    <Button key="cancel" onClick={() => { setVisible(false) }}>
                         Hủy
-                    </Button>,
+                    </Button>
                 ]}
             >
                 <div>
@@ -598,29 +626,33 @@ function FormChiTietHoaDon(props) {
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Số lượng: </span>
                                                     <span className={styles.labelName}>
-                                                        <span style={{ color: 'red', fontSize: '26px' }}>{soLuongView()} </span>Sản phẩm
+                                                        <span style={{ color: 'red', fontSize: '26px' }}>{amountBill} </span>Sản phẩm
                                                     </span>
                                                 </li>
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Giá trị hàng hóa: </span>
-                                                    <span className={styles.labelName} >{vndFormaterFunc(calculateTotal())}</span>
+                                                    <span className={styles.labelName} >{vndFormaterFunc(totalPriceBill)}</span>
                                                 </li>
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Giảm giá: </span>
-                                                    <span className={styles.labelName} >{vndFormaterFunc(props.bills.billReducedPrice)}</span>
+                                                    <span className={styles.labelName} >
+                                                        {totalPriceBill === 0 ? 0 : vndFormaterFunc(props.bills.billReducedPrice)}
+                                                    </span>
                                                 </li>{' '}
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Tiền ship: </span>
-                                                    <span className={styles.labelName} >{vndFormaterFunc(props.bills.shipPrice)}</span>
+                                                    <span className={styles.labelName} >
+                                                        {totalPriceBill === 0 ? 0 : vndFormaterFunc(props.bills.shipPrice)}
+                                                    </span>
                                                 </li>{' '}
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Thành tiền: </span>
                                                     <span className={styles.labelName} style={{ color: 'red', fontWeight: 'bold', fontSize: '26px' }}>
-                                                        {vndFormaterFunc(calculateTotal() - props.bills.billReducedPrice + props.bills.shipPrice)}
+                                                        {vndFormaterFunc(tongTienThanhToan)}
                                                     </span>
                                                 </li>{' '}
                                             </ul>

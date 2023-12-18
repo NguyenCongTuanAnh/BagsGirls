@@ -12,6 +12,7 @@ import fpoly.datn.ecommerce_website.service.IProductDetalisService;
 import jakarta.validation.constraints.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.text.ParseException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
@@ -62,14 +65,57 @@ public class BillDetailRestController {
                         .collect(Collectors.toList())
                 , HttpStatus.OK
         );
-
     }
+
+    @RequestMapping(value = "bill-detail/getBillDetailsByBillIdNotStatus", method = RequestMethod.GET)
+    public ResponseEntity<?> getAllBillDetailError(
+            @RequestParam(name = "page", defaultValue = "0") Integer pageNum,
+            @RequestParam(name = "size", defaultValue = "10") Integer pageSize
+//            @RequestParam(name ="status", required = false) Integer status,
+//            @RequestParam(name ="search", defaultValue = "") String search,
+//            @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
+//            @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr,
+//            @RequestParam(name = "customerRanking", required = false) String customerRanking,
+//            @RequestParam(name = "customerId", defaultValue = "") String customerId,
+//            @RequestParam(name = "staffId", defaultValue = "") String staffId,
+//            @RequestParam(name = "loaiHoaDon", defaultValue = "") String loaiHoaDon,
+//            @RequestParam(defaultValue = "billCreateDate") List<String> sortList,
+//            @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder
+    ) {
+        try {
+        return new ResponseEntity<>(this.iBillDetailsService.findAllBillDetailError( pageNum, pageSize), HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Lỗi ", HttpStatus.BAD_REQUEST);
+        }
+//        return new ResponseEntity<>(
+//                this.iBillDetailsService.findAllBillDetailError( pageNum, pageSize)
+//                        .stream()
+//                        .map(billDetails -> modelMapper.map(billDetails, GetBillDetailsDTO.class))
+//                        .collect(Collectors.toList())
+//                , HttpStatus.OK
+//        );
+    }
+
     @RequestMapping(value = "bill-detail/getBillDetailsByBillIdOfQuan", method = RequestMethod.GET)
     public ResponseEntity<?> getAllbyBillIdOfQuan(@RequestParam (name ="billId") String billId,
-                                            @RequestParam(name ="status", required = false) Integer status
+                                                  @RequestParam(name ="status", required = false) Integer status
     ) {
         return new ResponseEntity<>(
                 this.iBillDetailsService.findAllByBillId(billId, status)
+                        .stream()
+                        .map(billDetails -> modelMapper.map(billDetails, BillDetailsQDTO.class))
+                        .collect(Collectors.toList())
+                , HttpStatus.OK
+        );
+
+    }
+
+    @RequestMapping(value = "bill-detail/getBillDetailsByBillIdUpdateAmount", method = RequestMethod.GET)
+    public ResponseEntity<?> getBillDetailsByBillIdUpdateAmount(@RequestParam (name ="billId") String billId
+    ) {
+        return new ResponseEntity<>(
+                this.iBillDetailsService.findAllByBillIdUpdateAmount(billId)
                         .stream()
                         .map(billDetails -> modelMapper.map(billDetails, BillDetailsQDTO.class))
                         .collect(Collectors.toList())

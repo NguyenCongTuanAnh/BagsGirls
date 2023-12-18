@@ -270,7 +270,15 @@ function FormBillOfCustomer() {
                                 </Space>
                             </div>
                         );
-                    } else if (record.billStatus !== -1) {
+                    } else if (record.billStatus === -1) {
+                        return (
+                            <div>
+                                <Space size="middle" style={{ marginTop: '10px' }}>
+                                    {hanhDong(record, true, true, true)}
+                                </Space>
+                            </div>
+                        );
+                    } else if (record.billStatus === 4) {
                         return (
                             <div>
                                 <Space size="middle" style={{ marginTop: '10px' }}>
@@ -282,7 +290,7 @@ function FormBillOfCustomer() {
                         return (
                             <div>
                                 <Space size="middle" style={{ marginTop: '10px' }}>
-                                    {hanhDong(record, true, true, true)}
+                                    {hanhDong(record, true, false, true)}
                                 </Space>
                             </div>
                         );
@@ -337,7 +345,7 @@ function FormBillOfCustomer() {
     };
 
     const updateAmount = async (billId) => {
-        const list = await billDetailsAPI.getAllByBillId(billId);
+        const list = await billDetailsAPI.getBillDetailsByBillIdUpdateAmount(billId);
         if (Array.isArray(list.data)) {
             await Promise.all(
                 list.data.map(async (o) => {
@@ -345,7 +353,6 @@ function FormBillOfCustomer() {
                 }),
             );
         }
-
     };
     // const getAllByBillId = async (billId) => {
     //   const response = await billDetailsAPI.getAllByBillId(billId);
@@ -406,13 +413,12 @@ function FormBillOfCustomer() {
 
     const getAllPhanTrangCompartment = async (pageNum, pageSize) => {
         setCustomerId(customerIdLocalStorage);
-        console.log(customerIdLocalStorage);
         try {
             const response = await billsAPI.getAllBillOfCustomer(
                 status,
                 pageNum,
                 pageSize,
-                customerId
+                localStorage.getItem('customerId')
             );
             const data = response.data.content;
             setTotalItem(response.data.totalElements);

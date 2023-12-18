@@ -56,6 +56,7 @@ import ProfilePage from './pages/Admin/ProfilePage/ProfilePage';
 import ForgotPassword from './pages/Login/FormLogin/FormForgotPassword/FormForgotPassword';
 import CartCustomer from './pages/Home/Cart/CartCustomer/CartCustomer';
 import ShipAPI from './pages/Home/Cart/Checkout/FormCheckoutDetail/ShippingAPI';
+import HoaDonLoiView from './pages/Admin/QuanLyHoaDon/HoaDonLoi/indexHoaDonLoiView';
 
 function App() {
   return (
@@ -124,6 +125,14 @@ function App() {
             element={
               <AdminAuth>
                 <HoaDonOnlineView />
+              </AdminAuth>
+            }
+          />
+          <Route
+            path="/bill-error-view"
+            element={
+              <AdminAuth>
+                <HoaDonLoiView />
               </AdminAuth>
             }
           />

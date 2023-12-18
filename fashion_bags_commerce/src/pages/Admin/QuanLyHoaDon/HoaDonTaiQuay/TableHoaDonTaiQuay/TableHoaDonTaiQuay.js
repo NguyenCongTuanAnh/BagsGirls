@@ -402,7 +402,7 @@ function TableHoaDonTaiQuay() {
   };
 
   const updateAmount = async (billId) => {
-    const list = await billDetailsAPI.getAllByBillId(billId);
+    const list = await billDetailsAPI.getBillDetailsByBillIdUpdateAmount(billId);
     if (Array.isArray(list.data)) {
       await Promise.all(
         list.data.map(async (o) => {
