@@ -50,6 +50,18 @@ const billsAPI = {
     });
   },
 
+  getAllBillOfCustomer(status, pageNum, pageSize, customerId) {
+    const url = 'api/bills/customer';
+    return axiosClient.get(url, {
+      params: {
+        status: status,
+        page: pageNum - 1,
+        size: pageSize,
+        customerId: customerId
+      },
+    });
+  },
+
   get(id) {
     const url = `api/bills?id=${id}`;
     return axiosClient.get(url);
