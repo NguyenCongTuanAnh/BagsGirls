@@ -59,10 +59,9 @@ const items = [
     ),
 
     getItem(
-      <Link style={{ textDecoration: 'none' }} to={'/bill-offline-view'}>
-        Hóa đơn hàng lỗi
+      <Link style={{ textDecoration: 'none' }} to={'/bill-error-view'}>
+        Hóa đơn sản phẩm lỗi
       </Link>,
-
       'sub3.2',
 
     ),

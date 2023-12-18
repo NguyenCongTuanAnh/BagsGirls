@@ -18,6 +18,32 @@ const billDetailsAPI = {
     const url = `api/bill-detail/getBillDetailsByBillIdOfQuan?billId=${billId}&status=${status}`;
     return axiosClient.get(url);
   },
+  getBillDetailsByBillIdUpdateAmount(billId) {
+    const url = `api/bill-detail/getBillDetailsByBillIdUpdateAmount?billId=${billId}`;
+    return axiosClient.get(url);
+  },
+  getAllBillDetailsError(
+    // loaiHoaDon, filterStaffCode, startDate, endDate, status, search, pageNum, pageSize, filterRank, customerPhoneNumber, sortList, sortOrder, sortListPlaceHolder
+    ) {
+    const url = 'api/bill-detail/getBillDetailsByBillIdNotStatus';
+    return axiosClient.get(url, {
+      params: {
+        // loaiHoaDon: loaiHoaDon,
+        // staffId: filterStaffCode,
+        // startDate: startDate,
+        // endDate: endDate,
+        // search: search,
+        // status: status,
+        // page: pageNum - 1,
+        // size: pageSize,
+        // customerRanking: filterRank,
+        // customerId: customerPhoneNumber,
+        // sortList: sortList,
+        // sortOrder: sortOrder,
+        // sortListPlaceHolder: sortListPlaceHolder
+      },
+    });
+  },
   add(data) {
     const url = `api/bill-details`;
     return axiosClient.post(url, data, {

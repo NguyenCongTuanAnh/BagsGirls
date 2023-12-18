@@ -3,6 +3,7 @@ package fpoly.datn.ecommerce_website.repository;
 import fpoly.datn.ecommerce_website.dto.TopProductsDTO;
 import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.entity.BillDetails_ChiTiet;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,10 +14,28 @@ import java.util.List;
 
 @Repository
 public interface IBillDetailRepository extends JpaRepository<BillDetails, String> {
-    @Query("SELECT bd FROM  BillDetails_ChiTiet bd " +
-            "where bd.bills.billId = :billID " +
+    @Query(" SELECT bd FROM  BillDetails_ChiTiet bd " +
+            " where bd.bills.billId = :billID " +
             " AND ( :status IS NULL OR bd.billDetailStatus != :status ) " )
     List<BillDetails_ChiTiet> findAllByBillId(@Param("billID") String billID, Integer status);
+
+
+    // get all billdetail lỗi
+    @Query(" SELECT bd FROM  BillDetails_ChiTiet bd " +
+            " where ( bd.billDetailStatus = 0 " +
+            " OR bd.billDetailStatus = - 2 ) " )
+    Page<BillDetails_ChiTiet> findAllBillDetailError(
+
+            Pageable pageable);
+
+
+
+
+
+    @Query(" SELECT bd FROM  BillDetails_ChiTiet bd " +
+            " where bd.bills.billId = :billID " +
+            " AND (  bd.billDetailStatus = 1 OR bd.billDetailStatus = 0 ) " )
+    List<BillDetails_ChiTiet> findAllByBillIdUpdateAmount(@Param("billID") String billID);
 
     @Query("SELECT bd FROM  BillDetails_ChiTiet bd " +
             "where bd.billDetailId = :billDetailId " )

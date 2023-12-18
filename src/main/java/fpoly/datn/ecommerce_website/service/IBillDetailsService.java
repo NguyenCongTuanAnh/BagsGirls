@@ -21,6 +21,11 @@ public interface IBillDetailsService {
 
     List<BillDetailsQDTO> findAllByBillId(String billID, Integer status) ;
 
+    Page<BillDetailsQDTO> findAllBillDetailError(int pageNum, int pageSize);
+
+    List<BillDetailsQDTO> findAllByBillIdUpdateAmount(String billID) ;
+
+
 //    List<BillDetails> findAllBillProduct(String billId);
 
     BillDetailsDTO save(BillDetailsDTO billDetailsDTO);
