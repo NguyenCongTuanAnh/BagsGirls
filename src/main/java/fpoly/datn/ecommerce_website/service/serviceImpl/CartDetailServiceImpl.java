@@ -6,6 +6,7 @@ import fpoly.datn.ecommerce_website.entity.BillDetails;
 import fpoly.datn.ecommerce_website.entity.CartDetails;
 import fpoly.datn.ecommerce_website.entity.Carts;
 import fpoly.datn.ecommerce_website.repository.ICartDetailRepository;
+import fpoly.datn.ecommerce_website.repository.ICartRepository;
 import fpoly.datn.ecommerce_website.service.CartDetailService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class CartDetailServiceImpl implements CartDetailService {
 
     @Autowired
     private ICartDetailRepository iCartDetailRepository;
+
+    @Autowired
+    private ICartRepository iCartRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -46,6 +50,7 @@ public class CartDetailServiceImpl implements CartDetailService {
 
 
     }
+
     @Override
     public Boolean delete(String id) {
         Optional<CartDetails> optional = iCartDetailRepository.findById(id);
@@ -57,4 +62,19 @@ public class CartDetailServiceImpl implements CartDetailService {
             return false;
         }
     }
+
+    @Override
+    public Boolean deleteAllCartDetail(String cartId) {
+        // Tìm tất cả các CartDetails có cartId tương ứng
+        List<CartDetails> cartDetailsList = iCartDetailRepository.findByCartId(cartId);
+
+        if (!cartDetailsList.isEmpty()) {
+            // Xóa tất cả các CartDetails tìm được
+            iCartDetailRepository.deleteAll(cartDetailsList);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }

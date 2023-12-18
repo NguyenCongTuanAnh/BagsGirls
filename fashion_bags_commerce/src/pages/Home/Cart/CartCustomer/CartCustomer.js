@@ -159,130 +159,126 @@ function CartCustomer() {
             Tiếp tục mua sắm <DoubleRightOutlined />
           </Link>
         </div>
-        <table
-          style={{ textAlign: 'center', width: '100%', borderCollapse: 'collapse', margin: 'auto', height: 'auto' }}
-          className="table table-bordered"
-        >
-          <thead>
-            <tr>
-              <th style={{ backgroundColor: 'white' }}>STT</th>
-              <th style={{ backgroundColor: 'white', width: '230px' }}>Ảnh</th>
-              <th style={{ backgroundColor: 'white', width: '530px' }}>Sản phẩm</th>
-              <th style={{ backgroundColor: 'white' }}>Số lượng</th>
-              <th style={{ backgroundColor: 'white' }}>Giá</th>
-              <th style={{ backgroundColor: 'white' }}>Thành tiền</th>
-              <th style={{ backgroundColor: 'white', width: '230px' }}>Chức năng</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cartItems?.cartDetailsList?.map((item, index) => {
-              const totalPrice = item.amount * item.productDetails.retailPrice;
-              return (
-                <tr key={item.id} style={{ margin: 'auto', height: 'auto', backgroundColor: 'red' }}>
-                  <td>
-                    <div>{index + 1}</div>
-                  </td>
 
-                  <td>
-                    <img
-                      style={{ width: '200px', height: '200px' }}
-                      src={item.productDetails.product.images[0]?.imgUrl}
-                    />{' '}
-                  </td>
-                  <td style={{ textAlign: 'left', padding: '20px' }}>
-                    <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
-                      {item.productDetails.product.productName}-{item.productDetails.product.productCode}
-                    </div>
-                    <div style={{ fontSize: '20px' }}>
-                      <span style={{ fontSize: '20px', fontWeight: 'bold' }}>Màu săc:</span>{' '}
-                      {item.productDetails.color.colorName}
-                    </div>{' '}
-                    <div style={{ fontSize: '20px' }}>
-                      <span style={{ fontSize: '20px', fontWeight: 'bold' }}>Chất liệu:</span>{' '}
-                      {item.productDetails.material.materialName}
-                    </div>{' '}
-                  </td>
-                  <td style={{ textAlign: 'center' }}>
-                    <div style={{ padding: '80px 0 0 90px' }}>
-                      <div className={styles.book_number}>
-                        <div className={styles.item_change1} onClick={() => handleDecrement(item)}>
-                          <MinusOutlined />
-                        </div>
-                        <input
-                          type="text"
-                          disabled
-                          className={styles.input_amount}
-                          value={item.amount}
-                          onChange={(e) => handleQuantityChange(e, item)}
-                        />
-                        <div className={styles.item_change2} onClick={() => handleIncrement(item)}>
-                          <PlusOutlined />
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-
-                  <td>
-                    <div style={{ margin: '80px 0 0 0' }}>{VNDFormaterFunc(item.productDetails.retailPrice)}</div>{' '}
-                  </td>
-                  <td>
-                    <div style={{ margin: '80px 0 0 0' }}>{VNDFormaterFunc(totalPrice)}</div>{' '}
-                  </td>
-                  <td>
-                    <button className={styles.buttonXoa} onClick={() => handleDeleteCartItem(item?.cartDetailId)}>
-                      <DeleteOutlined /> Xóa
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <div style={{ textAlign: 'center' }}>
-          <h1
-            style={{
-              border: 'black 1px dashed',
-              background: 'white',
-              color: 'red',
-              padding: '10px 0',
-            }}
-          >
-            Tổng tiền: {VNDFormaterFunc(calculateTotalPrice())}
-          </h1>
-        </div>
-        {cartDetailId.length != 0 ? (
-          <button
-            className={styles.buttonThanhToan}
-            onClick={() => {
-              navigate(`/cart/checkout/${customerId}`, {
-                state: {
-                  totalPrice1: calculateTotalPrice(),
-                  cartItems: cartItems.cartDetailsList,
-                  totalAmount: calculateTotalAmount(),
-
-                },
-              });
-            }}
-          >
-            Tiến hành thanh toán
-          </button>
-        ) : (
+        {cartItems?.cartDetailsList?.length > 0 ? (
           <div>
-            <button
-              className={styles.buttonThanhToan}
-              onClick={() => {
-                navigate(`/cart/checkout/${customerId}`, {
-                  state: {
-                    totalPrice1: calculateTotalPrice(),
-                    cartItems: cartItems.cartDetailsList,
-                    totalAmount: calculateTotalAmount(),
-                    infoCustomer: cartItems,
-                  },
-                });
-              }}
+            <table
+              style={{ textAlign: 'center', width: '100%', borderCollapse: 'collapse', margin: 'auto', height: 'auto' }}
+              className="table table-bordered"
             >
-              Tiến hành thanh toán
-            </button>
+              <thead>
+                <tr>
+                  <th style={{ backgroundColor: 'white' }}>STT</th>
+                  <th style={{ backgroundColor: 'white', width: '230px' }}>Ảnh</th>
+                  <th style={{ backgroundColor: 'white', width: '530px' }}>Sản phẩm</th>
+                  <th style={{ backgroundColor: 'white' }}>Số lượng</th>
+                  <th style={{ backgroundColor: 'white' }}>Giá</th>
+                  <th style={{ backgroundColor: 'white' }}>Thành tiền</th>
+                  <th style={{ backgroundColor: 'white', width: '230px' }}>Chức năng</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cartItems?.cartDetailsList?.map((item, index) => {
+                  const totalPrice = item.amount * item.productDetails.retailPrice;
+                  return (
+                    <tr key={item.id} style={{ margin: 'auto', height: 'auto', backgroundColor: 'red' }}>
+                      <td>
+                        <div>{index + 1}</div>
+                      </td>
+
+                      <td>
+                        <img
+                          style={{ width: '200px', height: '200px' }}
+                          src={item.productDetails.product.images[0]?.imgUrl}
+                        />{' '}
+                      </td>
+                      <td style={{ textAlign: 'left', padding: '20px' }}>
+                        <div style={{ fontSize: '20px', fontWeight: 'bold' }}>
+                          {item.productDetails.product.productName}-{item.productDetails.product.productCode}
+                        </div>
+                        <div style={{ fontSize: '20px' }}>
+                          <span style={{ fontSize: '20px', fontWeight: 'bold' }}>Màu săc:</span>{' '}
+                          {item.productDetails.color.colorName}
+                        </div>{' '}
+                        <div style={{ fontSize: '20px' }}>
+                          <span style={{ fontSize: '20px', fontWeight: 'bold' }}>Chất liệu:</span>{' '}
+                          {item.productDetails.material.materialName}
+                        </div>{' '}
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <div style={{ padding: '80px 0 0 90px' }}>
+                          <div className={styles.book_number}>
+                            <div className={styles.item_change1} onClick={() => handleDecrement(item)}>
+                              <MinusOutlined />
+                            </div>
+                            <input
+                              type="text"
+                              disabled
+                              className={styles.input_amount}
+                              value={item.amount}
+                              onChange={(e) => handleQuantityChange(e, item)}
+                            />
+                            <div className={styles.item_change2} onClick={() => handleIncrement(item)}>
+                              <PlusOutlined />
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td>
+                        <div style={{ margin: '80px 0 0 0' }}>{VNDFormaterFunc(item.productDetails.retailPrice)}</div>{' '}
+                      </td>
+                      <td>
+                        <div style={{ margin: '80px 0 0 0' }}>{VNDFormaterFunc(totalPrice)}</div>{' '}
+                      </td>
+                      <td>
+                        <button className={styles.buttonXoa} onClick={() => handleDeleteCartItem(item?.cartDetailId)}>
+                          <DeleteOutlined /> Xóa
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <div style={{ textAlign: 'center' }}>
+              <h1
+                style={{
+                  border: 'black 1px dashed',
+                  background: 'white',
+                  color: 'red',
+                  padding: '10px 0',
+                }}
+              >
+                Tổng tiền: {VNDFormaterFunc(calculateTotalPrice())}
+              </h1>
+            </div>
+
+            <div>
+              <button
+                className={styles.buttonThanhToan}
+                onClick={() => {
+                  navigate(`/cart/checkout/${customerId}`, {
+                    state: {
+                      totalPrice1: calculateTotalPrice(),
+                      cartItems: cartItems.cartDetailsList,
+                      totalAmount: calculateTotalAmount(),
+                      infoCustomer: cartItems,
+                    },
+                  });
+                }}
+              >
+                Tiến hành thanh toán
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center', marginTop: '50px' }}>
+            <h2 style={{ color: 'gray' }}>Bạn chưa có sản phẩm nào trong giỏ hàng..</h2>
+            <img
+              src="https://theme.hstatic.net/1000197303/1001046599/14/empty-cart-desktop.png?v=7097"
+              style={{ width: '25%', height: '25%' }}
+            ></img>
           </div>
         )}
       </div>

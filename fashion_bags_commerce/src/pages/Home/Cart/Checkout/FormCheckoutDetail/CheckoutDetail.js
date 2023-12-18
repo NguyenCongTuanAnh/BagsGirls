@@ -967,7 +967,6 @@ const CheckoutDetail = () => {
                       </div>
                     ) : (
                       <div>
-                        <h1>hello</h1>
                         <br></br>
                         <div style={{ display: 'flex', flexDirection: 'row', gap: '15px' }}>
                           <div className="customInput">
@@ -1098,7 +1097,11 @@ const CheckoutDetail = () => {
                                     *
                                     <p
                                       className="thayDoiDiaChiNhanHang"
-                                      style={{ float: 'right', fontSize: '17px' }}
+                                      style={{
+                                        float: 'right',
+                                        fontSize: '17px',
+                                        textDecoration: 'underline',
+                                      }}
                                       onClick={() => {
                                         setAnThongTinDiaChi(false);
                                         setAnThongTinDiaChi1(true);
@@ -1107,9 +1110,7 @@ const CheckoutDetail = () => {
                                       }}
                                     >
                                       Lấy địa chỉ của bạn:
-                                      <span
-                                        style={{ color: 'black', padding: ' 0 0 0 10px', textDecoration: 'underline' }}
-                                      >
+                                      <span style={{ color: 'black', padding: ' 0 0 0 10px', textDecoration: 'none' }}>
                                         {location.state.infoCustomer?.customers?.users?.address}
                                       </span>
                                     </p>

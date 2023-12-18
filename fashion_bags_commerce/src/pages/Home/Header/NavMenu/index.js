@@ -39,8 +39,8 @@ function NavMenu() {
               BLOG
             </Link>
           </Menu.Item>
-          <Menu.Item key="/cart" className={styles.menuItem}>
-            <Link to="/cart" className={styles.submenu}>
+          <Menu.Item key="" className={styles.menuItem}>
+            <Link to="" className={styles.submenu}>
               LIÊN HỆ
             </Link>
           </Menu.Item>

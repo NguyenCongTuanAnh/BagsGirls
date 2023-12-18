@@ -15,6 +15,8 @@ public interface CartDetailService {
 
     Boolean delete(String id);
 
+    Boolean deleteAllCartDetail(String cartId);
+
 
 
 }
