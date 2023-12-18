@@ -1,10 +1,12 @@
 package fpoly.datn.ecommerce_website.service.serviceImpl;
 
 import fpoly.datn.ecommerce_website.dto.CustomerDTO;
+import fpoly.datn.ecommerce_website.entity.Carts;
 import fpoly.datn.ecommerce_website.entity.Customers;
 import fpoly.datn.ecommerce_website.entity.Users;
 import fpoly.datn.ecommerce_website.infrastructure.constant.Constants;
 import fpoly.datn.ecommerce_website.infrastructure.constant.Ranking;
+import fpoly.datn.ecommerce_website.repository.ICartRepository;
 import fpoly.datn.ecommerce_website.repository.ICustomerRepository;
 import fpoly.datn.ecommerce_website.repository.IUserRepository;
 import fpoly.datn.ecommerce_website.service.ICustomerService;
@@ -27,6 +29,9 @@ public class CustomerServiceImpl implements ICustomerService {
     private ICustomerRepository customerRepository;
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private ICartRepository cartRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -75,7 +80,6 @@ public class CustomerServiceImpl implements ICustomerService {
     @Override
     public Customers save(CustomerDTO customerDTO) {
 
-
         Users users = Users.builder()
                 .account(customerDTO.getUsers().getAccount())
                 .fullName(customerDTO.getUsers().getFullName())
@@ -99,7 +103,11 @@ public class CustomerServiceImpl implements ICustomerService {
                     .customerRanking(Ranking.KH_TIEMNANG)
                     .users(savedUserInfo)
                     .build();
-            return customerRepository.save(customer);
+            customerRepository.save(customer);
+            Carts carts = new Carts();
+            carts.setCustomers(customer);
+            cartRepository.save(carts);
+            return null;
         } else {
             throw new IllegalStateException("Failed to save UserInfo");
         }

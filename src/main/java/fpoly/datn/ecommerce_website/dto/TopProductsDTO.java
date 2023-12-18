@@ -23,5 +23,5 @@ public class TopProductsDTO {
     private String productName;
     private BigDecimal productPrice;
     private BigDecimal totalBillAmount;
-    
+
 }

@@ -552,6 +552,17 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             Pageable pageable);
 
 
+    // getAll bill với tất cả đơn hàng của customerId
+    @Query(value = " SELECT b FROM Bills b WHERE " +
+            "  ( :status IS NULL OR b.billStatus = :status ) " +
+            " AND ( :customerId IS NULL OR b.customer.customerId = :customerId ) "
+    )
+    Page<Bills> findAllBillsCustomer(
+            @Param("customerId") String customerId,
+            @Param("status") Integer status,
+            Pageable pageable);
+
+
 
 
     @Query("SELECT COALESCE(SUM(b.billTotalPrice), 0) FROM Bills b WHERE CAST(b.billCreateDate AS date) = CAST(:date AS date)")

@@ -1,18 +1,15 @@
 import { Table, Image, Button, notification, Modal, Card, Row, Col, Popconfirm, Space, Input, InputNumber, Form } from 'antd';
 import React, { useEffect, useState } from 'react';
 import styles from './chiTietHoaDon.module.scss';
-import vndFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import { CheckOutlined, DeleteOutlined, DoubleRightOutlined, ExclamationCircleOutlined, MenuFoldOutlined, MinusOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import billDetailsAPI from '~/api/BillDetailsAPI';
-import FormStaffEdit from '../../Staff/StaffEdit/FormEdit/FormStaffEdit';
-import productDetailsAPI from '~/api/productDetailsAPI';
 import billsAPI from '~/api/BillApi';
 const { useForm } = Form;
 
 
-function FormChiTietHoaDon(props) {
+function ComponentChiTietHoaDon(props) {
     const [totalQuantity, setTotalQuantity] = useState(0);
     const [tongTienThanhToan, setTongTienThanhToan] = useState(0);
     const [visible, setVisible] = useState(false);
@@ -358,13 +355,13 @@ function FormChiTietHoaDon(props) {
         {
             title: 'Giá',
             dataIndex: 'price',
-            render: (text, record) => vndFormaterFunc(record.price),
+            render: (text, record) => VNDFormaterFunc(record.price),
             key: 'price',
             width: '120px'
         },
         {
             title: 'Thành tiền',
-            render: (text, record) => vndFormaterFunc(record.amount * record.price),
+            render: (text, record) => VNDFormaterFunc(record.amount * record.price),
             key: 'calculateTotal',
             width: '130px'
         },
@@ -520,7 +517,7 @@ function FormChiTietHoaDon(props) {
     ];
     return (
         <>
-            <Button type="primary" style={{ width: '120px' }} onClick={showModal} icon={<MenuFoldOutlined />}
+            <Button type="primary" onClick={showModal} icon={<MenuFoldOutlined />}
             >
                 Chi tiết
             </Button>
@@ -604,23 +601,23 @@ function FormChiTietHoaDon(props) {
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Giá trị hàng hóa: </span>
-                                                    <span className={styles.labelName} >{vndFormaterFunc(calculateTotal())}</span>
+                                                    <span className={styles.labelName} >{VNDFormaterFunc(calculateTotal())}</span>
                                                 </li>
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Giảm giá: </span>
-                                                    <span className={styles.labelName} >{vndFormaterFunc(props.bills.billReducedPrice)}</span>
+                                                    <span className={styles.labelName} >{VNDFormaterFunc(props.bills.billReducedPrice)}</span>
                                                 </li>{' '}
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Tiền ship: </span>
-                                                    <span className={styles.labelName} >{vndFormaterFunc(props.bills.shipPrice)}</span>
+                                                    <span className={styles.labelName} >{VNDFormaterFunc(props.bills.shipPrice)}</span>
                                                 </li>{' '}
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Thành tiền: </span>
                                                     <span className={styles.labelName} style={{ color: 'red', fontWeight: 'bold', fontSize: '26px' }}>
-                                                        {vndFormaterFunc(calculateTotal() - props.bills.billReducedPrice + props.bills.shipPrice)}
+                                                        {VNDFormaterFunc(calculateTotal() - props.bills.billReducedPrice + props.bills.shipPrice)}
                                                     </span>
                                                 </li>{' '}
                                             </ul>
@@ -637,4 +634,4 @@ function FormChiTietHoaDon(props) {
     );
 }
 
-export default FormChiTietHoaDon;
+export default ComponentChiTietHoaDon;
