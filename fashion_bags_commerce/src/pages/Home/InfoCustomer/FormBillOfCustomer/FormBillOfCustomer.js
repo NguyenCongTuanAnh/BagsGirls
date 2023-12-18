@@ -107,7 +107,7 @@ function FormBillOfCustomer() {
             key: 'stt',
             dataIndex: 'index',
             title: 'STT',
-            width: '3%',
+            width: '40px',
             render: (text, record, index) => {
                 return <span id={record.id}>{(pageNum - 1) * pageSize + (index + 1)}</span>;
             },
@@ -116,13 +116,13 @@ function FormBillOfCustomer() {
             title: 'Mã hóa đơn',
             dataIndex: 'billCode',
             key: 'code',
-            width: '6%',
+            width: '100px',
         },
         {
             title: 'Loại hóa đơn',
             dataIndex: 'staff',
             key: 'staffCode',
-            width: '6%',
+            width: '100px',
             render: (staff) => {
                 if (staff && staff.users) {
                     return "Tại quầy";
@@ -134,7 +134,7 @@ function FormBillOfCustomer() {
         {
             title: 'Ngày tạo',
             dataIndex: 'billCreateDate',
-            width: '12%',
+            width: '180px',
             sorter: (a, b) => a.billCreateDate.localeCompare(b.billCreateDate),
             render: (date) => {
                 const formattedDate = dayjs(date).format('HH:mm:ss DD-MM-YYYY');
@@ -145,7 +145,7 @@ function FormBillOfCustomer() {
             title: 'Mã nhân viên',
             dataIndex: 'staff',
             key: 'staffCode',
-            width: '7%',
+            width: '100px',
             render: (staff) => {
                 if (staff && staff.users) {
                     return (
@@ -164,7 +164,7 @@ function FormBillOfCustomer() {
             title: 'SĐT khách hàng',
             dataIndex: 'orderPhone',
             key: 'orderPhone',
-            width: '10%',
+            width: '140px',
             render: (text, record) => {
                 if (record.customer == null) {
                     if (record.orderPhone == null) {
@@ -186,8 +186,7 @@ function FormBillOfCustomer() {
             title: 'Tổng thanh toán',
             dataIndex: 'billPriceAfterVoucher',
             key: 'billPriceAfterVoucher',
-            width: '10%',
-            // sorter: (a, b) => a.billTotalPrice.localeCompare(b.billTotalPrice),
+            width: '150px',
             render: (price) => {
                 return <span>{VNDFormaterFunc(price)}</span>;
             },
@@ -197,7 +196,7 @@ function FormBillOfCustomer() {
             title: 'Trạng thái',
             dataIndex: 'billStatus',
             key: 'status',
-            width: '13%',
+            width: '200px',
             render: (status) => {
                 let statusText;
                 let statusClass;
@@ -257,7 +256,7 @@ function FormBillOfCustomer() {
                     return (
                         <div>
                             <Space size="middle" style={{ marginTop: '10px' }}>
-                                {hanhDong(record, false, false, true)}
+                                {hanhDong(record, false, false, false)}
                                 <br></br>
                             </Space>
                         </div>
@@ -293,8 +292,6 @@ function FormBillOfCustomer() {
             width: 100,
         },
     ];
-
-
     const hanhDong = (record, online, capNhat, xoa) => {
         if (online === false) {
             return (
@@ -311,7 +308,6 @@ function FormBillOfCustomer() {
                         }}
                         onCancel={onCancel}
                     >
-                        <Button disabled={(record.billStatus === -1) ? true : false} type="primary" danger icon={<CloseCircleOutlined />}>Hủy</Button>
                     </Popconfirm>
                 </Space>
             )

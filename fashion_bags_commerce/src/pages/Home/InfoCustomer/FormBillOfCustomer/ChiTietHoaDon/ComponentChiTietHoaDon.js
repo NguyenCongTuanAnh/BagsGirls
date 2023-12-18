@@ -22,6 +22,8 @@ function ComponentChiTietHoaDon(props) {
     const [maxAmountProductError, setMaxAmountProductError] = useState(0);
     const [billDetailIdLoi, setBillDetailIdLoi] = useState('');
     const [indexBilldetails, setIndexBilldetails] = useState(0);
+    const [amountBill, setAmountBill] = useState(0);
+    const [totalPriceBill, settotalPriceBill] = useState(0);
     const [open, setOpen] = useState(false);
     const [form] = useForm();
 
@@ -37,40 +39,84 @@ function ComponentChiTietHoaDon(props) {
         setNewAmount([]);
         setMaxAmount([]);
         getAllByBillId();
-        // console.log(props);
         setTitleComponent(props.bills.billCode);
         const total = listBillDetails.reduce((totalQty, item) => {
-            addItemToNewAmount(item.amount);
-            addItemToMaxAmount(item.amount + item.productDetails.productDetailAmount);
-            return totalQty + item.amount;
+            if (item.billDetailStatus === 1 || item.billDetailStatus === 0) {
+                addItemToNewAmount(item.amount);
+                addItemToMaxAmount(item.amount + item.productDetails.productDetailAmount);
+                return totalQty + item.amount;
+            } else {
+                return totalQty;
+            }
         }, 0);
         setTotalQuantity(total);
         setVisible(true);
-        setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice + props.bills.shipPrice);
     };
 
     useEffect(() => {
         setReload(false);
         getAllByBillId();
-        setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice + props.bills.shipPrice);
     }, [visible, reload, totalQuantity]);
 
-    const calculateTotal = () => {
-        return listBillDetails.reduce((total, item) => {
-            return total + item.amount * item.price;
-        }, 0);
-
-    };
-
-    const soLuongView = () => {
-        return listBillDetails.reduce((total, item) => {
-            return total + item.amount;
-        }, 0);
-    };
     const getAllByBillId = async () => {
         const response = await billDetailsAPI.getAllByBillId(props.bills.billId, -1);
         const data = response.data;
         setListBillDetais(data);
+
+        const total = data.reduce((totalQty, item) => {
+            if (item.billDetailStatus === 1 || item.billDetailStatus === 0) {
+                return totalQty + item.amount * item.price;
+            } else {
+                return totalQty;
+            }
+        }, 0);
+        const productAmount = data.reduce((totalQty, item) => {
+
+            if (item.billDetailStatus === 1 || item.billDetailStatus === 0) {
+
+                return totalQty + item.amount;
+            } else {
+                return totalQty;
+            }
+        }, 0);
+        setTongTienThanhToan(total - props.bills.billReducedPrice + props.bills.shipPrice);
+        setAmountBill(productAmount);
+        settotalPriceBill(total);
+        let updateHoaDon = {
+            billId: props.bills.billId,
+            staff: props.bills.staff,
+            customer: props.bills.customer,
+            voucher: props.bills.voucher,
+            billCode: props.bills.billCode,
+            billCreateDate: props.bills.billCreateDate,
+            billDatePayment: props.bills.billDatePayment,
+            billShipDate: props.bills.billShipDate,
+            billReceiverDate: props.bills.billReceiverDate,
+            billTotalPrice: total,
+            productAmount: productAmount,
+            billPriceAfterVoucher: total - props.bills.billReducedPrice + props.bills.shipPrice,
+            shippingAddress: props.bills.shippingAddress,
+            billingAddress: props.bills.billingAddress,
+            receiverName: props.bills.receiverName,
+            shipPrice: props.bills.shipPrice,
+            orderEmail: props.bills.orderEmail,
+            orderPhone: props.bills.orderPhone,
+            paymentMethod: props.bills.paymentMethod,
+            billNote: props.bills.billNote,
+            billStatus: props.bills.billStatus,
+            billReducedPrice: props.bills.billReducedPrice
+        };
+        try {
+            await billsAPI.add(updateHoaDon);
+            props.reload();
+        } catch (error) {
+            notification.error({
+                message: 'Lỗi',
+                description: 'Lỗi cập nhật hóa đơn không thành công',
+                duration: 2,
+            });
+            console.log(error);
+        }
 
     };
     const setTenNhanVien = () => {
@@ -100,10 +146,7 @@ function ComponentChiTietHoaDon(props) {
         } else {
             return props.bills.orderPhone;
         }
-        //if (props.bills.customer == null)
-        //  else if (props.bills.customer != null) {
-        //     return props.bills.customer.users.phoneNumber;
-        // }
+
     }
     const setDiaChiKhachHang = () => {
         if (props.bills.customer == null && props.bills.shippingAddress == null) {
@@ -111,9 +154,7 @@ function ComponentChiTietHoaDon(props) {
         } else {
             return props.bills.shippingAddress;
         }
-        //  else if (props.bills.customer != null) {
-        //     return props.bills.customer.users.address;
-        // }
+
     }
     const setRankKhachHang = () => {
         if (props.bills.customer == null) {
@@ -132,45 +173,7 @@ function ComponentChiTietHoaDon(props) {
             return 'Chưa có hạng';
         }
     }
-    const updateThongTinHoaDon = async () => {
-        console.log(tongTienThanhToan);
-        let updateHoaDon = {
-            billId: props.bills.billId,
-            staff: props.bills.staff,
-            customer: props.bills.customer,
-            voucher: props.bills.voucher,
-            billCode: props.bills.billCode,
-            billCreateDate: props.bills.billCreateDate,
-            billDatePayment: props.bills.billDatePayment,
-            billShipDate: props.bills.billShipDate,
-            billReceiverDate: props.bills.billReceiverDate,
-            billTotalPrice: calculateTotal(),
-            productAmount: soLuongView(),
-            billPriceAfterVoucher: tongTienThanhToan,
-            shippingAddress: props.bills.shippingAddress,
-            billingAddress: props.bills.billingAddress,
-            receiverName: props.bills.receiverName,
-            shipPrice: props.bills.shipPrice,
-            orderEmail: props.bills.orderEmail,
-            orderPhone: props.bills.orderPhone,
-            paymentMethod: props.bills.paymentMethod,
-            billNote: props.bills.billNote,
-            billStatus: props.bills.billStatus,
-            billReducedPrice: props.bills.billReducedPrice
-        };
-        console.log(updateHoaDon);
-        try {
-            await billsAPI.add(updateHoaDon);
-            props.reload();
-        } catch (error) {
-            notification.error({
-                message: 'Lỗi',
-                description: 'Lỗi cập nhật hóa đơn không thành công',
-                duration: 2,
-            });
-            console.log(error);
-        }
-    }
+
 
     const updateAmountProductDetail = async (billDetailId, amount) => {
         try {
@@ -180,14 +183,12 @@ function ComponentChiTietHoaDon(props) {
                     message: 'Thành công',
                     description: 'Xóa thành công sản phẩm!!'
                 });
-                setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
                 setReload(true);
             } else {
                 notification.success({
                     message: 'Thành công',
                     description: 'Sửa thành công số lượng sản phẩm thành: ' + amount.toString(),
                 });
-                setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
                 setReload(true);
             }
 
@@ -202,9 +203,6 @@ function ComponentChiTietHoaDon(props) {
         setIndexBilldetails(index);
         setMaxAmountProductError(values.amount);
         setBillDetailIdLoi(values.billDetailId);
-        // setBill(values);
-        console.log(values);
-        // console.log(index);
         setOpen(true);
     };
     const onClose = () => {
@@ -232,7 +230,6 @@ function ComponentChiTietHoaDon(props) {
                     description: 'Sản phẩm lỗi không thể nhiều hơn sản phẩm trong đơn hàng! ',
                 });
             }
-            setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
             setReload(true);
             setOpen(false);
         } catch (error) {
@@ -240,16 +237,11 @@ function ComponentChiTietHoaDon(props) {
         }
     };
 
-    useEffect(() => {
-        setTongTienThanhToan(calculateTotal() - props.bills.billReducedPrice);
-    }, [calculateTotal()]);
-
     const columns = [
         {
             key: 'stt',
             dataIndex: 'index',
             title: 'STT',
-            // width: 70,
             render: (text, record, index) => {
                 return <span id={record.id}>{(index + 1)}</span>;
             },
@@ -300,9 +292,13 @@ function ComponentChiTietHoaDon(props) {
                         step={1}
                         disabled={
                             (newAmount[index] == null
+                                || props.bills.staff !== null
                                 || Math.floor(props.bills.billStatus) === -1
                                 || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
                                 || Math.floor(props.bills.billStatus) === 2
+                                || Math.floor(props.bills.billStatus) === 3
+                                || Math.floor(props.bills.billStatus) === 0
+                                || Math.floor(props.bills.billStatus) === -2
                             ) ? true : false}
                         value={newAmount[index]}
                         onChange={(newValue) => {
@@ -311,7 +307,6 @@ function ComponentChiTietHoaDon(props) {
                                 updatedAmount[index] = newValue;
                                 return updatedAmount;
                             });
-                            // console.log(newAmount);
                         }}
                         style={{ width: '55px' }}
                     />
@@ -322,6 +317,7 @@ function ComponentChiTietHoaDon(props) {
                         cancelText="Không"
                         onConfirm={() => {
                             updateAmountProductDetail(record.billDetailId, newAmount[index]);
+
                             setReload(true);
                         }}
                     >
@@ -330,18 +326,26 @@ function ComponentChiTietHoaDon(props) {
                             danger={newAmount[index] <= 0}
                             disabled={
                                 (newAmount[index] == null
+                                    || props.bills.staff !== null
                                     || Math.floor(props.bills.billStatus) === -1
                                     || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
                                     || Math.floor(props.bills.billStatus) === 2
+                                    || Math.floor(props.bills.billStatus) === 3
+                                    || Math.floor(props.bills.billStatus) === 0
+                                    || Math.floor(props.bills.billStatus) === -2
                                 ) ? true : false}
                             icon={<CheckOutlined />}
                             style={
                                 {
                                     backgroundColor:
                                         (newAmount[index] == null
+                                            || props.bills.staff !== null
                                             || Math.floor(props.bills.billStatus) === -1
                                             || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
                                             || Math.floor(props.bills.billStatus) === 2
+                                            || Math.floor(props.bills.billStatus) === 3
+                                            || Math.floor(props.bills.billStatus) === 0
+                                            || Math.floor(props.bills.billStatus) === -2
                                         ) ? 'grey' : 'red', color: 'white'
                                 }
                             }
@@ -373,7 +377,7 @@ function ComponentChiTietHoaDon(props) {
             render: (text, record) => {
                 let statusText;
                 let statusClass;
-                let backgroundColor; // Define a variable for text color
+                let backgroundColor;
 
                 switch (record.billDetailStatus) {
                     case 3:
@@ -413,8 +417,10 @@ function ComponentChiTietHoaDon(props) {
                     <div>
                         <span className={statusClass} style={textStyles}>
                             {statusText}
+                            <br></br>
+
                         </span>
-                        {/* <div style={{ marginTop: '15px' }}>Ghi chú: {record.billDetailNote}</div> */}
+                        <div style={{ marginTop: '15px' }}>Ghi chú: {record.billDetailNote}</div>
                     </div>
 
                 );
@@ -427,7 +433,15 @@ function ComponentChiTietHoaDon(props) {
                 <div>
                     <Space size="middle">
                         <Button type="default" danger
-                            disabled={(Math.floor(props.bills.billStatus) === -1) ? true : false}
+                            disabled={(
+                                Math.floor(props.bills.billStatus) === -1
+                                || props.bills.staff !== null
+                                || Math.floor(props.bills.billStatus) === -2
+                                || Math.floor(props.bills.billStatus) === 0
+                                || Math.floor(props.bills.billStatus) === 2
+                                || Math.floor(props.bills.billStatus) === 3
+                                || Math.floor(props.bills.billStatus) === 4
+                            ) ? true : false}
                             onClick={() => {
                                 showComponentSPLoi(record, index);
                             }}
@@ -440,12 +454,7 @@ function ComponentChiTietHoaDon(props) {
                             onCancel={onClose}
                             footer={
                                 <span>
-                                    {/* <Space>
-                                    <Button htmlType="submit" type="primary" className="btn btn-warning">
-                                        Lưu
-                                    </Button>
-                                    <Button onClick={onClose}>Thoát</Button>
-                                </Space> */}
+
                                 </span>
                             }
                         >
@@ -472,7 +481,6 @@ function ComponentChiTietHoaDon(props) {
                                             <InputNumber
                                                 min={1}
                                                 max={Math.floor(maxAmountProductError)}
-                                                // defaultValue={1}
                                                 step={1}
                                                 style={{ width: '70px' }}
                                             />
@@ -525,11 +533,15 @@ function ComponentChiTietHoaDon(props) {
                 title={<h2 style={{ fontSize: '28px', fontWeight: 'bold' }}>Chi tiết hóa đơn: {titleComponent}</h2>}
                 centered
                 open={visible}
-                onCancel={() => { updateThongTinHoaDon(); setVisible(false) }}
+                onCancel={() => {
+                    setVisible(false)
+                }}
                 width={'97%'}
                 height={'90%'}
                 footer={[
-                    <Button key="cancel" onClick={() => { updateThongTinHoaDon(); setVisible(false) }}>
+                    <Button key="cancel" onClick={() => {
+                        setVisible(false)
+                    }}>
                         Hủy
                     </Button>,
                 ]}
@@ -595,13 +607,13 @@ function ComponentChiTietHoaDon(props) {
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Số lượng: </span>
                                                     <span className={styles.labelName}>
-                                                        <span style={{ color: 'red', fontSize: '26px' }}>{soLuongView()} </span>Sản phẩm
+                                                        <span style={{ color: 'red', fontSize: '26px' }}>{amountBill} </span>Sản phẩm
                                                     </span>
                                                 </li>
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Giá trị hàng hóa: </span>
-                                                    <span className={styles.labelName} >{VNDFormaterFunc(calculateTotal())}</span>
+                                                    <span className={styles.labelName} >{VNDFormaterFunc(totalPriceBill)}</span>
                                                 </li>
                                                 <hr></hr>
                                                 <li className={styles.productDetailItem}>
@@ -617,7 +629,7 @@ function ComponentChiTietHoaDon(props) {
                                                 <li className={styles.productDetailItem}>
                                                     <span className={styles.label}>Thành tiền: </span>
                                                     <span className={styles.labelName} style={{ color: 'red', fontWeight: 'bold', fontSize: '26px' }}>
-                                                        {VNDFormaterFunc(calculateTotal() - props.bills.billReducedPrice + props.bills.shipPrice)}
+                                                        {VNDFormaterFunc(tongTienThanhToan)}
                                                     </span>
                                                 </li>{' '}
                                             </ul>
