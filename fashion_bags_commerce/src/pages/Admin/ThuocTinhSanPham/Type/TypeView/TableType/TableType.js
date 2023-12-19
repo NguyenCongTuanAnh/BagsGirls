@@ -13,7 +13,7 @@ function TableContent() {
   const [pageSize, setPageSize] = useState(10);
   const [totalItem, setTotalItem] = useState(); // Số lượng dữ liệu tổng cộng
 
-  const handleTableChange = (pagination, filters, sorter) => {};
+  const handleTableChange = (pagination, filters, sorter) => { };
   const columns = [
     {
       title: 'STT',
@@ -21,17 +21,21 @@ function TableContent() {
       render: (text, record, index) => <span>{(currentPage - 1) * pageSize + index + 1}</span>,
     },
     {
-      title: 'Name Type',
+      title: 'Mã kiểu',
+      dataIndex: 'typeCode',
+      width: 100,
+      sorter: (a, b) => a.typeCode.localeCompare(b.typeCode),
+    },
+    {
+      title: 'Tên kiểu',
       dataIndex: 'typeName',
       width: 100,
       sorter: (a, b) => a.typeName.localeCompare(b.typeName),
     },
     {
-      title: 'Status',
+      title: 'Trạng thái',
       dataIndex: 'typeStatus',
-
       width: 100,
-      sorter: (a, b) => a.typeStatus.localeCompare(b.typeStatus),
       render: (status) => {
         let statusText;
         let statusClass;
@@ -42,12 +46,8 @@ function TableContent() {
             statusClass = 'active-status';
             break;
           case 0:
-            statusText = 'Không hoạt động';
-            statusClass = 'inactive-status';
-            break;
-          case -1:
             statusText = 'Ngừng hoạt động';
-            statusClass = 'other-status';
+            statusClass = 'inactive-status';
             break;
           default:
             statusText = 'Trạng thái khác';
@@ -58,49 +58,46 @@ function TableContent() {
       },
     },
     {
-      title: 'Action',
+      title: 'Hành động',
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
           <FormTypeEdit
             type={record}
-            reload={() => {
-              setLoading(true);
-            }}
+            reload={() => { setLoading(true); }}
           />
           <Popconfirm
             title="Xác Nhận"
-            description="Bạn Có chắc chắn muốn xóa?"
+            description="Bạn có chắc chắn muốn hủy?"
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
-              handleDeleteType(record.typeId, -1);
-              reload();
+              handleDeleteType(record, 0);
+              setLoading(true);
             }}
             onCancel={onCancel}
           >
-            <Button className="btn btn-danger " icon={<DeleteOutlined />}></Button>
+            <Button
+              type="default"
+              disabled={(record.typeStatus !== 1) ? true : false}
+              danger
+              icon={<DeleteOutlined />}>
+              Hủy
+            </Button>
           </Popconfirm>
         </Space>
       ),
       width: 100,
     },
   ];
-  const onCancel = () => {};
-  const reload = () => {
-    setLoading(true);
+  const onCancel = () => { };
+
+  useEffect(() => {
     getAllPhanTrangType(currentPage, pageSize);
     setTimeout(() => {
       setLoading(false);
     }, 500);
-  };
-
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-  }, []);
+  }, [loading]);
   useEffect(() => {
     if (loading) {
       // Tải lại bảng khi biến trạng thái thay đổi
@@ -115,23 +112,23 @@ function TableContent() {
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
       setTypeList(data);
-      setTimeout(() => {}, 500);
+      setTimeout(() => { }, 500);
     } catch (error) {
       console.error('Đã xảy ra lỗi: ', error);
     }
   };
 
-  const handleDeleteType = async (id, status) => {
+  const handleDeleteType = async (values, status) => {
     try {
-      await typeAPI.updateStatus(id, status);
+      await typeAPI.updateStatus(values.typeId, status);
       notification.info({
-        message: 'Xóa thành Công',
-        description: 'Type Có ID: ' + id + ' đã được xóa thành công!!!',
+        message: 'Hủy thành công',
+        description: 'Kiểu balo có mã: ' + values.typeCode + ' đã được hủy thành công!!!',
         duration: 2,
       });
       getAllPhanTrangType(currentPage, pageSize);
     } catch (error) {
-      console.error('Đã xảy ra lỗi khi xóa Type: ', error);
+      console.error('Đã xảy ra lỗi khi hủy kiểu balo: ', error);
     }
   };
   const onShowSizeChange = (current, pageSize) => {
@@ -145,8 +142,8 @@ function TableContent() {
         padding: '10px',
       }}
     >
-      <FormTypeCreate />
-      <Button icon={<ReloadOutlined />} onClick={reload} loading={loading}></Button>
+      <FormTypeCreate reload={() => { setLoading(true) }} />
+      <Button style={{ marginLeft: '5px' }} icon={<ReloadOutlined />} onClick={() => { setLoading(true) }} loading={loading}></Button>
       <Table
         className="table table-striped"
         scroll={{
@@ -159,13 +156,15 @@ function TableContent() {
         onChange={handleTableChange}
         pagination={false}
       />
-      <div className={styles.pagination}>
+      <div className={styles.pagination} style={{ textAlign: 'center' }}>
         <Pagination
-          // showSizeChanger
+          showSizeChanger
           onShowSizeChange={onShowSizeChange}
           onChange={onShowSizeChange}
           defaultCurrent={1}
           total={totalItem}
+          current={currentPage}
+          defaultPageSize={pageSize}
         />
       </div>
     </div>

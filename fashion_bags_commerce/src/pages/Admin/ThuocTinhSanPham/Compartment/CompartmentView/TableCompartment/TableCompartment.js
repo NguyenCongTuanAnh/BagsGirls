@@ -7,13 +7,13 @@ import FormEditCompartment from '../../CompartmentEdit/FormEditCompartment/FormE
 import FormCreateCompartment from '../../CompartmentEdit/FormCreateCompartment/FormCreateCompartment';
 
 function TableContent() {
-  const [compartmentList, setCompartmentList] = useState([]);
+  const [typeList, setTypeList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [totalItem, setTotalItem] = useState();
+  const [totalItem, setTotalItem] = useState(); // Số lượng dữ liệu tổng cộng
 
-  const handleTableChange = (pagination, filters, sorter) => {};
+  const handleTableChange = (pagination, filters, sorter) => { };
   const columns = [
     {
       title: 'STT',
@@ -21,17 +21,21 @@ function TableContent() {
       render: (text, record, index) => <span>{(currentPage - 1) * pageSize + index + 1}</span>,
     },
     {
-      title: 'Tên ngăn',
+      title: 'Mã ngăn',
+      dataIndex: 'compartmentCode',
+      width: 100,
+      sorter: (a, b) => a.compartmentCode.localeCompare(b.compartmentCode),
+    },
+    {
+      title: 'Tên mã ngăn',
       dataIndex: 'compartmentName',
       width: 100,
       sorter: (a, b) => a.compartmentName.localeCompare(b.compartmentName),
     },
     {
       title: 'Trạng thái',
-      dataIndex: 'compartmentStatus',
-
+      dataIndex: 'typeStatus',
       width: 100,
-      sorter: (a, b) => a.compartmentStatus.localeCompare(b.compartmentStatus),
       render: (status) => {
         let statusText;
         let statusClass;
@@ -42,12 +46,8 @@ function TableContent() {
             statusClass = 'active-status';
             break;
           case 0:
-            statusText = 'Không hoạt động';
-            statusClass = 'inactive-status';
-            break;
-          case -1:
             statusText = 'Ngừng hoạt động';
-            statusClass = 'other-status';
+            statusClass = 'inactive-status';
             break;
           default:
             statusText = 'Trạng thái khác';
@@ -62,81 +62,79 @@ function TableContent() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <FormEditCompartment
-            compartment={record}
-            reload={() => {
-              setLoading(true);
-            }}
+          <FormTypeEdit
+            type={record}
+            reload={() => { setLoading(true); }}
           />
           <Popconfirm
             title="Xác Nhận"
-            description="Bạn có chắc chắn muốn xóa?"
+            description="Bạn có chắc chắn muốn hủy?"
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
-              handleDeleteCompartment(record.compartmentId, -1);
-              reload();
+              handleDeleteType(record, 0);
+              setLoading(true);
             }}
             onCancel={onCancel}
           >
-            <Button className="btn btn-danger " icon={<DeleteOutlined />}></Button>
+            <Button
+              type="default"
+              disabled={(record.typeStatus !== 1) ? true : false}
+              danger
+              icon={<DeleteOutlined />}>
+              Hủy
+            </Button>
           </Popconfirm>
         </Space>
       ),
       width: 100,
     },
   ];
-  const onCancel = () => {};
-  const reload = () => {
-    setLoading(true);
-    getAllPhanTrangCompartment(currentPage, pageSize);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-  };
+  const onCancel = () => { };
 
   useEffect(() => {
-    setLoading(true);
+    getAllPhanTrangType(currentPage, pageSize);
     setTimeout(() => {
       setLoading(false);
     }, 500);
-  }, []);
+  }, [loading]);
+  useEffect(() => {
+    if (loading) {
+      // Tải lại bảng khi biến trạng thái thay đổi
+      getAllPhanTrangType(currentPage, pageSize);
+      setLoading(false); // Reset lại trạng thái
+    }
+  }, [loading]);
 
-  const getAllPhanTrangCompartment = async (pageNum, pageSize) => {
+  const getAllPhanTrangType = async (pageNum, pageSize) => {
     try {
-      const response = await compartmentAPI.getAllPhanTrang(pageNum, pageSize);
+      const response = await typeAPI.getAllPhanTrang(pageNum, pageSize);
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
-      setCompartmentList(data);
-      setTimeout(() => {}, 500);
+      setTypeList(data);
+      setTimeout(() => { }, 500);
     } catch (error) {
       console.error('Đã xảy ra lỗi: ', error);
     }
   };
-  useEffect(() => {
-    if (loading) {
-      // Tải lại bảng khi biến trạng thái thay đổi
-      getAllPhanTrangCompartment(currentPage, pageSize);
-      setLoading(false); // Reset lại trạng thái
-    }
-  }, [loading]);
-  const handleDeleteCompartment = async (id, status) => {
+
+  const handleDeleteType = async (values, status) => {
     try {
-      await compartmentAPI.updateStatus(id, status);
+      await typeAPI.updateStatus(values.typeId, status);
       notification.info({
-        message: 'Xóa thành công',
-        description: 'Ngăn có ID: ' + id + ' đã được xóa thành công!!!',
+        message: 'Hủy thành công',
+        description: 'Kiểu balo có mã: ' + values.typeCode + ' đã được hủy thành công!!!',
         duration: 2,
       });
-      getAllPhanTrangCompartment(currentPage, pageSize);
+      getAllPhanTrangType(currentPage, pageSize);
     } catch (error) {
-      console.error('Đã xảy ra lỗi khi xóa ngăn: ', error);
+      console.error('Đã xảy ra lỗi khi hủy kiểu balo: ', error);
     }
   };
   const onShowSizeChange = (current, pageSize) => {
     setPageSize(pageSize);
     setCurrentPage(current);
-    getAllPhanTrangCompartment(current, pageSize);
+    getAllPhanTrangType(current, pageSize);
   };
   return (
     <div
@@ -144,32 +142,31 @@ function TableContent() {
         padding: '10px',
       }}
     >
-      <FormCreateCompartment />
-      <Button icon={<ReloadOutlined />} onClick={reload} loading={loading}></Button>
-
-      <Spin spinning={loading}>
-        <Table
-          className="table table-striped"
-          scroll={{
-            x: 1000,
-            y: 670,
-          }}
-          rowKey={(record) => record.compartmentId}
-          columns={columns}
-          dataSource={compartmentList}
-          onChange={handleTableChange}
-          pagination={false}
+      <FormTypeCreate reload={() => { setLoading(true) }} />
+      <Button style={{ marginLeft: '5px' }} icon={<ReloadOutlined />} onClick={() => { setLoading(true) }} loading={loading}></Button>
+      <Table
+        className="table table-striped"
+        scroll={{
+          x: 1000,
+          y: 570,
+        }}
+        rowKey={(record) => record.typeId}
+        columns={columns}
+        dataSource={typeList}
+        onChange={handleTableChange}
+        pagination={false}
+      />
+      <div className={styles.pagination} style={{ textAlign: 'center' }}>
+        <Pagination
+          showSizeChanger
+          onShowSizeChange={onShowSizeChange}
+          onChange={onShowSizeChange}
+          defaultCurrent={1}
+          total={totalItem}
+          current={currentPage}
+          defaultPageSize={pageSize}
         />
-        <div className={styles.pagination}>
-          <Pagination
-            // showSizeChanger
-            onShowSizeChange={onShowSizeChange}
-            onChange={onShowSizeChange}
-            defaultCurrent={1}
-            total={totalItem}
-          />
-        </div>
-      </Spin>
+      </div>
     </div>
   );
 }
