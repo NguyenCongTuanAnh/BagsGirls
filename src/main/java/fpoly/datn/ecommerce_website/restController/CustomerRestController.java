@@ -99,6 +99,12 @@ public class CustomerRestController {
                 HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/customer/updateNotPassword", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateNotPassword( @RequestBody CustomerDTO customerDTO) {
+        return new ResponseEntity<>(customerService.updateNotPassword(customerDTO),
+                HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/customer/update-status", method = RequestMethod.PUT)
     public ResponseEntity<Customers> updateStatus(@RequestParam String id, @RequestParam int status) {
         return new ResponseEntity<>(customerService.updateStatus(id, status),
