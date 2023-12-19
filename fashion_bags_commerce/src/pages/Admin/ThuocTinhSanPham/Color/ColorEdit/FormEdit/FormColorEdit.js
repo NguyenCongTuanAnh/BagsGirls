@@ -11,6 +11,14 @@ function FormcolorEdit(props) {
   const [reloadTable, setReloadTable] = useState(false);
   const [form] = Form.useForm();
 
+  const validateTypeName = (rule, value, callback) => {
+    if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
+      callback('Tên kiểu không hợp lệ!');
+    } else {
+      callback();
+    }
+  };
+
   const showComponent = () => {
     setOpen(true);
     if (data.colorStatus === 1) {
@@ -24,6 +32,7 @@ function FormcolorEdit(props) {
 
   const closeComponent = () => {
     setOpen(false);
+    form.getFieldValue();
   };
 
   const updateData = (event) => {
@@ -83,7 +92,7 @@ function FormcolorEdit(props) {
           extra={
             <Space>
               <Button onClick={closeComponent}>Thoát</Button>
-              <Button onClick={() => form.submit()} type="primary" className="btn btn-warning">
+              <Button onClick={() => updateFunction(data.colorId, data)} type="primary" className="btn btn-warning">
                 Lưu
               </Button>
             </Space>
@@ -93,8 +102,7 @@ function FormcolorEdit(props) {
             layout="vertical"
             hideRequiredMark
             initialValues={data}
-            onFinish={(values) => updateFunction(data.colorId, values)}
-            form={form} 
+            form={form}
           >
             <Row gutter={16}>
               <Col span={24}>
@@ -120,7 +128,10 @@ function FormcolorEdit(props) {
                   rules={[
                     {
                       required: true,
-                      message: 'Vui lòng điền tên Color',
+                      message: 'Vui lòng điền tên màu sắc!',
+                    },
+                    {
+                      validator: validateTypeName,
                     },
                   ]}
                 >
