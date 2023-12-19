@@ -67,7 +67,6 @@ const TableContent = () => {
       dataIndex: 'brandStatus',
 
       width: 150,
-      sorter: (a, b) => a.brandStatus.localeCompare(b.brandStatus),
       render: (status) => {
         let statusText;
         let statusClass;
@@ -98,7 +97,7 @@ const TableContent = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <FormBrandEdit brand={record}  reload={() => setLoading(true)}/>
+          <FormBrandEdit brand={record} reload={() => setLoading(true)} />
           <Popconfirm
             title="Xác Nhận"
             description="Bạn Có chắc chắn muốn hủy trạng thái?"
@@ -110,7 +109,7 @@ const TableContent = () => {
             }}
             onCancel={onCancel}
           >
-            <Button type="default" danger icon={<DeleteOutlined />}>
+            <Button type="default" disabled={record.brandStatus !== 1 ? true : false} danger icon={<DeleteOutlined />}>
               Hủy
             </Button>
           </Popconfirm>

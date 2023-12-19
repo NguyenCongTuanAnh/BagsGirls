@@ -13,6 +13,7 @@ const TableContent = () => {
   const [totalItem, setTotalItem] = useState();
 
   const onCancel = () => {};
+
   const reload = () => {
     setLoading(true);
     getAll(currentPage, pagesSize);
@@ -75,7 +76,6 @@ const TableContent = () => {
       title: 'Kích cỡ (dài x rộng x cao)',
       dataIndex: 'size', // Use a single dataIndex for the combined data
       width: 100,
-      sorter: (a, b) => a.lengthSize.localeCompare(b.lengthSize),
       render: (text, record) => `${record.sizeLength} x ${record.sizeWidth} x ${record.sizeHeight}`,
     },
     {
@@ -83,7 +83,6 @@ const TableContent = () => {
       dataIndex: 'sizeStatus',
 
       width: 100,
-      sorter: (a, b) => a.sizeStatus.localeCompare(b.sizeStatus),
       render: (status) => {
         let statusText;
         let statusClass;
@@ -114,10 +113,10 @@ const TableContent = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <FormSizeEdit size={record} />
+          <FormSizeEdit size={record} reload={()=>setLoading(true)}/>
           <Popconfirm
             title="Xác Nhận"
-            description="Bạn Có chắc chắn muốn xóa?"
+            description="Bạn Có chắc chắn muốn hủy?"
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
@@ -126,8 +125,10 @@ const TableContent = () => {
             }}
             onCancel={onCancel}
           >
-            <Button type="default" danger icon={<DeleteOutlined />}>
-              Xóa
+            <Button type="default" 
+            disabled={(record.sizeStatus !== 1) ? true : false}
+            danger icon={<DeleteOutlined />}>
+              Hủy
             </Button>
           </Popconfirm>
         </Space>
@@ -153,7 +154,7 @@ const TableContent = () => {
         padding: '10px',
       }}
     >
-      <FormSizeCreate />
+      <FormSizeCreate  reload={() => setLoading(true)}/>
       <Button icon={<ReloadOutlined />} onClick={reload} loading={loading}></Button>
       <Table
         className="table table-striped"
@@ -170,12 +171,13 @@ const TableContent = () => {
       />
 
       <Pagination
-        // showSizeChanger
-        className={styles.pagination}
-        total={totalItem}
-        onChange={onChange}
-        defaultCurrent={1}
-        defaultPageSize={pagesSize}
+       className={styles.pagination}
+       showSizeChanger
+       total={totalItem}
+       onChange={onChange}
+       defaultCurrent={1}
+       current={currentPage}
+       defaultPageSize={pagesSize}
       />
     </div>
   );

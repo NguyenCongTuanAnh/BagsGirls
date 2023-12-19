@@ -17,6 +17,16 @@ function FormcolorEditTonggle(props) {
     setOpen(true);
   };
 
+  const validatematerialName = async (rule, value) => {
+    return new Promise((resolve, reject) => {
+      if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
+        reject('Tên chất liệu không hợp lệ!');
+      } else {
+        resolve();
+      }
+    });
+  };
+
   const onFinishFailed = (errorInfo) => {
     setError(true);
     const errorMessages = Object.values(errorInfo.errorFields)
@@ -95,6 +105,9 @@ function FormcolorEditTonggle(props) {
                 {
                   required: true,
                   message: 'Vui lòng điền Tên color!',
+                },
+                {
+                  validator: validatematerialName,
                 },
               ]}
             >

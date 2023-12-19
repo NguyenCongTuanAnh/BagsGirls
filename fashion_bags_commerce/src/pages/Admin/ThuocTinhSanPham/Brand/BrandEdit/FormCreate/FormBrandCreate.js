@@ -18,6 +18,15 @@ function FormBrandCreate(props) {
     form.resetFields();
     setIsModalOpen(false);
   };
+  const validatematerialName = async (rule, value) => {
+    return new Promise((resolve, reject) => {
+      if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
+        reject('Tên chất liệu không hợp lệ!');
+      } else {
+        resolve();
+      }
+    });
+  };
 
   const addFunc = async (values) => {
     setError(false);
@@ -77,6 +86,9 @@ function FormBrandCreate(props) {
                 {
                   required: true,
                   message: 'Vui lòng điền Tên thương hiệu!',
+                },
+                {
+                  validator: validatematerialName,
                 },
               ]}
             >

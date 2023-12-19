@@ -28,6 +28,9 @@ const CheckoutDetail = () => {
   const [anThongTinDiaChi, setAnThongTinDiaChi] = useState(true);
   const [anThongTinDiaChi1, setAnThongTinDiaChi1] = useState(false);
   const [cartId, setCartId] = useState('');
+  const [amountShip, setAmountShip] = useState('');
+
+
   const navigate = useNavigate();
   
 
@@ -773,10 +776,11 @@ const clearAllCartDetail = async (cartId) => {
     const selectedWardCode = e.target.value;
     setSelectedWard(selectedWardCode);
 
+    setAmountShip(location?.state?.totalAmount)
     try {
       if (selectedDistrict && selectedWardCode) {
         const response = await fetch(
-          `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?service_id=53321&insurance_value=1000000&coupon&to_district_id=${selectedDistrict}&from_district_id=1482&weight=500&from_ward_code=11008&to_ward_code=${selectedWardCode}&length=30&width=15&height=40`,
+          `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?service_id=53321&insurance_value=1000000&coupon&to_district_id=${selectedDistrict}&from_district_id=1482&weight=${1000 * amountShip}&from_ward_code=11008&to_ward_code=${selectedWardCode}&length=30&width=15&height=40`,
           {
             headers: {
               token: `${token}`,

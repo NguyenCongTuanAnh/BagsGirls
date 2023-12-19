@@ -43,7 +43,6 @@ function TableContent() {
       dataIndex: 'colorStatus',
 
       width: 100,
-      sorter: (a, b) => a.colorStatus.localeCompare(b.colorStatus),
       render: (status) => {
         let statusText;
         let statusClass;
@@ -86,7 +85,9 @@ function TableContent() {
             }}
             onCancel={onCancel}
           >
-            <Button type="default" danger icon={<DeleteOutlined />}>
+            <Button type="default" 
+            disabled={(record.colorStatus !== 1) ? true : false}
+            danger icon={<DeleteOutlined />}>
               Hủy
             </Button>
           </Popconfirm>

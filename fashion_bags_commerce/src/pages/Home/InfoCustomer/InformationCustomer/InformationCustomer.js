@@ -22,6 +22,7 @@ function AddressCustomer() {
   const [birthDay, setBirthDay] = useState('');
 
   const [address, setAddress] = useState('');
+  const [fullAddress, setFullAddress] = useState('');
   const [displayUpdateAddress, setDisplayUpdateAddress] = useState(false);
   const [displayInfoAddress, setDisplayInfoAddress] = useState(true);
 
@@ -54,15 +55,6 @@ function AddressCustomer() {
         duration: 2,
       });
 
-      // Fill out the empty fields for easier correction
-      // if (!fullName) setFullName(customerInfo?.users?.fullName || '');
-      // if (!phoneNumber) setPhoneNumber(customerInfo?.users?.phoneNumber || '');
-      // if (!birthDay) setBirthDay(customerInfo?.users?.birthDay || '');
-      // if (!selectedProvince) setSelectedProvince(customerInfo?.users?.provinceCode || '');
-      // if (!selectedDistrict) setSelectedDistrict(customerInfo?.users?.districtCode || '');
-      // if (!selectedWard) setSelectedWard(customerInfo?.users?.wardCode || '');
-      // if (!address) setAddress(customerInfo?.users?.address || '');
-
       return;
     }
     const getNameFromCode = (code, list) => {
@@ -73,13 +65,14 @@ function AddressCustomer() {
     const selectedDistrictName = getNameFromCode(selectedDistrict, districts);
     const selectedWardName = getNameFromCode(selectedWard, wards);
 
-    const fullAddress = `${address} - ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`;
+    const fullAddressText = `- ${selectedWardName} - ${selectedDistrictName} - ${selectedProvinceName}`;
+    setFullAddress(fullAddress);
 
     const updateFunction = async () => {
       const user = customer?.users;
       const updatedFields = {
         fullName: fullName,
-        address: fullAddress,
+        address: address + selectedWardName + selectedDistrictName + selectedProvinceName,
         gender: gender,
         birthDay: birthDay,
         phoneNumber: phoneNumber,
@@ -108,7 +101,7 @@ function AddressCustomer() {
           phoneNumber: user.phoneNumber,
           account: user.account,
           gender: user.gender,
-          address: fullAddress,
+          address: address + fullAddressText,
 
           role: 'ROLE_CUSTOMER',
         },
@@ -221,6 +214,9 @@ function AddressCustomer() {
               onClick={() => {
                 setDisplayUpdateAddress(true);
                 setDisplayInfoAddress(false);
+                setAddress(customerInfo.users.address);
+                setFullName(customerInfo.users.fullName);
+                setPhoneNumber(customerInfo.users.phoneNumber);
               }}
               className="changleAddress"
               style={{
@@ -304,6 +300,9 @@ function AddressCustomer() {
                   onChange={handleProvinceChange}
                   required
                   style={{ flex: 1 }}
+                  onClick={() => {
+                    setAddress('');
+                  }}
                   className="infor-custom-input-item"
                 >
                   <option disabled value="">
@@ -329,6 +328,9 @@ function AddressCustomer() {
                   className="infor-custom-input-item"
                   onChange={handleDistrictChange}
                   required
+                  onClick={() => {
+                    setAddress('');
+                  }}
                   style={{ flex: 1 }}
                 >
                   <option disabled value="">
@@ -396,12 +398,13 @@ function AddressCustomer() {
                     onClick={() => {
                       setDisplayInfoAddress(true);
                       setDisplayUpdateAddress(false);
+                      setAddress(fullAddress);
                     }}
                   >
                     <RollbackOutlined /> Quay lại
                   </button>
 
-                  <button className="btn-update" onClick={handleConfirmation} >
+                  <button className="btn-update" onClick={handleConfirmation}>
                     <EditOutlined />
                     Cập nhật
                   </button>
