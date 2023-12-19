@@ -22,7 +22,9 @@ public interface ICustomerService {
 
     Customers update( CustomerDTO customerDTO);
 
-    Customers updateStatus(String id, Integer status);
+     Customers updateNotPassword(CustomerDTO customerDTO) ;
+
+     Customers updateStatus(String id, Integer status);
 
     String delete(String id);
 

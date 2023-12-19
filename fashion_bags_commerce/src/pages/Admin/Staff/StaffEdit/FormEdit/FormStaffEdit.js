@@ -51,7 +51,6 @@ function FormStaffEdit(props) {
     setOpen(true);
     setEmail(props.staffData.users.email);
     setSDT(props.staffData.users.phoneNumber);
-    setPassword(props.staffData.users.password);
     form.resetFields();
   };
   const onClose = () => {
@@ -320,7 +319,7 @@ function FormStaffEdit(props) {
               label="Ghi chú"
               rules={[
                 {
-                  required: true,
+                  required: false,
                   message: 'Vui lòng điền ghi chú!',
                 },
               ]}
@@ -341,69 +340,13 @@ function FormStaffEdit(props) {
       </Form>
     )
   }
-  const capNhatMatKhau = (values) => {
-    return (
-      <div>
-        <Form layout="vertical">
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Password"
-                name="usersPassword"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng điền Password!',
-                    whitespace: true,
-                  },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (
-                        value &&
-                        value.length >= 12 &&
-                        value.length <= 30 &&
-                        /[\W_]/.test(value) &&
-                        /[A-Z]/.test(value) &&
-                        /\d/.test(value)
-                      ) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error('Mật khẩu trong khoảng 12-30 kí tự, bao gồm ký tự đặc biệt, số và chữ in hoa!'),
-                      );
-                    },
-                  }),
-                ]}
-              >
-                <Input.Password iconRender={(visible) => (visible ? <EyeInvisibleOutlined /> : <EyeFilled />)} onChange={updateData} name="usersPassword" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <div>
-            <Space>
-              <Button onClick={() => updatePasswordFunction(values.staffId, password)} type="primary" className="btn btn-warning">
-                Lưu
-              </Button>
-              <Button onClick={onClose}>Thoát</Button>
 
-            </Space>
-          </div>
-
-        </Form>
-      </div>
-    )
-  }
   const items = [
     {
       key: '1',
       label: 'Cập nhật thông tin',
       children: capNhatThongTin(data),
-    },
-    {
-      key: '2',
-      label: 'Cập nhật mật khẩu',
-      children: capNhatMatKhau(data),
-    },
+    }
   ];
   return (
     <Fragment>
@@ -427,7 +370,7 @@ function FormStaffEdit(props) {
           },
         }}
       >
-        <Tabs defaultActiveKey="1" items={items} />;
+        <Tabs defaultActiveKey="1" items={items} />
       </Drawer>
     </Fragment>
   );
