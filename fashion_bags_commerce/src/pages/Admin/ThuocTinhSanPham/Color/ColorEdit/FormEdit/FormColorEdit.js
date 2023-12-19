@@ -9,6 +9,7 @@ function FormcolorEdit(props) {
   const [data, setData] = useState(props.color);
   const [stringStatus, setStringStatus] = useState('');
   const [reloadTable, setReloadTable] = useState(false);
+  const [form] = Form.useForm();
 
   const showComponent = () => {
     setOpen(true);
@@ -47,6 +48,7 @@ function FormcolorEdit(props) {
           duration: 2,
         });
         closeComponent();
+        props.reload();
       } catch (error) {
         console.log(error);
         setError(true);
@@ -71,7 +73,7 @@ function FormcolorEdit(props) {
           Sửa
         </Button>
         <Drawer
-          title={'Edit - ' + data.colorName}
+          title={'Edit - ' + data.colorCode}
           width={400}
           onClose={closeComponent}
           open={open}
@@ -81,13 +83,19 @@ function FormcolorEdit(props) {
           extra={
             <Space>
               <Button onClick={closeComponent}>Thoát</Button>
-              <Button onClick={() => updateFunction(data.colorId, data)} type="primary" className="btn btn-warning">
+              <Button onClick={() => form.submit()} type="primary" className="btn btn-warning">
                 Lưu
               </Button>
             </Space>
           }
         >
-          <Form layout="vertical" hideRequiredMark initialValues={data}>
+          <Form
+            layout="vertical"
+            hideRequiredMark
+            initialValues={data}
+            onFinish={(values) => updateFunction(data.colorId, values)}
+            form={form} 
+          >
             <Row gutter={16}>
               <Col span={24}>
                 <Form.Item
@@ -96,11 +104,11 @@ function FormcolorEdit(props) {
                   rules={[
                     {
                       required: true,
-                      message: 'Vui lòng điền Mã Kiểu',
+                      message: 'Vui lòng điền Mã Color',
                     },
                   ]}
                 >
-                  <Input placeholder="Vui lòng điền Mã Kiểu" disabled />
+                  <Input placeholder="Vui lòng điền Mã Color" disabled />
                 </Form.Item>
               </Col>
             </Row>
@@ -112,7 +120,7 @@ function FormcolorEdit(props) {
                   rules={[
                     {
                       required: true,
-                      message: 'Vui lòng điền tên',
+                      message: 'Vui lòng điền tên Color',
                     },
                   ]}
                 >
@@ -120,14 +128,23 @@ function FormcolorEdit(props) {
                     name="colorName"
                     value={data.colorName}
                     onChange={updateData}
-                    placeholder="Vui lòng điền tên"
+                    placeholder="Vui lòng điền tên color"
                   />
                 </Form.Item>
               </Col>
             </Row>
             <Row gutter={16}>
               <Col span={24}>
-                <Form.Item label="Trạng Thái">
+                <Form.Item
+                  name="colorStatus"
+                  label="Trạng Thái"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Vui lòng chọn Trạng Thái',
+                    },
+                  ]}
+                >
                   <Select onChange={updateStatus} defaultValue={stringStatus} placeholder="Vui lòng chọn Trạng Thái">
                     <Select.Option value="1">Hoạt động</Select.Option>
                     <Select.Option value="0">Không hoạt động</Select.Option>

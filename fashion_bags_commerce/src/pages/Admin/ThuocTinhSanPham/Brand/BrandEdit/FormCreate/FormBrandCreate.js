@@ -7,17 +7,15 @@ import brandAPI from '~/api/propertitesBalo/brandAPI';
 function FormBrandCreate(props) {
   const [modalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(true);
+  // const [isPopconfirmVisible, setPopconfirmVisible] = useState(false);
   const [form] = Form.useForm();
 
   const showModal = () => {
     setIsModalOpen(true);
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
   const handleCancel = () => {
+    form.resetFields();
     setIsModalOpen(false);
   };
 
@@ -27,6 +25,7 @@ function FormBrandCreate(props) {
       let add = { ...values, brandCode: generateCustomCode('brand', 3) };
       try {
         const response = await brandAPI.add(add);
+        // setPopconfirmVisible(false);
         notification.success({
           message: 'Add thành công',
           description: 'Dữ liệu đã được thêm thành công',
@@ -34,7 +33,7 @@ function FormBrandCreate(props) {
         });
 
         handleCancel();
-
+        props.reload();
         // Đóng Modal sau khi thêm thành công
       } catch (error) {
         setError(true);
@@ -49,7 +48,13 @@ function FormBrandCreate(props) {
 
   return (
     <Fragment>
-      <Button style={{ border: '1px white solid', color: 'white', background: 'green' }} onClick={showModal} icon={<PlusOutlined />}>Thêm</Button>
+      <Button
+        style={{ border: '1px white solid', color: 'white', background: 'green' }}
+        onClick={showModal}
+        icon={<PlusOutlined />}
+      >
+        Thêm
+      </Button>
       <Modal title="Thêm thương hiệu" open={modalOpen} onCancel={handleCancel} footer={null}>
         <div>
           <Form

@@ -22,6 +22,13 @@ const TableContent = () => {
   };
 
   useEffect(() => {
+    if (loading) {
+      // Tải lại bảng khi biến trạng thái thay đổi
+      getAll(currentPage, pagesSize);
+      setLoading(false); // Reset lại trạng thái
+    }
+  }, [loading]);
+  useEffect(() => {
     // Fetch size data using the sizeAPI.getAll function
     getAll(currentPage, pagesSize);
     reload();

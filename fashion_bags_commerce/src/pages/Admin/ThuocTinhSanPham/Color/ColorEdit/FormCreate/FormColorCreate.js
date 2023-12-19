@@ -35,7 +35,7 @@ function FormcolorEditTonggle(props) {
   const addFunc = async (values) => {
     setError(false);
     if (error == false) {
-      let addcolor = { ...values, colorCode: generateCustomCode('col', 3) };
+      let addcolor = { ...values, colorCode: generateCustomCode('MS', 6) };
       try {
         const response = await colorAPI.add(addcolor);
         setPopconfirmVisible(false);
@@ -45,6 +45,7 @@ function FormcolorEditTonggle(props) {
           duration: 2,
         });
         onClose();
+        props.reload();
       } catch (error) {
         setError(true);
         notification.info({
@@ -54,13 +55,6 @@ function FormcolorEditTonggle(props) {
         });
       }
     }
-  };
-  const onConfirm = () => {
-    form.submit(); // Gọi hàm onFinish của Form khi xác nhận
-    setPopconfirmVisible(false);
-  };
-  const onCancel = () => {
-    setPopconfirmVisible(false); // Đóng Popconfirm sau khi xác nhận
   };
   return (
     <Fragment>
@@ -73,7 +67,7 @@ function FormcolorEditTonggle(props) {
       >
         Thêm
       </Button>
-      <Modal title="Thêm Màu Sắc" visible={open} onCancel={onClose} footer={null}>
+      <Modal title="Thêm Màu Sắc" open={open} onCancel={onClose} footer={null}>
         <div>
           <Form
             initialValues={{

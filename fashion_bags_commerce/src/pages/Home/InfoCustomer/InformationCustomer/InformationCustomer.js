@@ -401,7 +401,7 @@ function AddressCustomer() {
                     <RollbackOutlined /> Quay lại
                   </button>
 
-                  <button className="btn-update" onClick={handleConfirmation}>
+                  <button className="btn-update" onClick={handleConfirmation} >
                     <EditOutlined />
                     Cập nhật
                   </button>

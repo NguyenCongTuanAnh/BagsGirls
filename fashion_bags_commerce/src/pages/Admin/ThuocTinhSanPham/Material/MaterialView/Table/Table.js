@@ -45,7 +45,13 @@ const TableContent = () => {
       setData(data);
     } catch (error) {}
   };
-
+  useEffect(() => {
+    if (loading) {
+      // Tải lại bảng khi biến trạng thái thay đổi
+      getAllPage(currentPage, pagesSize);
+      setLoading(false); // Reset lại trạng thái
+    }
+  }, [loading]);
   // Define your table columns
   const columns = [
     {
