@@ -32,13 +32,18 @@ function LoginForm(props) {
       if (response.data.data.users.role === 'ROLE_CUSTOMER') {
         const customer = await customerAPI.findByUserId(response.data.data.users.userId);
 
+        if (customer.data.customerStatus !== 1) {
+          notification.error({
+            message: 'Lỗi!!!',
+            description: `Tài khoản có mã ${customer.data.customerCode} hiện tại không thể đăng nhập vui lòng liên hệ lại với cửa hàng!!!`,
+            duration: 2,
+          });
+          return;
+        }
         localStorage.setItem('customerToken', response.data.data.token);
         localStorage.setItem('customerId', customer.data.customerId);
         const userToken = await AuthAPI.getCustomerToken('ROLE_CUSTOMER');
-        console.log('====================================');
-        console.log('kh');
-        console.log(userToken);
-        console.log('====================================');
+
         const userString = JSON.stringify(userToken.data);
 
         const customerTokenStringDecode = CryptoJS.AES.encrypt(userString, Constants.key).toString();

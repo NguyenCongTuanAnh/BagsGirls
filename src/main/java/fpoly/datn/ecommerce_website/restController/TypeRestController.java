@@ -1,6 +1,7 @@
 package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.TypeDTO;
+import fpoly.datn.ecommerce_website.entity.Colors;
 import fpoly.datn.ecommerce_website.entity.Types;
 import fpoly.datn.ecommerce_website.service.TypeService;
 import jakarta.validation.Valid;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
@@ -31,12 +33,13 @@ public class TypeRestController {
     //GetAll
     @RequestMapping(value = "/type/", method = RequestMethod.GET)
     public ResponseEntity<?> getAll() {
+        List<Types> colorsList = this.typeService.findAll();
+        List<Types> filtered = colorsList.stream()
+                .filter(color -> color.getTypeStatus() == 1)
+                .collect(Collectors.toList());
+
         return new ResponseEntity<>(
-                this.typeService.findAll()
-                        .stream()
-                        .map(type -> modelMapper.map(type, TypeDTO.class))
-                        .sorted(Comparator.comparing(TypeDTO::getTypeCode)) // Sắp xếp theo trường "name"
-                        .collect(Collectors.toList())
+                filtered
                 , HttpStatus.OK
         );
     }

@@ -400,7 +400,7 @@ function ProductDetailsViewer() {
                 title="Tình Trạng"
               >
                 <Button type="primary" shape="round">
-                  Còn Hàng
+                  Đang hoạt động
                 </Button>
               </Popover>
             );
@@ -409,14 +409,14 @@ function ProductDetailsViewer() {
               <Popover
                 content={
                   <Typography.Text type="danger" strong>
-                    Sản Phẩm này tạm thời hết hàng
+                    Sản Phẩm này tạm thời ngưng hoạt động
                   </Typography.Text>
                 }
                 title="Tình Trạng"
               >
                 {' '}
                 <Button type="primary" danger shape="round">
-                  Hết Hàng
+                  Ngưng hoạt động
                 </Button>
               </Popover>
             );
@@ -425,12 +425,12 @@ function ProductDetailsViewer() {
               <Popover
                 content={
                   <Typography.Text type="secondary" strong>
-                    Sản Phẩm này đã ngưng hoạt động
+                    Sản Phẩm này đã dừng hoạt động
                   </Typography.Text>
                 }
                 title="Tình Trạng"
               >
-                <Button shape="round">Ngưng Hoạt Động</Button>
+                <Button shape="round">Dừng Hoạt Động</Button>
               </Popover>
             );
           default:
@@ -759,11 +759,12 @@ function ProductDetailsViewer() {
           </Row>
           <Row>
             <Col span={24}>
-              <Form.Item label="Khoảng Số Lượng" name="importPrice">
+              <Form.Item label="Khoảng Số Lượng" name="amount">
                 <InputNumber
                   size="large"
                   style={{ width: 400 }}
-                  step={1000}
+                  step={1}
+                  min={0}
                   addonBefore="Min"
                   addonAfter="Cái"
                   formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -780,7 +781,8 @@ function ProductDetailsViewer() {
                 <InputNumber
                   size="large"
                   style={{ width: 400 }}
-                  step={1000}
+                  step={1}
+                  min={0}
                   addonBefore="Max"
                   addonAfter="Cái"
                   formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -799,6 +801,7 @@ function ProductDetailsViewer() {
                   size="large"
                   style={{ width: 400 }}
                   step={1000}
+                  min={0}
                   addonBefore="Min"
                   addonAfter="VND"
                   formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -816,6 +819,7 @@ function ProductDetailsViewer() {
                   size="large"
                   style={{ width: 400 }}
                   step={1000}
+                  min={0}
                   addonBefore="Min"
                   addonAfter="VND"
                   formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -834,6 +838,7 @@ function ProductDetailsViewer() {
                   size="large"
                   style={{ width: 400 }}
                   step={1000}
+                  min={0}
                   addonBefore="Min"
                   addonAfter="VND"
                   formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
@@ -849,6 +854,7 @@ function ProductDetailsViewer() {
                   size="large"
                   style={{ width: 400 }}
                   step={1000}
+                  min={0}
                   addonBefore="Max"
                   addonAfter="VND"
                   formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}

@@ -167,16 +167,9 @@ public class ProductDetailRestController {
                         .map(productDetail -> modelMapper.map(productDetail, ProductDetailDTO.class))
                         .collect(Collectors.toList())
                 , HttpStatus.OK);
+
     }
-//    @RequestMapping(value = "product-detail/getById", method = RequestMethod.GET)
-//    public ResponseEntity<?> getById(@RequestParam String productDetailId) {
-//        return new ResponseEntity<>(
-//               modelMapper.map( this.productDetailService.findById(productDetailId), ProductDetailDTO.class)
-//                , HttpStatus.OK
-//        );
-//    }
-//
-//
+
         @RequestMapping(value = "/product-detail/update-amount", method = RequestMethod.POST)
         public ResponseEntity<?> updateAmount(
                 @RequestParam @NotNull String productDetailId,
@@ -186,12 +179,15 @@ public class ProductDetailRestController {
 
             if(productDetails.getProductDetailAmount() < amount) {
 
-                return  new ResponseEntity<>( "Số lượng upadte không hợp lệ!!!"
+                return  new ResponseEntity<>( "Số lượng update không hợp lệ!!!"
                         , HttpStatus.CONFLICT);
             }
             int newAmount = productDetails.getProductDetailAmount()-amount;
             productDetails.setProductDetailAmount(newAmount);
 
+            if(productDetails.getProductDetailAmount() == 0 ){
+                productDetails.setProductDetailStatus(0);
+            }
             return new ResponseEntity<>(
                     modelMapper.map(this.productDetailService.save(modelMapper.map(productDetails, ProductDetailDTO.class)), ProductDetailDTO.class)
                     , HttpStatus.OK);

@@ -105,12 +105,6 @@ function FormProductViewDetails(props) {
       sorter: (a, b) => a.compartment.compartmentName.localeCompare(b.compartment.compartmentName),
     },
     {
-      title: 'Ảnh',
-      dataIndex: 'imageUrl',
-      width: 300,
-      sorter: (a, b) => a.imageUrl.localeCompare(b.imageUrl),
-    },
-    {
       title: 'NSX',
       dataIndex: ['producer', 'producerName'],
       width: 100,
@@ -131,11 +125,11 @@ function FormProductViewDetails(props) {
       render: (productDetailStatus) => {
         switch (productDetailStatus) {
           case 1:
-            return 'Còn Hàng';
+            return 'Hoạt động';
           case 0:
-            return 'Hết Hàng';
+            return 'Ngưng hoạt động';
           case -1:
-            return 'Tạm Ngưng';
+            return 'Dừng hoạt động';
           default:
             return 'Không xác định';
         }
@@ -164,17 +158,6 @@ function FormProductViewDetails(props) {
       width: 100,
       sorter: (a, b) => a.productDetailAmount - b.productDetailAmount,
       render: (productDetailAmount) => productDetailAmount + ' cái',
-    },
-    {
-      title: 'Hành Động',
-      key: 'action',
-      width: 100,
-      fixed: 'right',
-      render: (_, record) => (
-        <Space size="middle">
-          <FormProductEdit product={record} />
-        </Space>
-      ),
     },
   ];
 

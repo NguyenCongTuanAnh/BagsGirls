@@ -2,6 +2,7 @@ package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.MaterialDTO;
 import fpoly.datn.ecommerce_website.entity.Materials;
+import fpoly.datn.ecommerce_website.entity.Types;
 import fpoly.datn.ecommerce_website.service.serviceImpl.MaterialServiceImpl;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -31,12 +32,13 @@ public class MaterialRestController {
 
     //getAll
     @RequestMapping(value = "/material/", method = RequestMethod.GET)
-    public ResponseEntity<List<MaterialDTO>> getAll() {
+    public ResponseEntity<?> getAll() {
+        List<Materials> materialsList = this.materialService.findAll();
+        List<Materials> filtered = materialsList.stream()
+                .filter(color -> color.getMaterialStatus() == 1)
+                .collect(Collectors.toList());
         return new ResponseEntity<>(
-                this.materialService.findAll()
-                        .stream()
-                        .map(material -> modelMapper.map(material, MaterialDTO.class))
-                        .collect(Collectors.toList())
+               filtered
                 , HttpStatus.OK);
     }
 
