@@ -298,7 +298,8 @@ function CartItem() {
                   </div>
                 )}
               />
-              <button
+             <div style={{textAlign:'center'}}>
+             <button
                 className={styles.buttonThanhToan}
                 onClick={() => {
                   navigate('/cart/checkout', {
@@ -313,6 +314,7 @@ function CartItem() {
               >
                 Tiến hành thanh toán
               </button>
+             </div>
             </div>
           )}
         </div>
