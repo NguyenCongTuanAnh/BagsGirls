@@ -6,38 +6,39 @@ import compartmentAPI from '~/api/propertitesBalo/compartmentAPI';
 function FormEditCompartment(props) {
     const [open, setOpen] = useState(false);
     const [error, setError] = useState(false);
-    const [data, setData] = useState(props.compartment);
-    const [stringStatus, setStringStatus] = useState("");
+    const [form] = Form.useForm();
 
     const showComponent = () => {
         setOpen(true);
-        if (data.compartmentStatus === 1) {
-            setStringStatus("Hoạt động");
-        } else if (data.compartmentStatus === -1) {
-            setStringStatus("Ngừng hoạt động");
-        } else {
-            setStringStatus("Không hoạt động");
-        }
+        form.resetFields();
     };
 
     const closeComponent = () => {
         setOpen(false);
+
+    };
+    const validatecompartmentName = async (rule, value) => {
+        return new Promise((resolve, reject) => {
+            if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
+                reject('Tên kiểu ngăn không hợp lệ!');
+            } else {
+                resolve();
+            }
+        });
     };
 
-    const updateData = (event) => {
-        const { name, value } = event.target;
-        setData({ ...data, [name]: value });
-    };
-    const updateStatus = (value) => {
-        setData({ ...data, compartmentStatus: value });
-    };
+    const updateFunction = async (values) => {
 
-    const updateFunction = async (compartmentId, values) => {
         setError(false);
-        let update = { ...values };
+        let update = {
+            compartmentId: props.type.compartmentId,
+            compartmentCode: props.type.compartmentCode,
+            compartmentName: values.compartmentName,
+            compartmentStatus: values.compartmentStatus,
+        };
         if (!error) {
             try {
-                await compartmentAPI.update(compartmentId, update);
+                await compartmentAPI.update(props.type.compartmentId, update);
                 notification.success({
                     message: 'Cập nhật thành công',
                     description: 'Dữ liệu đã được cập nhật thành công',
@@ -60,11 +61,16 @@ function FormEditCompartment(props) {
     return (
         <Fragment>
             <div style={{ color: 'red' }}>
-                <Button type="primary" className="btn btn-warning" onClick={showComponent} icon={<EditOutlined />}>
-                    Edit
+                <Button
+                    type="default"
+                    style={{ border: '1px blue solid', color: 'blue' }}
+                    onClick={showComponent}
+                    icon={<EditOutlined />}
+                >
+                    Sửa
                 </Button>
                 <Drawer
-                    title={'Edit - ' + data.compartmentId}
+                    title={'Chỉnh sửa kiểu ngăn có mã: ' + props.type.compartmentCode}
                     width={400}
                     onClose={closeComponent}
                     open={open}
@@ -72,66 +78,64 @@ function FormEditCompartment(props) {
                         paddingBottom: 80,
                     }}
                     footer={
-                        <Space>
-                            <Button onClick={closeComponent}>Thoát</Button>
-                            <Button onClick={() => updateFunction(data.compartmentId, data)} type="primary" className="btn btn-warning">
-                                Lưu
-                            </Button>
-                        </Space>
+                        null
                     }
                 >
-                    <Form layout="vertical" hideRequiredMark initialValues={data}>
-                        <Row gutter={16}>
-                            <Col span={24}>
-                                <Form.Item
-                                    name="compartmentCode"
-                                    label="Mã"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Vui lòng điền mã ngăn',
-                                        },
-                                    ]}
-                                >
-                                    <Input placeholder="Vui lòng điền mã ngăn" disabled />
-                                </Form.Item>
-                            </Col>
-                        </Row>
+                    <Form layout="vertical"
+                        initialValues={props.type}
+                        onFinish={updateFunction}
+                        form={form}>
+
                         <Row gutter={16}>
                             <Col span={24}>
                                 <Form.Item
                                     name="compartmentName"
-                                    label="Tên"
+                                    label="Tên kiểu ngăn"
                                     rules={[
                                         {
                                             required: true,
-                                            message: 'Vui lòng điền tên ngăn',
+                                            message: 'Vui lòng điền tên kiểu ngăn!',
+                                        },
+                                        {
+                                            validator: validatecompartmentName,
                                         },
                                     ]}
                                 >
                                     <Input
-                                        name="compartmentName"
-                                        value={data.compartmentName}
-                                        onChange={updateData}
-                                        placeholder="Vui lòng điền tên ngăn"
+                                        placeholder="Vui lòng điền tên kiểu ngăn"
                                     />
                                 </Form.Item>
                             </Col>
                         </Row>
                         <Row gutter={16}>
                             <Col span={24}>
-                                <Form.Item label="Trạng Thái">
+                                <Form.Item
+                                    label="Trạng thái"
+                                    name="compartmentStatus"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng chọn trạng thái!',
+                                        },
+                                    ]}
+                                >
                                     <Select
-                                        onChange={updateStatus}
-                                        defaultValue={stringStatus}
-                                        placeholder="Vui lòng chọn Trạng Thái"
+                                        name="compartmentStatus"
+                                        placeholder="Vui lòng chọn trạng thái"
                                     >
-                                        <Select.Option value="1">Hoạt động</Select.Option>
-                                        <Select.Option value="0">Không hoạt động</Select.Option>
-                                        <Select.Option value="-1">Ngừng hoạt động</Select.Option>
+                                        <Select.Option value={1}>Hoạt động</Select.Option>
+                                        <Select.Option value={0}>Ngừng hoạt động</Select.Option>
                                     </Select>
                                 </Form.Item>
                             </Col>
+                        </Row>
+                        <Row>
+                            <Space style={{ textAlign: 'right' }}>
+                                <Button onClick={closeComponent}>Thoát</Button>
+                                <Button type="primary" htmlType="submit">
+                                    Lưu
+                                </Button>
+                            </Space>
                         </Row>
                     </Form>
                 </Drawer>
@@ -139,5 +143,4 @@ function FormEditCompartment(props) {
         </Fragment>
     );
 }
-
 export default FormEditCompartment;
