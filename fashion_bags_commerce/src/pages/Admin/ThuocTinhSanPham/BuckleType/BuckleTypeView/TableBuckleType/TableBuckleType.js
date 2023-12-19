@@ -10,9 +10,9 @@ function TableContent() {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [totalItem, setTotalItem] = useState();
+  const [totalItem, setTotalItem] = useState(); // Số lượng dữ liệu tổng cộng
 
-  const handleTableChange = (pagination, filters, sorter) => {};
+  const handleTableChange = (pagination, filters, sorter) => { };
   const columns = [
     {
       title: 'STT',
@@ -20,17 +20,21 @@ function TableContent() {
       render: (text, record, index) => <span>{(currentPage - 1) * pageSize + index + 1}</span>,
     },
     {
+      title: 'Mã kiểu khóa',
+      dataIndex: 'buckleTypeCode',
+      width: 100,
+      sorter: (a, b) => a.buckleTypeCode.localeCompare(b.buckleTypeCode),
+    },
+    {
       title: 'Tên kiểu khóa',
       dataIndex: 'buckleTypeName',
       width: 100,
-      sorter: (a, b) => a.buckleTypeName.localeCompare(b.buckleTypeName),
+      sorter: (a, b) => a.buckleTypeName.localeCompare(b.typeNbuckleTypeNameame),
     },
     {
       title: 'Trạng thái',
       dataIndex: 'buckleTypeStatus',
-
       width: 100,
-      sorter: (a, b) => a.buckleTypeStatus.localeCompare(b.buckleTypeStatus),
       render: (status) => {
         let statusText;
         let statusClass;
@@ -41,12 +45,8 @@ function TableContent() {
             statusClass = 'active-status';
             break;
           case 0:
-            statusText = 'Không hoạt động';
-            statusClass = 'inactive-status';
-            break;
-          case -1:
             statusText = 'Ngừng hoạt động';
-            statusClass = 'other-status';
+            statusClass = 'inactive-status';
             break;
           default:
             statusText = 'Trạng thái khác';
@@ -61,52 +61,42 @@ function TableContent() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <FormEditBuckleType buckleType={record} reload={() => setLoading(true)} />
+          <FormEditBuckleType
+            buckleType={record}
+            reload={() => { setLoading(true); }}
+          />
           <Popconfirm
             title="Xác Nhận"
-            description="Bạn Có chắc chắn muốn xóa?"
+            description="Bạn có chắc chắn muốn hủy?"
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
-              handleDeleteBuckleType(record.buckleTypeId, -1);
-              reload();
+              handleDeleteBuckleType(record, 0);
+              setLoading(true);
             }}
             onCancel={onCancel}
           >
-            <Button className="btn btn-danger " icon={<DeleteOutlined />}></Button>
+            <Button
+              type="default"
+              disabled={(record.buckleTypeStatus !== 1) ? true : false}
+              danger
+              icon={<DeleteOutlined />}>
+              Hủy
+            </Button>
           </Popconfirm>
         </Space>
       ),
       width: 100,
     },
   ];
-  const onCancel = () => {};
-  const reload = () => {
-    setLoading(true);
+  const onCancel = () => { };
+
+  useEffect(() => {
     getAllPhanTrangBuckleType(currentPage, pageSize);
     setTimeout(() => {
       setLoading(false);
     }, 500);
-  };
-
-  const getAllPhanTrangBuckleType = async (pageNum, pageSize) => {
-    try {
-      const response = await buckleTypeAPI.getAllPhanTrang(pageNum, pageSize);
-      const data = response.data.content;
-      setTotalItem(response.data.totalElements);
-      setBuckleTypeList(data);
-      setTimeout(() => {}, 500);
-    } catch (error) {
-      console.error('Đã xảy ra lỗi: ', error);
-    }
-  };
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-  }, []);
-
+  }, [loading]);
   useEffect(() => {
     if (loading) {
       // Tải lại bảng khi biến trạng thái thay đổi
@@ -115,24 +105,35 @@ function TableContent() {
     }
   }, [loading]);
 
-  const handleDeleteBuckleType = async (id, status) => {
+  const getAllPhanTrangBuckleType = async (pageNum, pageSize) => {
     try {
-      await buckleTypeAPI.updateStatus(id, status);
+      const response = await buckleTypeAPI.getAllPhanTrang(pageNum, pageSize);
+      const data = response.data.content;
+      setTotalItem(response.data.totalElements);
+      setBuckleTypeList(data);
+      setTimeout(() => { }, 500);
+    } catch (error) {
+      console.error('Đã xảy ra lỗi: ', error);
+    }
+  };
+
+  const handleDeleteBuckleType = async (values, status) => {
+    try {
+      await buckleTypeAPI.updateStatus(values.buckleTypeId, status);
       notification.info({
-        message: 'Xóa thành Công',
-        description: 'Kiểu khóa Có ID: ' + id + ' đã được xóa thành công!!!',
+        message: 'Hủy thành công',
+        description: 'Kiểu khóa mã: ' + values.buckleTypeCode + ' đã được hủy thành công!!!',
         duration: 2,
       });
-      setLoading(true);
+      getAllPhanTrangBuckleType(currentPage, pageSize);
     } catch (error) {
-      console.error('Đã xảy ra lỗi khi xóa kiểu khóa: ', error);
+      console.error('Đã xảy ra lỗi khi hủy kiểu khóa: ', error);
     }
   };
   const onShowSizeChange = (current, pageSize) => {
     setPageSize(pageSize);
     setCurrentPage(current);
-    // getAllPhanTrangBuckleType(current, pageSize);
-    setLoading(true);
+    getAllPhanTrangBuckleType(current, pageSize);
   };
   return (
     <div
@@ -140,29 +141,27 @@ function TableContent() {
         padding: '10px',
       }}
     >
-      <FormBuckleTypeCreate />
-      <Button icon={<ReloadOutlined />} className="" onClick={reload} loading={loading}></Button>
-
+      <FormBuckleTypeCreate reload={() => { setLoading(true) }} />
+      <Button style={{ marginLeft: '5px' }} icon={<ReloadOutlined />} onClick={() => { setLoading(true) }} loading={loading}></Button>
       <Table
-        size="middle"
         className="table table-striped"
         scroll={{
           x: 1000,
           y: 570,
         }}
-        rowKey={(record) => record.buckleTypeId}
+        rowKey={(record) => record.typeId}
         columns={columns}
         dataSource={buckleTypeList}
         onChange={handleTableChange}
         pagination={false}
       />
-      <div className={styles.pagination}>
+      <div className={styles.pagination} style={{ textAlign: 'center' }}>
         <Pagination
-          className={styles.pagination}
           showSizeChanger
-          total={totalItem}
+          onShowSizeChange={onShowSizeChange}
           onChange={onShowSizeChange}
           defaultCurrent={1}
+          total={totalItem}
           current={currentPage}
           defaultPageSize={pageSize}
         />

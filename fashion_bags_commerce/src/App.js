@@ -107,9 +107,9 @@ function App() {
           <Route
             path="/bill-offline-view"
             element={
-              <AdminAuth>
+              <StaffAuth>
                 <HoaDonTaiQuayView />
-              </AdminAuth>
+              </StaffAuth>
             }
           />
           <Route
@@ -123,17 +123,17 @@ function App() {
           <Route
             path="/bill-online-view"
             element={
-              <AdminAuth>
+              <StaffAuth>
                 <HoaDonOnlineView />
-              </AdminAuth>
+              </StaffAuth>
             }
           />
           <Route
             path="/bill-error-view"
             element={
-              <AdminAuth>
+              <StaffAuth>
                 <HoaDonLoiView />
-              </AdminAuth>
+              </StaffAuth>
             }
           />
 

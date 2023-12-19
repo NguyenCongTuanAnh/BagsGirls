@@ -11,41 +11,57 @@ function FormBuckleTypeCreate(props) {
 
   const showComponent = function () {
     setOpenComponent(true);
+    form.resetFields();
   };
 
-  const closeComponent = function () {
+  const handleCancel = function () {
     setOpenComponent(false);
+  };
+
+  const validateTypeName = async (rule, value) => {
+    return new Promise((resolve, reject) => {
+      if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
+        reject('Tên kiểu khóa không hợp lệ!');
+      } else {
+        resolve();
+      }
+    });
   };
 
   const addFuncion = async (values) => {
     setError(false);
-    if (!error) {
-      let add = { ...values, buckleTypeCode: generateCustomCode('buckleType', 3) };
-      console.log(add);
-      try {
-        await buckleTypeAPI.add(add);
-        notification.success({
-          message: 'Thêm thành công',
-          description: 'Kiểu khóa được thêm thành công', // hiển thị thông báo
-          duration: 2, // hiển thị 2 giây trước khi mất
-        });
-        closeComponent();
-      } catch (error) {
-        setError(true);
-        notification.error({
-          message: 'Lỗi',
-          description: 'Vui lòng xác nhận',
-          duration: 2,
-        });
-      }
+    let add = { ...values, buckleTypeCode: generateCustomCode('BuckleType', 6) };
+    try {
+      await buckleTypeAPI.add(add);
+      notification.success({
+        message: 'Thêm thành công',
+        description: 'Dữ liệu được thêm thành công',
+        duration: 2,
+      });
+      handleCancel();
+      props.reload();
+    } catch (error) {
+      setError(true);
+      notification.error({
+        message: 'Lỗi',
+        description: 'Vui lòng xác nhận',
+        duration: 2,
+      });
     }
+
   };
 
   return (
     <Fragment>
-      <Button type="primary" style={{ width: '100px' }} onClick={showComponent} icon={<PlusOutlined />}></Button>
-
-      <Modal title="Thêm kiểu khóa" open={openComponent} onCancel={closeComponent} footer={null}>
+      <Button
+        type="default"
+        style={{ border: '1px white solid', color: 'white', background: 'green' }}
+        onClick={showComponent}
+        icon={<PlusOutlined />}
+      >
+        Thêm
+      </Button>
+      <Modal title="Thêm kiểu khóa" open={openComponent} onCancel={handleCancel} footer={null}>
         <div>
           <Form
             form={form}
@@ -61,11 +77,14 @@ function FormBuckleTypeCreate(props) {
               rules={[
                 {
                   required: true,
-                  message: 'Vui lòng điền Tên kiểu khóa!',
+                  message: 'Vui lòng điền tên kiểu khóa!',
+                },
+                {
+                  validator: validateTypeName,
                 },
               ]}
             >
-              <Input></Input>
+              <Input />
             </Form.Item>
 
             <Form.Item
@@ -88,15 +107,15 @@ function FormBuckleTypeCreate(props) {
                   },
                   {
                     value: '0',
-                    label: 'Không Hoạt động',
+                    label: 'Ngừng Hoạt động',
                   },
                 ]}
               ></Select>
             </Form.Item>
 
-            <div style={{ textAlign: 'center' }}>
+            <div style={{ textAlign: 'right' }}>
               <Button type="primary" htmlType="submit">
-                Submit
+                Thêm
               </Button>
             </div>
           </Form>

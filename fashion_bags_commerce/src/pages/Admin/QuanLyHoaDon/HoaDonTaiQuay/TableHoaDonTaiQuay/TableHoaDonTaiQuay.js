@@ -329,6 +329,14 @@ function TableHoaDonTaiQuay() {
                 </Space>
               </div>
             );
+          } else if (record.billStatus === 2) {
+            return (
+              <div>
+                <Space size="middle" style={{ marginTop: '10px' }}>
+                  {hanhDong(record, true, false, true)}
+                </Space>
+              </div>
+            );
           } else if (record.billStatus !== -1) {
             return (
               <div>
