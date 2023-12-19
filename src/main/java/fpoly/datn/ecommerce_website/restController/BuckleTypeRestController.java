@@ -29,12 +29,14 @@ public class BuckleTypeRestController {
 
     //hien thi
     @RequestMapping(value = "/buckletype/", method = RequestMethod.GET)
-    public ResponseEntity<List<BuckleTypeDTO>> getAll() {
+    public ResponseEntity<?> getAll() {
+        List<BuckleTypes> sizePage = this.buckleTypeService.findAll();
+
+        List<BuckleTypes> filtered = sizePage.stream()
+                .filter(color -> color.getBuckleTypeStatus() == 1)
+                .collect(Collectors.toList());
         return new ResponseEntity<>(
-                this.buckleTypeService.findAll()
-                        .stream()
-                        .map(buckletype -> modelMapper.map(buckletype, BuckleTypeDTO.class))
-                        .collect(Collectors.toList())
+               filtered
                 , HttpStatus.OK);
     }
 

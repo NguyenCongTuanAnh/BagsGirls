@@ -131,12 +131,12 @@ function ProductDetailsPreviewForm(props) {
     setOpen(false);
   };
   const handleAddBaloDetails = (values) => {
-    if (values.retailPrice < values.importPrice) {
+    if (values.retailPrice <= values.importPrice) {
       console.log('abc');
 
       notification.error({
         message: 'Lỗi',
-        description: 'Giá bán không thể nhỏ hơn Giá nhập!!!',
+        description: 'Giá bán không thể nhỏ hơn hoặc bằng Giá nhập!!!',
         duration: 1,
       });
       setIsFirst(false);
@@ -315,8 +315,7 @@ function ProductDetailsPreviewForm(props) {
   const resetForm = () => {
     form.resetFields();
     setIsFirst(false);
-    setBaloList([]);
-    setBaloListPreview([]);
+
     notification.success({
       message: 'Hoàn Thành',
       description: 'Đã Reset Form thành công !!!!',
@@ -451,6 +450,7 @@ function ProductDetailsPreviewForm(props) {
                     size="large"
                     style={{ width: 200 }}
                     step={1000}
+                    min={1}
                     addonAfter="VND"
                     formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
@@ -472,6 +472,7 @@ function ProductDetailsPreviewForm(props) {
                     size="large"
                     style={{ width: 200 }}
                     step={1000}
+                    min={1}
                     addonAfter="VND"
                     formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
@@ -493,6 +494,7 @@ function ProductDetailsPreviewForm(props) {
                     size="large"
                     style={{ width: 200 }}
                     step={5}
+                    min={1}
                     addonAfter="Cái"
                     formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                     parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}

@@ -66,6 +66,10 @@ function FormProductEdit(props) {
   const [fileList, setFileList] = useState([]);
   const [messageApi, contextHolder] = message.useMessage();
 
+  useEffect(() => {
+    console.log(props.product.productStatus);
+    setProduct(props.product);
+  }, [open, product, props]);
   const start = () => {
     setLoading(true);
 
@@ -540,7 +544,7 @@ function FormProductEdit(props) {
             initialValues={{
               productCode: product.productCode,
               productName: product.productName,
-              productStatus: product.productStatus,
+              productStatus: props.product.productStatus,
               brandId: productBrand.brandId,
             }}
             onFinish={handleEditProductDetails}
@@ -588,7 +592,7 @@ function FormProductEdit(props) {
                     },
                   ]}
                 >
-                  <Select placeholder="Vui lòng chọn Trạng Thái Balo">
+                  <Select value={props.product.productStatus} placeholder="Vui lòng chọn Trạng Thái Balo">
                     <Option value={1}>Hoạt Động</Option>
                     <Option value={0}>Không Hoạt Động</Option>
                     <Option value={-1}>Hủy Hoạt Động</Option>
