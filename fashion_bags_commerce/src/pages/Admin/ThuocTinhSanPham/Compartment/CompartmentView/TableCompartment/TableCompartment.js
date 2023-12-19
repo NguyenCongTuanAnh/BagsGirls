@@ -34,7 +34,7 @@ function TableContent() {
     },
     {
       title: 'Trạng thái',
-      dataIndex: 'typeStatus',
+      dataIndex: 'compartmentStatus',
       width: 100,
       render: (status) => {
         let statusText;
@@ -62,7 +62,7 @@ function TableContent() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <FormTypeEdit
+          <FormEditCompartment
             type={record}
             reload={() => { setLoading(true); }}
           />
@@ -79,7 +79,7 @@ function TableContent() {
           >
             <Button
               type="default"
-              disabled={(record.typeStatus !== 1) ? true : false}
+              disabled={(record.compartmentStatus !== 1) ? true : false}
               danger
               icon={<DeleteOutlined />}>
               Hủy
@@ -108,7 +108,7 @@ function TableContent() {
 
   const getAllPhanTrangType = async (pageNum, pageSize) => {
     try {
-      const response = await typeAPI.getAllPhanTrang(pageNum, pageSize);
+      const response = await compartmentAPI.getAllPhanTrang(pageNum, pageSize);
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
       setTypeList(data);
@@ -120,15 +120,15 @@ function TableContent() {
 
   const handleDeleteType = async (values, status) => {
     try {
-      await typeAPI.updateStatus(values.typeId, status);
+      await compartmentAPI.updateStatus(values.compartmentId, status);
       notification.info({
         message: 'Hủy thành công',
-        description: 'Kiểu balo có mã: ' + values.typeCode + ' đã được hủy thành công!!!',
+        description: 'Kiểu ngăn có mã: ' + values.compartmentCode + ' đã được hủy thành công!!!',
         duration: 2,
       });
       getAllPhanTrangType(currentPage, pageSize);
     } catch (error) {
-      console.error('Đã xảy ra lỗi khi hủy kiểu balo: ', error);
+      console.error('Đã xảy ra lỗi khi hủy kiểu ngăn: ', error);
     }
   };
   const onShowSizeChange = (current, pageSize) => {
@@ -142,7 +142,7 @@ function TableContent() {
         padding: '10px',
       }}
     >
-      <FormTypeCreate reload={() => { setLoading(true) }} />
+      <FormCreateCompartment reload={() => { setLoading(true) }} />
       <Button style={{ marginLeft: '5px' }} icon={<ReloadOutlined />} onClick={() => { setLoading(true) }} loading={loading}></Button>
       <Table
         className="table table-striped"
@@ -150,7 +150,7 @@ function TableContent() {
           x: 1000,
           y: 570,
         }}
-        rowKey={(record) => record.typeId}
+        rowKey={(record) => record.compartmentId}
         columns={columns}
         dataSource={typeList}
         onChange={handleTableChange}

@@ -12,41 +12,57 @@ function FormCompartmentCreate(props) {
 
   const showComponent = function () {
     setOpenComponent(true);
+    form.resetFields();
   };
 
-  const closeComponent = function () {
+  const handleCancel = function () {
     setOpenComponent(false);
+  };
+
+  const validatecompartmentName = async (rule, value) => {
+    return new Promise((resolve, reject) => {
+      if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
+        reject(' Tên kiểu ngăn không hợp lệ!');
+      } else {
+        resolve();
+      }
+    });
   };
 
   const addFuncion = async (values) => {
     setError(false);
-    if (!error) {
-      let add = { ...values, compartmentCode: generateCustomCode('compartment', 3) };
-      try {
-        await compartmentAPI.add(add);
-        notification.success({
-          message: 'Thêm thành công',
-          description: 'Ngăn được thêm thành công', // hiển thị thông báo
-          duration: 2, // hiển thị 2 giây trước khi mất
-        });
-        closeComponent();
-      } catch (error) {
-        setError(true);
-        notification.error({
-          message: 'Lỗi',
-          description: 'Vui lòng xác nhận',
-          duration: 2,
-        });
-      }
+    let add = { ...values, compartmentCode: generateCustomCode('ngan', 6) };
+    try {
+      await compartmentAPI.add(add);
+      notification.success({
+        message: 'Thêm thành công',
+        description: 'Dữ liệu được thêm thành công',
+        duration: 2,
+      });
+      handleCancel();
+      props.reload();
+    } catch (error) {
+      setError(true);
+      notification.error({
+        message: 'Lỗi',
+        description: 'Vui lòng xác nhận',
+        duration: 2,
+      });
     }
+
   };
 
   return (
     <Fragment>
-      <Button type="primary" onClick={showComponent} style={{ width: '100px' }} icon={<PlusOutlined />}>
-        {' '}
+      <Button
+        type="default"
+        style={{ border: '1px white solid', color: 'white', background: 'green' }}
+        onClick={showComponent}
+        icon={<PlusOutlined />}
+      >
+        Thêm
       </Button>
-      <Modal title="Thêm ngăn" open={openComponent} onCancel={closeComponent} footer={null}>
+      <Modal title="Thêm kiểu ngăn" open={openComponent} onCancel={handleCancel} footer={null}>
         <div>
           <Form
             form={form}
@@ -57,16 +73,19 @@ function FormCompartmentCreate(props) {
             onFinish={addFuncion} // xử lí khi submit form
           >
             <Form.Item
-              label="Tên ngăn"
+              label="Tên kiểu ngăn"
               name="compartmentName"
               rules={[
                 {
                   required: true,
-                  message: 'Vui lòng điền tên ngăn!',
+                  message: 'Vui lòng điền tên kiểu ngăn!',
+                },
+                {
+                  validator: validatecompartmentName,
                 },
               ]}
             >
-              <Input></Input>
+              <Input />
             </Form.Item>
 
             <Form.Item
@@ -89,15 +108,15 @@ function FormCompartmentCreate(props) {
                   },
                   {
                     value: '0',
-                    label: 'Không Hoạt động',
+                    label: 'Ngừng Hoạt động',
                   },
                 ]}
               ></Select>
             </Form.Item>
 
-            <div style={{ textAlign: 'center' }}>
+            <div style={{ textAlign: 'right' }}>
               <Button type="primary" htmlType="submit">
-                Submit
+                Thêm
               </Button>
             </div>
           </Form>
