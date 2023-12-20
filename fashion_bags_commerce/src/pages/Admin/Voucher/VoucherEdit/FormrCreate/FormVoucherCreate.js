@@ -47,7 +47,7 @@ function FormVoucherCreate(props) {
       const currentDate = new Date();
 
       const formValues = form.getFieldsValue();
-      const { voucherDateRange} = formValues;
+      const { voucherDateRange } = formValues;
 
       let add = {
         ...values,
@@ -55,7 +55,6 @@ function FormVoucherCreate(props) {
         voucherCreateDate: currentDate,
         voucherStartTime: voucherDateRange ? voucherDateRange[0].toDate() : null,
         voucherEndTime: voucherDateRange ? voucherDateRange[1].toDate() : null,
-      
       };
 
       const response = await voucherAPI.add(add);
@@ -166,16 +165,14 @@ function FormVoucherCreate(props) {
             <Form.Item label="Status" name="voucherStatus">
               <Select
                 style={{ width: 300 }}
-                name="voucherStatus"
                 placeholder="Vui lòng chọn trạng thái"
-                defaultValue={1}
                 options={[
                   {
-                    value: '1',
+                    value: 1,
                     label: 'Hoạt động',
                   },
                   {
-                    value: '0',
+                    value: 0,
                     label: 'Không Hoạt động',
                   },
                 ]}
