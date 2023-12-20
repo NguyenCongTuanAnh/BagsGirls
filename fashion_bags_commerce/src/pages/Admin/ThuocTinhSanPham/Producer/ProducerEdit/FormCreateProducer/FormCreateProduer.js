@@ -12,39 +12,57 @@ function FormProducerCreate(props) {
 
   const showComponent = function () {
     setOpenComponent(true);
+    form.resetFields();
   };
 
-  const closeComponent = function () {
+  const handleCancel = function () {
     setOpenComponent(false);
+  };
+
+  const validateTypeName = async (rule, value) => {
+    return new Promise((resolve, reject) => {
+      if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
+        reject(' Tên nhà sản xuất không hợp lệ!');
+      } else {
+        resolve();
+      }
+    });
   };
 
   const addFuncion = async (values) => {
     setError(false);
-    if (!error) {
-      let add = { ...values, producerCode: generateCustomCode('producer', 3) };
-      try {
-        await producerAPI.add(add);
-        notification.success({
-          message: 'Thêm thành công',
-          description: 'Nhà sản xuất được thêm thành công', // hiển thị thông báo
-          duration: 2, // hiển thị 2 giây trước khi mất
-        });
-        closeComponent();
-      } catch (error) {
-        setError(true);
-        notification.error({
-          message: 'Lỗi',
-          description: 'Vui lòng xác nhận',
-          duration: 2,
-        });
-      }
+    let add = { ...values, producerCode: generateCustomCode('Producer', 6) };
+    try {
+      await producerAPI.add(add);
+      notification.success({
+        message: 'Thêm thành công',
+        description: 'Dữ liệu được thêm thành công',
+        duration: 2,
+      });
+      handleCancel();
+      props.reload();
+    } catch (error) {
+      setError(true);
+      notification.error({
+        message: 'Lỗi',
+        description: 'Vui lòng xác nhận',
+        duration: 2,
+      });
     }
+
   };
 
   return (
     <Fragment>
-      <Button type="primary" onClick={showComponent} style={{ width: '100px' }} icon={<PlusOutlined />}></Button>
-      <Modal title="Thêm nhà sản xuất" open={openComponent} onCancel={closeComponent} footer={null}>
+      <Button
+        type="default"
+        style={{ border: '1px white solid', color: 'white', background: 'green' }}
+        onClick={showComponent}
+        icon={<PlusOutlined />}
+      >
+        Thêm
+      </Button>
+      <Modal title="Thêm nhà sản xuất" open={openComponent} onCancel={handleCancel} footer={null}>
         <div>
           <Form
             form={form}
@@ -62,9 +80,12 @@ function FormProducerCreate(props) {
                   required: true,
                   message: 'Vui lòng điền tên nhà sản xuất!',
                 },
+                {
+                  validator: validateTypeName,
+                },
               ]}
             >
-              <Input></Input>
+              <Input />
             </Form.Item>
 
             <Form.Item
@@ -87,15 +108,15 @@ function FormProducerCreate(props) {
                   },
                   {
                     value: '0',
-                    label: 'Không Hoạt động',
+                    label: 'Ngừng Hoạt động',
                   },
                 ]}
               ></Select>
             </Form.Item>
 
-            <div style={{ textAlign: 'center' }}>
+            <div style={{ textAlign: 'right' }}>
               <Button type="primary" htmlType="submit">
-                Submit
+                Thêm
               </Button>
             </div>
           </Form>

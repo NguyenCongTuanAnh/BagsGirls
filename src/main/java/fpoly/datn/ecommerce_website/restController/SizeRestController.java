@@ -1,6 +1,7 @@
 package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.SizeDTO;
+import fpoly.datn.ecommerce_website.entity.Compartments;
 import fpoly.datn.ecommerce_website.entity.Sizes;
 import fpoly.datn.ecommerce_website.service.serviceImpl.SizeServiceImpl;
 import jakarta.validation.Valid;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequestMapping("/api")
 @RestController
@@ -43,6 +45,10 @@ public class SizeRestController {
 
     ) {
         List<Sizes> sizePage = sizeService.findAll();
+
+        List<Sizes> filtered = sizePage.stream()
+                .filter(color -> color.getSizeStatus() == 1)
+                .collect(Collectors.toList());
         return new ResponseEntity<>
                 (sizePage, HttpStatus.OK);
     }

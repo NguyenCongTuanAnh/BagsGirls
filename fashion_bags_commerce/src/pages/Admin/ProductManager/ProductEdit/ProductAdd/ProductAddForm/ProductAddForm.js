@@ -14,6 +14,7 @@ import {
   Button,
   Col,
   Form,
+  Image,
   InputNumber,
   Modal,
   Popconfirm,
@@ -147,10 +148,10 @@ function ProductAddForm() {
     setOpen(false);
   };
   const handleAddBaloDetails = (values) => {
-    if (values.retailPrice < values.importPrice) {
+    if (values.retailPrice <= values.importPrice) {
       messageApi.open({
         type: 'error',
-        content: 'Giá bán không thể nhỏ hơn Giá nhập!!!',
+        content: 'Giá bán không thể nhỏ hơn hoặc bằng Giá nhập!!!',
       });
       return;
     }
@@ -265,7 +266,7 @@ function ProductAddForm() {
       'productDetailDescribe',
       // 'imageUrl',
       'importPrice',
-      'reatilsPrice',
+      'retailPrice',
       'baloDetailAmount',
     ]);
     setFileList([]);
@@ -305,9 +306,12 @@ function ProductAddForm() {
       const addCodeImg = generateCustomCode('image', 5);
       const now = new Date();
       const dateString = `${now.getMonth()}_${now.getDate()}_${now.getFullYear()}_${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}:${now.getMilliseconds()}`;
+
       const file = fileList[i];
+      console.log('file');
+      console.log([file.originFileObj]);
       const name = addCodeImg + '_' + dateString;
-      const renamedFile = new File([file], name, { type: file.type });
+      const renamedFile = new File([file.originFileObj], name, { type: file.type });
       console.log(renamedFile);
       console.log(name);
       const storageRef = ref(storage, `mulitpleFiles/${name}`);
@@ -561,7 +565,9 @@ function ProductAddForm() {
       });
     }
   };
-  const handleChange = ({ fileList: newFileList }) => setFileList(newFileList);
+  const handleChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };
   return (
     <div className="contentStyle222">
       {contextHolder}
@@ -617,12 +623,17 @@ function ProductAddForm() {
                 rules={[
                   {
                     required: true,
-                    message: 'Vui lòng điền Tên Balo!',
+                    message: 'Tên Balo không hợp lệ!',
                     whitespace: true,
-                  },
-                  {
-                    pattern: /^[A-Za-z0-9]+$/,
-                    message: 'Tên Balo chỉ bao gồm chữ cái và số!',
+                    validator: (rule, value) => {
+                      if (value && value.trim() !== value) {
+                        return Promise.reject('Tên không được chứa khoảng trắng ở hai đầu!');
+                      }
+                      // if (value.length === 0) {
+                      //   return Promise.reject('Tên không hợp lệ!');
+                      // }
+                      return Promise.resolve();
+                    },
                   },
                 ]}
               >
@@ -731,7 +742,7 @@ function ProductAddForm() {
                   size="large"
                   style={{ width: 200 }}
                   step={1}
-                  min={0}
+                  min={1}
                   addonAfter="Cái"
                   formatter={(value) => ` ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                   parser={(value) => value.replace(/\₫\s?|(,*)/g, '')}
@@ -1105,7 +1116,7 @@ function ProductAddForm() {
                 <p className="ant-upload-text">Kéo thả hình ảnh vào đây</p>
               </Dragger>
               <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
-                <img
+                <Image
                   alt="example"
                   style={{
                     width: '100%',

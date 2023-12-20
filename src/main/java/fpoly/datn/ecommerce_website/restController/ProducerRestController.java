@@ -2,6 +2,7 @@ package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.ProducerDTO;
 import fpoly.datn.ecommerce_website.entity.Producers;
+import fpoly.datn.ecommerce_website.entity.Sizes;
 import fpoly.datn.ecommerce_website.service.ProducerService;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -28,12 +29,15 @@ public class ProducerRestController {
 
     //GetAll
     @RequestMapping(value = "/producer/", method = RequestMethod.GET)
-    public ResponseEntity<List<ProducerDTO>> getAll() {
+    public ResponseEntity<?> getAll() {
+        List<Producers> sizePage =   this.producerService.findAll();
+
+        List<Producers> filtered = sizePage.stream()
+                .filter(color -> color.getProducerStatus() == 1)
+                .collect(Collectors.toList());
         return new ResponseEntity<>(
-                this.producerService.findAll()
-                        .stream()
-                        .map(producer -> modelMapper.map(producer, ProducerDTO.class))
-                        .collect(Collectors.toList())
+
+                     filtered
                 , HttpStatus.OK);
     }
 

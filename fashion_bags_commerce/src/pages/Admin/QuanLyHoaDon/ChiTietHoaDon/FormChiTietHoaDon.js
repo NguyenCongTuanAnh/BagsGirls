@@ -408,7 +408,7 @@ function FormChiTietHoaDon(props) {
                 let statusText;
                 let statusClass;
                 let backgroundColor; // Define a variable for text color
-
+                console.log(record.billDetailStatus);
                 switch (record.billDetailStatus) {
                     case 1:
                         statusText = 'Không lỗi';
@@ -463,7 +463,17 @@ function FormChiTietHoaDon(props) {
                 <div>
                     <Space size="middle">
                         <Button type="default" danger
-                            disabled={(Math.floor(props.bills.billStatus) === -1) ? true : false}
+                            disabled={(
+                                (props.bills.billStatus === -1
+                                    || props.bills.billStatus === 2
+                                    || props.bills.billStatus === 3
+                                    || props.bills.billStatus === 4)
+                                &&
+                                (props.billDetailStatus === 0
+                                    || props.billDetailStatus === -1
+                                    || props.billDetailStatus === -2
+                                )
+                            ) ? true : false}
                             onClick={() => {
                                 showComponentSPLoi(record, index);
                             }}

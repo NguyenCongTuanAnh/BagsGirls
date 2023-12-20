@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequestMapping("/api")
 @RestController
@@ -43,9 +44,12 @@ public class ColorRestController {
     public ResponseEntity<?> getAll(
 
     ) {
-        List<Colors> colorPage = colorService.findAll();
+        List<Colors> allColors  = colorService.findAll();
+        List<Colors> filteredColors = allColors.stream()
+                .filter(color -> color.getColorStatus() == 1)
+                .collect(Collectors.toList());
         return new ResponseEntity<>
-                (colorPage, HttpStatus.OK);
+                (filteredColors, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/color", method = RequestMethod.GET)

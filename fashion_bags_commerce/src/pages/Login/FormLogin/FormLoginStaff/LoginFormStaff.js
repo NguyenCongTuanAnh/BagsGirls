@@ -55,7 +55,14 @@ function LoginFormStaff(props) {
       }
       if (response.data.data.users.role === 'ROLE_STAFF' || response.data.data.users.role === 'ROLE_ADMIN') {
         const staff = await staffAPI.findByUserId(response.data.data.users.userId);
-
+        if (staff.data.staffStatus !== 1) {
+          notification.error({
+            message: 'Lỗi!!!',
+            description: `Nhân viên có mã ${staff.data.staffCode} hiện tại không thể đăng nhập vui lòng liên hệ lại với quản lí!!!`,
+            duration: 2,
+          });
+          return;
+        }
         localStorage.setItem('staffToken', response.data.data.token);
         localStorage.setItem('staffId', staff.data.staffId);
         const userToken = await AuthAPI.getStaffToken();

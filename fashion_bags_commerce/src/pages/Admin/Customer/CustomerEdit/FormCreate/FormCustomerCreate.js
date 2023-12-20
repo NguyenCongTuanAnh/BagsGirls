@@ -254,7 +254,7 @@ const FormCustomerCreate = (props) => {
                 label="Ghi chú"
                 rules={[
                   {
-                    required: true,
+                    required: false,
                     message: 'Vui lòng điền ghi chú!',
                   },
                 ]}

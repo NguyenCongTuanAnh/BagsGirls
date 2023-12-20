@@ -6,38 +6,39 @@ import typeAPI from '~/api/propertitesBalo/typeAPI';
 function FormEditType(props) {
     const [open, setOpen] = useState(false);
     const [error, setError] = useState(false);
-    const [data, setData] = useState(props.type);
-    const [stringStatus, setStringStatus] = useState("");
+    const [form] = Form.useForm();
 
     const showComponent = () => {
         setOpen(true);
-        if (data.typeStatus === 1) {
-            setStringStatus("Hoạt động");
-        } else if (data.typeStatus === -1) {
-            setStringStatus("Ngừng hoạt động");
-        } else {
-            setStringStatus("Không hoạt động");
-        }
+        form.resetFields();
     };
 
     const closeComponent = () => {
         setOpen(false);
+
+    };
+    const validateTypeName = async (rule, value) => {
+        return new Promise((resolve, reject) => {
+            if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
+                reject('Tên kiểu balo không hợp lệ!');
+            } else {
+                resolve();
+            }
+        });
     };
 
-    const updateData = (event) => {
-        const { name, value } = event.target;
-        setData({ ...data, [name]: value });
-    };
-    const updateStatus = (value) => {
-        setData({ ...data, typeStatus: value });
-    };
+    const updateFunction = async (values) => {
 
-    const updateFunction = async (typeId, values) => {
         setError(false);
-        let update = { ...values };
+        let update = {
+            typeId: props.type.typeId,
+            typeCode: props.type.typeCode,
+            typeName: values.typeName,
+            typeStatus: values.typeStatus,
+        };
         if (!error) {
             try {
-                await typeAPI.update(typeId, update);
+                await typeAPI.update(props.type.typeId, update);
                 notification.success({
                     message: 'Cập nhật thành công',
                     description: 'Dữ liệu đã được cập nhật thành công',
@@ -60,11 +61,16 @@ function FormEditType(props) {
     return (
         <Fragment>
             <div style={{ color: 'red' }}>
-                <Button type="primary" className="btn btn-warning" onClick={showComponent} icon={<EditOutlined />}>
-                    
+                <Button
+                    type="default"
+                    style={{ border: '1px blue solid', color: 'blue' }}
+                    onClick={showComponent}
+                    icon={<EditOutlined />}
+                >
+                    Sửa
                 </Button>
                 <Drawer
-                    title={'Edit - ' + data.typeId}
+                    title={'Chỉnh sửa kiểu balo có mã: ' + props.type.typeCode}
                     width={400}
                     onClose={closeComponent}
                     open={open}
@@ -72,66 +78,64 @@ function FormEditType(props) {
                         paddingBottom: 80,
                     }}
                     footer={
-                        <Space>
-                            <Button onClick={closeComponent}>Thoát</Button>
-                            <Button onClick={() => updateFunction(data.typeId, data)} type="primary" className="btn btn-warning">
-                                Lưu
-                            </Button>
-                        </Space>
+                        null
                     }
                 >
-                    <Form layout="vertical" hideRequiredMark initialValues={data}>
-                        <Row gutter={16}>
-                            <Col span={24}>
-                                <Form.Item
-                                    name="typeCode"
-                                    label="Mã"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: 'Vui lòng điền Mã Kiểu',
-                                        },
-                                    ]}
-                                >
-                                    <Input placeholder="Vui lòng điền Mã Kiểu" disabled />
-                                </Form.Item>
-                            </Col>
-                        </Row>
+                    <Form layout="vertical"
+                        initialValues={props.type}
+                        onFinish={updateFunction}
+                        form={form}>
+
                         <Row gutter={16}>
                             <Col span={24}>
                                 <Form.Item
                                     name="typeName"
-                                    label="Tên"
+                                    label="Tên kiểu balo"
                                     rules={[
                                         {
                                             required: true,
-                                            message: 'Vui lòng điền tên Kiểu',
+                                            message: 'Vui lòng điền tên kiểu balo!',
+                                        },
+                                        {
+                                            validator: validateTypeName,
                                         },
                                     ]}
                                 >
                                     <Input
-                                        name="typeName"
-                                        value={data.typeName}
-                                        onChange={updateData}
-                                        placeholder="Vui lòng điền tên kiểu"
+                                        placeholder="Vui lòng điền tên kiểu balo"
                                     />
                                 </Form.Item>
                             </Col>
                         </Row>
                         <Row gutter={16}>
                             <Col span={24}>
-                                <Form.Item label="Trạng Thái">
+                                <Form.Item
+                                    label="Trạng thái"
+                                    name="typeStatus"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: 'Vui lòng chọn trạng thái!',
+                                        },
+                                    ]}
+                                >
                                     <Select
-                                        onChange={updateStatus}
-                                        defaultValue={stringStatus}
-                                        placeholder="Vui lòng chọn Trạng Thái"
+                                        name="typeStatus"
+                                        placeholder="Vui lòng chọn trạng thái"
                                     >
-                                        <Select.Option value="1">Hoạt động</Select.Option>
-                                        <Select.Option value="0">Không hoạt động</Select.Option>
-                                        <Select.Option value="-1">Ngừng hoạt động</Select.Option>
+                                        <Select.Option value={1}>Hoạt động</Select.Option>
+                                        <Select.Option value={0}>Ngừng hoạt động</Select.Option>
                                     </Select>
                                 </Form.Item>
                             </Col>
+                        </Row>
+                        <Row>
+                            <Space style={{ textAlign: 'right' }}>
+                                <Button onClick={closeComponent}>Thoát</Button>
+                                <Button type="primary" htmlType="submit">
+                                    Lưu
+                                </Button>
+                            </Space>
                         </Row>
                     </Form>
                 </Drawer>

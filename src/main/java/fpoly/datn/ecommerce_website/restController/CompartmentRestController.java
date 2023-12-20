@@ -2,6 +2,7 @@ package fpoly.datn.ecommerce_website.restController;
 
 import fpoly.datn.ecommerce_website.dto.CompartmentDTO;
 import fpoly.datn.ecommerce_website.entity.Compartments;
+import fpoly.datn.ecommerce_website.entity.Materials;
 import fpoly.datn.ecommerce_website.service.CompartmentService;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -29,12 +30,13 @@ public class CompartmentRestController {
 
     //hien thi
     @RequestMapping(value = "/compartment/", method = RequestMethod.GET)
-    public ResponseEntity<List<CompartmentDTO>> getAll() {
+    public ResponseEntity<?> getAll() {
+        List<Compartments> materialsList =  this.compartmentService.findAll();
+        List<Compartments> filtered = materialsList.stream()
+                .filter(color -> color.getCompartmentStatus() == 1)
+                .collect(Collectors.toList());
         return new ResponseEntity<>(
-                this.compartmentService.findAll()
-                        .stream()
-                        .map(compartment -> modelMapper.map(compartment, CompartmentDTO.class))
-                        .collect(Collectors.toList())
+               filtered
                 , HttpStatus.OK);
     }
 

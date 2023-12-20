@@ -8,18 +8,24 @@ import FormProducerCreate from '../../ProducerEdit/FormCreateProducer/FormCreate
 // import FormTypeEdit from '../../TypeEdit/FormEdit/FormEditType';
 
 function TableContent() {
-  const [producerList, setProducerList] = useState([]);
+  const [typeList, setTypeList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [totalItem, setTotalItem] = useState();
+  const [totalItem, setTotalItem] = useState(); // Số lượng dữ liệu tổng cộng
 
-  const handleTableChange = (pagination, filters, sorter) => {};
+  const handleTableChange = (pagination, filters, sorter) => { };
   const columns = [
     {
       title: 'STT',
       width: 40,
       render: (text, record, index) => <span>{(currentPage - 1) * pageSize + index + 1}</span>,
+    },
+    {
+      title: 'Mã nhà sản xuất',
+      dataIndex: 'producerCode',
+      width: 100,
+      sorter: (a, b) => a.producerCode.localeCompare(b.producerCode),
     },
     {
       title: 'Tên nhà sản xuất',
@@ -30,9 +36,7 @@ function TableContent() {
     {
       title: 'Trạng thái',
       dataIndex: 'producerStatus',
-
       width: 100,
-      sorter: (a, b) => a.producerStatus.localeCompare(b.producerStatus),
       render: (status) => {
         let statusText;
         let statusClass;
@@ -43,12 +47,8 @@ function TableContent() {
             statusClass = 'active-status';
             break;
           case 0:
-            statusText = 'Không hoạt động';
-            statusClass = 'inactive-status';
-            break;
-          case -1:
             statusText = 'Ngừng hoạt động';
-            statusClass = 'other-status';
+            statusClass = 'inactive-status';
             break;
           default:
             statusText = 'Trạng thái khác';
@@ -64,80 +64,78 @@ function TableContent() {
       render: (_, record) => (
         <Space size="middle">
           <FormEditProducer
-            producer={record}
-            reload={() => {
-              setLoading(true);
-            }}
+            type={record}
+            reload={() => { setLoading(true); }}
           />
           <Popconfirm
             title="Xác Nhận"
-            description="Bạn có chắc chắn muốn xóa?"
+            description="Bạn có chắc chắn muốn hủy?"
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
-              handleDeleteProducer(record.producerId, -1);
-              reload();
+              handleDeleteType(record, 0);
+              setLoading(true);
             }}
             onCancel={onCancel}
           >
-            <Button className="btn btn-danger " icon={<DeleteOutlined />}></Button>
+            <Button
+              type="default"
+              disabled={(record.producerStatus !== 1) ? true : false}
+              danger
+              icon={<DeleteOutlined />}>
+              Hủy
+            </Button>
           </Popconfirm>
         </Space>
       ),
       width: 100,
     },
   ];
-  const onCancel = () => {};
-  const reload = () => {
-    setLoading(true);
-    getAllPhanTrangProducer(currentPage, pageSize);
-    setTimeout(() => {
-      setLoading(false);
-    }, 500);
-  };
+  const onCancel = () => { };
 
   useEffect(() => {
-    setLoading(true);
+    getAllPhanTrangType(currentPage, pageSize);
     setTimeout(() => {
       setLoading(false);
     }, 500);
-  }, []);
+  }, [loading]);
+  useEffect(() => {
+    if (loading) {
+      // Tải lại bảng khi biến trạng thái thay đổi
+      getAllPhanTrangType(currentPage, pageSize);
+      setLoading(false); // Reset lại trạng thái
+    }
+  }, [loading]);
 
-  const getAllPhanTrangProducer = async (pageNum, pageSize) => {
+  const getAllPhanTrangType = async (pageNum, pageSize) => {
     try {
       const response = await producerAPI.getAllPhanTrang(pageNum, pageSize);
       const data = response.data.content;
       setTotalItem(response.data.totalElements);
-      setProducerList(data);
-      setTimeout(() => {}, 500);
+      setTypeList(data);
+      setTimeout(() => { }, 500);
     } catch (error) {
       console.error('Đã xảy ra lỗi: ', error);
     }
   };
-  useEffect(() => {
-    if (loading) {
-      // Tải lại bảng khi biến trạng thái thay đổi
-      getAllPhanTrangProducer(currentPage, pageSize);
-      setLoading(false); // Reset lại trạng thái
-    }
-  }, [loading]);
-  const handleDeleteProducer = async (id, status) => {
+
+  const handleDeleteType = async (values, status) => {
     try {
-      await producerAPI.updateStatus(id, status);
+      await producerAPI.updateStatus(values.producerId, status);
       notification.info({
-        message: 'Xóa thành công',
-        description: 'Nhà sản xuất có ID: ' + id + ' đã được xóa thành công!!!',
+        message: 'Hủy thành công',
+        description: 'Nhà sản xuất có mã: ' + values.producerCode + ' đã được hủy thành công!!!',
         duration: 2,
       });
-      getAllPhanTrangProducer(currentPage, pageSize);
+      getAllPhanTrangType(currentPage, pageSize);
     } catch (error) {
-      console.error('Đã xảy ra lỗi khi xóa nhà sản xuất: ', error);
+      console.error('Đã xảy ra lỗi khi hủy nhà sản xuất: ', error);
     }
   };
   const onShowSizeChange = (current, pageSize) => {
     setPageSize(pageSize);
     setCurrentPage(current);
-    getAllPhanTrangProducer(current, pageSize);
+    getAllPhanTrangType(current, pageSize);
   };
   return (
     <div
@@ -145,9 +143,8 @@ function TableContent() {
         padding: '10px',
       }}
     >
-      <FormProducerCreate />
-      <Button icon={<ReloadOutlined />} onClick={reload} loading={loading}></Button>
-
+      <FormProducerCreate reload={() => { setLoading(true) }} />
+      <Button style={{ marginLeft: '5px' }} icon={<ReloadOutlined />} onClick={() => { setLoading(true) }} loading={loading}></Button>
       <Table
         className="table table-striped"
         scroll={{
@@ -156,17 +153,19 @@ function TableContent() {
         }}
         rowKey={(record) => record.producerId}
         columns={columns}
-        dataSource={producerList}
+        dataSource={typeList}
         onChange={handleTableChange}
         pagination={false}
       />
-      <div className={styles.pagination}>
+      <div className={styles.pagination} style={{ textAlign: 'center' }}>
         <Pagination
-          // showSizeChanger
+          showSizeChanger
           onShowSizeChange={onShowSizeChange}
           onChange={onShowSizeChange}
           defaultCurrent={1}
           total={totalItem}
+          current={currentPage}
+          defaultPageSize={pageSize}
         />
       </div>
     </div>

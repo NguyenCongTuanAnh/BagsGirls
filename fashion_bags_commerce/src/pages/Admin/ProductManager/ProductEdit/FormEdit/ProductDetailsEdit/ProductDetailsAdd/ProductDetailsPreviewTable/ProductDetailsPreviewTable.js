@@ -89,6 +89,18 @@ function ProductDetailsPreviewTable(props) {
       dataIndex: 'productDetailStatus',
       width: 100,
       sorter: (a, b) => a.baloDetailStatus - b.baloDetailStatus,
+      render: (productDetailStatus) => {
+        switch (productDetailStatus) {
+          case 1:
+            return 'Hoạt động';
+          case 0:
+            return 'Ngưng hoạt động';
+          case -1:
+            return 'Dừng hoạt động';
+          default:
+            return 'Không xác định';
+        }
+      },
     },
     {
       title: 'Giá Nhập',
@@ -140,7 +152,19 @@ function ProductDetailsPreviewTable(props) {
       key: 'action',
       width: 100,
       fixed: 'right',
-      render: (text, record) => <Button onClick={() => props.handleDelete(record)}>Xóa</Button>,
+      render: (text, record) =>
+        record.productId === undefined ? (
+          <Button
+            onClick={() => {
+              console.log(record);
+              props.handleDelete(record);
+            }}
+          >
+            Xóa
+          </Button>
+        ) : (
+          ''
+        ),
     },
   ];
 

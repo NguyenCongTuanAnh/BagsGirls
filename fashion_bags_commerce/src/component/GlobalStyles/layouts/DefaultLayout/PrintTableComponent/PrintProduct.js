@@ -54,6 +54,7 @@ const PrintProduct = () => {
   useEffect(() => {
     window.addEventListener('afterprint', handleAfterPrint);
     return () => {
+      window.close();
       localStorage.removeItem('printList');
       window.removeEventListener('afterprint', handleAfterPrint);
     };

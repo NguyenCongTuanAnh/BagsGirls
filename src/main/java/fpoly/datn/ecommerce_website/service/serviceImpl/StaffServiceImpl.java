@@ -88,12 +88,7 @@ public class StaffServiceImpl implements IStaffService {
     }
     @Override
     public Staffs staffUpdate(Staffs staffs) {
-
-
-
-
         if (staffs != null) {
-
             return staffRepository.save(staffs);
         } else {
             throw new IllegalStateException("Failed to save UserInfo");

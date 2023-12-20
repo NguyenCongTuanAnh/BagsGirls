@@ -242,7 +242,7 @@ function TableContent() {
           <FormProductEdit product={record} brand={record.brand} handleRefresh={reload} />
           <Popconfirm
             title="Xác Nhận"
-            description="Bạn Có chắc chắn muốn xóa?"
+            description="Bạn Có chắc chắn muốn hủy?"
             okText="Đồng ý"
             cancelText="Không"
             onConfirm={() => {
@@ -252,7 +252,7 @@ function TableContent() {
             onCancel={onCancel}
           >
             <Button type="default" danger icon={<DeleteOutlined />}>
-              Xóa
+              Hủy
             </Button>
           </Popconfirm>
         </Space>
@@ -641,9 +641,7 @@ function TableContent() {
             <Button type="Button" onClick={handlePrint} style={{ backgroundColor: 'gray', color: 'white' }}>
               Print
             </Button>
-            <Button type="Button" onClick={() => {}} style={{ backgroundColor: 'gray', color: 'white' }}>
-              Copy
-            </Button>
+
             <Button type="Button" onClick={exportToExcel} style={{ backgroundColor: 'gray', color: 'white' }}>
               Excel
             </Button>

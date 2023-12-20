@@ -163,6 +163,7 @@ const SalesCounterForm = () => {
           message: 'Lỗi',
           description: `Hiện tại Sản Phẩm đang hết hàng!!!!`,
         });
+        return;
       } else {
         if (isItemAlreadyAdded(item)) {
           const updatedItems = selectedItems.map((o) => {
@@ -650,6 +651,9 @@ const SalesCounterForm = () => {
                   message: 'Lỗi',
                   description: `Hiện tại Sản Phẩm đang hết hàng!!!!`,
                 });
+                setData('');
+                setIsModalQROpen(false);
+                return;
               } else {
                 if (isItemAlreadyAdded(item)) {
                   const updatedItems = selectedItems.map((o) => {
@@ -704,7 +708,7 @@ const SalesCounterForm = () => {
         handleFindbyId();
       }, [data]);
       useEffect(() => {
-        const config = { fps: 60, qrbox: { width: 200, height: 200 }, aspectRatio: 1 };
+        const config = { fps: 10, qrbox: { width: 200, height: 200 }, aspectRatio: 1 };
         if (!html5QrCode?.getState()) {
           html5QrCode = new Html5Qrcode(qrcodeId);
           const qrCodeSuccessCallback = (decodedText) => {
@@ -1001,6 +1005,13 @@ const SalesCounterForm = () => {
           const startTime = moment(voucher.voucherStartTime);
           const endTime = moment(voucher.voucherEndTime);
 
+          if (voucher.voucherStatus !== 1) {
+            messageApi.open({
+              type: 'success',
+              content: `Voucher này tạm thời không được hoạt động!!!!`,
+            });
+            return;
+          }
           if (currentTime.isBetween(startTime, endTime)) {
             if (voucher.totalPriceToReceive <= totalPrice) {
               setDiscountPercent(voucher.discountPercent);
@@ -1370,7 +1381,6 @@ const SalesCounterForm = () => {
                                     }
                                     setConsumePoints(e);
                                   }}
-                                  enterButton="Search"
                                   min={0}
                                   max={consumePointsReicer}
                                 />

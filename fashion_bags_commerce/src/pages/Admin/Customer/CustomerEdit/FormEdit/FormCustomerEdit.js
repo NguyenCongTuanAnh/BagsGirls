@@ -12,7 +12,6 @@ function FormCustomerEdit(props) {
   const [error, setError] = useState(false);
   const [getEmail, setEmail] = useState('');
   const [getSDT, setSDT] = useState('');
-  const [data, setData] = useState(props.customerData);
   const [password, setPassword] = useState(props.customerData.users.password);
 
   const [form] = useForm();
@@ -20,7 +19,6 @@ function FormCustomerEdit(props) {
 
   const showDrawer = () => {
     setOpen(true);
-    setData(props.customerData);
     setEmail(props.customerData.users.email);
     setSDT(props.customerData.users.phoneNumber);
     setPassword(props.customerData.users.password);
@@ -28,7 +26,7 @@ function FormCustomerEdit(props) {
   };
   const onClose = () => {
     setOpen(false);
-    // form.resetFields();
+
   };
   const updateData = (event) => {
     const { name, value } = event.target;
@@ -63,20 +61,20 @@ function FormCustomerEdit(props) {
     }
     if (returnEmail === true && returnSDT === true) {
       let update = {
-        customerId: data.customerId,
-        customerCode: data.customerCode,
+        customerId: props.customerData.customerId,
+        customerCode: props.customerData.customerCode,
         customerStatus: values.customerStatus,
-        consumePoints: data.consumePoints,
+        consumePoints: props.customerData.consumePoints,
         rankingPoints: values.rankingPoints,
-        customerRanking: data.customerRanking,
+        customerRanking: props.customerData.customerRanking,
         users: {
-          userId: data.users.userId,
+          userId: props.customerData.users.userId,
           account: values.fullName,
           fullName: values.fullName,
-          birthDay: null,
-          password: data.users.password,
+          birthDay: props.customerData.users.birthDay,
+          password: props.customerData.users.password,
           email: values.email,
-          userStatus: data.users.userStatus,
+          userStatus: props.customerData.users.userStatus,
           gender: values.gender,
           address: values.address,
           phoneNumber: values.phoneNumber,
@@ -85,14 +83,14 @@ function FormCustomerEdit(props) {
         }
       }
       try {
+        console.log(props.customerData);
         console.log(update);
-        await customerAPI.update(update);
+        await customerAPI.updateNotPassword(update);
         notification.success({
           message: 'Update thành công',
           description: 'Dữ liệu đã được thay đổi thành công',
           duration: 2,
         });
-        setData(update);
         props.reload();
         onClose();
 
@@ -138,16 +136,16 @@ function FormCustomerEdit(props) {
     return (
       <Form layout="vertical" form={form} initialValues=
         {{
-          fullName: data.users.fullName,
-          customerStatus: data.customerStatus,
-          email: data.users.email,
-          phoneNumber: data.users.phoneNumber,
-          address: data.users.address,
-          gender: data.users.gender,
-          rankingPoints: data.rankingPoints,
-          userNote: data.users.userNote,
-          consumePoints: data.consumePoints,
-          customerRanking: data.customerRanking,
+          fullName: props.customerData.users.fullName,
+          customerStatus: props.customerData.customerStatus,
+          email: props.customerData.users.email,
+          phoneNumber: props.customerData.users.phoneNumber,
+          address: props.customerData.users.address,
+          gender: props.customerData.users.gender,
+          rankingPoints: props.customerData.rankingPoints,
+          userNote: props.customerData.users.userNote,
+          consumePoints: props.customerData.consumePoints,
+          customerRanking: props.customerData.customerRanking,
         }}
         onFinish={updateFunction} >
         <Row gutter={16}>
@@ -321,7 +319,7 @@ function FormCustomerEdit(props) {
               label="Ghi chú"
               rules={[
                 {
-                  required: true,
+                  required: false,
                   message: 'Vui lòng điền ghi chú!',
                 },
               ]}
@@ -342,69 +340,13 @@ function FormCustomerEdit(props) {
       </Form>)
   }
 
-  const capNhatMatKhau = (values) => {
-    return (
-      <div>
-        <Form layout="vertical">
-          <Row gutter={16}>
-            <Col span={12}>
-              <Form.Item
-                label="Password"
-                name="password"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Vui lòng điền Password!',
-                    whitespace: true,
-                  },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (
-                        value &&
-                        value.length >= 12 &&
-                        value.length <= 30 &&
-                        /[\W_]/.test(value) &&
-                        /[A-Z]/.test(value) &&
-                        /\d/.test(value)
-                      ) {
-                        return Promise.resolve();
-                      }
-                      return Promise.reject(
-                        new Error('Mật khẩu trong khoảng 12-30 kí tự, bao gồm ký tự đặc biệt, số và chữ in hoa!'),
-                      );
-                    },
-                  }),
-                ]}
-              >
-                <Input.Password iconRender={(visible) => (visible ? <EyeInvisibleOutlined /> : <EyeFilled />)} onChange={updateData} name="password" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <div>
-            <Space>
-              <Button onClick={() => updatePassword(values.customerId, password)} type="primary" className="btn btn-warning">
-                Lưu
-              </Button>
-              <Button onClick={onClose}>Thoát</Button>
 
-            </Space>
-          </div>
-
-        </Form>
-      </div>
-    )
-  }
   const items = [
     {
       key: '1',
       label: 'Cập nhật thông tin',
-      children: capNhatThongTin(data),
-    },
-    {
-      key: '2',
-      label: 'Cập nhật mật khẩu',
-      children: capNhatMatKhau(data),
-    },
+      children: capNhatThongTin(props.customerData),
+    }
   ];
   return (
     <Fragment>
@@ -412,7 +354,7 @@ function FormCustomerEdit(props) {
         Sửa
       </Button>
       <Drawer
-        title={'Cập nhật khách hàng có mã: ' + data.customerCode}
+        title={'Cập nhật khách hàng có mã: ' + props.customerData.customerCode}
         width={720}
         onClose={onClose}
         open={open}
@@ -422,7 +364,7 @@ function FormCustomerEdit(props) {
           },
         }}
       >
-        <Tabs defaultActiveKey="1" items={items} />;
+        <Tabs defaultActiveKey="1" items={items} />
 
 
       </Drawer>

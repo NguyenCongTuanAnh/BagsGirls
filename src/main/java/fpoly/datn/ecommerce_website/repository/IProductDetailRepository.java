@@ -69,7 +69,9 @@ public Page<ProductDetails> getProductDetailsWithoutDelete(
 //            @Param("productName") String productName,
 //            Pageable pageable);
     @Query("SELECT bd FROM Products b JOIN ProductDetails bd ON b.productId = bd.product.productId  " +
-            "WHERE b.productCode LIKE %:keyword% " +
+            "WHERE  bd.productDetailStatus = 1 " +
+            "AND bd.productDetailAmount > 0 " +
+            "and ( b.productCode LIKE %:keyword% " +
             "OR b.productId LIKE %:keyword% " +
             "OR b.productName LIKE %:keyword% " +
             "OR bd.color.colorName LIKE %:keyword% " +
@@ -80,7 +82,8 @@ public Page<ProductDetails> getProductDetailsWithoutDelete(
             "OR bd.compartment.compartmentName LIKE %:keyword% " +
             "OR bd.buckleType.buckleTypeName LIKE %:keyword% " +
             "OR bd.producer.producerName LIKE %:keyword% " +
-            "OR bd.productDetailDescribe LIKE %:keyword% "
+            "OR bd.productDetailDescribe LIKE %:keyword% ) "
+
 //            "OR bd.importPrice = cast(:keyword as int ) " +
 //            "or (:keyword = '' or (CAST(:keyword AS int) IS NULL AND bd.retailPrice =CAST(:keyword AS int))) "
     )
