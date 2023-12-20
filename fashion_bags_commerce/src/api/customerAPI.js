@@ -55,6 +55,14 @@ const customerAPI = {
       },
     });
   },
+  update(data) {
+    const url = `api/customer`;
+    return axiosClient.put(url, data, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  },
   updateNotPassword(data) {
     const url = `api/customer/updateNotPassword`;
     return axiosClient.put(url, data, {
