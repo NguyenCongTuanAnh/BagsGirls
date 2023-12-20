@@ -5,6 +5,7 @@ import { DeleteOutlined, ReloadOutlined, SyncOutlined } from '@ant-design/icons'
 import styles from './index.module.scss';
 import FormvoucherEdit from '../../VoucherEdit/FormVoucherEdit';
 import FormVoucherCreate from '../../VoucherEdit/FormrCreate/FormVoucherCreate';
+import moment from 'moment';
 const TableContent = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -59,7 +60,7 @@ const TableContent = () => {
     {
       title: 'Mã',
       dataIndex: 'voucherCode',
-      width: 100,
+      width: 200,
       fixed: 'left',
     },
     {
@@ -68,29 +69,32 @@ const TableContent = () => {
       width: 200,
       fixed: 'left',
     },
-    {
-      title: 'Giảm giá (%)',
-      dataIndex: 'discountPercent',
-      width: 200,
-    },
-    {
-      title: 'Giá tối thiểu',
-      dataIndex: 'totalPriceToReceive',
-      width: 200,
-    },
+
     {
       title: 'Thời gian bắt đầu',
       dataIndex: 'voucherStartTime',
+      render: (endTime) => moment(endTime).format('YYYY-MM-DD HH:mm:ss'),
       width: 200,
     },
     {
       title: 'Thời gian kết thúc',
       dataIndex: 'voucherEndTime',
+      render: (endTime) => moment(endTime).format('YYYY-MM-DD HH:mm:ss'),
       width: 200,
     },
     {
       title: 'Số lượng',
       dataIndex: 'voucherAmount',
+      width: 100,
+    },
+    {
+      title: 'Giảm giá(%)',
+      dataIndex: 'discountPercent',
+      width: 120,
+    },
+    {
+      title: 'Giá tối thiểu',
+      dataIndex: 'totalPriceToReceive',
       width: 200,
     },
     {
@@ -152,7 +156,12 @@ const TableContent = () => {
             }}
             onCancel={onCancel}
           >
-            <Button type="default" disabled={record.colorStatus !== 1 ? true : false} danger icon={<DeleteOutlined />}>
+            <Button
+              type="default"
+              disabled={record.voucherStatus !== 1 ? true : false}
+              danger
+              icon={<DeleteOutlined />}
+            >
               Hủy
             </Button>
           </Popconfirm>
@@ -174,7 +183,7 @@ const TableContent = () => {
     const xoa = await voucherAPI.updateStatus(id, status);
     notification.info({
       message: 'Thông báo',
-      description: 'Đã hủy thành công trạng thái của voucher có id là :' + id,
+      description: 'Đã hủy thành công trạng thái của voucher có code là là :' + id.voucherCode,
     });
     getAll(currentPage, pagesSize);
     console.log(xoa);
