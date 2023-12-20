@@ -24,7 +24,7 @@ function ShopDetailView() {
   const [defaultMaterial, setDefaultMaterial] = useState(null);
 
   const customerId = localStorage.getItem('customerId');
-  const [customeridd, setCustomerId] = useState('');
+  const [customeId, setCustomerId] = useState('');
   const [cartId1, setCartId] = useState('');
   const [cartItems, setCartItems] = useState([]);
   const [cartDetailId, setCartDetailId] = useState([]);
@@ -46,7 +46,6 @@ function ShopDetailView() {
 
     fetchCart();
   }, [customerId]);
-  console.log('cart', cartItems);
 
   const fetchProductDetail = async () => {
     try {
@@ -80,14 +79,14 @@ function ShopDetailView() {
         productDetailId: dataDetail.productDetailId,
       },
       carts: {
-        cartId: cartId1, // Use the state value for cartId
+        cartId: cartId1,
       },
       amount: quantity,
     };
 
     try {
       if (!productToAdd.carts?.cartId) {
-        console.error('Cart ID is not available');
+        console.error('CartId không tồn tại');
         return;
       }
 
@@ -183,7 +182,6 @@ function ShopDetailView() {
               className={styles.button_buy_now1}
               onClick={() => {
                 addToCart();
-                // setIsProductInCart(!isProductInCart);
               }}
               onChange={() => setLoading(true)}
             >
@@ -242,9 +240,19 @@ function ShopDetailView() {
         );
       } else {
         return (
-          <div className={styles.button_buy_now} onClick={addToCart}>
-            <ShoppingCartOutlined />
-            Thêm vào giỏ hàng
+          <div>
+            <Link to="">
+              <div className={styles.button_buy_now} onClick={() => addToTemporaryCart(product)}>
+                <ShoppingCartOutlined />
+                Thêm vào giỏ hàng
+              </div>
+            </Link>
+
+            <Link to="/cart">
+              <div className={styles.button_buy_now1} onClick={() => addToTemporaryCart(product)}>
+                Mua ngay
+              </div>
+            </Link>
           </div>
         );
       }
@@ -253,28 +261,28 @@ function ShopDetailView() {
 
   const addToTemporaryCart = async (product) => {
     try {
-      const amountInDatabase = dataDetail.amount; // Số lượng tồn kho trong cơ sở dữ liệu
+      const amountInDatabase = dataDetail.amount;
 
       if (quantity <= amountInDatabase) {
         const productToAdd = {
           productId: product.productId,
           productDetailId: dataDetail.productDetailId,
-
           image: product.img.imgUrl,
           productName: product.productName,
           productCode: product.productCode,
-          colorName: selectedColor, // Use the selectedColor state
-          materialName: selectedMaterial, // Use the selectedMaterial state
+          colorName: selectedColor,
+          materialName: selectedMaterial,
           brandName: product.brandName,
           quantity: quantity,
           retailPrice: dataDetail.retailPrice,
           amount: dataDetail.amount,
         };
 
-        // Thêm sản phẩm vào giỏ hàng tạm thời
         const storedCart = localStorage.getItem('temporaryCart');
         let updatedTemporaryCart = storedCart ? JSON.parse(storedCart) : [];
 
+        console.log('San pham trong gio hang', storedCart);
+        console.log('San pham trong gio hang', updatedTemporaryCart);
         // if (storedCart) {
         const existingProductIndex = updatedTemporaryCart.findIndex(
           (item) =>
@@ -575,15 +583,7 @@ function ShopDetailView() {
                 <Link to="">{renderAddToCartButtonDB()}</Link>
               )}
 
-              {customerId == null ? (
-                <Link to="/cart">
-                  <div className={styles.button_buy_now1} onClick={() => addToTemporaryCart(product)}>
-                    Mua ngay
-                  </div>
-                </Link>
-              ) : (
-                <div></div>
-              )}
+             
             </div>
           </div>
         </div>
