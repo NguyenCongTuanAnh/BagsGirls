@@ -243,7 +243,7 @@ function ProductDetailsPreviewTable(props) {
           retailPrice: retailPrice,
           productDetailDescribe: productDetailDescribe,
           productDetailAmount: baloDetailAmount,
-          productDetailStatus: productDetailStatus,
+          productDetailStatus: baloDetailAmount > 0 ? 1 : productDetailStatus,
         }),
       );
 
@@ -256,7 +256,9 @@ function ProductDetailsPreviewTable(props) {
               productId: props.product.productId,
             },
           };
-
+          // if(element.productDetailAmount > 0) {
+          //   element.productDetailStatus
+          // }
           const response2 = await baloDetailsAPI.add(addElement);
           if (response2.status !== 200) {
             isDoneSuccess = false;
