@@ -22,25 +22,36 @@ const billDetailsAPI = {
     const url = `api/bill-detail/getBillDetailsByBillIdUpdateAmount?billId=${billId}`;
     return axiosClient.get(url);
   },
+
   getAllBillDetailsError(
-    // loaiHoaDon, filterStaffCode, startDate, endDate, status, search, pageNum, pageSize, filterRank, customerPhoneNumber, sortList, sortOrder, sortListPlaceHolder
-    ) {
+    loaiHoaDon,
+    filterStaffCode,
+    startDate,
+    endDate,
+    status,
+    search,
+    pageNum,
+    pageSize,
+    customerId,
+    sortList,
+    sortOrder,
+    sortListPlaceHolder
+  ) {
     const url = 'api/bill-detail/getBillDetailsByBillIdNotStatus';
     return axiosClient.get(url, {
       params: {
-        // loaiHoaDon: loaiHoaDon,
-        // staffId: filterStaffCode,
-        // startDate: startDate,
-        // endDate: endDate,
-        // search: search,
-        // status: status,
-        // page: pageNum - 1,
-        // size: pageSize,
-        // customerRanking: filterRank,
-        // customerId: customerPhoneNumber,
-        // sortList: sortList,
-        // sortOrder: sortOrder,
-        // sortListPlaceHolder: sortListPlaceHolder
+        loaiHoaDon: loaiHoaDon,
+        staffId: filterStaffCode,
+        startDate: startDate,
+        endDate: endDate,
+        search: search,
+        status: status,
+        page: pageNum - 1,
+        size: pageSize,
+        customerId: customerId,
+        sortList: sortList,
+        sortOrder: sortOrder,
+        sortListPlaceHolder: sortListPlaceHolder
       },
     });
   },

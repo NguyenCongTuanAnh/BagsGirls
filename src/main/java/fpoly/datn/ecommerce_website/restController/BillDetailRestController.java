@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,20 +73,26 @@ public class BillDetailRestController {
     @RequestMapping(value = "bill-detail/getBillDetailsByBillIdNotStatus", method = RequestMethod.GET)
     public ResponseEntity<?> getAllBillDetailError(
             @RequestParam(name = "page", defaultValue = "0") Integer pageNum,
-            @RequestParam(name = "size", defaultValue = "10") Integer pageSize
-//            @RequestParam(name ="status", required = false) Integer status,
-//            @RequestParam(name ="search", defaultValue = "") String search,
-//            @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
-//            @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr,
-//            @RequestParam(name = "customerRanking", required = false) String customerRanking,
-//            @RequestParam(name = "customerId", defaultValue = "") String customerId,
-//            @RequestParam(name = "staffId", defaultValue = "") String staffId,
-//            @RequestParam(name = "loaiHoaDon", defaultValue = "") String loaiHoaDon,
-//            @RequestParam(defaultValue = "billCreateDate") List<String> sortList,
-//            @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder
+            @RequestParam(name = "size", defaultValue = "10") Integer pageSize,
+            @RequestParam(name ="status", required = false) Integer status,
+            @RequestParam(name ="search", defaultValue = "") String search,
+            @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
+            @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr,
+            @RequestParam(name = "customerId", defaultValue = "") String customerId,
+            @RequestParam(name = "staffId", defaultValue = "") String staffId,
+            @RequestParam(name = "loaiHoaDon", defaultValue = "") String loaiHoaDon
     ) {
         try {
-        return new ResponseEntity<>(this.iBillDetailsService.findAllBillDetailError( pageNum, pageSize), HttpStatus.OK);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date startDate = dateFormat.parse(startDateStr);
+            Date endDate = dateFormat.parse(endDateStr);
+//            if(loaiHoaDon.equalsIgnoreCase("offline")){
+//                return new ResponseEntity<>(this.iBillDetailsService.findAllBillDetailErrorOffline(staffId, customerId,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+//            }else if(loaiHoaDon.equalsIgnoreCase("online")){
+//                return new ResponseEntity<>(this.iBillDetailsService.findAllBillDetailErrorOnline(customerId,startDate, endDate, status, search, pageNum, pageSize, sortList, sortOrder.toString()), HttpStatus.OK);
+//            }else{
+                return new ResponseEntity<>(this.iBillDetailsService.findAllBillDetailError(loaiHoaDon, staffId, customerId, startDate, endDate, status, search, pageNum, pageSize), HttpStatus.OK);
+//            }
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>("Lỗi ", HttpStatus.BAD_REQUEST);

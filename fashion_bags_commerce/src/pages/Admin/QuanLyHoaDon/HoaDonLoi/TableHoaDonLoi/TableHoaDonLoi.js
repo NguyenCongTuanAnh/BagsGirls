@@ -61,8 +61,6 @@ function TableHoaDonLoi() {
     const typingTimeoutRef = useRef(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [customerPhoneNumber, setCustomerPhoneNumber] = useState('');
-    const [filterRank, setFilterRank] = useState('');
-    const [defaultCustomerValue, setDefaultCustomerValue] = useState('');
     const [loaiHoaDon, setLoaiHoaDon] = useState('');
     const [updateBill, setUpdateBill] = useState(false);
 
@@ -557,19 +555,18 @@ function TableHoaDonLoi() {
     const getAllPhanTrangCompartment = async (pageNum, pageSize) => {
         try {
             const response = await billDetailsAPI.getAllBillDetailsError(
-                // loaiHoaDon,
-                // filterStaffCode,
-                // startDate,
-                // endDate,
-                // status,
-                // search,
-                // pageNum,
-                // pageSize,
-                // filterRank,
-                // customerPhoneNumber,
-                // sortList,
-                // sortOrder,
-                // sortListPlaceHolder
+                loaiHoaDon,
+                filterStaffCode,
+                startDate,
+                endDate,
+                status,
+                search,
+                pageNum,
+                pageSize,
+                customerPhoneNumber,
+                sortList,
+                sortOrder,
+                sortListPlaceHolder
             );
             const data = response.data.content;
             setTotalItem(response.data.totalElements);
@@ -597,22 +594,17 @@ function TableHoaDonLoi() {
             <>
                 <Select.Option value=''>Tất cả</Select.Option>
                 {(listCustomer ?? []).map((item, index) => {
-                    if (filterRank === '' || filterRank === item.customerRanking) {
-                        return (
-                            <Select.Option key={index} value={item.customerId}>
-                                {item.customerCode + ' - ' + item.users.phoneNumber + ' - ' + item.users.fullName}
-                            </Select.Option>
-                        );
-                    }
-                    return null;
+                    return (
+                        <Select.Option key={index} value={item.customerId}>
+                            {item.customerCode + ' - ' + item.users.phoneNumber + ' - ' + item.users.fullName}
+                        </Select.Option>
+                    );
                 })}
             </>
         );
     };
 
-    useEffect(() => {
-        renderCustomerOptions();
-    }, [filterRank]);
+
 
     useEffect(() => {
         getAllStaff();
@@ -621,7 +613,7 @@ function TableHoaDonLoi() {
             setLoading(false);
         }, 500);
 
-    }, [loading, search, status, startDate, endDate, filterStaffCode, customerPhoneNumber, loaiHoaDon, filterRank, sortList, sortOrder, sortListPlaceHolder]);
+    }, [loading, search, status, startDate, endDate, filterStaffCode, customerPhoneNumber, loaiHoaDon, sortList, sortOrder, sortListPlaceHolder]);
 
     // lọc theo khách hàng
     const onChangeKhachHang = (value) => {
@@ -649,13 +641,13 @@ function TableHoaDonLoi() {
                         </h2>
                     </Row>
                     <Row>
-                        <Col span={7}>
+                        <Col span={9}>
                             <div style={{ paddingTop: '10px', fontSize: '18px' }}>
                                 <span style={{ fontWeight: 500 }}>Ngày tạo</span>
                                 <RangePicker placeholder={['Ngày bắt đầu', 'Ngày kết thúc']} className={styles.filter_inputSearch} style={{ marginLeft: '10px' }} presets={rangePresets} onChange={onRangeChange} />
                             </div>
                         </Col>
-                        <Col span={9}>
+                        <Col span={7}>
                             <div style={{ paddingTop: '10px', fontSize: '18px' }}>
                                 <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
                                     Loại hóa đơn
@@ -675,7 +667,11 @@ function TableHoaDonLoi() {
                                 </span>
                             </div>
                         </Col>
-                        <Col span={8}>
+
+
+                    </Row>
+                    <Row>
+                        <Col span={9}>
                             <div style={{ paddingTop: '10px', fontSize: '18px' }}>
                                 <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
                                     Nhân viên
@@ -699,33 +695,7 @@ function TableHoaDonLoi() {
                                 </span>
                             </div>
                         </Col>
-
-                    </Row>
-                    <Row>
-                        <Col span={7}>
-                            <div style={{ paddingTop: '10px', fontSize: '18px' }}>
-                                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
-                                    Hạng khách hàng
-                                    <Select
-                                        placeholder="Lọc theo hạng khách hàng"
-                                        style={{ width: '40%', marginLeft: '10px' }}
-                                        onChange={(value) => {
-                                            setFilterRank(value);
-                                            setCustomerPhoneNumber('');
-                                        }}
-                                    >
-                                        <Select.Option value="">Tất cả</Select.Option>
-                                        <Select.Option value="khachHangLe">Khách hàng lẻ</Select.Option>
-                                        <Select.Option value="KH_TIEMNANG">Tiềm năng</Select.Option>
-                                        <Select.Option value="KH_THANTHIET">Thân thiết</Select.Option>
-                                        <Select.Option value="KH_BAC">Bạc</Select.Option>
-                                        <Select.Option value="KH_VANG">Vàng</Select.Option>
-                                        <Select.Option value="KH_KIMCUONG">Kim cương</Select.Option>
-                                    </Select>
-                                </span>
-                            </div>
-                        </Col>
-                        <Col span={9}>
+                        <Col span={14}>
                             <div style={{ paddingTop: '10px', fontSize: '18px' }}>
                                 <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
                                     Khách hàng
@@ -733,69 +703,13 @@ function TableHoaDonLoi() {
                                         showSearch
                                         placeholder="Tìm và lọc hóa đơn theo khách hàng"
                                         optionFilterProp="children"
-                                        disabled={(filterRank === 'khachHangLe') ? true : false}
                                         onChange={onChangeKhachHang}
                                         onSearch={onSearchKhachHang}
                                         filterOption={filterOption}
                                         value={customerPhoneNumber}
-                                        style={{ marginLeft: '10px', width: '68%' }}
+                                        style={{ marginLeft: '10px', width: '40%' }}
                                     >
                                         {renderCustomerOptions()}
-                                    </Select>
-                                </span>
-                            </div>
-                        </Col>
-                        <Col span={7}>
-                            <div style={{ paddingTop: '10px', fontSize: '18px' }}>
-                                <span style={{ paddingTop: '20px', fontSize: '18px', fontWeight: 500 }}>
-                                    Sắp xếp
-                                    <Select
-                                        allowClear
-                                        value={sortListPlaceHolder}
-                                        placeholder={'Sắp xếp theo...'}
-                                        size="large"
-                                        style={{
-                                            width: 250, marginLeft: '10px'
-                                        }}
-                                        onChange={(value) => {
-                                            if (value === 'priceASC') {
-                                                setSortOrder('ASC');
-                                                setSortList('billPriceAfterVoucher');
-                                                setSortListPlaceHolder('Tổng thanh toán tăng dần');
-                                            } else if (value === 'priceDESC') {
-                                                setSortOrder('DESC');
-                                                setSortList('billPriceAfterVoucher');
-                                                setSortListPlaceHolder('Tổng thanh toán giảm dần');
-                                            } else if (value === 'timeASC') {
-                                                setSortOrder('ASC');
-                                                setSortList('billCreateDate');
-                                                setSortListPlaceHolder('Thời gian tăng dần');
-                                            } else if (value === 'timeDESC') {
-                                                setSortOrder('DESC');
-                                                setSortList('billCreateDate');
-                                                setSortListPlaceHolder('Thời gian giảm dần');
-                                            } else {
-                                                setSortOrder(null);
-                                                setSortList(null);
-                                                setSortListPlaceHolder('Không sắp xếp');
-                                            }
-                                        }}
-                                    >
-                                        <Select.Option key={'0'} value={'0'}>
-                                            Không sắp xếp
-                                        </Select.Option>
-                                        <Select.Option key={'1'} value={'priceASC'}>
-                                            Tổng thanh toán tăng dần
-                                        </Select.Option>
-                                        <Select.Option key={'2'} value={'priceDESC'}>
-                                            Tổng thanh toán giảm dần
-                                        </Select.Option>
-                                        <Select.Option key={'3'} value={'timeASC'}>
-                                            Thời gian tăng dần
-                                        </Select.Option>
-                                        <Select.Option key={'4'} value={'timeDESC'}>
-                                            Thời gian giảm dần
-                                        </Select.Option>
                                     </Select>
                                 </span>
                             </div>
