@@ -383,6 +383,7 @@ const SalesCounterForm = () => {
       if (value === 1) {
         setCustomer(null);
         setCustomerId(null);
+        setConsumePoints(0);
         form.resetFields();
         setVisible(false);
       }
@@ -401,10 +402,21 @@ const SalesCounterForm = () => {
       form.submit();
     };
     const onHandleAddBill = async (values) => {
+      messageApi.open({
+        type: 'loading',
+        content: 'Đang check hóa đơn',
+        duration: 0,
+      });
       var currentDate = new Date();
       var formattedDate = dayjs(currentDate).format('YYYY-MM-DD HH:mm:ss');
       if (customer == null && visible === true) {
-        messageApi.error('Vui lòng Chọn Khách lẻ hoặc Điền KH Thân Thiết!!!');
+        messageApi.error('');
+        messageApi.open({
+          type: 'error',
+          content: 'Vui lòng Chọn Khách lẻ hoặc Điền KH Thân Thiết!!!',
+          duration: 0,
+        });
+        setTimeout(messageApi.destroy, 2500);
       } else if (selectedItems.length === 0) {
         messageApi.error('Vui lòng thêm sản phẩm!!!');
       } else if (
@@ -416,204 +428,234 @@ const SalesCounterForm = () => {
         0
       ) {
         messageApi.error('Không thể hoàn thành do áp dụng giảm giá quá mức!!!!');
+        setTimeout(messageApi.destroy, 2500);
       } else {
-        if (customer !== null) {
-          const emailContent = `
-          <html>
-            <head>
-              <title>Thông tin đơn hàng</title>
-            </head>
-            <style>
-        
-          
-          </style>
-            <body>
-              <h1>Thông tin đơn hàng</h1>
-              <h4>Mã Bill: ${values.billCode} - ${formattedDate}</h4>
-              <table border="1" style="border-collapse: collapse; width: 100%; padding: 10px;">
-              <thead>
-                <tr>
-                  <th style="padding: 8px; text-align: center;">Mã Sản phẩm</th>
-                  <th style="padding: 8px; text-align: center;">Tên Balo</th>
-                  <th style="padding: 8px; text-align: center;">Màu Sắc</th>
-                  <th style="padding: 8px; text-align: center;">Size Balo</th>
-                  <th style="padding: 8px; text-align: center;">Giá Bán</th>
-                  <th style="padding: 8px; text-align: center;">Số Lượng</th>
-                  <th style="padding: 8px; text-align: center;">Thành tiền</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${selectedItems
-                  .map(
-                    (record) => `
-                  <tr key=${record.product.productId}>
-                    <td style="padding: 8px; text-align: center;">${record.productDetailId}</td>
-                    <td style="padding: 8px; text-align: center;">${record.product.productName}</td>
-                    <td style="padding: 8px; text-align: center;">${record.color.colorName}</td>
-                    <td style="padding: 8px; text-align: center;">${record.size.sizeName}</td>
-                    <td style="padding: 8px; text-align: center;">${VNDFormaterFunc(record.retailPrice)} / cái</td>
-                    <td style="padding: 8px; text-align: center;">${record.cartAmount} cái</td>
-                    <td style="padding: 8px; text-align: center;">${VNDFormaterFunc(
-                      record.cartAmount * record.retailPrice,
-                    )}</td>
-                  </tr>
-                `,
-                  )
-                  .join('')}
-              </tbody>
-            </table>
-            <div>
-                <div>
-                <h3>* Tổng tiền Sản Phẩm (1): + ${VNDFormaterFunc(totalPrice)}</h3>
-                </div>
-                <div>
-                <h3>
-                * Thuế VAT ${VAT * 100}% (2): + ${VNDFormaterFunc(totalPrice * VAT)}
-                </h3>
-                <h3>
-                * Voucher (${voucher.voucherCode || 'nếu có'}) (giảm ${
-            voucher.discountPercent || 0
-          } %) (3): - ${VNDFormaterFunc(voucherPrice)}
-              </h3>
-              </div>
-                <div>
-        
-                </div>
-                    <div>
-                      <h3>
-                        * Hạng Khách Hàng (${rankingName || 'nếu có'}) (- ${discountPercentByRankingName || ''} %) (4): 
-                      - ${VNDFormaterFunc(totalPrice * (discountPercentByRankingName / 100))}</h3>
-                    </div>
-                    
-                    <div>
-                              <h3>
-                                Điểm tiêu dùng (${consumePointsReicer || 'nếu có'}) (- ${
-            consumePoints + 'Điểm' || ''
-          } ) (4):
-                                - ${VNDFormaterFunc(consumePoints * 500)}
-                              </h3>
-                            </div>
-                <div >
-                 <h2>Tổng Tiền (1 - 2 + 3) = 
-                  ${VNDFormaterFunc(
-                    totalPrice +
-                      totalPrice * VAT -
-                      voucherPrice -
-                      totalPrice * (discountPercentByRankingName / 100) -
-                      consumePoints * 500,
-                  )}
-              </h2>
-                </div>
-          </div>
-            </body>
-          </html>
-        `;
+        ///check sl sản phẩm detail trước khi hoàn thành đơn hàng
+        var conflict = false;
 
-          const mail = {
-            email: customer.users.email,
-            subject: 'Cảm ơn đã mua hàng',
-            content: emailContent,
-          };
-          const mailResponse = MaillingAPI.notificationHtml(mail);
-        }
-        notification.success({
-          message: 'Thành Công',
-          description: `Đã hoàn thành đơn hàng`,
-          duration: 2,
+        var promises = selectedItems.map(async (o, index) => {
+          const productDetailId = o.productDetailId;
+          const response = await productDetailsAPI.findById(o.productDetailId);
+          console.log(o.cartAmount > response.data.productDetailAmount);
+          console.log(o.cartAmount);
+          console.log(response.data.productDetailAmount);
+          if (o.cartAmount > response.data.productDetailAmount || response.data.productDetailAmount === 0) {
+            conflict = true;
+            messageApi.open({
+              type: 'error',
+              content: `Sản phẩm thứ ${index + 1} đang tạm thời hết hàng (chỉ còn ${
+                response.data.productDetailAmount
+              } cái) vui lòng cập nhật lại số lượng sản phẩm!!!!`,
+              duration: 0,
+            });
+            return;
+          }
         });
+        console.log(conflict);
+        setTimeout(messageApi.destroy, 2500);
+        Promise.all(promises)
+          .then(async () => {
+            console.log(conflict);
+            if (conflict === false) {
+              ///check sl sản phẩm detail trước khi hoàn thành đơn hàng
 
-        let addBill = {
-          staff: {
-            staffId: staff.staffId,
-          },
-          customer: {
-            customerId: customerId,
-          },
-          voucher: {
-            voucherId: voucher.voucherId,
-          },
-          billCode: values.billCode,
-          billCreateDate: formattedDate,
-          billDatePayment: formattedDate,
-          billShipDate: formattedDate,
-          billReceiverDate: formattedDate,
-          billTotalPrice: totalPrice,
-          productAmount: handleCacuTotalAmount(),
-          billPriceAfterVoucher:
-            totalPrice +
-            totalPrice * VAT -
-            voucherPrice -
-            totalPrice * (discountPercentByRankingName / 100) -
-            consumePoints * 500,
-          shippingAddress: null,
-          billingAddress: null,
-          receiverName: customer ? customer.users.fullName : null,
-          shipPrice: 0,
-          billReducedPrice:
-            totalPrice -
-            (totalPrice +
-              totalPrice * VAT -
-              voucherPrice -
-              totalPrice * (discountPercentByRankingName / 100) -
-              consumePoints * 500),
-          orderEmail: customer ? customer.users.email : null,
-          orderPhone: customer ? customer.users.phoneNumber : null,
-          paymentMethod: values.paymentMethod,
-          billNote: values.billNote,
-          billStatus: 1,
-        };
+              let addBill = {
+                staff: {
+                  staffId: staff.staffId,
+                },
+                customer: {
+                  customerId: customerId,
+                },
+                voucher: {
+                  voucherId: voucher.voucherId,
+                },
+                billCode: values.billCode,
+                billCreateDate: formattedDate,
+                billDatePayment: formattedDate,
+                billShipDate: formattedDate,
+                billReceiverDate: formattedDate,
+                billTotalPrice: totalPrice,
+                productAmount: handleCacuTotalAmount(),
+                billPriceAfterVoucher:
+                  totalPrice +
+                  totalPrice * VAT -
+                  voucherPrice -
+                  totalPrice * (discountPercentByRankingName / 100) -
+                  consumePoints * 500,
+                shippingAddress: null,
+                billingAddress: null,
+                receiverName: customer ? customer.users.fullName : null,
+                shipPrice: 0,
+                billReducedPrice:
+                  totalPrice -
+                  (totalPrice +
+                    totalPrice * VAT -
+                    voucherPrice -
+                    totalPrice * (discountPercentByRankingName / 100) -
+                    consumePoints * 500),
+                orderEmail: customer ? customer.users.email : null,
+                orderPhone: customer ? customer.users.phoneNumber : null,
+                paymentMethod: values.paymentMethod,
+                billNote: values.billNote,
+                billStatus: 1,
+              };
 
-        if (customer === null) {
-          addBill.customer = null;
-        }
-        if (voucher === '') {
-          addBill.voucher = null;
-        }
-        console.log(addBill);
-        const addedBill = await handleAddBills(addBill);
-        if (visible) {
-          const updatePoint = await customerAPI.updatePoint(customerId, totalPrice);
-          const updateConsumePoint = await customerAPI.updateConsumePoint(customerId, consumePoints);
-        }
-
-        var isErr = false;
-        await Promise.all(
-          selectedItems.map(async (o) => {
-            let billDetail = {
-              bills: {
-                billId: addedBill.billId,
-              },
-              productDetails: {
-                productDetailId: o.productDetailId,
-              },
-              amount: o.cartAmount,
-              price: o.retailPrice,
-            };
-
-            const billDetails = await handleAddBillDetails(billDetail);
-            const produtcAmount = await productDetailsAPI.updateAmount(o.productDetailId, o.cartAmount);
-            let isuUpdateAmountSucess = false;
-            if (voucher !== '') {
-              const voucherBeforeAplied = await voucherAPI.updateAmountBeforeAplied(voucher.voucherId, 1);
-              if (voucherBeforeAplied.status === 200) {
-                isuUpdateAmountSucess = true;
+              if (customer === null) {
+                addBill.customer = null;
               }
-            }
-            if (billDetails.status === 200 && produtcAmount.status === 200 && isuUpdateAmountSucess === true) {
-              isErr = true;
-            }
-          }),
-        );
+              if (voucher === '') {
+                addBill.voucher = null;
+              }
 
-        if (isErr !== true) {
-          notification.success({
-            message: 'Thành Công',
-            description: `Đã hoàn thành đơn hàng`,
-            duration: 2,
+              const addedBill = await handleAddBills(addBill);
+              if (visible) {
+                const updatePoint = await customerAPI.updatePoint(customerId, totalPrice);
+                const updateConsumePoint = await customerAPI.updateConsumePoint(customerId, consumePoints);
+              }
+
+              var isErr = false;
+              await Promise.all(
+                selectedItems.map(async (o) => {
+                  let billDetail = {
+                    bills: {
+                      billId: addedBill.billId,
+                    },
+                    productDetails: {
+                      productDetailId: o.productDetailId,
+                    },
+                    amount: o.cartAmount,
+                    price: o.retailPrice,
+                    billDetailStatus: 1,
+                  };
+
+                  const billDetails = await handleAddBillDetails(billDetail);
+                  const produtcAmount = await productDetailsAPI.updateAmount(o.productDetailId, o.cartAmount);
+                  let isuUpdateAmountSucess = false;
+                  if (voucher !== '') {
+                    const voucherBeforeAplied = await voucherAPI.updateAmountBeforeAplied(voucher.voucherId, 1);
+                    if (voucherBeforeAplied.status === 200) {
+                      isuUpdateAmountSucess = true;
+                    }
+                  }
+                  if (billDetails.status === 200 && produtcAmount.status === 200 && isuUpdateAmountSucess === true) {
+                    isErr = true;
+                  }
+                }),
+              );
+
+              if (isErr !== true) {
+                if (customer !== null) {
+                  const emailContent = `
+        <html>
+          <head>
+            <title>Thông tin đơn hàng</title>
+          </head>
+          <style>
+      
+        
+        </style>
+          <body>
+            <h1>Thông tin đơn hàng</h1>
+            <h4>Mã Bill: ${values.billCode} - ${formattedDate}</h4>
+            <table border="1" style="border-collapse: collapse; width: 100%; padding: 10px;">
+            <thead>
+              <tr>
+                <th style="padding: 8px; text-align: center;">Mã Sản phẩm</th>
+                <th style="padding: 8px; text-align: center;">Tên Balo</th>
+                <th style="padding: 8px; text-align: center;">Màu Sắc</th>
+                <th style="padding: 8px; text-align: center;">Size Balo</th>
+                <th style="padding: 8px; text-align: center;">Giá Bán</th>
+                <th style="padding: 8px; text-align: center;">Số Lượng</th>
+                <th style="padding: 8px; text-align: center;">Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${selectedItems
+                .map(
+                  (record) => `
+                <tr key=${record.product.productId}>
+                  <td style="padding: 8px; text-align: center;">${record.productDetailId}</td>
+                  <td style="padding: 8px; text-align: center;">${record.product.productName}</td>
+                  <td style="padding: 8px; text-align: center;">${record.color.colorName}</td>
+                  <td style="padding: 8px; text-align: center;">${record.size.sizeName}</td>
+                  <td style="padding: 8px; text-align: center;">${VNDFormaterFunc(record.retailPrice)} / cái</td>
+                  <td style="padding: 8px; text-align: center;">${record.cartAmount} cái</td>
+                  <td style="padding: 8px; text-align: center;">${VNDFormaterFunc(
+                    record.cartAmount * record.retailPrice,
+                  )}</td>
+                </tr>
+              `,
+                )
+                .join('')}
+            </tbody>
+          </table>
+          <div>
+              <div>
+              <h3>* Tổng tiền Sản Phẩm (1): + ${VNDFormaterFunc(totalPrice)}</h3>
+              </div>
+              <div>
+              <h3>
+              * Thuế VAT ${VAT * 100}% (2): + ${VNDFormaterFunc(totalPrice * VAT)}
+              </h3>
+              <h3>
+              * Voucher (${voucher.voucherCode || 'nếu có'}) (giảm ${
+                    voucher.discountPercent || 0
+                  } %) (3): - ${VNDFormaterFunc(voucherPrice)}
+            </h3>
+            </div>
+              <div>
+      
+              </div>
+                  <div>
+                    <h3>
+                      * Hạng Khách Hàng (${rankingName || 'nếu có'}) (- ${discountPercentByRankingName || ''} %) (4): 
+                    - ${VNDFormaterFunc(totalPrice * (discountPercentByRankingName / 100))}</h3>
+                  </div>
+                  
+                  <div>
+                            <h3>
+                              Điểm tiêu dùng (${consumePointsReicer || 'nếu có'}) (- ${
+                    consumePoints + 'Điểm' || ''
+                  } ) (4):
+                              - ${VNDFormaterFunc(consumePoints * 500)}
+                            </h3>
+                          </div>
+              <div >
+               <h2>Tổng Tiền (1 - 2 + 3 - 4) = 
+                ${VNDFormaterFunc(
+                  totalPrice +
+                    totalPrice * VAT -
+                    voucherPrice -
+                    totalPrice * (discountPercentByRankingName / 100) -
+                    consumePoints * 500,
+                )}
+            </h2>
+              </div>
+        </div>
+          </body>
+        </html>
+      `;
+
+                  const mail = {
+                    email: customer.users.email,
+                    subject: 'Cảm ơn đã mua hàng',
+                    content: emailContent,
+                  };
+                  const mailResponse = MaillingAPI.notificationHtml(mail);
+                }
+                setTimeout(messageApi.destroy, 2500);
+                notification.success({
+                  message: 'Thành Công',
+                  description: `Đã hoàn thành đơn hàng`,
+                  duration: 2,
+                });
+              }
+              handleResetScreen();
+            }
+          })
+          .catch((error) => {
+            console.error(error);
           });
-        }
-        handleResetScreen();
-        console.log(customer);
       }
 
       setBillInfo(values);
