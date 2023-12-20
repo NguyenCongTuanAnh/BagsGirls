@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import billDetailsAPI from '~/api/BillDetailsAPI';
 import billsAPI from '~/api/BillApi';
+import dayjs from 'dayjs';
+
 const { useForm } = Form;
 
 
@@ -27,6 +29,8 @@ function ComponentChiTietHoaDon(props) {
     const [updateBill, setUpdateBill] = useState(false);
     const [billDetailProductError, setBillDetailProductError] = useState([]);
     const [newAmountBillDetail, setNewAmountBillDetail] = useState(0);
+    const [timeHangLoi, setTimeHangLoi] = useState(false);
+
 
 
     const showModal = () => {
@@ -43,6 +47,17 @@ function ComponentChiTietHoaDon(props) {
         }, 0);
         setTotalQuantity(total);
         setVisible(true);
+
+        let ngayHomNay = dayjs().add(-7, 'd');
+        let bayNgayTruoc = dayjs(props.bills.billCreateDate);
+        let isNgayHomNayGreaterThanBayNgayTruoc = ngayHomNay.isAfter(bayNgayTruoc);
+        if (isNgayHomNayGreaterThanBayNgayTruoc) {
+            // hết thời gian hàng lỗi
+            setTimeHangLoi(true);
+        } else {
+            // vẫn còn thời gian hàng lỗi
+            setTimeHangLoi(false);
+        }
     };
 
     useEffect(() => {
@@ -75,8 +90,13 @@ function ComponentChiTietHoaDon(props) {
             setTongTienThanhToan(0);
         } else {
             setTongTienThanhToan(total - props.bills.billReducedPrice + props.bills.shipPrice);
-        } setAmountBill(productAmount);
+        }
+        setAmountBill(productAmount);
         settotalPriceBill(total);
+        let TrangThaiKhiPriceBangKhong = props.bills.billStatus;
+        if (total === 0) {
+            TrangThaiKhiPriceBangKhong = -1;
+        }
         let updateHoaDon = {
             billId: props.bills.billId,
             staff: props.bills.staff,
@@ -98,7 +118,7 @@ function ComponentChiTietHoaDon(props) {
             orderPhone: props.bills.orderPhone,
             paymentMethod: props.bills.paymentMethod,
             billNote: props.bills.billNote,
-            billStatus: props.bills.billStatus,
+            billStatus: TrangThaiKhiPriceBangKhong,
             billReducedPrice: props.bills.billReducedPrice
         };
         if (updateBill) {
@@ -268,6 +288,18 @@ function ComponentChiTietHoaDon(props) {
         }
     };
 
+    const disableHangLoi = (billStatus, billDetailStatus) => {
+        if (timeHangLoi === true) {
+            return true;
+        } else {
+            if (props.bills.staff === null && billDetailStatus === 1 && billStatus === 1) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+    }
+
     const columns = [
         {
             key: 'stt',
@@ -325,15 +357,11 @@ function ComponentChiTietHoaDon(props) {
                             max={Math.floor(maxAmount)}
                             step={1}
                             disabled={
-                                (newAmount === null
-                                    || props.bills.staff !== null
-                                    || Math.floor(props.bills.billStatus) === -1
-                                    || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
-                                    || Math.floor(props.bills.billStatus) === 2
-                                    || Math.floor(props.bills.billStatus) === 3
-                                    || Math.floor(props.bills.billStatus) === 0
-                                    || Math.floor(props.bills.billStatus) === -2
-                                ) ? true : false}
+                                (timeHangLoi !== true &&
+                                    (
+                                        (record.bills.billStatus === 4 && record.billDetailStatus === 1)
+                                    )
+                                ) ? false : true}
                             defaultValue={record.amount}
                             onChange={(newValue) => {
 
@@ -359,30 +387,22 @@ function ComponentChiTietHoaDon(props) {
                         >
                             <Button
                                 type="primary"
-                                danger={newAmount <= 0}
+                                // danger={newAmount <= 0}
                                 disabled={
-                                    (newAmount === null
-                                        || props.bills.staff !== null
-                                        || Math.floor(props.bills.billStatus) === -1
-                                        || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
-                                        || Math.floor(props.bills.billStatus) === 2
-                                        || Math.floor(props.bills.billStatus) === 3
-                                        || Math.floor(props.bills.billStatus) === 0
-                                        || Math.floor(props.bills.billStatus) === -2
-                                    ) ? true : false}
+                                    (timeHangLoi !== true &&
+                                        (
+                                            (record.bills.billStatus === 4 && record.billDetailStatus === 1)
+                                        )
+                                    ) ? false : true}
                                 icon={<CheckOutlined />}
                                 style={
                                     {
                                         backgroundColor:
-                                            (newAmount === null
-                                                || props.bills.staff !== null
-                                                || Math.floor(props.bills.billStatus) === -1
-                                                || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
-                                                || Math.floor(props.bills.billStatus) === 2
-                                                || Math.floor(props.bills.billStatus) === 3
-                                                || Math.floor(props.bills.billStatus) === 0
-                                                || Math.floor(props.bills.billStatus) === -2
-                                            ) ? 'grey' : 'red', color: 'white'
+                                            (timeHangLoi !== true &&
+                                                (
+                                                    (record.bills.billStatus === 4 && record.billDetailStatus === 1)
+                                                )
+                                            ) ? 'red' : 'grey', color: 'white'
                                     }
                                 }
                             >
@@ -470,15 +490,7 @@ function ComponentChiTietHoaDon(props) {
                 <div>
                     <Space size="middle">
                         <Button type="default" danger
-                            disabled={(
-                                Math.floor(props.bills.billStatus) === -1
-                                || props.bills.staff !== null
-                                || Math.floor(props.bills.billStatus) === -2
-                                || Math.floor(props.bills.billStatus) === 0
-                                || Math.floor(props.bills.billStatus) === 2
-                                || Math.floor(props.bills.billStatus) === 3
-                                || Math.floor(props.bills.billStatus) === 4
-                            ) ? true : false}
+                            disabled={disableHangLoi(record.bills.billStatus, record.billDetailStatus)}
                             onClick={() => {
                                 showComponentSPLoi(record, index);
                             }}
