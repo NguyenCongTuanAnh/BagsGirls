@@ -18,6 +18,7 @@ function ShopDetailView() {
   const [dataDetail, setDataDetail] = useState(null);
   const [temporaryCart, setTemporaryCart] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isProductInCart1, setIsProductInCart] = useState(false);
 
   const [materialOptions, setMaterialOptions] = useState([]);
   const [defaultMaterial, setDefaultMaterial] = useState(null);
@@ -47,20 +48,20 @@ function ShopDetailView() {
   }, [customerId]);
   console.log('cart', cartItems);
 
-  useEffect(() => {
-    const fetchProductDetail = async () => {
-      try {
-        const response = await fullProductAPI.findById(productId);
-        const data = response.data;
-        setProduct(data);
-        setDataDetail(data?.productDetails[0]);
-        setLoading(true);
-      } catch (error) {
-        setLoading(true);
-        console.error('Error fetching product details:', error);
-      }
-    };
+  const fetchProductDetail = async () => {
+    try {
+      const response = await fullProductAPI.findById(productId);
+      const data = response.data;
+      setProduct(data);
+      setDataDetail(data?.productDetails[0]);
+      setLoading(false); // Set loading to false after updating details
+    } catch (error) {
+      setLoading(false); // Handle errors and set loading to false
+      console.error('Error fetching product details:', error);
+    }
+  };
 
+  useEffect(() => {
     fetchProductDetail();
   }, [productId]);
 
@@ -72,7 +73,6 @@ function ShopDetailView() {
   }, []);
 
   const addToCart = async () => {
-    setLoading(true);
     const amountInDatabase = dataDetail.amount;
 
     const productToAdd = {
@@ -102,8 +102,7 @@ function ShopDetailView() {
 
       const response = await cartDetailAPI.save(productToAdd);
       setQuantity(1);
-      
-
+      setIsProductInCart(true);
       notification.success({
         message: 'Thành công',
         description: 'Sản phẩm đã được thêm vào giỏ hàng',
@@ -141,6 +140,7 @@ function ShopDetailView() {
             padding: '5px 10px',
             textAlign: 'center',
           }}
+          onChange={() => setLoading(true)}
         >
           Hết hàng
         </div>
@@ -157,6 +157,7 @@ function ShopDetailView() {
             padding: '5px 10px',
             textAlign: 'center',
           }}
+          onChange={() => setLoading(true)}
         >
           <ShoppingCartOutlined />
           Sản phẩm đã có trong giỏ hàng
@@ -164,9 +165,31 @@ function ShopDetailView() {
       );
     } else {
       return (
-        <div className={styles.button_buy_now} onClick={addToCart}>
-          <ShoppingCartOutlined />
-          Thêm vào giỏ hàng
+        <div>
+          <Link to="/shop">
+            <div
+              className={styles.button_buy_now}
+              onClick={() => {
+                addToCart();
+              }}
+            >
+              <ShoppingCartOutlined />
+              Thêm vào giỏ hàng
+            </div>
+          </Link>
+
+          <Link to={`/cart/${cartId1}`}>
+            <div
+              className={styles.button_buy_now1}
+              onClick={() => {
+                addToCart();
+                // setIsProductInCart(!isProductInCart);
+              }}
+              onChange={() => setLoading(true)}
+            >
+              Mua ngay
+            </div>
+          </Link>
         </div>
       );
     }
@@ -219,7 +242,7 @@ function ShopDetailView() {
         );
       } else {
         return (
-          <div className={styles.button_buy_now} onClick={() => addToTemporaryCart(product)}>
+          <div className={styles.button_buy_now} onClick={addToCart}>
             <ShoppingCartOutlined />
             Thêm vào giỏ hàng
           </div>
@@ -549,9 +572,9 @@ function ShopDetailView() {
               {customerId == null ? (
                 <Link to="">{renderAddToCartButton()}</Link>
               ) : (
-                <Link to={`/cart/${cartId1}`}>{renderAddToCartButtonDB()}</Link>
-                // <Link to="{`/cart/${cartId1}`}">{renderAddToCartButtonDB()}</Link>
+                <Link to="">{renderAddToCartButtonDB()}</Link>
               )}
+
               {customerId == null ? (
                 <Link to="/cart">
                   <div className={styles.button_buy_now1} onClick={() => addToTemporaryCart(product)}>
@@ -559,11 +582,6 @@ function ShopDetailView() {
                   </div>
                 </Link>
               ) : (
-                // <Link to={`/cart/${customerId}`}>
-                //   <div className={styles.button_buy_now1} onClick={() => addToCart(product)}>
-                //     Mua ngay
-                //   </div>
-                // </Link>
                 <div></div>
               )}
             </div>

@@ -1,3 +1,4 @@
+import { UserOutlined } from '@ant-design/icons';
 import { Avatar, Badge, Button, Card, Popover } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getCustomer } from '~/api/auth/helper/UserCurrent';
@@ -44,7 +45,17 @@ function UserProfile(props) {
       ]}
     >
       <Meta
-        avatar={<Avatar src="https://i.imgur.com/TQNotqB.jpg"  style={{ fontSize: '90px', width:'50px',height:'50px' }} alt="User Avatar" />}
+        avatar={
+          <Avatar
+            style={{
+              backgroundColor: '#87d068',
+              fontSize: '30px',
+              width: '40px',
+              height: '40px',
+            }}
+            icon={<UserOutlined />}
+          />
+        }
         title={`Xin chào, ${customer.users.fullName}`}
         description="Chúc bạn 1 ngày tốt lành"
       />
@@ -55,7 +66,15 @@ function UserProfile(props) {
     <Popover content={PopupProContent} title="Tài Khoản" trigger="hover">
       <Badge dot={true}>
         <div style={{ cursor: 'pointer' }}>
-          <Avatar style={{ fontSize: '90px', width:'50px',height:'50px' }} size="large" src="https://i.imgur.com/TQNotqB.jpg" />
+          <Avatar
+            style={{
+              backgroundColor: '#87d068',
+              fontSize: '30px',
+              width: '40px',
+              height: '40px',
+            }}
+            icon={<UserOutlined />}
+          />
         </div>
       </Badge>
     </Popover>

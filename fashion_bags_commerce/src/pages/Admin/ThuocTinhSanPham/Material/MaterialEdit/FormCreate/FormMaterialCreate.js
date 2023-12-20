@@ -19,8 +19,18 @@ function FormMaterialCreate(props) {
 
   const handleCancel = () => {
     setIsModalOpen(false);
+    form.resetFields();
   };
 
+  const validatematerialName = async (rule, value) => {
+    return new Promise((resolve, reject) => {
+      if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
+        reject('Tên chất liệu không hợp lệ!');
+      } else {
+        resolve();
+      }
+    });
+  };
   const addFunc = async (values) => {
     setError(false);
     if (!error) {
@@ -34,6 +44,7 @@ function FormMaterialCreate(props) {
         });
 
         handleCancel();
+        props.reload();
 
         // Đóng Modal sau khi thêm thành công
       } catch (error) {
@@ -81,6 +92,9 @@ function FormMaterialCreate(props) {
                   required: true,
                   message: 'Vui lòng điền Tên chất liệu!',
                 },
+                    {
+                      validator: validatematerialName,
+                    },
               ]}
             >
               <Input />

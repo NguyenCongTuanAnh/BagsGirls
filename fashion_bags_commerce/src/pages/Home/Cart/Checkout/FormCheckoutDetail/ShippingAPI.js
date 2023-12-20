@@ -32,14 +32,14 @@ function ShipAPI() {
     };
 
     fetchData();
-  }, []); 
+  }, []);
 
   const handleProvinceChange = async (e) => {
     const selectedProvinceId = e.target.value;
     setSelectedProvince(selectedProvinceId);
     setDistricts([]);
-    setWards([]); 
-    setShippingFee(0); 
+    setWards([]);
+    setShippingFee(0);
 
     try {
       const response = await fetch(
@@ -151,3 +151,131 @@ function ShipAPI() {
 }
 
 export default ShipAPI;
+
+// const productDetail = await productDetailsAPI.get(item.productDetails.productDetailId);
+
+// if (productDetail) {
+//   // Bước 2: Kiểm tra số lượng trong billDetail và số lượng sản phẩm trong cơ sở dữ liệu
+//   if (item.amount <= productDetail.quantityAvailable) {
+//     // Nếu số lượng trong billDetail nhỏ hơn hoặc bằng số lượng sản phẩm trong cơ sở dữ liệu
+//     // Tiến hành thêm hóa đơn và chi tiết hóa đơn
+//     const responseBill = await billsAPI.add(billData);
+//     const billId = responseBill.data.billId;
+
+//     // Thêm chi tiết hóa đơn
+//     const responseBillDetails = await billDetailAPI.add({
+//       bills: {
+//         billId: billId,
+//       },
+//       productDetails: {
+//         productDetailId: item.productDetails.productDetailId,
+//       },
+//       amount: item.amount,
+//       // ... (các thông tin khác của chi tiết hóa đơn)
+//     });
+
+//     // Cập nhật số lượng sản phẩm trong cơ sở dữ liệu (trừ đi số lượng đã bán)
+//     await updateProductDetailAmount(item.productDetails.productDetailId, item.amount);
+
+//     // Xử lý tiếp theo (xóa giỏ hàng, thông báo thành công, v.v.)
+//   } else {
+//     // Nếu số lượng trong billDetail lớn hơn số lượng sản phẩm trong cơ sở dữ liệu
+//     // Thực hiện xử lý lỗi hoặc thông báo cho người dùng
+//     console.log('Số lượng sản phẩm không đủ');
+//     // Xử lý thông báo lỗi hoặc hiển thị thông báo cho người dùng
+//   }
+// } else {
+//   console.log('Không tìm thấy thông tin sản phẩm chi tiết');
+//   // Xử lý thông báo lỗi hoặc hiển thị thông báo cho người dùng
+// }
+
+
+// const handleConfirmation1 = async () => {
+//   // ... (các phần code khác)
+//   try {
+//     // ... (các phần code khác)
+
+//     // Lấy thông tin sản phẩm chi tiết từ cơ sở dữ liệu
+//     const fetchProductDetail = async (productDetailId) => {
+//       try {
+//         const response = await productDetailsAPI.get(productDetailId);
+//         const data = response.data;
+//         return data?.productDetails[0]?.productDetailAmount || 0;
+//       } catch (error) {
+//         console.error('Error fetching product details:', error);
+//         return 0;
+//       }
+//     };
+
+//     const billDetailsData = await Promise.all(
+//       cartDetailss.map(async (item) => {
+//         const productDetailAmount = await fetchProductDetail(item.productDetails.productDetailAmount);
+
+//         if (item.amount <= productDetailAmount) {
+//           return {
+//             bills: {
+//               billId: billId,
+//             },
+//             productDetails: {
+//               productDetailId: item.productDetails.productDetailId,
+//             },
+//             amount: item.amount,
+//             billDetailStatus: 1,
+//             billDetailNote: null,
+//             price: item.productDetails.retailPrice,
+//           };
+//         } else {
+//           console.log('Số lượng sản phẩm không đủ');
+//           // Xử lý thông báo lỗi hoặc hiển thị thông báo cho người dùng (nếu cần)
+//           return null;
+//         }
+//       })
+//     );
+
+//     // Loại bỏ các billDetail không hợp lệ (số lượng sản phẩm không đủ)
+//     const validBillDetailsData = billDetailsData.filter((billDetail) => billDetail !== null);
+
+//     // Thêm các billDetail hợp lệ vào cơ sở dữ liệu
+//     const responseBillDetails = await Promise.all(
+//       validBillDetailsData.map((billDetail) => billDetailAPI.add(billDetail))
+//     );
+
+//     // ... (các phần code khác)
+//   } catch (error) {
+//     // ... (xử lý lỗi)
+//   }
+// };
+
+// await Promise.all(
+//   cartDetailss.map(async (item) => {
+//     const productDetail = await productDetailsAPI.get(item.productDetails.productDetailId);
+//     await updateProductDetailAmount(item.productDetails.productDetailId, item.amount);
+//   }),
+// );
+
+// const handleConfirmation1 = async () => {
+//   try {
+//     // ... (các phần code khác)
+
+//     const responseBillDetails = await Promise.all(
+//       validBillDetailsData.map((billDetail) => billDetailAPI.add(billDetail))
+//     );
+
+//     // Cập nhật số lượng sản phẩm sau khi đã thêm thành công billDetail
+//     await Promise.all(
+//       validBillDetailsData.map(async (billDetail, index) => {
+//         if (billDetail) {
+//           // Nếu billDetail là hợp lệ
+//           await updateProductDetailAmount(
+//             billDetail.productDetails.productDetailId,
+//             billDetail.amount
+//           );
+//         }
+//       })
+//     );
+
+//     // ... (các phần code khác)
+//   } catch (error) {
+//     // ... (xử lý lỗi)
+//   }
+// };

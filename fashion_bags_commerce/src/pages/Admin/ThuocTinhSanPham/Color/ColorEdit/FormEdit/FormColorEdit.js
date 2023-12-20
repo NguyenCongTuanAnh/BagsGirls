@@ -6,46 +6,43 @@ import colorAPI from '~/api/propertitesBalo/colorAPI';
 function FormcolorEdit(props) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(false);
-  const [data, setData] = useState(props.color);
-  const [stringStatus, setStringStatus] = useState('');
-  const [reloadTable, setReloadTable] = useState(false);
+  const [form] = Form.useForm();
 
   const showComponent = () => {
     setOpen(true);
-    if (data.colorStatus === 1) {
-      setStringStatus('Hoạt động');
-    } else if (data.colorStatus === -1) {
-      setStringStatus('Ngừng hoạt động');
-    } else {
-      setStringStatus('Không hoạt động');
-    }
+    form.resetFields();
   };
 
   const closeComponent = () => {
     setOpen(false);
   };
-
-  const updateData = (event) => {
-    const { name, value } = event.target;
-    setData({ ...data, [name]: value });
+  const validatecolorName = async (rule, value) => {
+    return new Promise((resolve, reject) => {
+      if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
+        reject('Tên màu sắc không hợp lệ!');
+      } else {
+        resolve();
+      }
+    });
   };
-  const updateStatus = (value) => {
-    setData({ ...data, colorStatus: value });
-  };
 
-  const updateFunction = async (colorId, values) => {
+  const updateFunction = async (values) => {
     setError(false);
-    let update = { ...values };
-    console.log(colorId);
-    console.log(update);
+    let update = {
+      colorId: props.color.colorId,
+      colorCode: props.color.colorCode,
+      colorName: values.colorName,
+      colorStatus: values.colorStatus,
+    };
     if (!error) {
       try {
-        await colorAPI.update(colorId, update);
+        await colorAPI.update(props.color.colorId, update);
         notification.success({
           message: 'Cập nhật thành công',
           description: 'Dữ liệu đã được cập nhật thành công',
           duration: 2,
         });
+        props.reload();
         closeComponent();
       } catch (error) {
         console.log(error);
@@ -63,7 +60,7 @@ function FormcolorEdit(props) {
     <Fragment>
       <div style={{ color: 'red' }}>
         <Button
-          type="default"
+          color="default"
           style={{ border: '1px blue solid', color: 'blue' }}
           onClick={showComponent}
           icon={<EditOutlined />}
@@ -71,70 +68,61 @@ function FormcolorEdit(props) {
           Sửa
         </Button>
         <Drawer
-          title={'Edit - ' + data.colorName}
+          title={'Chỉnh sửa màu sắc có mã: ' + props.color.colorCode}
           width={400}
           onClose={closeComponent}
           open={open}
           style={{
             paddingBottom: 80,
           }}
-          extra={
-            <Space>
-              <Button onClick={closeComponent}>Thoát</Button>
-              <Button onClick={() => updateFunction(data.colorId, data)} type="primary" className="btn btn-warning">
-                Lưu
-              </Button>
-            </Space>
-          }
+          footer={null}
         >
-          <Form layout="vertical" hideRequiredMark initialValues={data}>
-            <Row gutter={16}>
-              <Col span={24}>
-                <Form.Item
-                  name="colorCode"
-                  label="Mã"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Vui lòng điền Mã Kiểu',
-                    },
-                  ]}
-                >
-                  <Input placeholder="Vui lòng điền Mã Kiểu" disabled />
-                </Form.Item>
-              </Col>
-            </Row>
+          <Form layout="vertical" initialValues={props.color} onFinish={updateFunction} form={form}>
             <Row gutter={16}>
               <Col span={24}>
                 <Form.Item
                   name="colorName"
-                  label="Tên"
+                  label="Tên màu sắc"
                   rules={[
                     {
                       required: true,
-                      message: 'Vui lòng điền tên',
+                      message: 'Vui lòng điền tên màu sắc!',
+                    },
+                    {
+                      validator: validatecolorName,
                     },
                   ]}
                 >
-                  <Input
-                    name="colorName"
-                    value={data.colorName}
-                    onChange={updateData}
-                    placeholder="Vui lòng điền tên"
-                  />
+                  <Input placeholder="Vui lòng điền tên màu sắc" />
                 </Form.Item>
               </Col>
             </Row>
             <Row gutter={16}>
               <Col span={24}>
-                <Form.Item label="Trạng Thái">
-                  <Select onChange={updateStatus} defaultValue={stringStatus} placeholder="Vui lòng chọn Trạng Thái">
-                    <Select.Option value="1">Hoạt động</Select.Option>
-                    <Select.Option value="0">Không hoạt động</Select.Option>
-                    <Select.Option value="-1">Ngừng hoạt động</Select.Option>
+                <Form.Item
+                  label="Trạng thái"
+                  name="colorStatus"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Vui lòng chọn trạng thái!',
+                    },
+                  ]}
+                >
+                  <Select name="colorStatus" placeholder="Vui lòng chọn trạng thái">
+                    <Select.Option value={1}>Hoạt động</Select.Option>
+                    <Select.Option value={0}>Ngừng hoạt động</Select.Option>
                   </Select>
                 </Form.Item>
               </Col>
+            </Row>
+            <Row>
+              <Space style={{ textAlign: 'right' }}>
+                <Button onClick={closeComponent}>Thoát</Button>
+                <Button type="primary" htmlType="submit">
+                  Lưu
+                </Button>
+              </Space>
             </Row>
           </Form>
         </Drawer>

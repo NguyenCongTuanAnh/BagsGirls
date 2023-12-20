@@ -6,45 +6,43 @@ import materialAPI from '~/api/propertitesBalo/materialAPI';
 function FormMaterialEdit(props) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState(false);
-  const [data, setData] = useState(props.material);
-  const [stringStatus, setStringStatus] = useState('');
+  const [form] = Form.useForm();
 
   const showComponent = () => {
     setOpen(true);
-    if (data.materialStatus === 1) {
-      setStringStatus('Hoạt động');
-    } else if (data.materialStatus === -1) {
-      setStringStatus('Ngừng hoạt động');
-    } else {
-      setStringStatus('Không hoạt động');
-    }
+    form.resetFields();
   };
 
   const closeComponent = () => {
     setOpen(false);
   };
-
-  const updateData = (event) => {
-    const { name, value } = event.target;
-    setData({ ...data, [name]: value });
+  const validatematerialName = async (rule, value) => {
+    return new Promise((resolve, reject) => {
+      if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
+        reject('Tên chất liệu không hợp lệ!');
+      } else {
+        resolve();
+      }
+    });
   };
-  const updateStatus = (value) => {
-    setData({ ...data, materialStatus: value });
-  };
 
-  const updateFunction = async (materialId, values) => {
+  const updateFunction = async (values) => {
     setError(false);
-    let update = { ...values };
-    console.log(materialId);
-    console.log(update);
+    let update = {
+      materialId: props.material.materialId,
+      materialCode: props.material.materialCode,
+      materialName: values.materialName,
+      materialStatus: values.materialStatus,
+    };
     if (!error) {
       try {
-        await materialAPI.update(materialId, update);
+        await materialAPI.update(props.material.materialId, update);
         notification.success({
           message: 'Cập nhật thành công',
           description: 'Dữ liệu đã được cập nhật thành công',
           duration: 2,
         });
+        props.reload();
         closeComponent();
       } catch (error) {
         console.log(error);
@@ -61,74 +59,70 @@ function FormMaterialEdit(props) {
   return (
     <Fragment>
       <div style={{ color: 'red' }}>
-        <Button style={{ border: '1px blue solid', color: 'blue' }} onClick={showComponent} icon={<EditOutlined />}>
+        <Button
+          material="default"
+          style={{ border: '1px blue solid', color: 'blue' }}
+          onClick={showComponent}
+          icon={<EditOutlined />}
+        >
           Sửa
         </Button>
         <Drawer
-          title={'Edit - ' + data.materialName}
+          title={'Chỉnh sửa chất liệu có mã: ' + props.material.materialCode}
           width={400}
           onClose={closeComponent}
           open={open}
           style={{
             paddingBottom: 80,
           }}
-          extra={
-            <Space>
-              <Button onClick={closeComponent}>Thoát</Button>
-              <Button onClick={() => updateFunction(data.materialId, data)} type="primary" className="btn btn-warning">
-                Lưu
-              </Button>
-            </Space>
-          }
+          footer={null}
         >
-          <Form layout="vertical" hideRequiredMark initialValues={data}>
-            <Row gutter={16}>
-              <Col span={24}>
-                <Form.Item
-                  name="materialCode"
-                  label="Mã"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Vui lòng điền Mã Kiểu',
-                    },
-                  ]}
-                >
-                  <Input placeholder="Vui lòng điền Mã Kiểu" disabled />
-                </Form.Item>
-              </Col>
-            </Row>
+          <Form layout="vertical" initialValues={props.material} onFinish={updateFunction} form={form}>
             <Row gutter={16}>
               <Col span={24}>
                 <Form.Item
                   name="materialName"
-                  label="Tên"
+                  label="Tên chất liệu"
                   rules={[
                     {
                       required: true,
-                      message: 'Vui lòng điền tên Kiểu',
+                      message: 'Vui lòng điền tên chất liệu!',
+                    },
+                    {
+                      validator: validatematerialName,
                     },
                   ]}
                 >
-                  <Input
-                    name="materialName"
-                    value={data.materialName}
-                    onChange={updateData}
-                    placeholder="Vui lòng điền tên kiểu"
-                  />
+                  <Input placeholder="Vui lòng điền tên chất liệu" />
                 </Form.Item>
               </Col>
             </Row>
             <Row gutter={16}>
               <Col span={24}>
-                <Form.Item label="Trạng Thái">
-                  <Select onChange={updateStatus} defaultValue={stringStatus} placeholder="Vui lòng chọn Trạng Thái">
-                    <Select.Option value="1">Hoạt động</Select.Option>
-                    <Select.Option value="0">Không hoạt động</Select.Option>
-                    <Select.Option value="-1">Ngừng hoạt động</Select.Option>
+                <Form.Item
+                  label="Trạng thái"
+                  name="materialStatus"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Vui lòng chọn trạng thái!',
+                    },
+                  ]}
+                >
+                  <Select name="materialStatus" placeholder="Vui lòng chọn trạng thái">
+                    <Select.Option value={1}>Hoạt động</Select.Option>
+                    <Select.Option value={0}>Ngừng hoạt động</Select.Option>
                   </Select>
                 </Form.Item>
               </Col>
+            </Row>
+            <Row>
+              <Space style={{ textAlign: 'right' }}>
+                <Button onClick={closeComponent}>Thoát</Button>
+                <Button type="primary" htmlType="submit">
+                  Lưu
+                </Button>
+              </Space>
             </Row>
           </Form>
         </Drawer>
