@@ -73,7 +73,7 @@ function TableContent() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <FormColorEdit color={record} reload={() => setLoading(true)}/>
+          <FormColorEdit color={record} reload={() => setLoading(true)} />
           <Popconfirm
             title="Xác Nhận"
             description="Bạn Có chắc chắn muốn hủy trạng thái?"
@@ -85,9 +85,7 @@ function TableContent() {
             }}
             onCancel={onCancel}
           >
-            <Button type="default" 
-            disabled={(record.colorStatus !== 1) ? true : false}
-            danger icon={<DeleteOutlined />}>
+            <Button type="default" disabled={record.colorStatus !== 1 ? true : false} danger icon={<DeleteOutlined />}>
               Hủy
             </Button>
           </Popconfirm>
@@ -138,7 +136,7 @@ function TableContent() {
   const onShowSizeChange = (current, pageSize) => {
     setPageSize(pageSize);
     setCurrentPage(current);
-    setLoading(true)
+    setLoading(true);
   };
   useEffect(() => {
     if (loading) {
@@ -165,7 +163,7 @@ function TableContent() {
         pagination={false}
       />
       <div className={styles.pagination}>
-      <Pagination
+        <Pagination
           className={styles.pagination}
           showSizeChanger
           total={totalItem}
