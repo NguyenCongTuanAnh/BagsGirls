@@ -19,14 +19,14 @@ function MainHeader() {
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const customer = localStorage.getItem("customerId");
+  const customer = localStorage.getItem('customerId');
   useEffect(() => {
     // Lấy số lượng sản phẩm trong giỏ hàng từ local storage hoặc API
     const storedCart = localStorage.getItem('temporaryCart');
     const parsedCart = storedCart ? JSON.parse(storedCart) : [];
     const totalCount = parsedCart.reduce((acc, item) => acc + item.quantity, 0);
     setCartCount(totalCount);
-    setCartCountInDb(0)
+    setCartCountInDb(0);
 
     const customerTokenString = localStorage.getItem('customerDecodeString');
     if (customerTokenString) {

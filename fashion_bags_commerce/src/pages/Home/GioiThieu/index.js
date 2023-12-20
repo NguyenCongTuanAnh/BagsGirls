@@ -27,6 +27,7 @@ const AboutPage = () => {
   const steps = ['Trang chủ', 'Giới thiệu'];
   return (
     <MainLayout>
+      <div style={{textAlign:'center'}}>
       <Breadcrumb steps={steps} />
       <h1>Giới thiệu về Website Bán Balo Thời Trang</h1>
       <p>
@@ -41,6 +42,7 @@ const AboutPage = () => {
         Hãy khám phá các mẫu balo phong cách mới nhất của chúng tôi và không ngần ngại liên hệ nếu bạn có bất kỳ câu hỏi
         hoặc yêu cầu nào!
       </p>
+      </div>
     </MainLayout>
   );
 };
