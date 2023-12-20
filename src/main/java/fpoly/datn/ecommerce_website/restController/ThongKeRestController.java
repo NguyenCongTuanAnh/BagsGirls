@@ -5,6 +5,7 @@ import fpoly.datn.ecommerce_website.dto.TopProductsDTO;
 import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.service.IThongKeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,7 @@ import java.math.RoundingMode;
 import java.text.ParseException;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -96,17 +98,17 @@ public class ThongKeRestController {
 
     @GetMapping("/thong-ke/top-products")
     public ResponseEntity<List<Object []>> getTopProducts(@RequestParam("startDate") String startDateStr,
-                                                          @RequestParam("endDate") String endDateStr
-    ) throws ParseException {
+                                                        @RequestParam("endDate") String endDateStr
+                                           ) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = dateFormat.parse(startDateStr);
         Date endDate = dateFormat.parse(endDateStr);
         List<Object []> topProducts = this.thongKeService.findTopProductsSold(startDate, endDate);
         return ResponseEntity.ok(topProducts);
     }
-
     @GetMapping("/thong-ke/statisticPercentByBillStatus")
     public Map<String, Double> findByBillCreateDateBetween(@RequestParam("startDate") String startDateStr,
+
                                                             @RequestParam("endDate") String endDateStr) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = dateFormat.parse(startDateStr);

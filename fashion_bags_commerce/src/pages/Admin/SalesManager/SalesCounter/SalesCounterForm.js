@@ -416,7 +416,7 @@ const SalesCounterForm = () => {
           content: 'Vui lòng Chọn Khách lẻ hoặc Điền KH Thân Thiết!!!',
           duration: 0,
         });
-        setTimeout(messageApi.destroy, 2500);
+        setTimeout(messageApi.destroy, 1);
       } else if (selectedItems.length === 0) {
         messageApi.error('Vui lòng thêm sản phẩm!!!');
       } else if (
@@ -428,7 +428,7 @@ const SalesCounterForm = () => {
         0
       ) {
         messageApi.error('Không thể hoàn thành do áp dụng giảm giá quá mức!!!!');
-        setTimeout(messageApi.destroy, 2500);
+        setTimeout(messageApi.destroy, 1);
       } else {
         ///check sl sản phẩm detail trước khi hoàn thành đơn hàng
         var conflict = false;
@@ -452,7 +452,7 @@ const SalesCounterForm = () => {
           }
         });
         console.log(conflict);
-        setTimeout(messageApi.destroy, 2500);
+        setTimeout(messageApi.destroy, 1);
         Promise.all(promises)
           .then(async () => {
             console.log(conflict);
@@ -643,7 +643,7 @@ const SalesCounterForm = () => {
                   };
                   const mailResponse = MaillingAPI.notificationHtml(mail);
                 }
-                setTimeout(messageApi.destroy, 2500);
+                setTimeout(messageApi.destroy, 1);
                 notification.success({
                   message: 'Thành Công',
                   description: `Đã hoàn thành đơn hàng`,

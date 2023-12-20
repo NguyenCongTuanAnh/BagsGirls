@@ -35,9 +35,10 @@ public class ThongKeServiceImpl implements IThongKeService {
     @Autowired
     IBillDetailRepository billDetailRepository;
     @Autowired
-    IStaffRepository staffRepository;
-    @Autowired
     IProductDetailRepository productDetailRepository;
+    @Autowired
+    IStaffRepository staffRepository;
+
 
     @Override
     public List<Bills> getBillsByDateRange(Date startDate, Date endDate) {
@@ -143,6 +144,7 @@ public class ThongKeServiceImpl implements IThongKeService {
         return billDetailRepository.findTopProductsByTotalAmount(PageRequest.of(0, 5));
     }
 
+
     @Override
     public List<Object[]> findTopProductsSold(Date startDate, Date endDate) {
 
@@ -151,12 +153,14 @@ public class ThongKeServiceImpl implements IThongKeService {
     }
     @Override
     public Map<String, Double> findByBillCreateDateBetween(Date startDate, Date endDate){
+
         List<Bills> bills = this.getBillsByDateRange(startDate, endDate);
         int totalBills = bills.size();
         Map<Integer, Long> billStatusCounts = bills.stream()
                 .collect(Collectors.groupingBy(Bills::getBillStatus, Collectors.counting()));
 
 // Tính phần trăm cho mỗi trạng thái
+
         Map<String, Double> percentageByStatus = new HashMap<>();
         for (Map.Entry<Integer, Long> entry : billStatusCounts.entrySet()) {
             int status = entry.getKey();
@@ -184,5 +188,4 @@ public class ThongKeServiceImpl implements IThongKeService {
 
         return percentageByStatus;
     }
-
 }

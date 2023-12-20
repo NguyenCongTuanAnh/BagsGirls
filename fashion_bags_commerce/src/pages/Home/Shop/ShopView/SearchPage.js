@@ -23,6 +23,10 @@ const SearchPage = (props) => {
     setColumnType(type);
   };
 
+  const handleInputChange = (e) => {
+    setKeyword(e.target.value);
+  };
+
   const handleSearch = async () => {
     try {
       const response = await fullProductAPI.searchByKeyword(keyword);
@@ -40,6 +44,22 @@ const SearchPage = (props) => {
     <MainLayout>
       <div className={styles.listSanPham}>
         <div className="row">
+          <div className={styles.searchBar} style={{ textAlign: 'center' }}>
+            <input
+              style={{
+                borderRadius: '32px',
+                boder: 'gray 1px solid',
+                textAlign: 'center',
+                width: '500px',
+                height: '30px',
+              }}
+              type="text"
+              placeholder="Tìm kiếm sản phẩm ở đây"
+              value={keyword}
+              onChange={handleInputChange}
+            />
+            {/* <button onClick={handleSearch}>Search</button> */}
+          </div>
           <div className={styles.scrollableList}>
             {data
               .filter((product) => product.productStatus === 1)

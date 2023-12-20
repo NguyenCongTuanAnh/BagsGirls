@@ -30,9 +30,7 @@ const CheckoutDetail = () => {
   const [cartId, setCartId] = useState('');
   const [amountShip, setAmountShip] = useState('');
 
-
   const navigate = useNavigate();
-
 
   // const addressFromLocalStorage = { address };
   const displayInformationSection = address1 === null;
@@ -47,16 +45,16 @@ const CheckoutDetail = () => {
   const [displayAddress, setDisplayAddress] = useState(false);
   const [displayOrder, setDisplayOrder] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [discountPercentByRankingName, setDiscountPercentByRankingName] = useState();
 
   const [voucherPrice, setVoucherPrice] = useState(0);
   const [voucherCode, setVoucherCode] = useState('');
   const [voucher, setVoucher] = useState('');
   const [disCountPercent, setDiscountPercent] = useState(0);
+  const [ranhkingDiscount, setRanhkingDiscount] = useState(0);
   const [form] = Form.useForm();
 
   const [customerData, setCustomerData] = useState([]);
-
-
 
   const getOneCustomer = async () => {
     try {
@@ -65,17 +63,35 @@ const CheckoutDetail = () => {
       console.log(data);
       setCustomerData(data);
       setAddress1(data.users.address || '');
-
     } catch (error) {
       console.error('Error fetching customer data:', error);
     }
   };
 
-
   useEffect(() => {
     getOneCustomer(customerId);
   }, []);
 
+  useEffect(() => {
+    const customer = customerData;
+    const rankingName = customer.customerRanking;
+    if (rankingName === 'KH_KIMCUONG' && totalPrice >= 4000000) {
+      setDiscountPercentByRankingName(15);
+    } else if (rankingName === 'KH_KIMCUONG') {
+      setDiscountPercentByRankingName(12);
+    } else if (rankingName === 'KH_VANG') {
+      setDiscountPercentByRankingName(10);
+    } else if (rankingName === 'KH_BAC') {
+      setDiscountPercentByRankingName(8);
+    } else if (rankingName === 'KH_THANTHIET') {
+      setDiscountPercentByRankingName(5);
+    } else if (rankingName === 'KH_TIEMNANG') {
+      // if (totalPrice >= 500000) {
+      setDiscountPercentByRankingName(2);
+    } else {
+      setDiscountPercentByRankingName(0);
+    }
+  }, [thongTinKH, totalPrice, customerData]);
   const handleApplyVoucherCode = async () => {
     console.log(voucherCode);
     if (voucherCode === '') {
@@ -167,7 +183,8 @@ const CheckoutDetail = () => {
             setDiscountPercent(voucher.discountPercent);
             const calculatedVoucherPrice = calculateTotalCustomer() * (voucher.discountPercent / 100) || voucherPrice;
             setVoucherPrice(calculatedVoucherPrice);
-            const discountedTotalPrice = calculateTotalCustomer() - calculatedVoucherPrice + shippingFee;
+            const discountedTotalPrice =
+              calculateTotalCustomer() - calculatedVoucherPrice + shippingFee - ((discountPercentByRankingName / 100) * calculateTotalCustomer());
             setTotalPrice(discountedTotalPrice);
             console.log('tong bill khi ap dung voucher', discountedTotalPrice);
 
@@ -487,10 +504,11 @@ const CheckoutDetail = () => {
           billCreateDate: currentDateTime,
           billNote: billNote,
           billStatus: 4,
+          shipPrice:shippingFee,
           billCode: generateCustomCode('HĐ', 9),
           billTotalPrice: location?.state?.totalPrice,
           productAmount: location?.state?.totalQuantity,
-          billPriceAfterVoucher: totalPrice || location?.state?.totalPrice,
+          billPriceAfterVoucher: totalPrice  || location?.state?.totalPrice + shippingFee,
           billReducedPrice: voucherPrice,
         };
 
@@ -529,6 +547,8 @@ const CheckoutDetail = () => {
             await updateProductDetailAmount(item.productDetailId, item.quantity);
           }),
         );
+        setShipPrice(shippingFee);
+
         console.log('bilsssssss:', response.data);
         console.log('BilLDetails:', responseBillDetails);
         setOrderSuccess(true);
@@ -602,17 +622,20 @@ const CheckoutDetail = () => {
           orderPhone: location.state?.infoCustomer?.customers?.users?.phoneNumber || phoneNumber,
           orderEmail: location.state?.infoCustomer?.customers?.users?.email || email,
           shippingAddress: address ? combinedAddress : address1,
-          // billingAddress: 
+          // billingAddress:
 
           billCreateDate: currentDateTime,
           billNote: billNote,
           billStatus: 4,
-          billReducedPrice: voucherPrice,
+          billReducedPrice: voucherPrice +  ((discountPercentByRankingName / 100) * calculateTotalCustomer()) ,
           shipPrice: shippingFee,
           billCode: generateCustomCode('HĐ', 9),
           billTotalPrice: location?.state?.totalPrice1,
           productAmount: location?.state?.totalAmount,
-          billPriceAfterVoucher: totalPrice || location?.state?.totalPrice1 +shippingFee,
+          billPriceAfterVoucher: totalPrice ||
+          location?.state?.totalPrice1 +
+            shippingFee -
+            (discountPercentByRankingName / 100) * calculateTotalCustomer(),
           customer: {
             customerId: customerId,
             users: {
@@ -667,7 +690,7 @@ const CheckoutDetail = () => {
           }),
         );
         const cartIdne = location?.state?.cartId;
-        setCartId(cartIdne)
+        setCartId(cartIdne);
         console.log('bilsssssss:', response.data);
         console.log('BilLDetails:', responseBillDetails);
         setOrderSuccess(true);
@@ -677,7 +700,6 @@ const CheckoutDetail = () => {
           content: 'Thanh toán thành công',
         });
         clearAllCartDetail(cartIdne);
-
       } catch (error) {
         setLoadingPayment(false);
         setTimeout(() => setLoadingPayment(true), 200);
@@ -776,7 +798,7 @@ const CheckoutDetail = () => {
     const selectedWardCode = e.target.value;
     setSelectedWard(selectedWardCode);
 
-    setAmountShip(location?.state?.totalAmount)
+    setAmountShip(location?.state?.totalAmount);
     try {
       if (selectedDistrict && selectedWardCode) {
         const response = await fetch(
@@ -801,6 +823,8 @@ const CheckoutDetail = () => {
     }
   };
 
+  console.log(customerData);
+  console.log(discountPercentByRankingName);
   return (
     <div className="form-container">
       {/* <Breadcrumb steps={steps} /> */}
@@ -1484,7 +1508,7 @@ const CheckoutDetail = () => {
                       (3) Voucher (%):{' '}
                       <span style={{ color: 'darkred', fontSize: '20px' }}> {disCountPercent || 0} %</span>
                       <br></br>
-                      (4) Giảm tiền:{' '}
+                      (4) Giảm tiền theo voucher:{' '}
                       <span style={{ color: 'darkred', fontSize: '20px' }}>
                         {' '}
                         - {VNDFormaterFunc(voucherPrice || 0)}
@@ -1493,10 +1517,21 @@ const CheckoutDetail = () => {
                       (5) Phí ship:{' '}
                       <span style={{ color: 'darkred', fontSize: '20px' }}> {VNDFormaterFunc(shippingFee)}</span>
                       <br></br>
-                      Tổng thanh toán (2) + (4) + (5):{' '}
+                      (6) Hạng khách hàng ( {discountPercentByRankingName}%):{' '}
+                      <span style={{ color: 'darkred', fontSize: '20px' }}>
+                        {' - '}
+                        {VNDFormaterFunc((discountPercentByRankingName / 100) * calculateTotalCustomer())}
+                      </span>
+                      <br></br>
+                      Tổng thanh toán (2) + (4) + (5) + (6):{' '}
                       <span style={{ color: 'red', fontWeight: 'bold', fontSize: '25px' }}>
                         {' '}
-                        {VNDFormaterFunc(totalPrice || location?.state?.totalPrice1 + shippingFee)}
+                        {VNDFormaterFunc(
+                          totalPrice  ||
+                            location?.state?.totalPrice1 +
+                              shippingFee -
+                              (discountPercentByRankingName / 100) * calculateTotalCustomer(),
+                        )}
                       </span>
                       <br />
                     </div>
@@ -1514,7 +1549,7 @@ const CheckoutDetail = () => {
                       (3) Voucher giảm (%):{' '}
                       <span style={{ color: 'darkred', fontSize: '20px' }}> {disCountPercent || 0} %</span>
                       <br></br>
-                      (4) Giảm tiền:{' '}
+                      (4) Giảm tiền theo voucher:{' '}
                       <span style={{ color: 'darkred', fontSize: '20px' }}>
                         {' '}
                         - {VNDFormaterFunc(voucherPrice || 0)}
@@ -1526,7 +1561,7 @@ const CheckoutDetail = () => {
                       Tổng thanh toán (2) + (4) + (5):{' '}
                       <span style={{ color: 'red', fontWeight: 'bold', fontSize: '25px' }}>
                         {' '}
-                        {VNDFormaterFunc(totalPrice + shippingFee || location?.state?.totalPrice + shipPrice)}
+                        {VNDFormaterFunc(totalPrice || location?.state?.totalPrice + shippingFee)}
                       </span>
                       <br />
                     </div>
