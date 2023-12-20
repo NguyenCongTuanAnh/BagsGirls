@@ -1,5 +1,5 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, notification, Modal, Popconfirm, Input, Select, DatePicker, InputNumber } from 'antd';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Form, notification, Modal, Popconfirm, Input, Select, DatePicker, Space, InputNumber } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { timers } from 'jquery';
 import React, { Component, Fragment, useState } from 'react';
@@ -10,6 +10,7 @@ function FormVoucherCreate(props) {
   const [modalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(true);
   const [form] = Form.useForm();
+  const { RangePicker } = DatePicker;
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -98,16 +99,20 @@ function FormVoucherCreate(props) {
               <InputNumber />
             </Form.Item>
 
-            <Form.Item label="Ngày tạo" name="voucherCreateDate">
+            {/* <Form.Item label="Ngày tạo" name="voucherCreateDate">
               <DatePicker format="YYYY-MM-DD" />
-            </Form.Item>
+            </Form.Item> */}
 
-            <Form.Item label="Ngày băt đầu" name="voucherStartTime">
-              <DatePicker format="YYYY-MM-DD" />
-            </Form.Item>
-
-            <Form.Item label="Ngày kết thúc" name="voucherEndTime">
-              <DatePicker format="YYYY-MM-DD" />
+            <Form.Item label="Thời gian áp dụng" name="voucherDateRange">
+              <Space style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                <Form.Item
+                  name={'voucherStartTime'}
+                  fieldKey={'voucherStartTime'}
+                  rules={[{ required: true, message: 'Missing start date' }]}
+                >
+                  <RangePicker showTime />
+                </Form.Item>
+              </Space>
             </Form.Item>
 
             <Form.Item label="Kiểu voucher" name="voucherType">

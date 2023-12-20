@@ -92,7 +92,7 @@ function ShopView({ titleContent }) {
   return (
     <Fragment>
       <div>
-        <br></br> <Breadcrumb steps={steps} />
+        {/* <br></br> <Breadcrumb steps={steps} /> */}
         <h3 className={styles.sortTitle}>
           Tuỳ chọn hiển thị
           <button className={styles.line_col} onClick={() => handleColumnChange('col-4')}>
