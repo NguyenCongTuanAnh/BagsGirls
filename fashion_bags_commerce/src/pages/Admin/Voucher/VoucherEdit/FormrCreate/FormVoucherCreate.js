@@ -113,7 +113,7 @@ function FormVoucherCreate(props) {
             </Form.Item>
 
             <Form.Item
-              label="Giảm giá"
+              label="Giảm giá (%) "
               name="discountPercent"
               rules={[
                 {

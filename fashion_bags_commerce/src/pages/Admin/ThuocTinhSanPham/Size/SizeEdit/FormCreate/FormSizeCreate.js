@@ -25,7 +25,7 @@ function FormSizeCreate(props) {
   const validatematerialName = async (rule, value) => {
     return new Promise((resolve, reject) => {
       if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
-        reject('Tên chất liệu không hợp lệ!');
+        reject('Tên kích cỡ không hợp lệ!');
       } else {
         resolve();
       }

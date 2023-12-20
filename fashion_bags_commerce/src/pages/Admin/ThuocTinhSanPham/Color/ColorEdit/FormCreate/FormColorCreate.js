@@ -20,7 +20,7 @@ function FormcolorEditTonggle(props) {
   const validatematerialName = async (rule, value) => {
     return new Promise((resolve, reject) => {
       if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
-        reject('Tên chất liệu không hợp lệ!');
+        reject('Tên màu sắc không hợp lệ!');
       } else {
         resolve();
       }

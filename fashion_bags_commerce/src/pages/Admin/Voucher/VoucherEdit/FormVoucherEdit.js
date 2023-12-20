@@ -31,7 +31,6 @@ function FormvoucherEdit(props) {
   const currentDate = new Date();
 
   const formValues = form.getFieldsValue();
-  const { voucherDateRange, ...restValues } = formValues;
 
   const updateFunction = async (values) => {
     setError(false);
@@ -41,8 +40,8 @@ function FormvoucherEdit(props) {
       voucherName: values.voucherName,
       discountPercent: values.discountPercent,
       voucherCreateDate: currentDate,
-      voucherStartTime: values.voucherDateRange ? voucherDateRange[0].toDate() : null,
-      voucherEndTime: values.voucherDateRange ? voucherDateRange[1].toDate() : null,
+      // voucherStartTime: ,
+      // voucherEndTime:,
       voucherNote: values.voucherNote,
       totalPriceToReceive: values.totalPriceToReceive,
       voucherAmount: values.voucherAmount,

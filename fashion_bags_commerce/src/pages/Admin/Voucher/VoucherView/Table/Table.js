@@ -5,6 +5,7 @@ import { DeleteOutlined, ReloadOutlined, SyncOutlined } from '@ant-design/icons'
 import styles from './index.module.scss';
 import FormvoucherEdit from '../../VoucherEdit/FormVoucherEdit';
 import FormVoucherCreate from '../../VoucherEdit/FormrCreate/FormVoucherCreate';
+import moment from 'moment';
 const TableContent = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -81,11 +82,13 @@ const TableContent = () => {
     {
       title: 'Thời gian bắt đầu',
       dataIndex: 'voucherStartTime',
+      render: (endTime) => moment(endTime).format('YYYY-MM-DD HH:mm:ss'),
       width: 200,
     },
     {
       title: 'Thời gian kết thúc',
       dataIndex: 'voucherEndTime',
+      render: (endTime) => moment(endTime).format('YYYY-MM-DD HH:mm:ss'),
       width: 200,
     },
     {
