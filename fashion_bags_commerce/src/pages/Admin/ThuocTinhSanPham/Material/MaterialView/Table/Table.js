@@ -45,7 +45,13 @@ const TableContent = () => {
       setData(data);
     } catch (error) {}
   };
-
+  useEffect(() => {
+    if (loading) {
+      // Tải lại bảng khi biến trạng thái thay đổi
+      getAllPage(currentPage, pagesSize);
+      setLoading(false); // Reset lại trạng thái
+    }
+  }, [loading]);
   // Define your table columns
   const columns = [
     {
@@ -70,7 +76,6 @@ const TableContent = () => {
       dataIndex: 'materialStatus',
 
       width: 150,
-      sorter: (a, b) => a.materialStatus.localeCompare(b.materialStatus),
       render: (status) => {
         let statusText;
         let statusClass;
@@ -101,7 +106,7 @@ const TableContent = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <FormMaterialEdit material={record} />
+          <FormMaterialEdit material={record}  reload={()=>setLoading(true)}/>
           <Popconfirm
             title="Xác Nhận"
             description="Bạn Có chắc chắn muốn hủy trạng thái?"
@@ -113,8 +118,13 @@ const TableContent = () => {
             }}
             onCancel={onCancel}
           >
-            <Button type="default" danger icon={<DeleteOutlined />}>
-              Xóa
+            <Button
+              type="default"
+              disabled={record.materialStatus !== 1 ? true : false}
+              danger
+              icon={<DeleteOutlined />}
+            >
+              Hủy
             </Button>
           </Popconfirm>
         </Space>
@@ -140,7 +150,7 @@ const TableContent = () => {
         padding: '10px',
       }}
     >
-      <FormMaterialCreate />
+      <FormMaterialCreate reload={()=>setLoading(true)} />
       <Button icon={<ReloadOutlined />} onClick={reload} loading={loading}></Button>
       <Table
         size="middle"
@@ -158,11 +168,13 @@ const TableContent = () => {
       />
       <div className={styles.pagination}>
         <Pagination
-          // showSizeChanger
-          total={totalItem}
-          onChange={onChange}
-          defaultCurrent={1}
-          defaultPageSize={pagesSize}
+           className={styles.pagination}
+           showSizeChanger
+           total={totalItem}
+           onChange={onChange}
+           defaultCurrent={1}
+           current={currentPage}
+           defaultPageSize={pagesSize}
         />
       </div>
     </div>

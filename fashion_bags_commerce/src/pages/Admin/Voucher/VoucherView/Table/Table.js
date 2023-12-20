@@ -22,10 +22,12 @@ const TableContent = () => {
   };
 
   useEffect(() => {
-    // Fetch voucher data using the voucherAPI.getAll function
-    getAll(currentPage, pagesSize);
     reload();
-  }, []); // Update data when page or page size changes
+  }, []);
+
+  useEffect(() => {
+    getAll(currentPage, pagesSize);
+  }, []);
 
   const onChange = (current, pageSize) => {
     console.log(current);
@@ -42,6 +44,7 @@ const TableContent = () => {
       console.log(data);
       setTotalItem(response.data.totalElements);
       setData(data);
+      setTimeout(() => {}, 300);
     } catch (error) {}
   };
 
@@ -132,7 +135,12 @@ const TableContent = () => {
       fixed: 'right',
       render: (_, record) => (
         <Space size="middle">
-          <FormvoucherEdit voucher={record} />
+          <FormvoucherEdit
+            voucher={record}
+            reload={() => {
+              setLoading(true);
+            }}
+          />
           <Popconfirm
             title="Xác Nhận"
             description="Bạn Có chắc chắn muốn hủy trạng thái?"
@@ -144,8 +152,8 @@ const TableContent = () => {
             }}
             onCancel={onCancel}
           >
-            <Button type="default" danger icon={<DeleteOutlined />}>
-              xóa
+            <Button type="default" disabled={record.colorStatus !== 1 ? true : false} danger icon={<DeleteOutlined />}>
+              Hủy
             </Button>
           </Popconfirm>
         </Space>
@@ -154,6 +162,13 @@ const TableContent = () => {
       width: 200,
     },
   ];
+  useEffect(() => {
+    if (loading) {
+      // Tải lại bảng khi biến trạng thái thay đổi
+      getAll(currentPage, pagesSize);
+      setLoading(false); // Reset lại trạng thái
+    }
+  }, [loading]);
 
   const deleteHandle = async (id, status) => {
     const xoa = await voucherAPI.updateStatus(id, status);
@@ -171,7 +186,7 @@ const TableContent = () => {
         padding: '10px',
       }}
     >
-      <FormVoucherCreate />
+      <FormVoucherCreate reload={() => setLoading(true)} />
       <Button icon={<ReloadOutlined />} onClick={reload} loading={loading}></Button>
       <Table
         className="table table-striped"
@@ -187,11 +202,12 @@ const TableContent = () => {
       />
 
       <Pagination
-        // showSizeChanger
         className={styles.pagination}
+        showSizeChanger
         total={totalItem}
         onChange={onChange}
         defaultCurrent={1}
+        current={currentPage}
         defaultPageSize={pagesSize}
       />
     </div>

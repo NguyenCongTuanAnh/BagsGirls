@@ -28,8 +28,11 @@ const CheckoutDetail = () => {
   const [anThongTinDiaChi, setAnThongTinDiaChi] = useState(true);
   const [anThongTinDiaChi1, setAnThongTinDiaChi1] = useState(false);
   const [cartId, setCartId] = useState('');
+  const [amountShip, setAmountShip] = useState('');
+
+
   const navigate = useNavigate();
-  
+
 
   // const addressFromLocalStorage = { address };
   const displayInformationSection = address1 === null;
@@ -53,7 +56,7 @@ const CheckoutDetail = () => {
 
   const [customerData, setCustomerData] = useState([]);
 
-  
+
 
   const getOneCustomer = async () => {
     try {
@@ -598,8 +601,8 @@ const CheckoutDetail = () => {
           receiverName: location.state?.infoCustomer?.customers?.users?.fullName || fullName,
           orderPhone: location.state?.infoCustomer?.customers?.users?.phoneNumber || phoneNumber,
           orderEmail: location.state?.infoCustomer?.customers?.users?.email || email,
-          shippingAddress: address1 ? address1 : combinedAddress,
-          billingAddress: address ? combinedAddress : address1,
+          shippingAddress: address ? combinedAddress : address1,
+          // billingAddress: 
 
           billCreateDate: currentDateTime,
           billNote: billNote,
@@ -683,8 +686,8 @@ const CheckoutDetail = () => {
       setLoadingPayment(false);
     }, 500);
   };
-const clearAllCartDetail = async (cartId) => {
-    console.log('cartId',cartId);
+  const clearAllCartDetail = async (cartId) => {
+    console.log('cartId', cartId);
     try {
       await cartDetailAPI.clearCartDetail(cartId);
     } catch (error) {
@@ -773,6 +776,7 @@ const clearAllCartDetail = async (cartId) => {
     const selectedWardCode = e.target.value;
     setSelectedWard(selectedWardCode);
 
+    setAmountShip(location?.state?.totalAmount)
     try {
       if (selectedDistrict && selectedWardCode) {
         const response = await fetch(

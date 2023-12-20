@@ -43,7 +43,6 @@ function TableContent() {
       dataIndex: 'colorStatus',
 
       width: 100,
-      sorter: (a, b) => a.colorStatus.localeCompare(b.colorStatus),
       render: (status) => {
         let statusText;
         let statusClass;
@@ -74,7 +73,7 @@ function TableContent() {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
-          <FormColorEdit color={record} />
+          <FormColorEdit color={record} reload={() => setLoading(true)} />
           <Popconfirm
             title="Xác Nhận"
             description="Bạn Có chắc chắn muốn hủy trạng thái?"
@@ -86,8 +85,8 @@ function TableContent() {
             }}
             onCancel={onCancel}
           >
-            <Button type="default" danger icon={<DeleteOutlined />}>
-              Xóa
+            <Button type="default" disabled={record.colorStatus !== 1 ? true : false} danger icon={<DeleteOutlined />}>
+              Hủy
             </Button>
           </Popconfirm>
         </Space>
@@ -137,19 +136,26 @@ function TableContent() {
   const onShowSizeChange = (current, pageSize) => {
     setPageSize(pageSize);
     setCurrentPage(current);
-    setLoading(true)
+    setLoading(true);
   };
+  useEffect(() => {
+    if (loading) {
+      // Tải lại bảng khi biến trạng thái thay đổi
+      getAll(currentPage, pageSize);
+      setLoading(false); // Reset lại trạng thái
+    }
+  }, [loading]);
   return (
     <div
       style={{
         padding: '10px',
       }}
     >
-      <FormcolorEditTonggle />
+      <FormcolorEditTonggle reload={() => setLoading(true)} />
       <Button icon={<ReloadOutlined />} className="" onClick={reload} loading={loading}></Button>
       <Table
         className="table table-striped"
-        scroll={{ x: 1000, y: 680 }}
+        scroll={{ x: 1000, y: 650 }}
         rowKey={(record) => record.colorId} // Đảm bảo colorId là một giá trị duy nhất
         columns={columns}
         dataSource={list}
@@ -157,7 +163,7 @@ function TableContent() {
         pagination={false}
       />
       <div className={styles.pagination}>
-      <Pagination
+        <Pagination
           className={styles.pagination}
           showSizeChanger
           total={totalItem}

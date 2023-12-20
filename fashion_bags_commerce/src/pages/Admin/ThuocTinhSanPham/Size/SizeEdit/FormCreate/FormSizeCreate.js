@@ -1,5 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, notification, Modal, Popconfirm, Input, Select } from 'antd';
+import { Button, Form, notification, Modal, Popconfirm, Input, Select, InputNumber } from 'antd';
 import React, { Fragment, useState } from 'react';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 import sizeAPI from '~/api/propertitesBalo/sizeAPI';
@@ -18,13 +18,23 @@ function FormSizeCreate(props) {
   };
 
   const handleCancel = () => {
+    form.resetFields();
     setIsModalOpen(false);
   };
 
+  const validatematerialName = async (rule, value) => {
+    return new Promise((resolve, reject) => {
+      if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
+        reject('Tên chất liệu không hợp lệ!');
+      } else {
+        resolve();
+      }
+    });
+  };
   const addFunc = async (values) => {
     setError(false);
     if (!error) {
-      let add = { ...values, sizeCode: generateCustomCode('size', 3) };
+      let add = { ...values, sizeCode: generateCustomCode('Size', 6) };
       try {
         const response = await sizeAPI.add(add);
         notification.success({
@@ -34,7 +44,7 @@ function FormSizeCreate(props) {
         });
 
         handleCancel();
-
+        props.reload();
         // Đóng Modal sau khi thêm thành công
       } catch (error) {
         setError(true);
@@ -49,7 +59,13 @@ function FormSizeCreate(props) {
 
   return (
     <Fragment>
-      <Button style={{ border: '1px white solid', color: 'white', background: 'green' }} onClick={showModal} icon={<PlusOutlined />}>Thêm</Button>
+      <Button
+        style={{ border: '1px white solid', color: 'white', background: 'green' }}
+        onClick={showModal}
+        icon={<PlusOutlined />}
+      >
+        Thêm
+      </Button>
       <Modal title="Thêm kích cỡ" open={modalOpen} onCancel={handleCancel} footer={null}>
         <div>
           <Form
@@ -73,6 +89,9 @@ function FormSizeCreate(props) {
                   required: true,
                   message: 'Vui lòng điền thông tin!',
                 },
+                {
+                  validator: validatematerialName,
+                },
               ]}
             >
               <Input />
@@ -88,7 +107,7 @@ function FormSizeCreate(props) {
                 },
               ]}
             >
-              <Input />
+              <InputNumber style={{ width: '300px' }} min={0} />
             </Form.Item>
             <Form.Item
               label="Chiều rộng"
@@ -100,7 +119,7 @@ function FormSizeCreate(props) {
                 },
               ]}
             >
-              <Input />
+              <InputNumber style={{ width: '300px' }} min={0} />
             </Form.Item>
             <Form.Item
               label="Chiều cao"
@@ -112,7 +131,7 @@ function FormSizeCreate(props) {
                 },
               ]}
             >
-              <Input />
+              <InputNumber style={{ width: '300px' }} min={0} />
             </Form.Item>
 
             <Form.Item label="Status" name="sizeStatus">
