@@ -12,7 +12,7 @@ function FormvoucherEdit(props) {
 
   const showComponent = () => {
     setOpen(true);
-    form.getFieldValue();
+    form.getFieldsValue();
   };
 
   const closeComponent = () => {
@@ -30,43 +30,57 @@ function FormvoucherEdit(props) {
   };
   const currentDate = new Date();
 
-  const formValues = form.getFieldsValue();
-
   const updateFunction = async (values) => {
     setError(false);
-    let update = {
-      voucherId: props.voucher.voucherId,
-      voucherCode: props.voucher.voucherCode,
-      voucherName: values.voucherName,
-      discountPercent: values.discountPercent,
-      voucherCreateDate: currentDate,
-      // voucherStartTime: ,
-      // voucherEndTime:,
-      voucherNote: values.voucherNote,
-      totalPriceToReceive: values.totalPriceToReceive,
-      voucherAmount: values.voucherAmount,
-      voucherStatus: values.voucherStatus,
-    };
-    if (!error) {
-      try {
+    const formValues = form.getFieldsValue();
+    const voucherDateRange = formValues.voucherDateRange;
+
+    try {
+      if (voucherDateRange && Array.isArray(voucherDateRange) && voucherDateRange.length === 2) {
+        const voucherStartTime = voucherDateRange[0].toDate(); // Convert moment object to Date
+        const voucherEndTime = voucherDateRange[1].toDate(); // Convert moment object to Date
+
+        let update = {
+          voucherId: props.voucher.voucherId,
+          voucherCode: props.voucher.voucherCode,
+          voucherName: values.voucherName,
+          discountPercent: values.discountPercent,
+          voucherCreateDate: currentDate,
+          voucherStartTime: voucherStartTime,
+          voucherEndTime: voucherEndTime,
+          voucherNote: values.voucherNote,
+          totalPriceToReceive: values.totalPriceToReceive,
+          voucherAmount: values.voucherAmount,
+          voucherStatus: values.voucherStatus,
+        };
+
         await voucherAPI.update(props.voucher.voucherId, update);
+
         notification.success({
           message: 'Cập nhật thành công',
           description: 'Dữ liệu đã được cập nhật thành công',
           duration: 2,
         });
+
         closeComponent();
         props.reload();
-      } catch (error) {
-        console.log(error);
-        setError(true);
-        notification.error({
-          message: 'Cập nhật thất bại',
-          description: 'Dữ liệu không được cập nhật',
-          duration: 2,
-        });
+      } else {
+        throw new Error('Invalid date range');
       }
+    } catch (error) {
+      console.error(error);
+      setError(true);
+      notification.error({
+        message: 'Cập nhật thất bại',
+        description: 'Dữ liệu không được cập nhật',
+        duration: 2,
+      });
     }
+  };
+
+  const initialValues = {
+    ...props.voucher,
+    voucherDateRange: [moment(props.voucher.voucherStartTime), moment(props.voucher.voucherEndTime)],
   };
 
   return (
@@ -88,15 +102,7 @@ function FormvoucherEdit(props) {
           style={{ paddingBottom: 80 }}
           footer={null}
         >
-          <Form
-            layout="vertical"
-            initialValues={props.voucher}
-            onFinish={updateFunction}
-            form={form}
-            onValuesChange={() => {
-              // Your logic to handle value changes in the form fields goes here
-            }}
-          >
+          <Form layout="vertical" initialValues={props.voucher} onFinish={updateFunction} form={form}>
             <Row gutter={16}>
               <Col span={12}>
                 <Form.Item

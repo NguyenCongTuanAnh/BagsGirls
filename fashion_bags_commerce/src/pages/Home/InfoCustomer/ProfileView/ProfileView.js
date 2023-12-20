@@ -104,24 +104,52 @@ function ProfileView() {
             <Tabs defaultActiveKey="1" tabPosition="top" className="tabTop">
               <TabPane
                 className="tabTopChild"
-                tab={<span style={{ fontSize: '25px', padding: '0 100px' }}>Hạng và điểm hiện tại</span>}
+                tab={<span style={{ fontSize: '25px', padding: '0 100px', color: 'red', fontWeight:'bold' }}>Hạng và điểm hiện tại</span>}
                 key="1"
               >
-                Nội dung tab địa chỉ
+                <h3>
+                  Hạng khách hàng của bạn:
+                  <span style={{ color: 'red', fontSize: '30px', fontWeight: 'bold' }}>
+                    {' '}
+                    {customer.customerRanking}
+                  </span>
+                </h3>
+
+                <h3>
+                  Điểm hiện tại của bạn:
+                  <span style={{ color: 'red', fontSize: '30px', fontWeight: 'bold' }}> {customer.consumePoints}</span>
+                </h3>
               </TabPane>
               <TabPane
                 className="tabTopChild"
-                tab={<span style={{ fontSize: '25px', padding: '0 100px' }}>Lịch sử giao dịch</span>}
-                key="2"
-              >
-                Nội dung tab giao dịch
-              </TabPane>
-              <TabPane
-                className="tabTopChild"
-                tab={<span style={{ fontSize: '25px', padding: '0 100px' }}>Quy chế lên hạng</span>}
+                tab={
+                  <span style={{ fontSize: '25px', padding: '0 100px', background: 'white ', color: 'red', fontWeight:'bold' }}>
+                    Quy chế lên hạng
+                  </span>
+                }
                 key="3"
               >
-                Nội dung tab lên hạng
+                <h2>ĐIỀU KIỆN LÊN HẠNG THÀNH VIÊN</h2>
+                <br />
+
+                <h5>Chỉ những đơn hàng đã hoàn thành mới được tính điểm tích lũy và xét làm tiêu chí lên hạng.</h5>
+                <hr></hr>
+                <br />
+                <p>
+                  Thời gian cập nhật điểm tích lũy là từ 5 – 7 ngày (không tính thứ 7, Chủ nhật). Tài khoản thành viên
+                  của khách hàng sẽ được nâng cấp lên hạng thành viên tương ứng ngay khi đạt được điều kiện giá trị đơn
+                  hàng.
+                </p>
+                <br />
+                <img style={{ width: '100%' }} src="https://i.imgur.com/VHT54Ln.png" />
+                <hr></hr>
+              </TabPane>
+              <TabPane
+                className="tabTopChild"
+                tab={<span style={{ fontSize: '25px', padding: '0 100px', color: 'red', fontWeight:'bold' }}>Lịch sử giao dịch</span>}
+                key="2"
+              >
+                Tạm thời chưa hoạt động
               </TabPane>
             </Tabs>
           </div>
