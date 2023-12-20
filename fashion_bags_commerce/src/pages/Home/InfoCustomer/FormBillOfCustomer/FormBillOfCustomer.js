@@ -278,7 +278,7 @@ function FormBillOfCustomer() {
                                 </Space>
                             </div>
                         );
-                    } else if (record.billStatus === 4 || record.billStatus === 3) {
+                    } else if (record.billStatus === 4) {
                         return (
                             <div>
                                 <Space size="middle" style={{ marginTop: '10px' }}>

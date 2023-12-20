@@ -22,6 +22,7 @@ import java.util.List;
 @Repository
 public interface IBillRepository extends JpaRepository<Bills, String> {
 
+
     // getAll bill  với tất cả đơn hàng
     @Query(value = " SELECT b FROM Bills b WHERE " +
             " ( b.billCode LIKE %:search% " +

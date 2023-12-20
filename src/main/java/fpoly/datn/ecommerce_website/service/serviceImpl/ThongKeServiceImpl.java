@@ -6,6 +6,7 @@ import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.entity.Staffs;
 import fpoly.datn.ecommerce_website.repository.IBillDetailRepository;
 import fpoly.datn.ecommerce_website.repository.IBillRepository;
+import fpoly.datn.ecommerce_website.repository.IProductDetailRepository;
 import fpoly.datn.ecommerce_website.repository.IStaffRepository;
 import fpoly.datn.ecommerce_website.service.IThongKeService;
 import org.apache.http.ParseException;
@@ -24,6 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ThongKeServiceImpl implements IThongKeService {
@@ -32,6 +34,8 @@ public class ThongKeServiceImpl implements IThongKeService {
      IBillRepository billRepository;
     @Autowired
     IBillDetailRepository billDetailRepository;
+    @Autowired
+    IProductDetailRepository productDetailRepository;
     @Autowired
     IStaffRepository staffRepository;
 
@@ -139,4 +143,30 @@ public class ThongKeServiceImpl implements IThongKeService {
         return billDetailRepository.findTopProductsByTotalAmount(PageRequest.of(0, 5));
     }
 
+
+    @Override
+    public List<Object[]> findTopProductsSold(Date startDate, Date endDate) {
+
+        List<Object[]> objects = this.productDetailRepository.findTop5Products(startDate, endDate);
+        return objects;
+    }
+    @Override
+    public Map<Integer, Double> findByBillCreateDateBetween(Date startDate, Date endDate){
+        List<Bills> bills = this.getBillsByDateRange(startDate, endDate);
+        int totalBills = bills.size();
+        Map<Integer, Long> billStatusCounts = bills.stream()
+                .collect(Collectors.groupingBy(Bills::getBillStatus, Collectors.counting()));
+
+// Tính phần trăm cho mỗi trạng thái
+        Map<Integer, Double> percentageByStatus = new HashMap<>();
+        for (Map.Entry<Integer, Long> entry : billStatusCounts.entrySet()) {
+            int status = entry.getKey();
+            long count = entry.getValue();
+            double percentage = (count * 100.0) / totalBills;
+            double roundedPercentage = Math.round(percentage * 100.0) / 100.0; // Làm tròn đến 2 chữ số thập phân
+            percentageByStatus.put(status, roundedPercentage);
+        }
+
+        return percentageByStatus;
+    }
 }
