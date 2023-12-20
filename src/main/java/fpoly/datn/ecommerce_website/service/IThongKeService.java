@@ -6,8 +6,10 @@ import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.entity.Staffs;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface IThongKeService {
 
@@ -29,6 +31,7 @@ public interface IThongKeService {
     List<TopProductsDTO> findTopProductsByTotalAmount();
 
 
+    List<Object[]> findTopProductsSold(Date startDate, Date endDate);
 
-
+    Map<Integer, Double> findByBillCreateDateBetween(Date startDate, Date endDate);
 }
