@@ -8,6 +8,7 @@ import fpoly.datn.ecommerce_website.entity.Staffs;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface IThongKeService {
 
@@ -24,11 +25,17 @@ public interface IThongKeService {
     // biểu đồ cột
     List<Object[]> findTotalPricesByDay(String month, String year);
 
-    List<TopCustomersDTO> getTopCustomersByTotalPrice();
+    List<TopCustomersDTO> getTopCustomersByTotalPrice(Date startDate, Date endDate);
 
     List<TopProductsDTO> findTopProductsByTotalAmount();
 
+     List<Object[]> findTopProductsSold(Date startDate, Date endDate);
+
+     Map<String, Double> findByBillCreateDateBetween(Date startDate, Date endDate);
 
 
 
-}
+
+
+
+    }

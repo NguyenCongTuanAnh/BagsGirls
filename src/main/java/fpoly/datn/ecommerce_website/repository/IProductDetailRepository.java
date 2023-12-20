@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -89,6 +90,11 @@ public Page<ProductDetails> getProductDetailsWithoutDelete(
     )
     List<ProductDetails> findByKeyword(@Param("keyword") String keyword);
 
-
+    @Query("SELECT bd.productDetails.product, SUM(bd.amount) as totalSold " +
+            "FROM BillDetails bd " +
+            "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
+            "GROUP BY bd.productDetails.product " +
+            "ORDER BY totalSold DESC")
+    List<Object[]> findTop5Products(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 }

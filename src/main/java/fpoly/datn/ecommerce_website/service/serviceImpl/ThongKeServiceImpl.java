@@ -6,6 +6,7 @@ import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.entity.Staffs;
 import fpoly.datn.ecommerce_website.repository.IBillDetailRepository;
 import fpoly.datn.ecommerce_website.repository.IBillRepository;
+import fpoly.datn.ecommerce_website.repository.IProductDetailRepository;
 import fpoly.datn.ecommerce_website.repository.IStaffRepository;
 import fpoly.datn.ecommerce_website.service.IThongKeService;
 import org.apache.http.ParseException;
@@ -24,6 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ThongKeServiceImpl implements IThongKeService {
@@ -34,6 +36,8 @@ public class ThongKeServiceImpl implements IThongKeService {
     IBillDetailRepository billDetailRepository;
     @Autowired
     IStaffRepository staffRepository;
+    @Autowired
+    IProductDetailRepository productDetailRepository;
 
     @Override
     public List<Bills> getBillsByDateRange(Date startDate, Date endDate) {
@@ -130,13 +134,55 @@ public class ThongKeServiceImpl implements IThongKeService {
     }
 
     @Override
-    public List<TopCustomersDTO> getTopCustomersByTotalPrice() {
-        return billRepository.findTopCustomersByTotalPrice(PageRequest.of(0, 5));
+    public List<TopCustomersDTO> getTopCustomersByTotalPrice(Date startDate, Date endDate) {
+        return billRepository.findTopCustomersByTotalPrice(PageRequest.of(0, 5), startDate, endDate);
     }
 
     @Override
     public List<TopProductsDTO> findTopProductsByTotalAmount(){
         return billDetailRepository.findTopProductsByTotalAmount(PageRequest.of(0, 5));
+    }
+
+    @Override
+    public List<Object[]> findTopProductsSold(Date startDate, Date endDate) {
+
+        List<Object[]> objects = this.productDetailRepository.findTop5Products(startDate, endDate);
+        return objects;
+    }
+    @Override
+    public Map<String, Double> findByBillCreateDateBetween(Date startDate, Date endDate){
+        List<Bills> bills = this.getBillsByDateRange(startDate, endDate);
+        int totalBills = bills.size();
+        Map<Integer, Long> billStatusCounts = bills.stream()
+                .collect(Collectors.groupingBy(Bills::getBillStatus, Collectors.counting()));
+
+// Tính phần trăm cho mỗi trạng thái
+        Map<String, Double> percentageByStatus = new HashMap<>();
+        for (Map.Entry<Integer, Long> entry : billStatusCounts.entrySet()) {
+            int status = entry.getKey();
+            String stringStatus = "";
+            if(status == 1){
+                stringStatus = "ThanhCong";
+            }else if(status == 2){
+                stringStatus = "DangGiao";
+            }
+            else if(status == 3){
+                stringStatus = "DangDongGoi";
+            }
+            else if(status == 4){
+                stringStatus = "ChoXacNhan";
+            }
+            else if(status == -1){
+                stringStatus = "DaHuy";
+            }else{
+                stringStatus = "KhongXacDinh";
+            }
+            long count = entry.getValue();
+            double percentage = (count * 100.0) / totalBills;
+            percentageByStatus.put(stringStatus, percentage);
+        }
+
+        return percentageByStatus;
     }
 
 }

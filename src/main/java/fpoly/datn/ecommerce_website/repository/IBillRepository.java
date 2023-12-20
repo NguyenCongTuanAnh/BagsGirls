@@ -594,9 +594,17 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
 
     @Query("SELECT NEW fpoly.datn.ecommerce_website.dto.TopCustomersDTO(b.customer.customerId, b.customer.users.fullName, b.customer.users.phoneNumber, SUM(b.billPriceAfterVoucher)) " +
             "FROM Bills b " +
+            "WHERE ( b.billCreateDate BETWEEN :startDate AND :endDate )" +
+            " AND b.billStatus = 1 " +
             "GROUP BY b.customer.customerId, b.customer.users.fullName, b.customer.users.phoneNumber " +
             "ORDER BY SUM(b.billPriceAfterVoucher) DESC")
-    List<TopCustomersDTO> findTopCustomersByTotalPrice(Pageable pageable);
+    List<TopCustomersDTO> findTopCustomersByTotalPrice(
+            Pageable pageable,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate
+    );
+
+
 
 
 
