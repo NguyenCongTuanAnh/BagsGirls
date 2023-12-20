@@ -9,6 +9,7 @@ import fpoly.datn.ecommerce_website.entity.ProductDetails;
 
 import org.springframework.data.domain.Page;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -21,7 +22,16 @@ public interface IBillDetailsService {
 
     List<BillDetailsQDTO> findAllByBillId(String billID, Integer status) ;
 
-    Page<BillDetailsQDTO> findAllBillDetailError(int pageNum, int pageSize);
+    Page<BillDetailsQDTO> findAllBillDetailError(
+            String loaiHoaDon,
+            String staffId,
+            String customerId,
+            Date startDate,
+            Date endDate,
+            Integer status,
+            String search,
+            int pageNum,
+            int pageSize);
 
     List<BillDetailsQDTO> findAllByBillIdUpdateAmount(String billID) ;
 

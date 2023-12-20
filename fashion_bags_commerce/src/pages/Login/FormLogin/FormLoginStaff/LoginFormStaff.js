@@ -124,7 +124,7 @@ function LoginFormStaff(props) {
               },
             ]}
           >
-            <Input width={300} size="large" />
+            <Input style={{ width: '350px' }} size="large" />
           </Form.Item>
 
           <Form.Item
@@ -155,7 +155,7 @@ function LoginFormStaff(props) {
               }),
             ]}
           >
-            <Input.Password width={300} size="large" />
+            <Input.Password style={{ width: '350px' }} size="large" />
           </Form.Item>
 
           <Form.Item

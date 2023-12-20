@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -21,12 +22,198 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
 
 
     // get all billdetail lỗi
-    @Query(" SELECT bd FROM  BillDetails_ChiTiet bd " +
-            " where ( bd.billDetailStatus = 0 " +
-            " OR bd.billDetailStatus = - 2 ) " )
+    @Query("SELECT bd FROM BillDetails_ChiTiet bd " +
+            "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
+            "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
+            "OR (:status = -2 AND bd.billDetailStatus = -2) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
+            " OR bd.bills.orderPhone LIKE %:search% ) " +
+            " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) "
+    )
     Page<BillDetails_ChiTiet> findAllBillDetailError(
-
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
             Pageable pageable);
+
+    // khi chọn customer
+    @Query("SELECT bd FROM BillDetails_ChiTiet bd " +
+            "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
+            "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
+            "OR (:status = -2 AND bd.billDetailStatus = -2) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
+            " OR bd.bills.orderPhone LIKE %:search% ) " +
+            " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( bd.bills.customer.customerId = :customerId ) "
+    )
+    Page<BillDetails_ChiTiet> findAllBillDetailErrorCustomer(
+            @Param("customerId") String customerId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // khi chọn staff
+    @Query("SELECT bd FROM BillDetails_ChiTiet bd " +
+            "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
+            "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
+            "OR (:status = -2 AND bd.billDetailStatus = -2) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
+            " OR bd.bills.orderPhone LIKE %:search% ) " +
+            " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND ( bd.bills.staff.staffId = :staffId ) "
+    )
+    Page<BillDetails_ChiTiet> findAllBillDetailErrorStaff(
+            @Param("staffId") String staffId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+
+    // get all billdetail online
+    @Query("SELECT bd FROM BillDetails_ChiTiet bd " +
+            "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
+            "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
+            "OR (:status = -2 AND bd.billDetailStatus = -2) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
+            " OR bd.bills.orderPhone LIKE %:search% ) " +
+            " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate)" +
+            " AND bd.bills.staff IS NULL "
+    )
+    Page<BillDetails_ChiTiet> findAllBillDetailErrorOnline(
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    @Query("SELECT bd FROM BillDetails_ChiTiet bd " +
+            "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
+            "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
+            "OR (:status = -2 AND bd.billDetailStatus = -2) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
+            " OR bd.bills.orderPhone LIKE %:search% ) " +
+            " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate)" +
+            " AND bd.bills.staff IS NULL " +
+            " AND bd.bills.customer IS NULL "
+    )
+    Page<BillDetails_ChiTiet> findAllBillDetailErrorOnlineKhachHangLe(
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    @Query("SELECT bd FROM BillDetails_ChiTiet bd " +
+            " WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
+            " AND ((:status = 0 AND bd.billDetailStatus = 0) " +
+            " OR (:status = -2 AND bd.billDetailStatus = -2) " +
+            " OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) ) " +
+            " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
+            " OR bd.bills.orderPhone LIKE %:search% ) " +
+            " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND bd.bills.staff IS NULL " +
+            " AND ( bd.bills.customer.customerId = :customerId ) "
+    )
+    Page<BillDetails_ChiTiet> findAllBillDetailErrorOnlineCustomer(
+            @Param("customerId") String customerId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+
+
+
+    // get all billdetail offline
+    @Query("SELECT bd FROM BillDetails_ChiTiet bd " +
+            "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
+            "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
+            "OR (:status = -2 AND bd.billDetailStatus = -2) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
+            " OR bd.bills.orderPhone LIKE %:search% ) " +
+            " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND bd.bills.staff IS NOT NULL "
+    )
+    Page<BillDetails_ChiTiet> findAllBillDetailErrorOffline(
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    @Query("SELECT bd FROM BillDetails_ChiTiet bd " +
+            "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
+            "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
+            "OR (:status = -2 AND bd.billDetailStatus = -2) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
+            " OR bd.bills.orderPhone LIKE %:search% ) " +
+            " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) " +
+//            " AND bd.bills.staff IS NOT NULL "
+            " AND ( bd.bills.staff.staffId = :staffId ) "
+    )
+    Page<BillDetails_ChiTiet> findAllBillDetailErrorOfflineStaff(
+            @Param("staffId") String staffId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    @Query("SELECT bd FROM BillDetails_ChiTiet bd " +
+            "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
+            "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
+            "OR (:status = -2 AND bd.billDetailStatus = -2) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
+            " OR bd.bills.orderPhone LIKE %:search% ) " +
+            " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) " +
+            " AND bd.bills.staff IS NOT NULL " +
+            " AND ( bd.bills.customer.customerId = :customerId ) "
+    )
+    Page<BillDetails_ChiTiet> findAllBillDetailErrorOfflineCustomer(
+            @Param("customerId") String customerId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+    @Query("SELECT bd FROM BillDetails_ChiTiet bd " +
+            "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
+            "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
+            "OR (:status = -2 AND bd.billDetailStatus = -2) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
+            " OR bd.bills.orderPhone LIKE %:search% ) " +
+            " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) " +
+//            " AND bd.bills.staff IS NOT NULL "
+            " AND (  bd.bills.staff.staffId = :staffId ) " +
+            " AND (  bd.bills.customer.customerId = :customerId ) "
+
+    )
+    Page<BillDetails_ChiTiet> findAllBillDetailErrorOfflineStaffCustomer(
+            @Param("staffId") String staffId,
+            @Param("customerId") String customerId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("status") Integer status,
+            @Param("search") String search,
+            Pageable pageable);
+
+
 
 
 

@@ -188,7 +188,7 @@ function TableHoaDon() {
       dataIndex: 'index',
       title: 'STT',
       // fixed: "left",
-      width: '3%',
+      width: '50px',
       render: (text, record, index) => {
         return <span id={record.id}>{(PageNum - 1) * pageSize + (index + 1)}</span>;
       },
@@ -198,12 +198,12 @@ function TableHoaDon() {
       dataIndex: 'billCode',
       key: 'code',
       // fixed: "left",
-      width: '5%'
+      width: '80px'
     },
     {
       title: 'Ngày tạo',
       dataIndex: 'billCreateDate',
-      width: '12%',
+      width: '140px',
       sorter: (a, b) => a.billCreateDate.localeCompare(b.billCreateDate),
       render: (date) => {
         const formattedDate = dayjs(date).format('HH:mm:ss DD-MM-YYYY');
@@ -214,7 +214,7 @@ function TableHoaDon() {
       title: 'Tên khách hàng',
       dataIndex: 'receiverName',
       key: 'receiverName',
-      width: '13%',
+      width: '130px',
       render: (text, record) => {
         if (record.customer == null) {
           return <span>
@@ -233,7 +233,7 @@ function TableHoaDon() {
       title: 'Số điện thoại',
       dataIndex: 'orderPhone',
       key: 'orderPhone',
-      width: '8%',
+      width: '100px',
       render: (text, record) => {
         if (record.customer == null) {
           return <span>
@@ -253,7 +253,7 @@ function TableHoaDon() {
       title: 'Hạng khách hàng',
       dataIndex: 'customerRanking',
       key: 'customerRanking',
-      width: '10%',
+      width: '150px',
       render: (text, record) => {
         if (record.customer == null) {
           return <span>
@@ -276,7 +276,7 @@ function TableHoaDon() {
       render: (price) => {
         return <span>{VNDFormaterFunc(price)}</span>;
       },
-      width: '10%',
+      width: '130px',
     },
 
     {
@@ -345,6 +345,15 @@ function TableHoaDon() {
               <Space size="middle" style={{ marginTop: '10px' }}>
                 <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
                 {hanhDong(record, true, true)}
+              </Space>
+            </div>
+          );
+        } else if (record.billStatus === 2) {
+          return (
+            <div>
+              <Space size="middle" style={{ marginTop: '10px' }}>
+                <FormChiTietHoaDon bills={record} reload={() => setLoading(true)} />
+                {hanhDong(record, false, true)}
               </Space>
             </div>
           );
