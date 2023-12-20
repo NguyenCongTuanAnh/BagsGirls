@@ -184,7 +184,7 @@ const CheckoutDetail = () => {
             const calculatedVoucherPrice = calculateTotalCustomer() * (voucher.discountPercent / 100) || voucherPrice;
             setVoucherPrice(calculatedVoucherPrice);
             const discountedTotalPrice =
-              calculateTotalCustomer() - calculatedVoucherPrice + shippingFee - ranhkingDiscount;
+              calculateTotalCustomer() - calculatedVoucherPrice + shippingFee - ((discountPercentByRankingName / 100) * calculateTotalCustomer());
             setTotalPrice(discountedTotalPrice);
             console.log('tong bill khi ap dung voucher', discountedTotalPrice);
 
@@ -504,10 +504,11 @@ const CheckoutDetail = () => {
           billCreateDate: currentDateTime,
           billNote: billNote,
           billStatus: 4,
+          shipPrice:shippingFee,
           billCode: generateCustomCode('HĐ', 9),
           billTotalPrice: location?.state?.totalPrice,
           productAmount: location?.state?.totalQuantity,
-          billPriceAfterVoucher: totalPrice || location?.state?.totalPrice,
+          billPriceAfterVoucher: totalPrice  || location?.state?.totalPrice + shippingFee,
           billReducedPrice: voucherPrice,
         };
 
@@ -546,6 +547,8 @@ const CheckoutDetail = () => {
             await updateProductDetailAmount(item.productDetailId, item.quantity);
           }),
         );
+        setShipPrice(shippingFee);
+
         console.log('bilsssssss:', response.data);
         console.log('BilLDetails:', responseBillDetails);
         setOrderSuccess(true);
@@ -624,12 +627,15 @@ const CheckoutDetail = () => {
           billCreateDate: currentDateTime,
           billNote: billNote,
           billStatus: 4,
-          billReducedPrice: voucherPrice,
+          billReducedPrice: voucherPrice +  ((discountPercentByRankingName / 100) * calculateTotalCustomer()) ,
           shipPrice: shippingFee,
           billCode: generateCustomCode('HĐ', 9),
           billTotalPrice: location?.state?.totalPrice1,
           productAmount: location?.state?.totalAmount,
-          billPriceAfterVoucher: totalPrice || location?.state?.totalPrice1 +shippingFee,
+          billPriceAfterVoucher: totalPrice ||
+          location?.state?.totalPrice1 +
+            shippingFee -
+            (discountPercentByRankingName / 100) * calculateTotalCustomer(),
           customer: {
             customerId: customerId,
             users: {
@@ -1502,7 +1508,7 @@ const CheckoutDetail = () => {
                       (3) Voucher (%):{' '}
                       <span style={{ color: 'darkred', fontSize: '20px' }}> {disCountPercent || 0} %</span>
                       <br></br>
-                      (4) Giảm tiền:{' '}
+                      (4) Giảm tiền theo voucher:{' '}
                       <span style={{ color: 'darkred', fontSize: '20px' }}>
                         {' '}
                         - {VNDFormaterFunc(voucherPrice || 0)}
@@ -1517,11 +1523,11 @@ const CheckoutDetail = () => {
                         {VNDFormaterFunc((discountPercentByRankingName / 100) * calculateTotalCustomer())}
                       </span>
                       <br></br>
-                      Tổng thanh toán (2) + (4) + (5):{' '}
+                      Tổng thanh toán (2) + (4) + (5) + (6):{' '}
                       <span style={{ color: 'red', fontWeight: 'bold', fontSize: '25px' }}>
                         {' '}
                         {VNDFormaterFunc(
-                          totalPrice ||
+                          totalPrice  ||
                             location?.state?.totalPrice1 +
                               shippingFee -
                               (discountPercentByRankingName / 100) * calculateTotalCustomer(),
@@ -1543,7 +1549,7 @@ const CheckoutDetail = () => {
                       (3) Voucher giảm (%):{' '}
                       <span style={{ color: 'darkred', fontSize: '20px' }}> {disCountPercent || 0} %</span>
                       <br></br>
-                      (4) Giảm tiền:{' '}
+                      (4) Giảm tiền theo voucher:{' '}
                       <span style={{ color: 'darkred', fontSize: '20px' }}>
                         {' '}
                         - {VNDFormaterFunc(voucherPrice || 0)}
@@ -1555,7 +1561,7 @@ const CheckoutDetail = () => {
                       Tổng thanh toán (2) + (4) + (5):{' '}
                       <span style={{ color: 'red', fontWeight: 'bold', fontSize: '25px' }}>
                         {' '}
-                        {VNDFormaterFunc(totalPrice + shippingFee || location?.state?.totalPrice + shipPrice)}
+                        {VNDFormaterFunc(totalPrice || location?.state?.totalPrice + shippingFee)}
                       </span>
                       <br />
                     </div>
