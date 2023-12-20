@@ -28,7 +28,7 @@ function FormVoucherCreate(props) {
   const validatematerialName = async (rule, value) => {
     return new Promise((resolve, reject) => {
       if (value && !/^[a-zA-ZÀ-ỹ]+(\s[a-zA-ZÀ-ỹ]+)*$/.test(value)) {
-        reject('Tên chất liệu không hợp lệ!');
+        reject('Tên voucher không hợp lệ!');
       } else {
         resolve();
       }
@@ -51,7 +51,7 @@ function FormVoucherCreate(props) {
 
       let add = {
         ...values,
-        voucherCode: generateCustomCode('voucher', 6),
+        voucherCode: generateCustomCode('NOEL', 6),
         voucherCreateDate: currentDate,
         voucherStartTime: voucherDateRange ? voucherDateRange[0].toDate() : null,
         voucherEndTime: voucherDateRange ? voucherDateRange[1].toDate() : null,

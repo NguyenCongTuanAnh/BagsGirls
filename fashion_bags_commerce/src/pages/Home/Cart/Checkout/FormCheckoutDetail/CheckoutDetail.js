@@ -344,21 +344,21 @@ const CheckoutDetail = () => {
         selectedWardName = wards.find((ward) => ward.WardCode === selectedWard)?.WardName || '';
       }
 
-      const fullAddress = `${address} - ${selectedProvinceName} - ${selectedDistrictName} - ${selectedWardName}`;
-
+      const fullAddressText = `- ${selectedProvinceName} - ${selectedDistrictName} - ${selectedWardName}`;
+        const tongAddress =address + fullAddressText;
       const data = {
         fullName,
         phoneNumber,
-        address,
+        address: tongAddress,
         email,
         billNote,
         selectedProvince,
         selectedDistrict,
         selectedWard,
-        fullAddress,
+        fullAddress : tongAddress,
       };
 
-      setFullAddres(fullAddress);
+      setAddress(tongAddress);
       setDisplayAddress(true);
       setDisplayInformation(false);
       setSubmittedData(data);
@@ -612,7 +612,7 @@ const CheckoutDetail = () => {
           billCode: generateCustomCode('HĐ', 9),
           billTotalPrice: location?.state?.totalPrice1,
           productAmount: location?.state?.totalAmount,
-          billPriceAfterVoucher: totalPrice || location?.state?.totalPrice1,
+          billPriceAfterVoucher: totalPrice || location?.state?.totalPrice1 +shippingFee,
           customer: {
             customerId: customerId,
             users: {
@@ -1281,10 +1281,10 @@ const CheckoutDetail = () => {
                     <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Số điện thoại:</span>{' '}
                     {phoneNumber || location.state.infoCustomer.customers.users.phoneNumber}
                   </p>
-                  <p>
+                  {/* <p>
                     <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ Người Đặt:</span> {address1}{' '}
                     {fullAddress}
-                  </p>
+                  </p> */}
                   <p>
                     <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Địa chỉ Người Nhận:</span> {address}
                   </p>
