@@ -8,6 +8,7 @@ import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
 import billDetailsAPI from '~/api/BillDetailsAPI';
 import FormStaffEdit from '../../Staff/StaffEdit/FormEdit/FormStaffEdit';
 import productDetailsAPI from '~/api/productDetailsAPI';
+import dayjs from 'dayjs';
 import billsAPI from '~/api/BillApi';
 const { useForm } = Form;
 
@@ -29,6 +30,7 @@ function FormChiTietHoaDon(props) {
     const [updateBill, setUpdateBill] = useState(false);
     const [billDetailProductError, setBillDetailProductError] = useState([]);
     const [newAmountBillDetail, setNewAmountBillDetail] = useState(0);
+    const [timeHangLoi, setTimeHangLoi] = useState(false);
 
     const showModal = () => {
         getAllByBillId();
@@ -42,6 +44,16 @@ function FormChiTietHoaDon(props) {
         }, 0);
         setTotalQuantity(total);
         setVisible(true);
+        let ngayHomNay = dayjs().add(-7, 'd');
+        let bayNgayTruoc = dayjs(props.bills.billCreateDate);
+        let isNgayHomNayGreaterThanBayNgayTruoc = ngayHomNay.isAfter(bayNgayTruoc);
+        if (isNgayHomNayGreaterThanBayNgayTruoc) {
+            // hết thời gian hàng lỗi
+            setTimeHangLoi(true);
+        } else {
+            // vẫn còn thời gian hàng lỗi
+            setTimeHangLoi(false);
+        }
     };
 
     useEffect(() => {
@@ -72,9 +84,12 @@ function FormChiTietHoaDon(props) {
             setTongTienThanhToan(0);
         } else {
             setTongTienThanhToan(total - props.bills.billReducedPrice + props.bills.shipPrice);
-        }
-        setAmountBill(productAmount);
+        } setAmountBill(productAmount);
         settotalPriceBill(total);
+        let TrangThaiKhiPriceBangKhong = props.bills.billStatus;
+        if (total === 0) {
+            TrangThaiKhiPriceBangKhong = -1;
+        }
         let updateHoaDon = {
             billId: props.bills.billId,
             staff: props.bills.staff,
@@ -96,7 +111,7 @@ function FormChiTietHoaDon(props) {
             orderPhone: props.bills.orderPhone,
             paymentMethod: props.bills.paymentMethod,
             billNote: props.bills.billNote,
-            billStatus: props.bills.billStatus,
+            billStatus: TrangThaiKhiPriceBangKhong,
             billReducedPrice: props.bills.billReducedPrice
         };
         if (updateBill) {
@@ -191,6 +206,19 @@ function FormChiTietHoaDon(props) {
             console.error('Đã xảy ra lỗi: ', error);
         }
     }
+
+    const disableHangLoi = (amount, billStatus, billDetailStatus) => {
+        if (timeHangLoi === true) {
+            return true;
+        } else {
+            if (billStatus === 1 && billDetailStatus === 1) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+    };
 
 
     // component Sản phẩm lỗi
@@ -326,21 +354,19 @@ function FormChiTietHoaDon(props) {
                             max={Math.floor(maxAmount)}
                             step={1}
                             disabled={
-                                (newAmount === null
-                                    || Math.floor(props.bills.billStatus) === -1
-                                    || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
-                                    || Math.floor(props.bills.billStatus) === 2
-                                    || Math.floor(props.bills.billStatus) === -2
-                                ) ? true : false}
+                                (timeHangLoi !== true &&
+                                    (
+                                        (record.bills.billStatus === 4 && record.billDetailStatus === 1)
+                                        || (record.bills.billStatus === 3 && record.billDetailStatus === 1)
+                                    )
+                                ) ? false : true}
                             defaultValue={record.amount}
                             onChange={(newValue) => {
 
                                 if (newValue === null) {
                                     newAmount = 0;
-                                    // setNewAmountBillDetail(0);
                                 } else {
                                     newAmount = newValue;
-                                    // setNewAmountBillDetail(newValue);
                                 }
                             }}
                             style={{ width: '55px' }}
@@ -357,24 +383,22 @@ function FormChiTietHoaDon(props) {
                         >
                             <Button
                                 type="primary"
-                                danger={newAmount <= 0}
                                 disabled={
-                                    (newAmount === null
-                                        || Math.floor(props.bills.billStatus) === -1
-                                        || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
-                                        || Math.floor(props.bills.billStatus) === 2
-                                        || Math.floor(props.bills.billStatus) === -2
-                                    ) ? true : false}
-                                icon={<CheckOutlined />}
+                                    (timeHangLoi !== true &&
+                                        (
+                                            (record.bills.billStatus === 4 && record.billDetailStatus === 1)
+                                            || (record.bills.billStatus === 3 && record.billDetailStatus === 1)
+                                        )
+                                    ) ? false : true} icon={<CheckOutlined />}
                                 style={
                                     {
                                         backgroundColor:
-                                            (newAmount === null
-                                                || Math.floor(props.bills.billStatus) === -1
-                                                || (Math.floor(props.bills.billStatus) === 1 && props.bills.staff === null)
-                                                || Math.floor(props.bills.billStatus) === 2
-                                                || Math.floor(props.bills.billStatus) === -2
-                                            ) ? 'grey' : 'red', color: 'white'
+                                            (timeHangLoi !== true &&
+                                                (
+                                                    (record.bills.billStatus === 4 && record.billDetailStatus === 1)
+                                                    || (record.bills.billStatus === 3 && record.billDetailStatus === 1)
+                                                )
+                                            ) ? 'red' : 'grey', color: 'white'
                                     }
                                 }
                             >
@@ -408,7 +432,6 @@ function FormChiTietHoaDon(props) {
                 let statusText;
                 let statusClass;
                 let backgroundColor; // Define a variable for text color
-                console.log(record.billDetailStatus);
                 switch (record.billDetailStatus) {
                     case 1:
                         statusText = 'Không lỗi';
@@ -459,98 +482,90 @@ function FormChiTietHoaDon(props) {
         {
             title: 'Action',
             key: 'action',
-            render: (text, record, index) => (
-                <div>
-                    <Space size="middle">
-                        <Button type="default" danger
-                            disabled={(
-                                (props.bills.billStatus === -1
-                                    || props.bills.billStatus === 2
-                                    || props.bills.billStatus === 3
-                                    || props.bills.billStatus === 4)
-                                &&
-                                (props.billDetailStatus === 0
-                                    || props.billDetailStatus === -1
-                                    || props.billDetailStatus === -2
-                                )
-                            ) ? true : false}
-                            onClick={() => {
-                                showComponentSPLoi(record, index);
-                            }}
-                            icon={<ExclamationCircleOutlined />}>
-                            Hàng lỗi
-                        </Button>
-                        <Modal
-                            title="Sản phẩm lỗi"
-                            open={open}
-                            onCancel={onClose}
-                            footer={
-                                <span>
+            render: (text, record, index) => {
+                return (
+                    <div>
+                        <Space size="middle">
+                            <Button type="default" danger
+                                disabled={disableHangLoi(record.amount, record.bills.billStatus, record.billDetailStatus)}
+                                onClick={() => {
+                                    showComponentSPLoi(record, index);
+                                }}
+                                icon={<ExclamationCircleOutlined />}>
+                                Hàng lỗi
+                            </Button>
+                            <Modal
+                                title="Sản phẩm lỗi"
+                                open={open}
+                                onCancel={onClose}
+                                footer={
+                                    <span>
 
-                                </span>
-                            }
-                        >
-                            <Form form={form} initialValues=
-                                {{
-                                    billDetailId: record.billDetailId,
-                                    amountError: record.amount,
-                                    billDetailNote: record.billDetailNote,
+                                    </span>
                                 }
-                                }
-                                onFinish={updateAmountProductError} >
-                                <Row gutter={16}>
-                                    <Col span={24}>
-                                        <Form.Item
-                                            name='amountError'
-                                            label="Số lượng sản phẩm lỗi"
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message: 'Vui lòng điền số lượng sản phẩm lỗi!',
-                                                },
-                                            ]}
-                                        >
-                                            <InputNumber
-                                                min={1}
-                                                max={Math.floor(maxAmountProductError)}
-                                                // defaultValue={1}
-                                                step={1}
-                                                style={{ width: '70px' }}
-                                            />
-                                        </Form.Item>
-                                    </Col>
-                                </Row>
-                                <Row gutter={16}>
-                                    <Col span={24}>
-                                        <Form.Item
-                                            name='billDetailNote'
-                                            label="Ghi chú sản phẩm lỗi: "
-                                            rules={[
-                                                {
-                                                    required: true,
-                                                    message: 'Vui lòng điền ghi chú!',
-                                                },
-                                            ]}
-                                        >
-                                            <Input.TextArea rows={4} placeholder='Vui lòng điền ghi chú!' />
-                                        </Form.Item>
+                            >
+                                <Form form={form} initialValues=
+                                    {{
+                                        billDetailId: record.billDetailId,
+                                        amountError: record.amount,
+                                        billDetailNote: record.billDetailNote,
+                                    }
+                                    }
+                                    onFinish={updateAmountProductError} >
+                                    <Row gutter={16}>
+                                        <Col span={24}>
+                                            <Form.Item
+                                                name='amountError'
+                                                label="Số lượng sản phẩm lỗi"
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: 'Vui lòng điền số lượng sản phẩm lỗi!',
+                                                    },
+                                                ]}
+                                            >
+                                                <InputNumber
+                                                    min={1}
+                                                    max={Math.floor(maxAmountProductError)}
+                                                    // defaultValue={1}
+                                                    step={1}
+                                                    style={{ width: '70px' }}
+                                                />
+                                            </Form.Item>
+                                        </Col>
+                                    </Row>
+                                    <Row gutter={16}>
+                                        <Col span={24}>
+                                            <Form.Item
+                                                name='billDetailNote'
+                                                label="Ghi chú sản phẩm lỗi: "
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        message: 'Vui lòng điền ghi chú!',
+                                                    },
+                                                ]}
+                                            >
+                                                <Input.TextArea rows={4} placeholder='Vui lòng điền ghi chú!' />
+                                            </Form.Item>
 
-                                    </Col>
-                                </Row>
+                                        </Col>
+                                    </Row>
 
-                                <div>
-                                    <Space>
-                                        <Button htmlType="submit" type="primary" className="btn btn-warning">
-                                            Lưu
-                                        </Button>
-                                        <Button onClick={onClose}>Thoát</Button>
-                                    </Space>
-                                </div>
-                            </Form>
-                        </Modal>
-                    </Space>
-                </div>
-            ),
+                                    <div>
+                                        <Space>
+                                            <Button htmlType="submit" type="primary" className="btn btn-warning">
+                                                Lưu
+                                            </Button>
+                                            <Button onClick={onClose}>Thoát</Button>
+                                        </Space>
+                                    </div>
+                                </Form>
+                            </Modal>
+                        </Space>
+                    </div>
+                )
+            },
 
             width: '150px',
         },

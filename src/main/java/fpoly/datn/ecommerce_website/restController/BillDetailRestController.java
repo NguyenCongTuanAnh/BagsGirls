@@ -5,6 +5,7 @@ import fpoly.datn.ecommerce_website.dto.BillDetailsQDTO;
 import fpoly.datn.ecommerce_website.dto.GetBillDetailsDTO;
 import fpoly.datn.ecommerce_website.dto.ProductDetailDTO;
 import fpoly.datn.ecommerce_website.entity.BillDetails;
+import fpoly.datn.ecommerce_website.entity.Bills;
 import fpoly.datn.ecommerce_website.entity.ProductDetails;
 import fpoly.datn.ecommerce_website.service.IBillDetailsService;
 import fpoly.datn.ecommerce_website.service.IProductDetalisService;
@@ -189,6 +190,12 @@ public class BillDetailRestController {
         }
 
     }
+
+//    @RequestMapping(value = "/bills/update-status", method = RequestMethod.PUT)
+//    public ResponseEntity<BillDetailsDTO> updateStatus(@RequestParam String id, @RequestParam int status) {
+//        return new ResponseEntity<>(iBillDetailsService.updateStatus(id, status),
+//                HttpStatus.OK);
+//    }
 
 //    @RequestMapping(value = "bill-detail/getBillDetailsProductsById", method = RequestMethod.GET)
 //    public ResponseEntity<?> getAllBillDetailProductsById(@RequestParam (name ="billId") String billId) {

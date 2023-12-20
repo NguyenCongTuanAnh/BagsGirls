@@ -64,6 +64,8 @@ function TableHoaDonLoi() {
     const [filterRank, setFilterRank] = useState('');
     const [defaultCustomerValue, setDefaultCustomerValue] = useState('');
     const [loaiHoaDon, setLoaiHoaDon] = useState('');
+    const [updateBill, setUpdateBill] = useState(false);
+
 
     const thongTinNhanVien = (values) => {
         return (
@@ -124,7 +126,7 @@ function TableHoaDonLoi() {
             key: 'stt',
             dataIndex: 'index',
             title: 'STT',
-            width: '3%',
+            width: '50px',
             render: (text, record, index) => {
                 return <span id={record.id}>{(pageNum - 1) * pageSize + (index + 1)}</span>;
             },
@@ -134,13 +136,13 @@ function TableHoaDonLoi() {
             dataIndex: ['bills', 'billCode'],
             sorter: (a, b) => a.bills.billCode.localeCompare(b.bills.billCode),
             key: 'billCode',
-            width: '6%',
+            width: '70px',
         },
         {
             title: 'Loại hóa đơn',
             dataIndex: ['bills', 'staff'],
             key: 'staffCode',
-            width: '6%',
+            width: '70px',
             render: (staff) => {
                 if (staff && staff.users) {
                     return "Tại quầy";
@@ -152,7 +154,7 @@ function TableHoaDonLoi() {
         {
             title: 'Ngày tạo',
             dataIndex: ['bills', 'billCreateDate'],
-            width: '12%',
+            width: '140px',
             sorter: (a, b) => a.bills.billCreateDate.localeCompare(b.bills.billCreateDate),
             render: (date) => {
                 const formattedDate = dayjs(date).format('HH:mm:ss DD-MM-YYYY');
@@ -163,7 +165,7 @@ function TableHoaDonLoi() {
             title: 'Mã nhân viên',
             dataIndex: ['bills', 'staff'],
             key: 'staffCode',
-            width: '7%',
+            width: '80px',
             render: (staff) => {
                 if (staff && staff.users) {
                     return (
@@ -178,31 +180,12 @@ function TableHoaDonLoi() {
             },
         },
         {
-            title: 'Tên khách hàng',
-            dataIndex: 'receiverName',
-            key: 'receiverName',
-            width: '12%',
-            render: (text, record) => {
-                if (record.bills.customer == null) {
-                    if (record.bills.receiverName == null) {
-                        return "";
-                    }
-                    return record.bills.receiverName;
-                } else {
-                    return (
-                        <Popover placement="top" content={thongTinKhachHang(record.bills)} >
-                            <Typography.Text>{record.bills.receiverName}</Typography.Text>
-                        </Popover>
-                    );
-                }
-            },
-        },
-        {
             title: 'SĐT khách hàng',
-            dataIndex: 'orderPhone',
+            dataIndex: ['productDetails', 'billCreateDate'],
             key: 'orderPhone',
-            width: '10%',
+            width: '100px',
             render: (text, record) => {
+                // console.log(record);
                 if (record.bills.customer == null) {
                     if (record.bills.orderPhone == null) {
                         return "";
@@ -219,16 +202,39 @@ function TableHoaDonLoi() {
             },
         },
         {
+            title: 'Sản phẩm lỗi',
+            dataIndex: 'productName',
+            width: '250px',
+            render: (texe, record) => (
+                <div className={styles.info_item}>
+                    <div className={styles.title_product}>
+                        {record.productDetails.product.productName}-{record.productDetails.product.productCode}
+                    </div>
+                    <ul className={styles.attr}>
+                        <li>
+                            <span className={styles.spanTitle}>Màu sắc: </span> {record.productDetails.color.colorName}
+                        </li>
+                        <li>
+                            <span className={styles.spanTitle}>Chất liệu: </span>
+                            {record.productDetails.material.materialName}
+                        </li>
+                    </ul>
+                </div>
+            ),
+            key: 'productName',
+        },
+
+        {
             title: 'Số lượng lỗi',
             dataIndex: 'amount',
             key: 'amount',
-            width: '6%',
+            width: '60px',
         },
         {
-            title: 'Tổng tiền',
+            title: 'Tiền hoàn',
             dataIndex: 'price',
             key: 'price',
-            width: '10%',
+            width: '100px',
             render: (text, record) => {
                 return <span>{VNDFormaterFunc(record.price * record.amount)}</span>;
             },
@@ -238,7 +244,7 @@ function TableHoaDonLoi() {
             title: 'Trạng thái',
             dataIndex: 'billDetailStatus',
             key: 'billDetailStatus',
-            width: '13%',
+            width: '180px',
             render: (text, record) => {
                 let statusText;
                 let statusClass;
@@ -295,61 +301,139 @@ function TableHoaDonLoi() {
             title: 'Hành động',
             key: 'action',
             render: (text, record) => {
-                <Space size="middle" >
-                    <Popconfirm
-                        title="Xác Nhận"
-                        description="Bạn có chắc chắn muốn xác nhận lỗi?"
-                        okText="Đồng ý"
-                        cancelText="Không"
-                        onConfirm={() => {
-                            // deleteHandle(record.billId, -1, record.billCode);
-                            setLoading(true);
-                        }}
-                        onCancel={onCancel}
-                    >
-                        <Button disabled={(record.billStatus === -1) ? true : false} type="primary" danger icon={<CheckCircleOutlined />}>Xác nhận</Button>
-                    </Popconfirm>
-                    <Popconfirm
-                        title="Xác Nhận"
-                        description="Bạn có chắc chắn muốn hủy xác nhận lỗi?"
-                        okText="Đồng ý"
-                        cancelText="Không"
-                        onConfirm={() => {
-                            // deleteHandle(record.billId, -1, record.billCode);
-                            setLoading(true);
-                        }}
-                        onCancel={onCancel}
-                    >
-                        <Button disabled={(record.billStatus === -1) ? true : false} type="primary" danger icon={<CloseCircleOutlined />}>Hủy</Button>
-                    </Popconfirm>
-                </Space>
+                if (record.billDetailStatus === 0) {
+                    return (
+                        <Space size="middle" >
+                            <Popconfirm
+                                title="Xác Nhận"
+                                description="Bạn có chắc chắn muốn xác nhận lỗi?"
+                                okText="Đồng ý"
+                                cancelText="Không"
+                                onConfirm={() => {
+                                    xacNhanLoi(record);
+                                    setUpdateBill(record);
+                                }}
+                                onCancel={onCancel}
+                            >
+                                <Button disabled={(record.billStatus === -1) ? true : false} type="primary" icon={<CheckCircleOutlined />}>Xác nhận</Button>
+                            </Popconfirm>
+                            <Popconfirm
+                                title="Xác Nhận"
+                                description="Bạn có chắc chắn muốn hủy xác nhận lỗi?"
+                                okText="Đồng ý"
+                                cancelText="Không"
+                                onConfirm={() => {
+                                    huyXacNhan(record);
+                                }}
+                                onCancel={onCancel}
+                            >
+                                <Button disabled={(record.billStatus === -1) ? true : false} type="primary" danger icon={<CloseCircleOutlined />}>Hủy</Button>
+                            </Popconfirm>
+                        </Space>
+                    )
+                } else {
+                    return "";
+                }
             },
-            width: 100,
+
+            width: '150px',
         },
     ];
 
 
 
 
-    const updateAmount = async (billId) => {
-        const list = await billDetailsAPI.getBillDetailsByBillIdUpdateAmount(billId);
-        if (Array.isArray(list.data)) {
-            await Promise.all(
-                list.data.map(async (o) => {
-                    await productDetailsAPI.updateAmount(o.productDetails.productDetailId, -o.amount);
-                }),
-            );
+    // const updateAmount = async (billId) => {
+    //     const list = await billDetailsAPI.getBillDetailsByBillIdUpdateAmount(billId);
+    //     if (Array.isArray(list.data)) {
+    //         await Promise.all(
+    //             list.data.map(async (o) => {
+    //                 await productDetailsAPI.updateAmount(o.productDetails.productDetailId, -o.amount);
+    //             }),
+    //         );
+    //     }
+    // };
+
+    const huyXacNhan = async (values) => {
+        // updateAmount(billId);
+        let updateStatus = {
+            ...values,
+            billDetailStatus: 1,
+            billDetailNote: "Yêu cầu hàng lỗi của bạn đã bị hủy!",
         }
+        await billDetailsAPI.add(updateStatus);
+        notification.success({
+            message: 'Xác nhận',
+            description: 'Sản phẩm "' + values.productDetails.product.productCode + '" Không bị lỗi!',
+        });
+        setLoading(true);
     };
 
-    const deleteHandle = async (billId, status, code) => {
-        updateAmount(billId);
-        await billsAPI.updateStatus(billId, status);
+    const xacNhanLoi = async (values) => {
+        // updateAmount(billId);
+        let updateStatus = {
+            ...values,
+            billDetailStatus: -2,
+        }
+        // console.log(updateStatus);
+        await billDetailsAPI.add(updateStatus);
         notification.success({
-            message: 'Hủy thành công',
-            description: 'Đơn hàng ' + code + ' hủy thành công!',
+            message: 'Xác nhận',
+            description: 'Sản phẩm "' + values.productDetails.product.productCode + '" đã được xác nhận lỗi!',
         });
+        // update hoa don
+        let TrangThaiKhiPriceBangKhong = values.bills.billStatus;
+        let priceAfterVoucher = values.bills.billPriceAfterVoucher - values.price * values.amount;
+        let totalPrice = values.bills.billTotalPrice - values.price * values.amount;
+        let billReducedPrice = values.bills.billReducedPrice;
+        let shipPrice = values.bills.shipPrice;
+        if (values.bills.productAmount - values.amount === 0) {
+            TrangThaiKhiPriceBangKhong = -1;
+            priceAfterVoucher = 0;
+            totalPrice = 0;
+            billReducedPrice = 0;
+            shipPrice = 0;
+        }
+        let updateHoaDon = {
+            billId: values.bills.billId,
+            staff: values.bills.staff,
+            customer: values.bills.customer,
+            voucher: values.bills.voucher,
+            billCode: values.bills.billCode,
+            billCreateDate: values.bills.billCreateDate,
+            billDatePayment: values.bills.billDatePayment,
+            billShipDate: values.bills.billShipDate,
+            billReceiverDate: values.bills.billReceiverDate,
+            billTotalPrice: totalPrice,
+            productAmount: values.bills.productAmount - values.amount,
+            billPriceAfterVoucher: priceAfterVoucher,
+            shippingAddress: values.bills.shippingAddress,
+            billingAddress: values.bills.billingAddress,
+            receiverName: values.bills.receiverName,
+            shipPrice: shipPrice,
+            orderEmail: values.bills.orderEmail,
+            orderPhone: values.bills.orderPhone,
+            paymentMethod: values.bills.paymentMethod,
+            billNote: values.bills.billNote,
+            billStatus: TrangThaiKhiPriceBangKhong,
+            billReducedPrice: billReducedPrice
+        };
+        // console.log(updateHoaDon);
+        try {
+            await billsAPI.add(updateHoaDon);
+        } catch (error) {
+            notification.error({
+                message: 'Lỗi',
+                description: 'Lỗi cập nhật hóa đơn không thành công',
+                duration: 2,
+            });
+            console.log(error);
+        }
+        setLoading(true);
+
     };
+
+
     const onCancel = () => { };
 
     const onRangeChange = (dates, dateStrings) => {
@@ -490,6 +574,7 @@ function TableHoaDonLoi() {
             const data = response.data.content;
             setTotalItem(response.data.totalElements);
             setData(data);
+
         } catch (error) {
             console.error('Đã xảy ra lỗi: ', error);
         }
@@ -730,7 +815,6 @@ function TableHoaDonLoi() {
                             <Button icon={<ReloadOutlined />} onClick={() => { setLoading(true) }} style={{ marginTop: '7px', marginLeft: '15px' }} loading={loading}></Button>
                         </Col>
                         <Col span={7}>
-                            {/* <div className={styles.searchContainer}> */}
                             <Input
                                 className={styles.searchIinput}
                                 type="text"

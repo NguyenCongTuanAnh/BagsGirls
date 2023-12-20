@@ -566,6 +566,7 @@ function TableHoaDonTaiQuay() {
     setPageSize(pageSize);
     setLoading(true);
   };
+  
 
   const getAllPhanTrangCompartment = async (pageNum, pageSize) => {
     try {
