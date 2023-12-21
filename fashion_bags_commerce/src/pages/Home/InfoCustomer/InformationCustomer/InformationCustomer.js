@@ -109,7 +109,7 @@ function AddressCustomer() {
 
       try {
         console.log(update);
-        await customerAPI.update(update);
+        await customerAPI.updateNotPassword(update);
 
         notification.success({
           message: 'Update thành công',
