@@ -5,9 +5,12 @@ import { ArrowDownOutlined, ArrowUpOutlined, DeleteOutlined, FilterFilled, Reloa
 import { useEffect, useState, useContext, Fragment } from 'react';
 import colorAPI from '~/api/propertitesBalo/colorAPI';
 import styles from './thongKe.module.scss';
+import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
+
 import SearchForm from '~/Utilities/FormSearch/SearchForm';
 import Icon from '@ant-design/icons/lib/components/Icon';
 import ThongKeAPI from '~/api/ThongKeAPI';
+import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
 const { RangePicker } = DatePicker;
 
 
@@ -23,8 +26,9 @@ function ThongKeContent() {
     const [year, setYear] = useState('');
     const [listDoanhThuTrongThang, setListDoanhThuTrongThang] = useState([]);
     const revenueData = []; // Dữ liệu doanh thu
-    const topProductsData = []; // Dữ liệu top sản phẩm
-    const topCustomersData = []; // Dữ liệu top khách hàng
+    const [thongKeStatus, setThongKeStatus] = useState([]);
+    const [topProductsData, setTopProductsData] = useState([]); // Dữ liệu top sản phẩm
+    const [topCustomersData, setTopCustomersData] = useState([]); // Dữ liệu top khách hàng
 
 
     const onRangeChange = (dates, dateStrings) => {
@@ -100,6 +104,7 @@ function ThongKeContent() {
             setTotalBillsCount(data.totalBillsCount);
             setTotalProductAmount(data.totalProductAmount);
             setTotalStaffsCount(data.totalStaffsCount);
+            drawChart();
         } catch (error) { }
     };
 
@@ -110,8 +115,61 @@ function ThongKeContent() {
             setListDoanhThuTrongThang(data);
         } catch (error) { }
     };
+    const getTopFiveCustomer = async () => {
+        try {
+            const response = await ThongKeAPI.getTopFiveCustomer(startDate, endDate);
+            const data = response.data;
+            setTopCustomersData(data);
+        } catch (error) { }
+    };
+    const getTopFiveProduct = async () => {
+        try {
+            const response = await ThongKeAPI.getTopFiveProduct(startDate, endDate);
+            const data = response.data;
+            setTopProductsData(data);
+        } catch (error) { }
+    };
+    const getThongKeStatus = async () => {
+        try {
+            const response = await ThongKeAPI.getThongKeStatus(startDate, endDate);
+            const data = response.data;
+            setThongKeStatus(data);
+        } catch (error) { }
+    };
+
+    const taiAPIBieuDo = () => {
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = 'https://www.gstatic.com/charts/loader.js';
+        script.async = true;
+
+        // Set up a callback for when the script is loaded
+        script.onload = () => {
+            // Load the visualization library
+            window.google.charts.load('current', { packages: ['corechart'] });
+
+            // Set a callback to run when the Google Visualization API is loaded
+            window.google.charts.setOnLoadCallback(drawChart);
+            window.google.charts.load('current', { packages: ['corechart'] });
+
+            // Set a callback to run when the Google Visualization API is loaded
+            window.google.charts.setOnLoadCallback(drawChart);
+        };
+
+        // Append the script element to the document head
+        document.head.appendChild(script);
+
+        // Clean up the script element when the component is unmounted
+        return () => {
+            document.head.removeChild(script);
+        };
+    }
+
     useEffect(() => {
         getTotalPricesByDay();
+        getTopFiveCustomer();
+        getTopFiveProduct();
+        getThongKeStatus();
         // Tải API biểu đồ Google
         const script = document.createElement('script');
         script.type = 'text/javascript';
@@ -138,9 +196,13 @@ function ThongKeContent() {
         return () => {
             document.head.removeChild(script);
         };
-    }, [month, year]);
+
+
+    }, [month, year, startDate, endDate]);
     useEffect(() => {
         getBillStatisticsByDateRange();
+        taiAPIBieuDo();
+
         // // Tải API biểu đồ Google
         // const script = document.createElement('script');
         // script.type = 'text/javascript';
@@ -155,26 +217,47 @@ function ThongKeContent() {
         // document.head.appendChild(script);
     }, [startDate, endDate]);
 
+    const stringStatus = (status) => {
+        switch (status) {
+            case 4:
+                return "Chờ xác nhận";
+            case 3:
+                return "Đang đóng gói";
+            case 2:
+                return "Đang giao";
+            case 1:
+                return "Thành công";
+            case -1:
+                return "Đã hủy";
+            default:
+                return "Không xác định";
+        }
+    }
+
+    const duLieuStatus = () => {
+        let status = [
+            ['Task', 'Hours per Day'],
+            [stringStatus(1), thongKeStatus.ThanhCong],
+            [stringStatus(-1), thongKeStatus.DaHuy],
+            [stringStatus(4), thongKeStatus.ChoXacNhan],
+            [stringStatus(3), thongKeStatus.DangDongGoi],
+            [stringStatus(2), thongKeStatus.DangGiao],
+        ];
+        return status;
+    };
+
 
     const drawChart = () => {
-        // Dữ liệu và cấu hình biểu đồ của bạn tại đây
-        const data = window.google.visualization.arrayToDataTable([
-            ['Task', 'Hours per Day'],
-            ['Work', 11],
-            ['Eat', 2],
-            ['Commute', 2],
-            ['Watch TV', 2],
-            ['Sleep', 7],
-        ]);
+        // biểu đồ trạng thái
+        const data = window.google.visualization.arrayToDataTable(duLieuStatus());
 
         const options = {
             title: 'Thống kê trạng thái đơn hàng',
-            pieHole: 0.4,
         };
         const chart = new window.google.visualization.PieChart(document.getElementById('chart_div'));
         chart.draw(data, options);
 
-        // Khởi tạo và vẽ biểu đồ
+        // biểu đồ cột
 
         const dataChartColumn = new window.google.visualization.DataTable();
         dataChartColumn.addColumn('string', 'Ngày: ');
@@ -201,29 +284,45 @@ function ThongKeContent() {
             },
         },
         {
-            title: 'Hình ảnh',
-            dataIndex: 'productName',
-            key: 'productName',
+            title: 'Mã balo',
+            dataIndex: 'productCode',
+            key: 'productCode',
+            render: (text, record, index) => {
+                return <span>
+                    {record[0].productCode}
+                </span>;
+            },
         },
         {
             title: 'Tên balo',
             dataIndex: 'productName',
             key: 'productName',
+            render: (text, record, index) => {
+                return <span>
+                    {record[0].productName}
+                </span>;
+            },
         },
-        {
-            title: 'Mã balo',
-            dataIndex: 'productName',
-            key: 'productName',
-        },
+
         {
             title: 'Thương hiệu',
             dataIndex: 'productName',
             key: 'productName',
+            render: (text, record, index) => {
+                return <span>
+                    {record[0].brand.brandName}
+                </span>;
+            },
         },
         {
             title: 'Số lượng balo bán được',
             dataIndex: 'quantitySold',
             key: 'quantitySold',
+            render: (text, record, index) => {
+                return <span>
+                    {record[1]}
+                </span>;
+            },
         },
 
     ];
@@ -239,18 +338,21 @@ function ThongKeContent() {
         },
         {
             title: 'Tên',
-            dataIndex: 'productName',
-            key: 'productName',
+            dataIndex: 'customerFullName',
+            key: 'customerFullName',
         },
         {
             title: 'SĐT',
-            dataIndex: 'productName',
-            key: 'productName',
+            dataIndex: 'customerPhoneNumber',
+            key: 'customerPhoneNumber',
         },
         {
-            title: 'Tổng đơn hàng',
-            dataIndex: 'quantitySold',
-            key: 'quantitySold',
+            title: 'Tổng tiền đã mua',
+            dataIndex: 'price',
+            key: 'price',
+            render: (text, record, index) => {
+                return <span> {VNDFormaterFunc(record.price)}</span>;
+            },
         },
     ];
     return (
@@ -326,27 +428,42 @@ function ThongKeContent() {
                 <Col span={16}>
                     <div style={{ margin: '15px 15px 15px 15px' }}>
                         <Card style={{ borderRadius: '20px' }}>
-                            <h5>
-                                <FilterFilled style={{ fontSize: '25px' }} />
-                                Tháng
+                            <Row>
+                                <Col span={3} >
+                                    <FilterFilled style={{ fontSize: '25px' }} />
+                                    <InputNumber
+                                        min={1}
+                                        max={12}
+                                        value={month}
+                                        placeholder='Tháng'
+                                        onChange={(newValue) => {
+                                            setMonth(newValue);
+                                        }}
+                                    >
+                                    </InputNumber>
+                                </Col>
+                            </Row>
+                            <Col span={3} >
                                 <InputNumber
-                                    min={1}
-                                    max={12}
-                                    value={month}
+                                    placeholder='Năm'
+                                    min={2000}
+                                    max={2023}
+                                    value={year}
                                     onChange={(newValue) => {
-                                        setMonth(newValue);
+                                        setYear(newValue);
                                     }}
                                 >
                                 </InputNumber>
-                            </h5>
-                            <div id="chart_column" style={{ width: '100%', height: '300px' }}></div>
+                            </Col>
+
+                            <div id="chart_column" style={{ width: '100%', height: '350px' }}></div>
                         </Card>
                     </div>
                 </Col>
                 <Col span={8}>
                     <div style={{ margin: '15px 15px 15px 15px' }}>
                         <Card style={{ borderRadius: '20px' }}>
-                            <div id="chart_div" style={{ width: '100%', height: '300px' }}></div>
+                            <div id="chart_div" style={{ width: '130%', height: '400px' }}></div>
                         </Card>
                     </div>
                 </Col>
@@ -354,15 +471,24 @@ function ThongKeContent() {
             <Row>
                 <Col span={16}>
                     <Card style={{ margin: '0 15px 0 ' }}   >
-                        {/* <Statistic title="Top 5 sản phẩm bán chạy nhất " value={totalRevenue} /> */}
-                        <Statistic value={' '} title={<span style={{ fontSize: '23px' }}>Top 5 sản phẩm bán chạy nhất</span>} />
-                        <Table dataSource={topProductsData} columns={columnProduct} />
+                        <Statistic value={' '} title={<span style={{ fontSize: '23px' }}>Top 5 sản phẩm có số lượng bán chạy nhất</span>} />
+                        <Table
+                            dataSource={topProductsData}
+                            columns={columnProduct}
+                            rowKey={(record) => record[1]}
+                            pagination={false}
+                        />
                     </Card>
                 </Col>
                 <Col span={8}>
                     <Card style={{ margin: '0 15px 0 15px' }}>
                         <Statistic value={' '} title={<span style={{ fontSize: '23px' }}>Top 5 khách hàng mua nhiều nhất</span>} />
-                        <Table dataSource={topCustomersData} columns={columnCustomer} />
+                        <Table
+                            dataSource={topCustomersData}
+                            rowKey={topCustomersData.customerId}
+                            columns={columnCustomer}
+                            pagination={false}
+                        />
                     </Card>
                 </Col>
             </Row>
