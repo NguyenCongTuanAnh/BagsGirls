@@ -19,6 +19,7 @@ import java.text.ParseException;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -104,7 +105,11 @@ public class ThongKeRestController {
         Date startDate = dateFormat.parse(startDateStr);
         Date endDate = dateFormat.parse(endDateStr);
         List<Object []> topProducts = this.thongKeService.findTopProductsSold(startDate, endDate);
-        return ResponseEntity.ok(topProducts);
+        List<Object []> topProduct = new ArrayList<>();
+        for(int i=0; i<5; i++){
+            topProduct.add(topProducts.get(i));
+        }
+        return ResponseEntity.ok(topProduct);
     }
     @GetMapping("/thong-ke/statisticPercentByBillStatus")
     public Map<String, Double> findByBillCreateDateBetween(@RequestParam("startDate") String startDateStr,
