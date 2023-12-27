@@ -322,6 +322,7 @@ const CheckoutDetail = () => {
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [selectedWard, setSelectedWard] = useState('');
   const [shippingFee, setShippingFee] = useState(0);
+  const [shippingFee1, setShippingFee1] = useState(0);
   const [shipPrice, setShipPrice] = useState(0);
   const token = '96b259e7-9ca7-11ee-b394-8ac29577e80e';
   const shopId = '4773374';
@@ -823,6 +824,36 @@ const CheckoutDetail = () => {
     }
   };
 
+  const handleWardChange1 = async (e) => {
+    const selectedWardCode = e.target.value;
+    setSelectedWard(selectedWardCode);
+
+    setAmountShip(location?.state?.totalAmount);
+    try {
+      if (selectedDistrict && selectedWardCode) {
+        const response = await fetch(
+          `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?service_id=53321&insurance_value=1000000&coupon&to_district_id=${selectedDistrict}&from_district_id=1482&weight=1000*${amountShip}&from_ward_code=11008&to_ward_code=${selectedWardCode}&length=30&width=15&height=40`,
+          {
+            headers: {
+              token: `${token}`,
+              'Content-Type': 'application/json; charset=utf-8',
+              shop_id: `${shopId}`,
+            },
+          },
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setShippingFee(data.data.total);
+        } else {
+          console.error('Failed to fetch shipping fee');
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching shipping fee:', error);
+    }
+  };
+
+
   console.log(customerData);
   console.log(discountPercentByRankingName);
   return (
@@ -1116,7 +1147,7 @@ const CheckoutDetail = () => {
                                     Phường/ Xã<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
                                   </label>
                                   <select
-                                    onChange={handleWardChange}
+                                    onChange={handleWardChange1}
                                     value={selectedWard}
                                     id="selectedWard"
                                     disabled={!selectedDistrict}
