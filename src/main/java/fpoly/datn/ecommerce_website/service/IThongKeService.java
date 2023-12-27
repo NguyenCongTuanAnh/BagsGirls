@@ -26,12 +26,17 @@ public interface IThongKeService {
     // biểu đồ cột
     List<Object[]> findTotalPricesByDay(String month, String year);
 
-    List<TopCustomersDTO> getTopCustomersByTotalPrice();
+    List<TopCustomersDTO> getTopCustomersByTotalPrice(Date startDate, Date endDate);
 
     List<TopProductsDTO> findTopProductsByTotalAmount();
 
+     List<Object[]> findTopProductsSold(Date startDate, Date endDate);
 
-    List<Object[]> findTopProductsSold(Date startDate, Date endDate);
+     Map<String, Double> findByBillCreateDateBetween(Date startDate, Date endDate);
 
-    Map<Integer, Double> findByBillCreateDateBetween(Date startDate, Date endDate);
-}
+
+
+
+
+
+    }

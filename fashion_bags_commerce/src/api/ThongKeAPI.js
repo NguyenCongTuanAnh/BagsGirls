@@ -20,6 +20,33 @@ const ThongKeAPI = {
             },
         });
     },
+    getTopFiveCustomer(startDate, endDate) {
+        const url = 'api/thong-ke/top-customer';
+        return axiosClient.get(url, {
+            params: {
+                startDate: startDate,
+                endDate: endDate,
+            },
+        });
+    },
+    getTopFiveProduct(startDate, endDate) {
+        const url = 'api/thong-ke/top-products';
+        return axiosClient.get(url, {
+            params: {
+                startDate: startDate,
+                endDate: endDate,
+            },
+        });
+    },
+    getThongKeStatus(startDate, endDate) {
+        const url = 'api/thong-ke/statisticPercentByBillStatus';
+        return axiosClient.get(url, {
+            params: {
+                startDate: startDate,
+                endDate: endDate,
+            },
+        });
+    },
 
 };
 

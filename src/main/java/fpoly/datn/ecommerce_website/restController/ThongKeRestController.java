@@ -19,6 +19,7 @@ import java.text.ParseException;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -74,18 +75,29 @@ public class ThongKeRestController {
     }
 
     @GetMapping("/thong-ke/top-customer")
-    public ResponseEntity<List<TopCustomersDTO>> getTopStaffsByTotalPrice() {
-        List<TopCustomersDTO> topCustomers = thongKeService.getTopCustomersByTotalPrice();
-        return new ResponseEntity<>(topCustomers, HttpStatus.OK);
+    public ResponseEntity<List<TopCustomersDTO>> getTopStaffsByTotalPrice(
+            @RequestParam(name ="startDate", defaultValue = "0001-01-01") String startDateStr,
+            @RequestParam(name ="endDate", defaultValue = "9999-01-01") String endDateStr) {
+        try{
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date startDate = dateFormat.parse(startDateStr);
+            Date endDate = dateFormat.parse(endDateStr);
+            List<TopCustomersDTO> topCustomers = thongKeService.getTopCustomersByTotalPrice(startDate, endDate);
+            return new ResponseEntity<>(topCustomers, HttpStatus.OK);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
-    @GetMapping("/thong-ke/top-product")
-    public ResponseEntity<List<TopProductsDTO>> getTopProduct() {
-        List<TopProductsDTO> topProduct = thongKeService.findTopProductsByTotalAmount();
-        return new ResponseEntity<>(topProduct, HttpStatus.OK);
-    }
+//    @GetMapping("/thong-ke/top-product")
+//    public ResponseEntity<List<TopProductsDTO>> getTopProduct() {
+//        List<TopProductsDTO> topProduct = thongKeService.findTopProductsByTotalAmount();
+//        return new ResponseEntity<>(topProduct, HttpStatus.OK);
+//    }
 
-    @GetMapping("/top-products")
+    @GetMapping("/thong-ke/top-products")
     public ResponseEntity<List<Object []>> getTopProducts(@RequestParam("startDate") String startDateStr,
                                                         @RequestParam("endDate") String endDateStr
                                            ) throws ParseException {
@@ -93,14 +105,20 @@ public class ThongKeRestController {
         Date startDate = dateFormat.parse(startDateStr);
         Date endDate = dateFormat.parse(endDateStr);
         List<Object []> topProducts = this.thongKeService.findTopProductsSold(startDate, endDate);
-        return ResponseEntity.ok(topProducts);
+        List<Object []> topProduct = new ArrayList<>();
+        for(int i=0; i<5; i++){
+            topProduct.add(topProducts.get(i));
+        }
+        return ResponseEntity.ok(topProduct);
     }
-    @GetMapping("/statisticPercentByBillStatus")
-    public Map<Integer, Double> findByBillCreateDateBetween(@RequestParam("startDate") String startDateStr,
+    @GetMapping("/thong-ke/statisticPercentByBillStatus")
+    public Map<String, Double> findByBillCreateDateBetween(@RequestParam("startDate") String startDateStr,
+
                                                             @RequestParam("endDate") String endDateStr) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = dateFormat.parse(startDateStr);
         Date endDate = dateFormat.parse(endDateStr);
         return this.thongKeService.findByBillCreateDateBetween(startDate, endDate);
     }
+
 }

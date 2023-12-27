@@ -39,6 +39,7 @@ public class ThongKeServiceImpl implements IThongKeService {
     @Autowired
     IStaffRepository staffRepository;
 
+
     @Override
     public List<Bills> getBillsByDateRange(Date startDate, Date endDate) {
         return billRepository.findByBillCreateDateBetween(startDate, endDate);
@@ -134,8 +135,8 @@ public class ThongKeServiceImpl implements IThongKeService {
     }
 
     @Override
-    public List<TopCustomersDTO> getTopCustomersByTotalPrice() {
-        return billRepository.findTopCustomersByTotalPrice(PageRequest.of(0, 5));
+    public List<TopCustomersDTO> getTopCustomersByTotalPrice(Date startDate, Date endDate) {
+        return billRepository.findTopCustomersByTotalPrice(PageRequest.of(0, 5), startDate, endDate);
     }
 
     @Override
@@ -151,20 +152,38 @@ public class ThongKeServiceImpl implements IThongKeService {
         return objects;
     }
     @Override
-    public Map<Integer, Double> findByBillCreateDateBetween(Date startDate, Date endDate){
+    public Map<String, Double> findByBillCreateDateBetween(Date startDate, Date endDate){
+
         List<Bills> bills = this.getBillsByDateRange(startDate, endDate);
         int totalBills = bills.size();
         Map<Integer, Long> billStatusCounts = bills.stream()
                 .collect(Collectors.groupingBy(Bills::getBillStatus, Collectors.counting()));
 
 // Tính phần trăm cho mỗi trạng thái
-        Map<Integer, Double> percentageByStatus = new HashMap<>();
+
+        Map<String, Double> percentageByStatus = new HashMap<>();
         for (Map.Entry<Integer, Long> entry : billStatusCounts.entrySet()) {
             int status = entry.getKey();
+            String stringStatus = "";
+            if(status == 1){
+                stringStatus = "ThanhCong";
+            }else if(status == 2){
+                stringStatus = "DangGiao";
+            }
+            else if(status == 3){
+                stringStatus = "DangDongGoi";
+            }
+            else if(status == 4){
+                stringStatus = "ChoXacNhan";
+            }
+            else if(status == -1){
+                stringStatus = "DaHuy";
+            }else{
+                stringStatus = "KhongXacDinh";
+            }
             long count = entry.getValue();
             double percentage = (count * 100.0) / totalBills;
-            double roundedPercentage = Math.round(percentage * 100.0) / 100.0; // Làm tròn đến 2 chữ số thập phân
-            percentageByStatus.put(status, roundedPercentage);
+            percentageByStatus.put(stringStatus, percentage);
         }
 
         return percentageByStatus;
