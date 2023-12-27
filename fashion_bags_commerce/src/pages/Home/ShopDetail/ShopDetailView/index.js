@@ -308,7 +308,7 @@ function ShopDetailView() {
       } else {
         notification.error({
           message: 'Thất bại',
-          description: 'Số lượng sản phẩm trong kho không đủ',
+          description: 'Số lượng sản phẩm không hợp lệ',
           duration: 1,
         });
       }
@@ -318,22 +318,30 @@ function ShopDetailView() {
   };
 
   const handleInputChange = (event) => {
-    let newValue = event.target.value.replace(/\D/g, '');
-    if (newValue === '' || parseInt(newValue, 10) === 0) {
-      newValue = '1';
-    }
+    let newValue = event.target.value.replace(/\D/g, ''); // Only allowing digits
 
-    setQuantity(parseInt(newValue, 10));
+    if (newValue === '') {
+      setQuantity(''); // Set the state to an empty string if the input is cleared
+    } else {
+      newValue = newValue > 20 ? '20' : newValue; // Limiting input to 20
+      setQuantity(parseInt(newValue, 10)); // Setting the parsed integer value
+    }
+  };
+
+  const handleInputBlur = () => {
+    if (quantity === '' || quantity===0) {
+      setQuantity(1); // If the input is empty on blur, set it to '1'
+    }
   };
 
   const handleIncrement = () => {
     // Tăng giá trị quantity khi nhấn nút '+'
     const amountInDatabase = dataDetail.amount; // Số lượng tồn kho trong cơ sở dữ liệu
-    if (quantity + 1 > amountInDatabase) {
+    if (quantity + 1 > amountInDatabase || quantity + 1 > 20) {
       // Hiển thị thông báo khi số lượng vượt quá số lượng trong kho
       notification.error({
         message: 'Thất bại',
-        description: 'Số lượng đã đạt giới hạn ',
+        description: 'Chỉ được phép đặt mua tối đa 20 sản phẩm',
         duration: 1,
       });
     } else {
@@ -563,11 +571,15 @@ function ShopDetailView() {
                       <MinusOutlined />
                     </div>
                     <input
-                      className={styles.input_amount}
-                      value={quantity}
-                      id="quantity"
+                    className={styles.input_amount}
+                      type="text"
+                      value={quantity === '' ? '' : parseInt(quantity, 10)} // Ensure empty string or parse as an integer
                       onChange={handleInputChange}
+                      onBlur={handleInputBlur}
+                      min={1}
+                              
                     />
+
                     <div className={styles.item_change2} onClick={handleIncrement}>
                       <PlusOutlined />
                     </div>
@@ -582,8 +594,6 @@ function ShopDetailView() {
               ) : (
                 <Link to="">{renderAddToCartButtonDB()}</Link>
               )}
-
-             
             </div>
           </div>
         </div>

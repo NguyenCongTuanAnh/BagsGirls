@@ -172,12 +172,11 @@ function CartItem() {
               <MinusOutlined />
             </div>
             <input
-              disabled
               className={styles.input_amount}
-              value={record.quantity}
-              id="quantity"
+              type="text"
+              value={record.quantity || ''}
               onChange={(e) => handleQuantityChange(e, record)}
-              min={1}
+              onBlur={(e) => handleBlur(e, record)}
             />
             <div className={styles.item_change2} onClick={() => handleIncrement(record)}>
               <PlusOutlined />
@@ -202,34 +201,60 @@ function CartItem() {
       title: 'Xóa',
       dataIndex: 'operation',
       render: (text, record) => (
-        <Button type="dashed" danger onClick={() => handleRemoveItem(record)} icon={<DeleteOutlined />}>
-          Xóa
-        </Button>
+        <button
+          className={styles.btnXoa}
+          type="default"
+          onClick={() => handleRemoveItem(record)}
+          // icon={}
+        >
+          <DeleteOutlined /> Xóa
+        </button>
       ),
       key: 'operation',
     },
   ];
 
   const handleQuantityChange = (e, record) => {
+    const input = e.target.value;
+    const newQuantity = input === '' ? '' : parseInt(input, 10);
     const updatedCart = cartItems.map((item) => {
       if (item === record) {
-        return { ...item, quantity: parseInt(e.target.value, 10) };
+        // Limit quantity to a maximum of 20 or set to empty if the input is empty
+        const quantity = input === '' ? '' : newQuantity > 20 ? 20 : newQuantity;
+        return { ...item, quantity };
       }
       return item;
     });
+
     setCartItems(updatedCart);
     localStorage.setItem('temporaryCart', JSON.stringify(updatedCart));
+  };
+
+  const handleBlur = (e, record) => {
+    const input = e.target.value;
+    const updatedCart = cartItems.map((item) => {
+      if (item === record) {
+        // If the input is empty, revert to the initial value
+        const quantity = input === '' ? 1 : item.quantity;
+        return { ...item, quantity };
+      }
+      return item;
+    });
+
+    setCartItems(updatedCart);
+    localStorage.setItem('temporaryCart', JSON.stringify(updatedCart));
+
   };
 
   const handleIncrement = (record) => {
     const amountInDatabase = record.amount;
     console.log('so luong sp trong kho', amountInDatabase); // Số lượng tồn kho của sản phẩm trong cơ sở dữ liệu
 
-    if (record.quantity + 1 > amountInDatabase) {
+    if (record.quantity + 1 > amountInDatabase || record.quantity + 1 > 20) {
       // Hiển thị thông báo khi số lượng vượt quá số lượng trong kho
       notification.error({
         message: 'Thất bại',
-        description: 'Số lượng đã đạt giới hạn ',
+        description: 'Chỉ đặt tối đa 20 sản phẩm và không vượt quá số lượng có sẵn',
         duration: 1,
       });
     } else {
@@ -298,23 +323,23 @@ function CartItem() {
                   </div>
                 )}
               />
-             <div style={{textAlign:'center'}}>
-             <button
-                className={styles.buttonThanhToan}
-                onClick={() => {
-                  navigate('/cart/checkout', {
-                    state: {
-                      totalPrice: calculateTotal(),
-                      voucherPrice: voucherPrice,
-                      disCountPercent: voucher.discountPercent,
-                      totalQuantity: totalQuantity,
-                    },
-                  });
-                }}
-              >
-                Tiến hành thanh toán
-              </button>
-             </div>
+              <div style={{ textAlign: 'center' }}>
+                <button
+                  className={styles.buttonThanhToan}
+                  onClick={() => {
+                    navigate('/cart/checkout', {
+                      state: {
+                        totalPrice: calculateTotal(),
+                        voucherPrice: voucherPrice,
+                        disCountPercent: voucher.discountPercent,
+                        totalQuantity: totalQuantity,
+                      },
+                    });
+                  }}
+                >
+                  Tiến hành thanh toán
+                </button>
+              </div>
             </div>
           )}
         </div>

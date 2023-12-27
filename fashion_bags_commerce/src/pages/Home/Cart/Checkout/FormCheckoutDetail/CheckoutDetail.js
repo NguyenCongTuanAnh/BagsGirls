@@ -29,6 +29,7 @@ const CheckoutDetail = () => {
   const [anThongTinDiaChi1, setAnThongTinDiaChi1] = useState(false);
   const [cartId, setCartId] = useState('');
   const [amountShip, setAmountShip] = useState('');
+  const [amountShip1, setAmountShip1] = useState('');
 
   const navigate = useNavigate();
 
@@ -60,7 +61,7 @@ const CheckoutDetail = () => {
     try {
       const response = await customerAPI.getOne(customerId);
       const data = response.data;
-      console.log(data);
+      // console.log(data);
       setCustomerData(data);
       setAddress1(data.users.address || '');
     } catch (error) {
@@ -93,7 +94,7 @@ const CheckoutDetail = () => {
     }
   }, [thongTinKH, totalPrice, customerData]);
   const handleApplyVoucherCode = async () => {
-    console.log(voucherCode);
+    // console.log(voucherCode);
     if (voucherCode === '') {
       messageApi.error('Mã code không hợp lệ!!!!');
       return;
@@ -101,7 +102,7 @@ const CheckoutDetail = () => {
     try {
       const response = await voucherAPI.findByVoucherCode(voucherCode);
       const voucher = response.data;
-      console.log('voucherss', voucher);
+      // console.log('voucherss', voucher);
       setVoucher(voucher);
       if (voucher.voucherAmount <= 0) {
         messageApi.open({
@@ -114,9 +115,9 @@ const CheckoutDetail = () => {
         const endTime = moment(voucher.voucherEndTime);
 
         if (currentTime.isBetween(startTime, endTime)) {
-          console.log(currentTime.isBetween(startTime, endTime));
-          console.log('gia toi thieu', voucher.totalPriceToReceive);
-          console.log('tong gia bill', calculateTotal());
+          // console.log(currentTime.isBetween(startTime, endTime));
+          // console.log('gia toi thieu', voucher.totalPriceToReceive);
+          // console.log('tong gia bill', calculateTotal());
 
           if (voucher.totalPriceToReceive <= calculateTotal()) {
             setDiscountPercent(voucher.discountPercent);
@@ -124,7 +125,7 @@ const CheckoutDetail = () => {
             setVoucherPrice(calculatedVoucherPrice);
             const discountedTotalPrice = calculateTotal() - calculatedVoucherPrice + shippingFee;
             setTotalPrice(discountedTotalPrice);
-            console.log('tong bill khi ap dung voucher', discountedTotalPrice);
+            // console.log('tong bill khi ap dung voucher', discountedTotalPrice);
 
             messageApi.open({
               type: 'success',
@@ -154,7 +155,7 @@ const CheckoutDetail = () => {
     }
   };
   const handleApplyVoucherCode1 = async () => {
-    console.log(voucherCode);
+    // console.log(voucherCode);
     if (voucherCode === '') {
       messageApi.error('Mã code không hợp lệ!!!!');
       return;
@@ -162,7 +163,7 @@ const CheckoutDetail = () => {
     try {
       const response = await voucherAPI.findByVoucherCode(voucherCode);
       const voucher = response.data;
-      console.log('voucherss', voucher);
+      // console.log('voucherss', voucher);
       setVoucher(voucher);
       if (voucher.voucherAmount <= 0) {
         messageApi.open({
@@ -175,18 +176,21 @@ const CheckoutDetail = () => {
         const endTime = moment(voucher.voucherEndTime);
 
         if (currentTime.isBetween(startTime, endTime)) {
-          console.log(currentTime.isBetween(startTime, endTime));
-          console.log('gia toi thieu', voucher.totalPriceToReceive);
-          console.log('tong gia bill', calculateTotalCustomer());
+          // console.log(currentTime.isBetween(startTime, endTime));
+          // console.log('gia toi thieu', voucher.totalPriceToReceive);
+          // console.log('tong gia bill', calculateTotalCustomer());
 
           if (voucher.totalPriceToReceive <= calculateTotalCustomer()) {
             setDiscountPercent(voucher.discountPercent);
             const calculatedVoucherPrice = calculateTotalCustomer() * (voucher.discountPercent / 100) || voucherPrice;
             setVoucherPrice(calculatedVoucherPrice);
             const discountedTotalPrice =
-              calculateTotalCustomer() - calculatedVoucherPrice + shippingFee - ((discountPercentByRankingName / 100) * calculateTotalCustomer());
+              calculateTotalCustomer() -
+              calculatedVoucherPrice +
+              shippingFee -
+              (discountPercentByRankingName / 100) * calculateTotalCustomer();
             setTotalPrice(discountedTotalPrice);
-            console.log('tong bill khi ap dung voucher', discountedTotalPrice);
+            // console.log('tong bill khi ap dung voucher', discountedTotalPrice);
 
             messageApi.open({
               type: 'success',
@@ -235,8 +239,8 @@ const CheckoutDetail = () => {
   };
 
   useEffect(() => {
-    console.log('dia chi', cartDetailss);
-    console.log('hinh anh', cartDetailss);
+    // console.log('dia chi', cartDetailss);
+    // console.log('hinh anh', cartDetailss);
   }, [location]);
 
   const bottomRef = useRef(null);
@@ -267,7 +271,7 @@ const CheckoutDetail = () => {
     if (storedCart) {
       setCartItems(JSON.parse(storedCart));
     }
-    console.log('storedCart', storedCart);
+    // console.log('storedCart', storedCart);
     // console.log('tongBill', calculateTotal());
     // console.log('tongBill', calculateTotalCustomer());
   }, []);
@@ -277,8 +281,8 @@ const CheckoutDetail = () => {
     if (storeCartDetail) {
       setCartetailss(storeCartDetail);
     }
-    console.log('storeCartDetail', storeCartDetail);
-    console.log('totalPrice', totalPrice);
+    // console.log('storeCartDetail', storeCartDetail);
+    // console.log('totalPrice', totalPrice);
   }, []);
   const handleFullNameChange = (e) => {
     const inputValue = e.target.value;
@@ -363,7 +367,7 @@ const CheckoutDetail = () => {
       }
 
       const fullAddressText = `- ${selectedProvinceName} - ${selectedDistrictName} - ${selectedWardName}`;
-        const tongAddress =address + fullAddressText;
+      const tongAddress = address + fullAddressText;
       const data = {
         fullName,
         phoneNumber,
@@ -373,7 +377,7 @@ const CheckoutDetail = () => {
         selectedProvince,
         selectedDistrict,
         selectedWard,
-        fullAddress : tongAddress,
+        fullAddress: tongAddress,
       };
 
       setAddress(tongAddress);
@@ -427,12 +431,12 @@ const CheckoutDetail = () => {
       setDisplayAddress(true);
       setDisplayInformation(false);
       setSubmittedData(data);
-      console.log('Thông tin địa chỉ:', data);
-      console.log('Tỉnh:', selectedProvinceName);
-      console.log('Quận:', selectedDistrictName);
-      console.log('Xã:', selectedWardName);
-      console.log('Họ và tên:', fullName);
-      console.log('Địa chỉ hoàn chỉnh:', combinedAddress);
+      // console.log('Thông tin địa chỉ:', data);
+      // console.log('Tỉnh:', selectedProvinceName);
+      // console.log('Quận:', selectedDistrictName);
+      // console.log('Xã:', selectedWardName);
+      // console.log('Họ và tên:', fullName);
+      // console.log('Địa chỉ hoàn chỉnh:', combinedAddress);
     } catch (error) {
       console.error('Error submitting information:', error);
     }
@@ -454,6 +458,8 @@ const CheckoutDetail = () => {
   };
 
   const handleConfirmation = async () => {
+    const confirmed = window.confirm('Bạn chắc chắn muốn đặt hàng?');
+
     setLoadingPayment(true);
     setTimeout(async () => {
       const currentTime = new Date();
@@ -497,6 +503,8 @@ const CheckoutDetail = () => {
         { billTotalPrice: 0, productAmount: 0 },
       );
       try {
+    if(confirmed){
+
         const billData = {
           receiverName: fullName,
           orderPhone: phoneNumber,
@@ -505,20 +513,20 @@ const CheckoutDetail = () => {
           billCreateDate: currentDateTime,
           billNote: billNote,
           billStatus: 4,
-          shipPrice:shippingFee,
+          shipPrice: shippingFee,
           billCode: generateCustomCode('HĐ', 9),
           billTotalPrice: location?.state?.totalPrice,
           productAmount: location?.state?.totalQuantity,
-          billPriceAfterVoucher: totalPrice  || location?.state?.totalPrice + shippingFee,
+          billPriceAfterVoucher: totalPrice || location?.state?.totalPrice + shippingFee,
           billReducedPrice: voucherPrice,
         };
-
-        console.log('BilLData', billData);
+        //
+        // console.log('BilLData', billData);
         const response = await billsAPI.add(billData);
-        console.log('Billsssss', response.data);
+        // console.log('Billsssss', response.data);
 
         const billId = response.data.billId;
-        console.log('BillIDdđ', billId);
+        // console.log('BillIDdđ', billId);
 
         // Tạo mảng dữ liệu cho billDetails
         const billDetailsData = cartItems.map((item) => ({
@@ -534,7 +542,7 @@ const CheckoutDetail = () => {
 
           price: item.retailPrice,
         }));
-        console.log('Cartssss', cartItems);
+        // console.log('Cartssss', cartItems);
 
         const responseBillDetails = await Promise.all(
           billDetailsData.map((billDetail) => billDetailAPI.add(billDetail)),
@@ -550,14 +558,17 @@ const CheckoutDetail = () => {
         );
         setShipPrice(shippingFee);
 
-        console.log('bilsssssss:', response.data);
-        console.log('BilLDetails:', responseBillDetails);
+        // console.log('bilsssssss:', response.data);
+        // console.log('BilLDetails:', responseBillDetails);
         setOrderSuccess(true);
         localStorage.removeItem('temporaryCart');
         messageApi.open({
           type: 'success',
           content: 'Thanh toán thành công',
         });
+      }else{
+        console.log("ban da huy dat hang");
+      }
       } catch (error) {
         setLoadingPayment(false);
         setTimeout(() => setLoadingPayment(true), 200);
@@ -568,11 +579,13 @@ const CheckoutDetail = () => {
   };
 
   const handleConfirmation1 = async () => {
+    const confirmed = window.confirm('Bạn chắc chắn muốn đặt hàng?');
+
     await customerAPI
       .getOne(customerId)
       .then((response) => {
         const data = response.data;
-        console.log(data);
+        // console.log(data);
         setCustomerData(data);
 
         setAddress1(data.users.address || '');
@@ -599,6 +612,8 @@ const CheckoutDetail = () => {
       }
 
       try {
+    if(confirmed){
+
         let selectedProvinceName = '';
         let selectedDistrictName = '';
         let selectedWardName = '';
@@ -628,15 +643,16 @@ const CheckoutDetail = () => {
           billCreateDate: currentDateTime,
           billNote: billNote,
           billStatus: 4,
-          billReducedPrice: voucherPrice +  ((discountPercentByRankingName / 100) * calculateTotalCustomer()) ,
+          billReducedPrice: voucherPrice + (discountPercentByRankingName / 100) * calculateTotalCustomer(),
           shipPrice: shippingFee,
           billCode: generateCustomCode('HĐ', 9),
           billTotalPrice: location?.state?.totalPrice1,
           productAmount: location?.state?.totalAmount,
-          billPriceAfterVoucher: totalPrice ||
-          location?.state?.totalPrice1 +
-            shippingFee -
-            (discountPercentByRankingName / 100) * calculateTotalCustomer(),
+          billPriceAfterVoucher:
+            totalPrice ||
+            location?.state?.totalPrice1 +
+              shippingFee -
+              (discountPercentByRankingName / 100) * calculateTotalCustomer(),
           customer: {
             customerId: customerId,
             users: {
@@ -650,9 +666,9 @@ const CheckoutDetail = () => {
         setAddressFinal(combinedAddress);
         setFullAddres(fullAddressText);
         setShipPrice(shippingFee);
-        console.log('11111111111111111', billData);
+        // console.log('11111111111111111', billData);
         const response = await billsAPI.add(billData);
-        console.log('Billsssss', response.data);
+        // console.log('Billsssss', response.data);
 
         // const customerData = {
         //   customerStatus:
@@ -661,7 +677,7 @@ const CheckoutDetail = () => {
         // const response1 = await customerAPI.add(customerData);
 
         const billId = response.data.billId;
-        console.log('BillIDdđ', billId);
+        // console.log('BillIDdđ', billId);
 
         // Tạo mảng dữ liệu cho billDetails
         const billDetailsData = cartDetailss.map((item) => ({
@@ -692,8 +708,8 @@ const CheckoutDetail = () => {
         );
         const cartIdne = location?.state?.cartId;
         setCartId(cartIdne);
-        console.log('bilsssssss:', response.data);
-        console.log('BilLDetails:', responseBillDetails);
+        // console.log('bilsssssss:', response.data);
+        // console.log('BilLDetails:', responseBillDetails);
         setOrderSuccess(true);
         localStorage.removeItem('temporaryCart');
         messageApi.open({
@@ -701,6 +717,9 @@ const CheckoutDetail = () => {
           content: 'Thanh toán thành công',
         });
         clearAllCartDetail(cartIdne);
+      }else{ 
+        setLoadingPayment(false);
+          console.log('Hủy đặt hàng');} 
       } catch (error) {
         setLoadingPayment(false);
         setTimeout(() => setLoadingPayment(true), 200);
@@ -710,7 +729,7 @@ const CheckoutDetail = () => {
     }, 500);
   };
   const clearAllCartDetail = async (cartId) => {
-    console.log('cartId', cartId);
+    // console.log('cartId', cartId);
     try {
       await cartDetailAPI.clearCartDetail(cartId);
     } catch (error) {
@@ -746,7 +765,7 @@ const CheckoutDetail = () => {
     setSelectedProvince(selectedProvinceId);
     setDistricts([]);
     setWards([]);
-    setShippingFee(0);
+    // setShippingFee(0);
 
     try {
       const response = await fetch(
@@ -799,11 +818,16 @@ const CheckoutDetail = () => {
     const selectedWardCode = e.target.value;
     setSelectedWard(selectedWardCode);
 
-    setAmountShip(location?.state?.totalAmount);
+    setAmountShip1(location?.state?.totalQuantity);
+
+    // console.log("tong so luong san pham la",amountShip);
+    // console.log("tong so luong san pham la",amountShip1);
     try {
       if (selectedDistrict && selectedWardCode) {
         const response = await fetch(
-          `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?service_id=53321&insurance_value=1000000&coupon&to_district_id=${selectedDistrict}&from_district_id=1482&weight=500&from_ward_code=11008&to_ward_code=${selectedWardCode}&length=30&width=15&height=40`,
+          `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?service_id=53321&insurance_value=1000000&coupon&to_district_id=${selectedDistrict}&from_district_id=1482&weight=${
+            500 * amountShip1
+          }&from_ward_code=11008&to_ward_code=${selectedWardCode}&length=30&width=15&height=40`,
           {
             headers: {
               token: `${token}`,
@@ -829,10 +853,16 @@ const CheckoutDetail = () => {
     setSelectedWard(selectedWardCode);
 
     setAmountShip(location?.state?.totalAmount);
+    setAmountShip1(location?.state?.totalQuantity);
+    // console.log("tong so luong san pham la",amountShip);
+    // console.log("tong so luong san pham la ship1",amountShip1);
+
     try {
       if (selectedDistrict && selectedWardCode) {
         const response = await fetch(
-          `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?service_id=53321&insurance_value=1000000&coupon&to_district_id=${selectedDistrict}&from_district_id=1482&weight=1000*${amountShip}&from_ward_code=11008&to_ward_code=${selectedWardCode}&length=30&width=15&height=40`,
+          `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?service_id=53321&insurance_value=1000000&coupon&to_district_id=${selectedDistrict}&from_district_id=1482&weight=${
+            500 * amountShip
+          }&from_ward_code=11008&to_ward_code=${selectedWardCode}&length=30&width=15&height=40`,
           {
             headers: {
               token: `${token}`,
@@ -853,9 +883,8 @@ const CheckoutDetail = () => {
     }
   };
 
-
-  console.log(customerData);
-  console.log(discountPercentByRankingName);
+  // console.log(customerData);
+  // console.log(discountPercentByRankingName);
   return (
     <div className="form-container">
       {/* <Breadcrumb steps={steps} /> */}
@@ -1558,7 +1587,7 @@ const CheckoutDetail = () => {
                       <span style={{ color: 'red', fontWeight: 'bold', fontSize: '25px' }}>
                         {' '}
                         {VNDFormaterFunc(
-                          totalPrice  ||
+                          totalPrice ||
                             location?.state?.totalPrice1 +
                               shippingFee -
                               (discountPercentByRankingName / 100) * calculateTotalCustomer(),

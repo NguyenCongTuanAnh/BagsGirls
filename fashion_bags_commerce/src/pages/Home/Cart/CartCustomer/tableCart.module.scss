@@ -67,6 +67,7 @@
 .buttonXoa:hover {
   background-color: red;
   color: white;
+  border: 1px white dashed;
 }
 .buttonXoa {
   border: 1px red dashed;
@@ -74,6 +75,7 @@
   background-color: white;
   color: red;
   margin: 80px 0 0 0;
+  border-radius: 8px;
 }
 .buttonThanhToan {
   background-color: white;
