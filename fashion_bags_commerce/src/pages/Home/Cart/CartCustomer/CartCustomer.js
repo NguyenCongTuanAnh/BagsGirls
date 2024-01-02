@@ -121,6 +121,15 @@ function CartCustomer() {
       return;
     }
 
+    if (newQuantity > 20) {
+      notification.error({
+        message: 'Thất bại',
+        description: 'Chỉ được mua tối đa 20 sản phẩm ',
+        duration: 3,
+      });
+      return;
+    }
+    
     try {
       await updateCartItemQuantity(cartItem.cartDetailId, newQuantity);
     } catch (error) {

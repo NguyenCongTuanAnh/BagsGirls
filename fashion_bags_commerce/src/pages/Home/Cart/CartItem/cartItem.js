@@ -250,14 +250,24 @@ function CartItem() {
     const amountInDatabase = record.amount;
     console.log('so luong sp trong kho', amountInDatabase); // Số lượng tồn kho của sản phẩm trong cơ sở dữ liệu
 
-    if (record.quantity + 1 > amountInDatabase || record.quantity + 1 > 20) {
+    if (record.quantity + 1 > amountInDatabase) {
       // Hiển thị thông báo khi số lượng vượt quá số lượng trong kho
       notification.error({
         message: 'Thất bại',
-        description: 'Chỉ đặt tối đa 20 sản phẩm và không vượt quá số lượng có sẵn',
+        description: 'Số lượng đã đạt giới hạn',
         duration: 1,
       });
-    } else {
+    } else 
+    if ( record.quantity + 1 > 20) {
+      // Hiển thị thông báo khi số lượng vượt quá số lượng trong kho
+      notification.error({
+        message: 'Thất bại',
+        description: 'Chỉ được đặt tối đa 20 sản phẩm',
+        duration: 1,
+      });
+    }
+    
+    else {
       const updatedCart = cartItems.map((item) => {
         if (item === record) {
           return { ...item, quantity: item.quantity + 1 };

@@ -326,8 +326,7 @@ const CheckoutDetail = () => {
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [selectedWard, setSelectedWard] = useState('');
-  const [shippingFee, setShippingFee] = useState(38650);
-  const [shippingFee1, setShippingFee1] = useState(0);
+  const [shippingFee, setShippingFee] = useState(0);
   const [shipPrice, setShipPrice] = useState(0);
   const token = '96b259e7-9ca7-11ee-b394-8ac29577e80e';
   const shopId = '4773374';
@@ -1207,6 +1206,7 @@ const CheckoutDetail = () => {
                                         setAnThongTinDiaChi1(true);
                                         setAddress('');
                                         handleResetDropdowns();
+                                        setShippingFee(56520 + 1000 * location?.state?.totalAmount);
                                       }}
                                     >
                                       Lấy địa chỉ của bạn:
