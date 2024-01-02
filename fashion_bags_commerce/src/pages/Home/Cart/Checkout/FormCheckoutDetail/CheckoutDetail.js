@@ -1,4 +1,4 @@
-import { RightOutlined } from '@ant-design/icons';
+import { DownOutlined, RightOutlined, UpOutlined } from '@ant-design/icons';
 import { Form, Result, message, notification } from 'antd';
 import Search from 'antd/es/input/Search';
 import axios from 'axios';
@@ -46,6 +46,7 @@ const CheckoutDetail = () => {
   const [displayAddress, setDisplayAddress] = useState(false);
   const [displayOrder, setDisplayOrder] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [donhang, setDonHang] = useState(false);
   const [discountPercentByRankingName, setDiscountPercentByRankingName] = useState();
 
   const [voucherPrice, setVoucherPrice] = useState(0);
@@ -325,7 +326,7 @@ const CheckoutDetail = () => {
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [selectedWard, setSelectedWard] = useState('');
-  const [shippingFee, setShippingFee] = useState(0);
+  const [shippingFee, setShippingFee] = useState(38650);
   const [shippingFee1, setShippingFee1] = useState(0);
   const [shipPrice, setShipPrice] = useState(0);
   const token = '96b259e7-9ca7-11ee-b394-8ac29577e80e';
@@ -503,72 +504,71 @@ const CheckoutDetail = () => {
         { billTotalPrice: 0, productAmount: 0 },
       );
       try {
-    if(confirmed){
+        if (confirmed) {
+          const billData = {
+            receiverName: fullName,
+            orderPhone: phoneNumber,
+            orderEmail: email,
+            shippingAddress: fullAddress,
+            billCreateDate: currentDateTime,
+            billNote: billNote,
+            billStatus: 4,
+            shipPrice: shippingFee,
+            billCode: generateCustomCode('HĐ', 9),
+            billTotalPrice: location?.state?.totalPrice,
+            productAmount: location?.state?.totalQuantity,
+            billPriceAfterVoucher: totalPrice || location?.state?.totalPrice + shippingFee,
+            billReducedPrice: voucherPrice,
+          };
+          //
+          // console.log('BilLData', billData);
+          const response = await billsAPI.add(billData);
+          // console.log('Billsssss', response.data);
 
-        const billData = {
-          receiverName: fullName,
-          orderPhone: phoneNumber,
-          orderEmail: email,
-          shippingAddress: fullAddress,
-          billCreateDate: currentDateTime,
-          billNote: billNote,
-          billStatus: 4,
-          shipPrice: shippingFee,
-          billCode: generateCustomCode('HĐ', 9),
-          billTotalPrice: location?.state?.totalPrice,
-          productAmount: location?.state?.totalQuantity,
-          billPriceAfterVoucher: totalPrice || location?.state?.totalPrice + shippingFee,
-          billReducedPrice: voucherPrice,
-        };
-        //
-        // console.log('BilLData', billData);
-        const response = await billsAPI.add(billData);
-        // console.log('Billsssss', response.data);
+          const billId = response.data.billId;
+          // console.log('BillIDdđ', billId);
 
-        const billId = response.data.billId;
-        // console.log('BillIDdđ', billId);
+          // Tạo mảng dữ liệu cho billDetails
+          const billDetailsData = cartItems.map((item) => ({
+            bills: {
+              billId: billId,
+            },
+            productDetails: {
+              productDetailId: item.productDetailId,
+            },
+            amount: item.quantity,
+            billDetailStatus: 1,
+            billDetailNote: null,
 
-        // Tạo mảng dữ liệu cho billDetails
-        const billDetailsData = cartItems.map((item) => ({
-          bills: {
-            billId: billId,
-          },
-          productDetails: {
-            productDetailId: item.productDetailId,
-          },
-          amount: item.quantity,
-          billDetailStatus: 1,
-          billDetailNote: null,
+            price: item.retailPrice,
+          }));
+          // console.log('Cartssss', cartItems);
 
-          price: item.retailPrice,
-        }));
-        // console.log('Cartssss', cartItems);
+          const responseBillDetails = await Promise.all(
+            billDetailsData.map((billDetail) => billDetailAPI.add(billDetail)),
+          );
 
-        const responseBillDetails = await Promise.all(
-          billDetailsData.map((billDetail) => billDetailAPI.add(billDetail)),
-        );
+          setSubmittedData(responseBillDetails);
 
-        setSubmittedData(responseBillDetails);
+          await Promise.all(
+            cartItems.map(async (item) => {
+              // Subtract the quantity from the product detail amount
+              await updateProductDetailAmount(item.productDetailId, item.quantity);
+            }),
+          );
+          setShipPrice(shippingFee);
 
-        await Promise.all(
-          cartItems.map(async (item) => {
-            // Subtract the quantity from the product detail amount
-            await updateProductDetailAmount(item.productDetailId, item.quantity);
-          }),
-        );
-        setShipPrice(shippingFee);
-
-        // console.log('bilsssssss:', response.data);
-        // console.log('BilLDetails:', responseBillDetails);
-        setOrderSuccess(true);
-        localStorage.removeItem('temporaryCart');
-        messageApi.open({
-          type: 'success',
-          content: 'Thanh toán thành công',
-        });
-      }else{
-        console.log("ban da huy dat hang");
-      }
+          // console.log('bilsssssss:', response.data);
+          // console.log('BilLDetails:', responseBillDetails);
+          setOrderSuccess(true);
+          localStorage.removeItem('temporaryCart');
+          messageApi.open({
+            type: 'success',
+            content: 'Thanh toán thành công',
+          });
+        } else {
+          console.log('ban da huy dat hang');
+        }
       } catch (error) {
         setLoadingPayment(false);
         setTimeout(() => setLoadingPayment(true), 200);
@@ -612,114 +612,114 @@ const CheckoutDetail = () => {
       }
 
       try {
-    if(confirmed){
+        if (confirmed) {
+          let selectedProvinceName = '';
+          let selectedDistrictName = '';
+          let selectedWardName = '';
 
-        let selectedProvinceName = '';
-        let selectedDistrictName = '';
-        let selectedWardName = '';
+          if (selectedProvince && provinces.length > 0) {
+            selectedProvinceName =
+              provinces.find((province) => province.ProvinceID === +selectedProvince)?.ProvinceName || '';
+          }
+          if (selectedDistrict && districts.length > 0) {
+            selectedDistrictName =
+              districts.find((district) => district.DistrictID === +selectedDistrict)?.DistrictName || '';
+          }
+          if (selectedWard && wards.length > 0) {
+            selectedWardName = wards.find((ward) => ward.WardCode === selectedWard)?.WardName || '';
+          }
 
-        if (selectedProvince && provinces.length > 0) {
-          selectedProvinceName =
-            provinces.find((province) => province.ProvinceID === +selectedProvince)?.ProvinceName || '';
-        }
-        if (selectedDistrict && districts.length > 0) {
-          selectedDistrictName =
-            districts.find((district) => district.DistrictID === +selectedDistrict)?.DistrictName || '';
-        }
-        if (selectedWard && wards.length > 0) {
-          selectedWardName = wards.find((ward) => ward.WardCode === selectedWard)?.WardName || '';
-        }
+          const fullAddressText = `- ${selectedWardName}- ${selectedDistrictName} -  ${selectedProvinceName}`;
+          const combinedAddress = address + fullAddressText;
 
-        const fullAddressText = `- ${selectedWardName}- ${selectedDistrictName} -  ${selectedProvinceName}`;
-        const combinedAddress = address + fullAddressText;
+          const billData = {
+            receiverName: location.state?.infoCustomer?.customers?.users?.fullName || fullName,
+            orderPhone: location.state?.infoCustomer?.customers?.users?.phoneNumber || phoneNumber,
+            orderEmail: location.state?.infoCustomer?.customers?.users?.email || email,
+            shippingAddress: address ? combinedAddress : address1,
+            // billingAddress:
 
-        const billData = {
-          receiverName: location.state?.infoCustomer?.customers?.users?.fullName || fullName,
-          orderPhone: location.state?.infoCustomer?.customers?.users?.phoneNumber || phoneNumber,
-          orderEmail: location.state?.infoCustomer?.customers?.users?.email || email,
-          shippingAddress: address ? combinedAddress : address1,
-          // billingAddress:
-
-          billCreateDate: currentDateTime,
-          billNote: billNote,
-          billStatus: 4,
-          billReducedPrice: voucherPrice + (discountPercentByRankingName / 100) * calculateTotalCustomer(),
-          shipPrice: shippingFee,
-          billCode: generateCustomCode('HĐ', 9),
-          billTotalPrice: location?.state?.totalPrice1,
-          productAmount: location?.state?.totalAmount,
-          billPriceAfterVoucher:
-            totalPrice ||
-            location?.state?.totalPrice1 +
-              shippingFee -
-              (discountPercentByRankingName / 100) * calculateTotalCustomer(),
-          customer: {
-            customerId: customerId,
-            users: {
-              fullName: thongTinKH?.fullName,
-              phoneNumber: thongTinKH?.phoneNumber,
-              email: thongTinKH?.email,
-              address: address1,
+            billCreateDate: currentDateTime,
+            billNote: billNote,
+            billStatus: 4,
+            billReducedPrice: voucherPrice + (discountPercentByRankingName / 100) * calculateTotalCustomer(),
+            shipPrice: shippingFee,
+            billCode: generateCustomCode('HĐ', 9),
+            billTotalPrice: location?.state?.totalPrice1,
+            productAmount: location?.state?.totalAmount,
+            billPriceAfterVoucher:
+              totalPrice ||
+              location?.state?.totalPrice1 +
+                shippingFee -
+                (discountPercentByRankingName / 100) * calculateTotalCustomer(),
+            customer: {
+              customerId: customerId,
+              users: {
+                fullName: thongTinKH?.fullName,
+                phoneNumber: thongTinKH?.phoneNumber,
+                email: thongTinKH?.email,
+                address: address1,
+              },
             },
-          },
-        };
-        setAddressFinal(combinedAddress);
-        setFullAddres(fullAddressText);
-        setShipPrice(shippingFee);
-        // console.log('11111111111111111', billData);
-        const response = await billsAPI.add(billData);
-        // console.log('Billsssss', response.data);
+          };
+          setAddressFinal(combinedAddress);
+          setFullAddres(fullAddressText);
+          setShipPrice(shippingFee);
+          // console.log('11111111111111111', billData);
+          const response = await billsAPI.add(billData);
+          // console.log('Billsssss', response.data);
 
-        // const customerData = {
-        //   customerStatus:
+          // const customerData = {
+          //   customerStatus:
 
-        // };
-        // const response1 = await customerAPI.add(customerData);
+          // };
+          // const response1 = await customerAPI.add(customerData);
 
-        const billId = response.data.billId;
-        // console.log('BillIDdđ', billId);
+          const billId = response.data.billId;
+          // console.log('BillIDdđ', billId);
 
-        // Tạo mảng dữ liệu cho billDetails
-        const billDetailsData = cartDetailss.map((item) => ({
-          bills: {
-            billId: billId,
-          },
-          productDetails: {
-            productDetailId: item.productDetails.productDetailId,
-          },
-          amount: item.amount,
-          billDetailStatus: 1,
-          billDetailNote: null,
+          // Tạo mảng dữ liệu cho billDetails
+          const billDetailsData = cartDetailss.map((item) => ({
+            bills: {
+              billId: billId,
+            },
+            productDetails: {
+              productDetailId: item.productDetails.productDetailId,
+            },
+            amount: item.amount,
+            billDetailStatus: 1,
+            billDetailNote: null,
 
-          price: item.productDetails.retailPrice,
-        }));
+            price: item.productDetails.retailPrice,
+          }));
 
-        const responseBillDetails = await Promise.all(
-          billDetailsData.map((billDetail) => billDetailAPI.add(billDetail)),
-        );
+          const responseBillDetails = await Promise.all(
+            billDetailsData.map((billDetail) => billDetailAPI.add(billDetail)),
+          );
 
-        setSubmittedData(responseBillDetails);
+          setSubmittedData(responseBillDetails);
 
-        await Promise.all(
-          cartDetailss.map(async (item) => {
-            // Subtract the quantity from the product detail amount
-            await updateProductDetailAmount(item.productDetails.productDetailId, item.amount);
-          }),
-        );
-        const cartIdne = location?.state?.cartId;
-        setCartId(cartIdne);
-        // console.log('bilsssssss:', response.data);
-        // console.log('BilLDetails:', responseBillDetails);
-        setOrderSuccess(true);
-        localStorage.removeItem('temporaryCart');
-        messageApi.open({
-          type: 'success',
-          content: 'Thanh toán thành công',
-        });
-        clearAllCartDetail(cartIdne);
-      }else{ 
-        setLoadingPayment(false);
-          console.log('Hủy đặt hàng');} 
+          await Promise.all(
+            cartDetailss.map(async (item) => {
+              // Subtract the quantity from the product detail amount
+              await updateProductDetailAmount(item.productDetails.productDetailId, item.amount);
+            }),
+          );
+          const cartIdne = location?.state?.cartId;
+          setCartId(cartIdne);
+          // console.log('bilsssssss:', response.data);
+          // console.log('BilLDetails:', responseBillDetails);
+          setOrderSuccess(true);
+          localStorage.removeItem('temporaryCart');
+          messageApi.open({
+            type: 'success',
+            content: 'Thanh toán thành công',
+          });
+          clearAllCartDetail(cartIdne);
+        } else {
+          setLoadingPayment(false);
+          console.log('Hủy đặt hàng');
+        }
       } catch (error) {
         setLoadingPayment(false);
         setTimeout(() => setLoadingPayment(true), 200);
@@ -815,18 +815,14 @@ const CheckoutDetail = () => {
   };
 
   const handleWardChange = async (e) => {
-    const selectedWardCode = e.target.value;
-    setSelectedWard(selectedWardCode);
-
-    setAmountShip1(location?.state?.totalQuantity);
-
-    // console.log("tong so luong san pham la",amountShip);
-    // console.log("tong so luong san pham la",amountShip1);
     try {
+      const selectedWardCode = e.target.value;
+      setSelectedWard(selectedWardCode);
+
       if (selectedDistrict && selectedWardCode) {
         const response = await fetch(
           `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?service_id=53321&insurance_value=1000000&coupon&to_district_id=${selectedDistrict}&from_district_id=1482&weight=${
-            500 * amountShip1
+            500 * location?.state?.totalQuantity
           }&from_ward_code=11008&to_ward_code=${selectedWardCode}&length=30&width=15&height=40`,
           {
             headers: {
@@ -842,6 +838,12 @@ const CheckoutDetail = () => {
         } else {
           console.error('Failed to fetch shipping fee');
         }
+        console.log('selectedDistrict:', selectedDistrict);
+        console.log('selectedWardCode:', selectedWardCode);
+        console.log('amountShip1:', amountShip1);
+        console.log('token:', token);
+        console.log('shopId:', shopId);
+        console.log('Fetch response:', response);
       }
     } catch (error) {
       console.error('Error fetching shipping fee:', error);
@@ -851,17 +853,11 @@ const CheckoutDetail = () => {
   const handleWardChange1 = async (e) => {
     const selectedWardCode = e.target.value;
     setSelectedWard(selectedWardCode);
-
-    setAmountShip(location?.state?.totalAmount);
-    setAmountShip1(location?.state?.totalQuantity);
-    // console.log("tong so luong san pham la",amountShip);
-    // console.log("tong so luong san pham la ship1",amountShip1);
-
     try {
       if (selectedDistrict && selectedWardCode) {
         const response = await fetch(
           `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?service_id=53321&insurance_value=1000000&coupon&to_district_id=${selectedDistrict}&from_district_id=1482&weight=${
-            500 * amountShip
+            500 * location?.state?.totalAmount
           }&from_ward_code=11008&to_ward_code=${selectedWardCode}&length=30&width=15&height=40`,
           {
             headers: {
@@ -905,7 +901,7 @@ const CheckoutDetail = () => {
             <div style={{ width: '100%' }}>
               <Fragment>
                 <div>
-                  <h1>Thông tin người đặt && nhận hàng</h1>
+                  <h1 style={{ color: 'red' }}>Thông tin người đặt && nhận hàng</h1>
                   {!displayInformation && (
                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'end' }}>
                       <div
@@ -1040,7 +1036,7 @@ const CheckoutDetail = () => {
                             </select>
                           </div>
                         </div>
-                        <div>Phí vận chuyển: {shippingFee}</div>
+                        {/* <div>Phí vận chuyển: {shippingFee}</div> */}
                         <div className="customInput">
                           <label>
                             Địa chỉ<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
@@ -1192,7 +1188,7 @@ const CheckoutDetail = () => {
                                   </select>
                                 </div>
                               </div>
-                              <div>Phí vận chuyển: {shippingFee}</div>
+                              {/* <div>Phí vận chuyển: {shippingFee}</div> */}
                               <div className="customInput">
                                 <label>
                                   Địa chỉ người nhận:
@@ -1324,7 +1320,7 @@ const CheckoutDetail = () => {
                                   setAddress(location.state.infoCustomer.customers.users.address);
                                 }}
                               >
-                                Giao đến địa chỉ này gốc
+                                Giao đến địa chỉ gốc
                               </button>
                             </div>
                           )}
@@ -1351,7 +1347,7 @@ const CheckoutDetail = () => {
                 color: displayAddress ? 'black' : 'gray',
               }}
             >
-              <h1>Địa chỉ</h1>
+              <h1 style={{ color: 'red' }}>Địa chỉ</h1>
             </div>
             {displayAddress && (
               <div>
@@ -1408,84 +1404,102 @@ const CheckoutDetail = () => {
                   color: displayOrder ? 'black' : 'gray',
                 }}
               >
-                <h1>Thanh toán</h1>
+                <h1 style={{ color: 'red' }}>Thanh toán</h1>
               </div>
               <br />
               {displayOrder && (
                 <div>
                   {customerId != null ? (
                     <div className="voucher">
-                      <h3>Đơn hàng</h3>
-                      {Array.isArray(cartDetailss) &&
-                        cartDetailss.map((cartDetailss, index) => (
-                          <div className="avatar" key={index}>
-                            <img src={cartDetailss.productDetails.product.images[0].imgUrl} className="image" />
-                            <div className="info">
-                              <div className="productTitle">{cartDetailss.productDetails.product.productName}</div>
-                              <div className="titleChild">
-                                <a>{`Màu: ${cartDetailss.productDetails.color.colorName}`}</a>
-                                <br />
-                                <a>{`Chất liệu: ${cartDetailss.productDetails.material.materialName}`}</a>
+                      <h3 style={{ color: 'gray' }}>
+                        Đơn hàng{' '}
+                        <span style={{ cursor: 'pointer', color: 'gray' }} onClick={() => setDonHang(!donhang)}>
+                          {donhang ? <DownOutlined /> : <UpOutlined />}
+                        </span>
+                      </h3>
+                      {!donhang && (
+                        <div>
+                          {Array.isArray(cartDetailss) &&
+                            cartDetailss.map((cartDetailss, index) => (
+                              <div className="avatar" key={index}>
+                                <img src={cartDetailss.productDetails.product.images[0].imgUrl} className="image" />
+                                <div className="info">
+                                  <div className="productTitle">{cartDetailss.productDetails.product.productName}</div>
+                                  <div className="titleChild">
+                                    <a>{`Màu: ${cartDetailss.productDetails.color.colorName}`}</a>
+                                    <br />
+                                    <a>{`Chất liệu: ${cartDetailss.productDetails.material.materialName}`}</a>
+                                  </div>
+                                  <div className="number">{`Số lượng: ${cartDetailss.amount}`}</div>
+                                  {/* Add your price calculations here */}
+                                  <span className="price_sale">
+                                    Giá:{' '}
+                                    <a>
+                                      <span className="price">
+                                        {VNDFormaterFunc(cartDetailss.productDetails.retailPrice)}
+                                      </span>
+                                    </a>
+                                  </span>
+                                  <span className="price_sale">
+                                    Tổng:{' '}
+                                    <a>
+                                      <span className="price">
+                                        {VNDFormaterFunc(cartDetailss.amount * cartDetailss.productDetails.retailPrice)}
+                                      </span>
+                                    </a>
+                                  </span>
+                                </div>
                               </div>
-                              <div className="number">{`Số lượng: ${cartDetailss.amount}`}</div>
-                              {/* Add your price calculations here */}
-                              <span className="price_sale">
-                                Giá:{' '}
-                                <a>
-                                  <span className="price">
-                                    {VNDFormaterFunc(cartDetailss.productDetails.retailPrice)}
-                                  </span>
-                                </a>
-                              </span>
-                              <span className="price_sale">
-                                Tổng:{' '}
-                                <a>
-                                  <span className="price">
-                                    {VNDFormaterFunc(cartDetailss.amount * cartDetailss.productDetails.retailPrice)}
-                                  </span>
-                                </a>
-                              </span>
-                            </div>
-                          </div>
-                        ))}
+                            ))}
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="voucher">
-                      <h3>Đơn hàng:</h3>
-                      {cartItems.map((item, index) => (
-                        <div className={item} key={index}>
-                          <div className="avatar">
-                            <img src={item.image} className="image" alt={item.productName} />
-                            <div className="info">
-                              <div className="productTitle">{item.productName}</div>
-                              <div className="titleChild">
-                                <a>{`Màu: ${item.colorName}`}</a>
-                                <br />
-                                <a> {`Chất liệu: ${item.materialName}`}</a>
+                      <h3 style={{ color: 'gray' }}>
+                        Đơn hàng{' '}
+                        <span style={{ cursor: 'pointer', color: 'gray' }} onClick={() => setDonHang(!donhang)}>
+                          {donhang ? <DownOutlined /> : <UpOutlined />}
+                        </span>
+                      </h3>
+                      {!donhang && (
+                        <div>
+                          {cartItems.map((item, index) => (
+                            <div className={item} key={index}>
+                              <div className="avatar">
+                                <img src={item.image} className="image" alt={item.productName} />
+                                <div className="info">
+                                  <div className="productTitle">{item.productName}</div>
+                                  <div className="titleChild">
+                                    <a>{`Màu: ${item.colorName}`}</a>
+                                    <br />
+                                    <a> {`Chất liệu: ${item.materialName}`}</a>
+                                  </div>
+                                  <div className="number">{`Quantity: ${item.quantity}`}</div>
+                                  <span className="price_sale">
+                                    Giá:{' '}
+                                    <a>
+                                      <span className="price">{VNDFormaterFunc(item.retailPrice)}</span>
+                                    </a>
+                                  </span>
+                                  <span className="price_sale">
+                                    Tổng:{' '}
+                                    <a>
+                                      <span className="price">{VNDFormaterFunc(item.retailPrice * item.quantity)}</span>
+                                    </a>
+                                  </span>
+                                </div>
                               </div>
-                              <div className="number">{`Quantity: ${item.quantity}`}</div>
-                              <span className="price_sale">
-                                Giá:{' '}
-                                <a>
-                                  <span className="price">{VNDFormaterFunc(item.retailPrice)}</span>
-                                </a>
-                              </span>
-                              <span className="price_sale">
-                                Tổng:{' '}
-                                <a>
-                                  <span className="price">{VNDFormaterFunc(item.retailPrice * item.quantity)}</span>
-                                </a>
-                              </span>
                             </div>
-                          </div>
+                          ))}
                         </div>
-                      ))}
+                      )}
                     </div>
                   )}
 
                   {customerId == null ? (
                     <div className="voucher">
-                      <h3>Voucher:</h3>
+                      <h3 style={{ color: 'gray' }}>Voucher:</h3>
 
                       <div
                         style={{
@@ -1510,7 +1524,7 @@ const CheckoutDetail = () => {
                     </div>
                   ) : (
                     <div className="voucher">
-                      <h3>Voucher:</h3>
+                      <h3 style={{ color: 'gray' }}>Voucher:</h3>
 
                       <div
                         style={{

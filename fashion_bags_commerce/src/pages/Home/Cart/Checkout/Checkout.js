@@ -1,18 +1,11 @@
 import CheckoutDetail from '~/pages/Home/Cart/Checkout/FormCheckoutDetail/CheckoutDetail';
 import Header from '../../Header';
+import MainLayout from '../../MainLayout';
 function Checkout() {
-
-
   return (
-    <div className="checkout">
-      <Header />
-      <br></br>
-      <div>
-        <div className="page_content">
-            <CheckoutDetail />
-        </div>
-      </div>
-    </div>
+    <MainLayout>
+      <CheckoutDetail />
+    </MainLayout>
   );
 }
 

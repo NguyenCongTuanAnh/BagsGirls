@@ -62,6 +62,7 @@ function ShopDetailView() {
 
   useEffect(() => {
     fetchProductDetail();
+    
   }, [productId]);
 
   useEffect(() => {
@@ -165,12 +166,13 @@ function ShopDetailView() {
     } else {
       return (
         <div>
-          <Link to="/shop">
+          <Link to="">
             <div
               className={styles.button_buy_now}
               onClick={() => {
                 addToCart();
               }}
+
             >
               <ShoppingCartOutlined />
               Thêm vào giỏ hàng

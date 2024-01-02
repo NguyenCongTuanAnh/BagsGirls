@@ -2,7 +2,6 @@ import React, { Fragment } from 'react';
 import Header from '../Header';
 import Footer from '../Footer';
 import { RightOutlined } from '@ant-design/icons';
-import MainHeader from '../Header/MainHeader';
 import MainLayout from '../MainLayout';
 
 const AboutPage = () => {

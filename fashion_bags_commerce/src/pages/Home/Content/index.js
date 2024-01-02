@@ -8,7 +8,7 @@ function Content() {
   return (
     <Fragment>
       <LayoutCarousel />
-      <ShopView titleContent={'SẢN PHẨM BÁN CHẠY'} />
+      {/* <ShopView titleContent={'SẢN PHẨM BÁN CHẠY'} /> */}
       <ProductList titleContent={'SẢN PHẨM KHUYẾN MÃI'} />
       <ExtendContent titleContent={'EVENT/TÀI TRỢ'} />
     </Fragment>

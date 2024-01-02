@@ -10,7 +10,7 @@ const MainLayout = ({ children }) => {
       <div className="header001">
         <Header />
       </div>
-      <div className="page_content">{children}</div>
+      <div className="page_content" style={{marginTop:'100px'}}>{children}</div>
       <div className="footer_client">
         <Footer />
       </div>

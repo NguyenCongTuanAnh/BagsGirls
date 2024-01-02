@@ -18,9 +18,9 @@ function UserProfile(props) {
     changeLoggedIn();
   };
 
-  const customer = getCustomer();
+  const customer = getCustomer().users.fullName;
 
-  console.log(customer);
+  // console.log(customer);
 
   const PopupProContent = (
     <Card
@@ -49,14 +49,14 @@ function UserProfile(props) {
           <Avatar
             style={{
               backgroundColor: '#87d068',
-              fontSize: '30px',
-              width: '40px',
-              height: '40px',
+              // fontSize: '30px',
+              // width: '40px',
+              // height: '40px',
             }}
             icon={<UserOutlined />}
           />
         }
-        title={`Xin chào, ${customer.users.fullName}`}
+        title={`Xin chào, ${customer}`}
         description="Chúc bạn 1 ngày tốt lành"
       />
     </Card>
@@ -69,9 +69,10 @@ function UserProfile(props) {
           <Avatar
             style={{
               backgroundColor: '#87d068',
-              fontSize: '30px',
-              width: '40px',
-              height: '40px',
+              // fontSize: '30px',
+              // width: '40px',
+              // height: '40px',
+              margin: '0 10px 0 20px',
             }}
             icon={<UserOutlined />}
           />

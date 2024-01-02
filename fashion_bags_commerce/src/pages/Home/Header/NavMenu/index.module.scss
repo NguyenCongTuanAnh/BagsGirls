@@ -1,16 +1,27 @@
 .navContent {
-  padding-top: 20px;
+  // padding-top: 20px;
   background-color: white;
+  position: fixed; /* Đặt menu ở vị trí cố định */
+  top: 0; /* Đặt vị trí từ đỉnh trang (ở vị trí top) */
+  width: 100%; /* Đảm bảo menu có chiều rộng bằng 100% của trang */
+  z-index: 1000; /* Đặt z-index để đảm bảo menu hiển thị trên các phần tử khác */
+  background-color: #fff;
 
   .centeredMenu {
+    display: flex;
+    // justify-content: space-between;
+    // align-items: center;
+    width: 100%; /* Chiều rộng 90% của navMenu */
+    margin: 0 auto;
     .menu {
       display: flex;
       align-items: center;
-      justify-content: center;
+      // justify-content: center;
+      // height: 120px;
       width: 100%;
-      margin: 10px 0;
+      // margin: 10px 0;
       padding: 0;
-      background-color: WHITE;
+      background-color: white;
 
       .ant-menu-title-content {
         font-size: 23px;
@@ -24,15 +35,75 @@
   font-weight: 400;
   font-size: 25px;
   padding: 10px 5px;
-  margin: 0 px;
+  margin: 0px;
   font-family: Arial, Helvetica, sans-serif;
 
   -webkit-transition: all, 0.3s;
   transition: all, 0.3s;
 }
 .submenu:hover {
-  color: black;
-  // background-color: gray;
-  padding: 10px 40px;
-  border-radius: 32px;
+  background-color: red;
+  color: white;
+  border-radius: 6px;
+}
+
+//////////////////////
+.icon {
+  margin: 10px 10px;
+  font-size: 25px;
+}
+
+.toolRight {
+  display: flex;
+  // margin-top: 100px;
+
+  .profile {
+    display: flex;
+    margin: 0 40px 0px 0px;
+
+    .login {
+      display: flex;
+
+      align-items: center;
+      .horizontalLogin {
+        display: flex; /* Sử dụng mô hình flexbox */
+        padding-left: 0px;
+        margin: 0px auto;
+      }
+
+      .horizontalLogin li {
+        display: inline-block;
+        margin: 0 10px;
+
+        a {
+          font-size: 20px;
+          text-decoration: none;
+          color: rgb(95, 66, 226);
+        }
+      }
+    }
+  }
+}
+.cartIcon {
+  font-size: 30px;
+}
+.cart {
+  padding-top: 10px;
+}
+
+.userProfileScss {
+  margin-left: 200px;
+}
+.iconSearch {
+  font-size: 30px;
+}
+
+.iconUser {
+  font-size: 30px;
+  background-color: #87d068;
+}
+
+.iconCartUser {
+  font-size: 30px;
+  margin: 0 10px;
 }
