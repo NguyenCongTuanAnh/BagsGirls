@@ -1,12 +1,16 @@
 // Variables
-$footer-background-color: #655656;
-$footer-text-color: #fff;
+// $footer-background-color: #655656;
+$footer-text-color: white;
 $footer-padding: 40px;
 
 .footer {
-  background-color: $footer-background-color;
+  // background-color: $footer-background-color;
   color: $footer-text-color;
   padding: $footer-padding 0;
+  background: url(https://i0.wp.com/photofocus.com/wp-content/uploads/2019/04/Killing-Softly-2048.jpg?resize=1280%2C320&ssl=1);
+  background-repeat: no-repeat;
+  background-size: 100%;
+  // opacity: 0.4;
 
   .footer-content {
     display: flex;
@@ -14,6 +18,8 @@ $footer-padding: 40px;
     align-items: flex-start;
     max-width: 1200px;
     margin: 0 auto;
+    
+    opacity: 1;
 
     .footer-column {
       flex: 1;
@@ -22,6 +28,8 @@ $footer-padding: 40px;
       h4 {
         font-size: 1.2rem;
         margin-bottom: 10px;
+  color: blueviolet;
+        
       }
 
       ul {

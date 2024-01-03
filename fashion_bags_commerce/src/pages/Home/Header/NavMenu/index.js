@@ -1,4 +1,4 @@
-import { Avatar, Badge, Button, Card, Menu, message } from 'antd';
+import { Avatar, Badge, Button, Card, Input, Menu, message } from 'antd';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styles from './index.module.scss';
 import { useEffect, useState } from 'react';
@@ -158,7 +158,7 @@ function NavMenu() {
   const handleMenuClick = ({ key }) => {
     setSelectedKeys([key]);
   };
-  
+
   ///////////////////////
 
   const [showMenu, setShowMenu] = useState(true);
@@ -184,7 +184,8 @@ function NavMenu() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []); 
+  }, []);
+
   return (
     <div className={styles.navContent} style={{ display: showMenu ? 'block' : 'none' }}>
       <div className={styles.centeredMenu}>
@@ -198,33 +199,47 @@ function NavMenu() {
             </Link>
           </div>
           <div style={{ justifyContent: 'center' }}>
-            <Menu.Item key="/" className={styles.menuItem}>
+            <Menu.Item key="/" style={{ color: 'gray' }} className={styles.menuItem}>
               <Link to="/" className={styles.submenu}>
-                TRANG CHỦ
+                Trang chủ
               </Link>
             </Menu.Item>
-            <Menu.Item key="/gioi-thieu" className={styles.menuItem}>
+            <Menu.Item key="/gioi-thieu" style={{ color: 'gray' }} className={styles.menuItem}>
               <Link to="/gioi-thieu" className={styles.submenu}>
-                GIỚI THIỆU
+                Giới thiệu
               </Link>
             </Menu.Item>
-            <Menu.Item key="/shop" className={styles.menuItem}>
+            <Menu.Item key="/shop" style={{ color: 'gray' }} className={styles.menuItem}>
               <Link to="/shop" className={styles.submenu}>
-                SẢN PHẨM
+                Sản phẩm
               </Link>
             </Menu.Item>
-            <Menu.Item key="/blog" className={styles.menuItem}>
+            <Menu.Item key="/blog" style={{ color: 'gray' }} className={styles.menuItem}>
               <Link to="/blog" className={styles.submenu}>
-                BLOG
+                Blog
               </Link>
             </Menu.Item>
-            <Menu.Item key="" className={styles.menuItem}>
+            <Menu.Item key="" style={{ color: 'gray' }} className={styles.menuItem}>
               <Link to="" className={styles.submenu}>
-                LIÊN HỆ
+                Liên hệ
               </Link>
             </Menu.Item>
           </div>
-          <div style={{ width: '400px' }}></div>
+
+          <div style={{ width: '470px', display: 'flex', float: 'left' }}>
+            <input
+              style={{
+                width: '440px',
+                height: '40px',
+                padding: '0 0 0 10px',
+                borderRadius: '32px',
+                border: '1px solid gray',
+                background: 'white',
+              }}
+              placeholder="Tìm kiếm sản phẩm..."
+            />
+            <SearchOutlined className={styles.iconSearch} />
+          </div>
 
           <div style={{ float: 'right' }}>
             <div className={styles.toolRight}>
@@ -233,7 +248,7 @@ function NavMenu() {
                 {customer !== null ? (
                   <div class={styles.userProfileScss}>
                     <div style={{ marginTop: '20px', float: 'left' }}>
-                      <SearchOutlined className={styles.iconSearch} />
+                      {/* <SearchOutlined className={styles.iconSearch} /> */}
                     </div>
                     <div style={{ marginTop: '12px', float: 'left' }}>
                       <UserProfile changeLoggedIn={changeLoggedIn} className={styles.iconUser} />
@@ -248,7 +263,7 @@ function NavMenu() {
                   </div>
                 ) : (
                   <div className={styles.login}>
-                    <SearchOutlined className={styles.icon} />
+                    {/* <SearchOutlined className={styles.icon} /> */}
                     <div style={{ marginTop: '7px', float: 'left' }}>
                       <ul className={styles.horizontalLogin}>
                         <li>
