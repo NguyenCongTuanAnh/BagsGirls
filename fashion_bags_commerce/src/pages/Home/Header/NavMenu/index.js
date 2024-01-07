@@ -199,27 +199,27 @@ function NavMenu() {
             </Link>
           </div>
           <div style={{ justifyContent: 'center' }}>
-            <Menu.Item key="/" style={{ color: 'gray' }} className={styles.menuItem}>
+            <Menu.Item key="/" style={{ color: 'black' }} className={styles.menuItem}>
               <Link to="/" className={styles.submenu}>
                 Trang chủ
               </Link>
             </Menu.Item>
-            <Menu.Item key="/gioi-thieu" style={{ color: 'gray' }} className={styles.menuItem}>
+            <Menu.Item key="/gioi-thieu" style={{ color: 'black' }} className={styles.menuItem}>
               <Link to="/gioi-thieu" className={styles.submenu}>
                 Giới thiệu
               </Link>
             </Menu.Item>
-            <Menu.Item key="/shop" style={{ color: 'gray' }} className={styles.menuItem}>
+            <Menu.Item key="/shop" style={{ color: 'black' }} className={styles.menuItem}>
               <Link to="/shop" className={styles.submenu}>
                 Sản phẩm
               </Link>
             </Menu.Item>
-            <Menu.Item key="/blog" style={{ color: 'gray' }} className={styles.menuItem}>
+            <Menu.Item key="/blog" style={{ color: 'black' }} className={styles.menuItem}>
               <Link to="/blog" className={styles.submenu}>
                 Blog
               </Link>
             </Menu.Item>
-            <Menu.Item key="" style={{ color: 'gray' }} className={styles.menuItem}>
+            <Menu.Item key="" style={{ color: 'black' }} className={styles.menuItem}>
               <Link to="" className={styles.submenu}>
                 Liên hệ
               </Link>
@@ -227,7 +227,7 @@ function NavMenu() {
           </div>
 
           <div style={{ width: '470px', display: 'flex', float: 'left' }}>
-            <input
+            <Input
               style={{
                 width: '440px',
                 height: '40px',
@@ -236,6 +236,7 @@ function NavMenu() {
                 border: '1px solid gray',
                 background: 'white',
               }}
+              onChange={handleSearch}
               placeholder="Tìm kiếm sản phẩm..."
             />
             <SearchOutlined className={styles.iconSearch} />

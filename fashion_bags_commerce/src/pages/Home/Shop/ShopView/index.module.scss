@@ -4,14 +4,12 @@
 
   font-weight: normal;
   font-family: Arial, Helvetica, sans-serif;
-
 }
 .productTitle {
   font-size: 18pt;
   font-family: Arial, Helvetica, sans-serif;
 
   font-family: Arial, Helvetica, sans-serif;
-
 
   font-weight: normal inherit;
   color: black;
@@ -43,26 +41,28 @@
 }
 
 .line_col {
-  background-color: pink;
+  background-color: gold;
   border-radius: 12px;
   margin: 0 10px;
   width: 40px;
   border: none;
 }
 .line_col:hover {
-  background-color: rgb(99, 240, 240);
+  color: white;
 }
 .sortTitle {
   text-align: center;
   font-family: Arial, Helvetica, sans-serif;
 
-  color: rgb(215, 101, 101);
+  // color: rgb(215, 101, 101);
+  color: black;
+  padding-right: 20px;
   font-size: 20px;
 }
 .listSanPham {
   margin: 0 8%;
 }
-.pagination{
+.pagination {
   text-align: center;
 }
 .hovered {

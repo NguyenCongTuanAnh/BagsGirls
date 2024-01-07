@@ -48,7 +48,9 @@ function UserProfile(props) {
         avatar={
           <Avatar
             style={{
-              backgroundColor: '#87d068',
+              // backgroundColor: '#87d068',
+              backgroundColor: 'gold',
+              color: 'black',
               // fontSize: '30px',
               // width: '40px',
               // height: '40px',
@@ -68,7 +70,9 @@ function UserProfile(props) {
         <div style={{ cursor: 'pointer' }}>
           <Avatar
             style={{
-              backgroundColor: '#87d068',
+              // backgroundColor: '#87d068',
+              backgroundColor: 'white',
+              color: 'black',
               // fontSize: '30px',
               // width: '40px',
               // height: '40px',

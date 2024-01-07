@@ -64,9 +64,15 @@
     left: 0;
     height: 100%; /* Chiều cao của thanh dọc */
     width: 4px; /* Độ rộng của thanh dọc */
-    background-color: orange; /* Màu sắc của thanh dọc */
+    background-color: gold; /* Màu sắc của thanh dọc */
   }
 
+  .buttonXacNhan {
+    &:hover {
+      background-color: gold;
+      color: black;
+    }
+  }
   /////////////////////////////////////////////////////////////////////////////
   .list_product {
     // padding: 20px;
@@ -206,7 +212,7 @@
 }
 .changleAddress {
   cursor: pointer;
-  background-color: #ff5733;
+  background-color: gold;
   border-radius: 15px;
   height: 30px;
   width: 102px;

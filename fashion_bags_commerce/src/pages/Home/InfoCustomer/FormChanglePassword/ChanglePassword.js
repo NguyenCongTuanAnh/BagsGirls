@@ -82,7 +82,7 @@ function ChangePassword() {
       duration: 2,
     });
   };
-
+  const DEFAULT_OLD_PASSWORD = ''; 
   return (
     <div>
       <h5 style={{ textAlign: 'center' }}>THAY ĐỔI MẬT KHẨU ĐĂNG NHẬP CỦA BẠN</h5>
@@ -95,16 +95,18 @@ function ChangePassword() {
             <input
               className="infor-custom-input-item"
               type={showPassword ? 'text' : 'password'}
-              value={oldPassword}
+              value={oldPassword || DEFAULT_OLD_PASSWORD}
               onChange={(e) => setOldPassword(e.target.value)}
               placeholder="Mật khẩu cũ"
               required
+              
+              style={{ border: '1px gray solid' }}
             />
-            {showPassword ? (
+            {/* {showPassword ? (
               <EyeInvisibleOutlined onClick={togglePasswordVisibility} />
             ) : (
               <EyeOutlined onClick={togglePasswordVisibility} />
-            )}
+            )} */}
           </div>
         </div>
 
@@ -119,13 +121,14 @@ function ChangePassword() {
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               placeholder="Mật khẩu mới"
+              style={{ border: '1px gray solid' }}
               required
             />
-            {showPassword1 ? (
+            {/* {showPassword1 ? (
               <EyeInvisibleOutlined onClick={togglePasswordVisibility1} />
             ) : (
               <EyeOutlined onClick={togglePasswordVisibility1} />
-            )}
+            )} */}
           </div>
         </div>
 
@@ -141,23 +144,25 @@ function ChangePassword() {
               onChange={(e) => setConfirmNewPassword(e.target.value)}
               placeholder="Xác nhận mật khẩu mới"
               required
+              style={{ border: '1px gray solid' }}
             />
-            {showPassword2 ? (
+            {/* {showPassword2 ? (
               <EyeInvisibleOutlined onClick={togglePasswordVisibility2} />
             ) : (
               <EyeOutlined onClick={togglePasswordVisibility2} />
-            )}
+            )} */}
           </div>
         </div>
-        <div style={{ textAlign: 'center' }}>
+        <div style={{ textAlign: 'center', marginLeft: '170px' }}>
           <button
             style={{
-              background: 'orange',
+              background: 'gold',
               color: 'white ',
-              width: '300px',
+              width: '80%',
               padding: '5px 0',
               borderRadius: '32px',
               fontSize: '18px',
+              border: 'none',
             }}
             onClick={handleChangePassword}
           >

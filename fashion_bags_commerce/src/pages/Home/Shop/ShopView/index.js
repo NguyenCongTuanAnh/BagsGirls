@@ -196,7 +196,7 @@ function ShopView({ titleContent }) {
               with: 300,
               // marginLeft: -200,
               marginRight: 30,
-              background: 'pink',
+              background: 'gold',
               textAlign: 'center',
             }}
             onClick={() => setOpen(true)}
@@ -214,8 +214,8 @@ function ShopView({ titleContent }) {
             onCancel={() => setOpen(false)}
             width={1300}
             style={{
-              background: 'red',
-              color: 'pink',
+              background: 'gold',
+              color: 'black',
               textAlign: 'center',
             }}
             footer={null}
@@ -250,8 +250,6 @@ function ShopView({ titleContent }) {
                       />
                     </Form.Item>
                   </Col>
-
-                 
 
                   <Col span={6} style={{ marginLeft: '' }}>
                     <Form.Item label="Thương Hiệu" name={'brandName'}>
@@ -321,9 +319,9 @@ function ShopView({ titleContent }) {
                   <Col span={18}>
                     <Button
                       size="large"
-                      type="primary"
+                      // type="primary"
                       shape="round"
-                      style={{ marginLeft: '250px' }}
+                      style={{ marginLeft: '250px', background: 'gold', color: 'whtie' }}
                       onClick={handleFilterProduct}
                     >
                       Tìm kiếm
@@ -333,7 +331,7 @@ function ShopView({ titleContent }) {
               </Form>
             </div>
           </Modal>
-          Tuỳ chọn hiển thị
+          Tùy chọn hiển thị
           <button className={styles.line_col} onClick={() => handleColumnChange('col-4')}>
             <FullscreenOutlined />
           </button>

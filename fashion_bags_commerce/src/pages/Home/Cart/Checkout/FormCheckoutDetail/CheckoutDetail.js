@@ -900,7 +900,7 @@ const CheckoutDetail = () => {
             <div style={{ width: '100%' }}>
               <Fragment>
                 <div>
-                  <h1 style={{ color: 'red' }}>Thông tin người đặt && nhận hàng</h1>
+                  <h1 style={{ color: 'gold' }}>Thông tin người đặt && nhận hàng</h1>
                   {!displayInformation && (
                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'end' }}>
                       <div
@@ -1062,7 +1062,7 @@ const CheckoutDetail = () => {
                         </div>
 
                         <br></br>
-                        <button>Xác nhận địa chỉ</button>
+                        <button className='buttonXacNhan'>Xác nhận địa chỉ</button>
                       </div>
                     ) : (
                       <div>
@@ -1243,8 +1243,9 @@ const CheckoutDetail = () => {
                                   setAddress1(address);
                                   setAddress1(location.state.infoCustomer?.customers?.users?.address);
                                 }}
+                                className='buttonXacNhan'
                               >
-                                Giao đến địa chỉ mới
+                                Xác nhận địa chỉ
                               </button>
                             </div>
                           )}
@@ -1319,8 +1320,9 @@ const CheckoutDetail = () => {
                                   setAddress1(location.state.infoCustomer.customers.users.address);
                                   setAddress(location.state.infoCustomer.customers.users.address);
                                 }}
+                                className='buttonXacNhan'
                               >
-                                Giao đến địa chỉ gốc
+                                Xác nhận địa chỉ
                               </button>
                             </div>
                           )}
@@ -1347,7 +1349,7 @@ const CheckoutDetail = () => {
                 color: displayAddress ? 'black' : 'gray',
               }}
             >
-              <h1 style={{ color: 'red' }}>Địa chỉ</h1>
+              <h1 style={{ color: 'gold' }}>Địa chỉ</h1>
             </div>
             {displayAddress && (
               <div>
@@ -1383,6 +1385,7 @@ const CheckoutDetail = () => {
                     setDisplayAddress(false);
                     setDisplayOrder(true);
                   }}
+                  className='buttonXacNhan'
                 >
                   Tiếp tục
                 </button>
@@ -1404,7 +1407,7 @@ const CheckoutDetail = () => {
                   color: displayOrder ? 'black' : 'gray',
                 }}
               >
-                <h1 style={{ color: 'red' }}>Thanh toán</h1>
+                <h1 style={{ color: 'gold' }}>Thanh toán</h1>
               </div>
               <br />
               {displayOrder && (
