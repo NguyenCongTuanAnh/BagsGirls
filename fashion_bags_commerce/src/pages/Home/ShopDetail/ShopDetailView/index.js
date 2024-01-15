@@ -62,7 +62,6 @@ function ShopDetailView() {
 
   useEffect(() => {
     fetchProductDetail();
-    
   }, [productId]);
 
   useEffect(() => {
@@ -172,7 +171,6 @@ function ShopDetailView() {
               onClick={() => {
                 addToCart();
               }}
-
             >
               <ShoppingCartOutlined />
               Thêm vào giỏ hàng
@@ -331,7 +329,7 @@ function ShopDetailView() {
   };
 
   const handleInputBlur = () => {
-    if (quantity === '' || quantity===0) {
+    if (quantity === '' || quantity === 0) {
       setQuantity(1); // If the input is empty on blur, set it to '1'
     }
   };
@@ -339,11 +337,17 @@ function ShopDetailView() {
   const handleIncrement = () => {
     // Tăng giá trị quantity khi nhấn nút '+'
     const amountInDatabase = dataDetail.amount; // Số lượng tồn kho trong cơ sở dữ liệu
-    if (quantity + 1 > amountInDatabase || quantity + 1 > 20) {
+    if (quantity + 1 > amountInDatabase) {
       // Hiển thị thông báo khi số lượng vượt quá số lượng trong kho
       notification.error({
         message: 'Thất bại',
-        description: 'Chỉ được phép đặt mua tối đa 20 sản phẩm',
+        description: 'Sản phẩm đã đạt giới hạn tối đa',
+        duration: 1,
+      });
+    } else if (quantity + 1 > 20) {
+      notification.error({
+        message: 'Thất bại',
+        description: 'Chỉ được mua tối đa 20 sản phẩm',
         duration: 1,
       });
     } else {
@@ -573,13 +577,12 @@ function ShopDetailView() {
                       <MinusOutlined />
                     </div>
                     <input
-                    className={styles.input_amount}
+                      className={styles.input_amount}
                       type="text"
                       value={quantity === '' ? '' : parseInt(quantity, 10)} // Ensure empty string or parse as an integer
                       onChange={handleInputChange}
                       onBlur={handleInputBlur}
                       min={1}
-                              
                     />
 
                     <div className={styles.item_change2} onClick={handleIncrement}>
