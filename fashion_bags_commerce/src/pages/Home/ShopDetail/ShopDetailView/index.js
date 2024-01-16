@@ -107,6 +107,7 @@ function ShopDetailView() {
         description: 'Sản phẩm đã được thêm vào giỏ hàng',
         duration: 3,
       });
+      window.location.reload();
     } catch (error) {
       console.error('Error adding product to cart:', error);
       notification.error({

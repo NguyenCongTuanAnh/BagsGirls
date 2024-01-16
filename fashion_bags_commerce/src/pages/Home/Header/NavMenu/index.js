@@ -227,7 +227,7 @@ function NavMenu() {
           </div>
 
           <div style={{ width: '470px', display: 'flex', float: 'left' }}>
-            <Input
+            {/* <Input
               style={{
                 width: '440px',
                 height: '40px',
@@ -237,9 +237,12 @@ function NavMenu() {
                 background: 'white',
               }}
               onChange={handleSearch}
-              placeholder="Tìm kiếm sản phẩm..."
-            />
-            <SearchOutlined className={styles.iconSearch} />
+              placeholde
+              r="Tìm kiếm sản phẩm..."
+            /> */}
+  <Link className={styles.iconSearch}  to='/search'>
+  <SearchOutlined  />
+  </Link>
           </div>
 
           <div style={{ float: 'right' }}>
