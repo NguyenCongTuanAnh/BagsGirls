@@ -238,7 +238,7 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
             " FROM BillDetails_ChiTiet billDetail " +
             " JOIN billDetail.productDetails productDetails " +
             " JOIN productDetails.product product " +
-            " WHERE billDetail.billDetailStatus <> -1 " + // Sử dụng <> thay vì !=
+            " WHERE billDetail.billDetailStatus >= 0 " + // Sử dụng <> thay vì !=
             " GROUP BY product.productCode, product.productName " +
             " ORDER BY SUM(billDetail.amount) DESC ")
     List<TopProductsDTO> findTopProductsByTotalAmount(Pageable pageable);
