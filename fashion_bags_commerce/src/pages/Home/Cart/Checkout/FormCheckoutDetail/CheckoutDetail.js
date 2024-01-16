@@ -278,7 +278,7 @@ const CheckoutDetail = () => {
   }, []);
 
   useEffect(() => {
-    const storeCartDetail = location.state?.cartItems;
+    const storeCartDetail = location?.state?.cartItems;
     if (storeCartDetail) {
       setCartetailss(storeCartDetail);
     }
@@ -821,7 +821,7 @@ const CheckoutDetail = () => {
       if (selectedDistrict && selectedWardCode) {
         const response = await fetch(
           `https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?service_id=53321&insurance_value=1000000&coupon&to_district_id=${selectedDistrict}&from_district_id=1482&weight=${
-            500 * location?.state?.totalQuantity
+            1000 * location?.state?.totalQuantity
           }&from_ward_code=11008&to_ward_code=${selectedWardCode}&length=30&width=15&height=40`,
           {
             headers: {
@@ -1035,7 +1035,7 @@ const CheckoutDetail = () => {
                             </select>
                           </div>
                         </div>
-                        {/* <div>Phí vận chuyển: {shippingFee}</div> */}
+                        <div>Phí vận chuyển: {shippingFee}</div>
                         <div className="customInput">
                           <label>
                             Địa chỉ<span style={{ color: '#ff0000', fontWeight: 'bold' }}> * </span>
@@ -1062,7 +1062,7 @@ const CheckoutDetail = () => {
                         </div>
 
                         <br></br>
-                        <button className='buttonXacNhan'>Xác nhận địa chỉ</button>
+                        <button className="buttonXacNhan">Xác nhận địa chỉ</button>
                       </div>
                     ) : (
                       <div>
@@ -1187,7 +1187,7 @@ const CheckoutDetail = () => {
                                   </select>
                                 </div>
                               </div>
-                              {/* <div>Phí vận chuyển: {shippingFee}</div> */}
+                              <div>Phí vận chuyển: {shippingFee}</div>
                               <div className="customInput">
                                 <label>
                                   Địa chỉ người nhận:
@@ -1243,7 +1243,7 @@ const CheckoutDetail = () => {
                                   setAddress1(address);
                                   setAddress1(location.state.infoCustomer?.customers?.users?.address);
                                 }}
-                                className='buttonXacNhan'
+                                className="buttonXacNhan"
                               >
                                 Xác nhận địa chỉ
                               </button>
@@ -1320,7 +1320,7 @@ const CheckoutDetail = () => {
                                   setAddress1(location.state.infoCustomer.customers.users.address);
                                   setAddress(location.state.infoCustomer.customers.users.address);
                                 }}
-                                className='buttonXacNhan'
+                                className="buttonXacNhan"
                               >
                                 Xác nhận địa chỉ
                               </button>
@@ -1385,7 +1385,7 @@ const CheckoutDetail = () => {
                     setDisplayAddress(false);
                     setDisplayOrder(true);
                   }}
-                  className='buttonXacNhan'
+                  className="buttonXacNhan"
                 >
                   Tiếp tục
                 </button>

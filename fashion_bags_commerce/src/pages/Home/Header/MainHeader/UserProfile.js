@@ -2,7 +2,7 @@ import { UserOutlined } from '@ant-design/icons';
 import { Avatar, Badge, Button, Card, Popover } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getCustomer } from '~/api/auth/helper/UserCurrent';
-
+import styles from './UserProfile.module.scss'
 const { Meta } = Card;
 
 function UserProfile(props) {
@@ -66,18 +66,10 @@ function UserProfile(props) {
 
   return (
     <Popover content={PopupProContent} title="Tài Khoản" trigger="hover">
-      <Badge dot={true}>
+      <Badge dot={false}>
         <div style={{ cursor: 'pointer' }}>
           <Avatar
-            style={{
-              // backgroundColor: '#87d068',
-              backgroundColor: 'white',
-              color: 'black',
-              // fontSize: '30px',
-              // width: '40px',
-              // height: '40px',
-              margin: '0 10px 0 20px',
-            }}
+           className={styles.iconUser}
             icon={<UserOutlined />}
           />
         </div>

@@ -55,6 +55,8 @@ function ShopView({ titleContent }) {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [form] = Form.useForm();
+// Add this to the list of state variables at the beginning of your component
+const [searchKeyword, setSearchKeyword] = useState('');
 
   const [open, setOpen] = useState(false);
 
@@ -73,22 +75,71 @@ function ShopView({ titleContent }) {
     const values = form.getFieldsValue();
     const { productName, colorName, productCode, brandName, productStatus, minPrice, maxPrice } = values;
 
+    const handleFilterProduct = () => {
+      // Sử dụng giá trị thực từ trường nhập liệu
+      const values = form.getFieldsValue();
+      const { productName, colorName, productCode, brandName, productStatus, minPrice, maxPrice } = values;
+    
+      // Set the search keyword state
+      setSearchKeyword(productName);
+    
+      // Gọi hàm fetchProducts với các giá trị vừa lấy được
+      fetchProducts(
+        currentPage,
+        pagesSize,
+        productName,
+        productCode,
+        brandName,
+        colorName,
+        selectedColor,
+        productStatus,
+        sortList,
+        sortOrder,
+        minPrice,
+        maxPrice,
+      );
+    };
+
+    
     // Gọi hàm fetchProducts với các giá trị vừa lấy được
-    fetchProducts(
-      currentPage,
+    const fetchProducts = async (
+      pageNum,
       pagesSize,
       productName,
       productCode,
       brandName,
       colorName,
-      selectedColor,
       productStatus,
       sortList,
       sortOrder,
       minPrice,
       maxPrice,
-    );
-  };
+    ) => {
+      try {
+        setLoadingProducts(true);
+        const response = await fullProductAPI.getAll(
+          pageNum,
+          pagesSize,
+          searchKeyword, // Include the search keyword in the API request
+          productCode,
+          brandName,
+          colorName,
+          productStatus,
+          sortList,
+          sortOrder,
+          minPrice,
+          maxPrice,
+        );
+        const allProducts = response.data.content;
+        setData(allProducts);
+        setLoadingProducts(false);
+        setTotalItem(response.data.totalElements);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setLoadingProducts(false);
+      }
+    };
+  }
   const viewBrand = async () => {
     try {
       const brandData = await brandAPI.getAll();
@@ -339,6 +390,7 @@ function ShopView({ titleContent }) {
             <FullscreenExitOutlined />
           </button>
         </h3>
+
         <div className={styles.listSanPham}>
           {loadingProducts ? (
             <div style={{ textAlign: 'center', marginTop: '20px' }}>

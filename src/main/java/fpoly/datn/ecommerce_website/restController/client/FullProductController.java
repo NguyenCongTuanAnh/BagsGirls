@@ -69,7 +69,7 @@ public class FullProductController {
 
     @GetMapping("/products/search")
     public ResponseEntity<List<Products>> searchProducts(
-            @RequestParam(required = false) String keyword
+            @RequestParam String keyword
     ) {
         List<Products> foundProducts;
 
