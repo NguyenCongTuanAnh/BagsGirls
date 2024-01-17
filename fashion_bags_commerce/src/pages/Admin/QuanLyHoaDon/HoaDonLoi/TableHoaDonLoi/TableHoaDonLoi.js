@@ -265,7 +265,12 @@ function TableHoaDonLoi() {
                         backgroundColor = '#ff3333';
                         break;
                     case -2:
-                        statusText = 'Hàng lỗi';
+                        statusText = 'Hàng lỗi chưa hoàn';
+                        statusClass = 'other-status';
+                        backgroundColor = '#ff3333';
+                        break;
+                    case -3:
+                        statusText = 'Hàng lỗi đã hoàn';
                         statusClass = 'other-status';
                         backgroundColor = '#ff3333';
                         break;
@@ -302,6 +307,7 @@ function TableHoaDonLoi() {
                 if (record.billDetailStatus === 0) {
                     return (
                         <Space size="middle" >
+
                             <Popconfirm
                                 title="Xác Nhận"
                                 description="Bạn có chắc chắn muốn xác nhận lỗi?"
@@ -329,8 +335,23 @@ function TableHoaDonLoi() {
                             </Popconfirm>
                         </Space>
                     )
-                } else {
-                    return "";
+                } else if (record.billDetailStatus === -2) {
+                    return (
+                        <Space size="middle" >
+                            <Popconfirm
+                                title="Xác Nhận"
+                                description="Bạn đã nhận hàng và muốn hoàn tiền cho khách hàng?"
+                                okText="Đồng ý"
+                                cancelText="Không"
+                                onConfirm={() => {
+                                    xacNhanHoanTienLoi(record);
+                                }}
+                                onCancel={onCancel}
+                            >
+                                <Button disabled={(record.billStatus === -2) ? true : false} type="primary" icon={<CheckCircleOutlined />}>Hoàn tiền</Button>
+                            </Popconfirm>
+                        </Space>
+                    )
                 }
             },
 
@@ -366,7 +387,19 @@ function TableHoaDonLoi() {
         });
         setLoading(true);
     };
+    const xacNhanHoanTienLoi = async (values) => {
+        let updateStatus = {
+            ...values,
+            billDetailStatus: -3,
+        }
+        await billDetailsAPI.add(updateStatus);
+        notification.success({
+            message: 'Xác nhận',
+            description: 'Sản phẩm "' + values.productDetails.product.productCode + '" đã nhận lại và hoàn tiền thành công!',
+        });
+        setLoading(true);
 
+    }
     const xacNhanLoi = async (values) => {
         // updateAmount(billId);
         let updateStatus = {
@@ -746,7 +779,8 @@ function TableHoaDonLoi() {
                         items={[
                             SyncOutlined,
                             ClockCircleOutlined,
-                            CloseCircleOutlined,
+                            ClockCircleOutlined,
+                            CheckCircleOutlined,
                         ].map((Icon, i) => {
                             const id = String(i + 1);
                             return {
@@ -758,11 +792,13 @@ function TableHoaDonLoi() {
                                             : id === '2'
                                                 ? 'Chờ xác nhận lỗi'
                                                 : id === '3'
-                                                    ? 'Hàng lỗi'
-                                                    : ''}
+                                                    ? 'Hàng lỗi chưa hoàn'
+                                                    : id === '4'
+                                                        ? 'Hàng lỗi đã hoàn'
+                                                        : ''}
                                     </span>
                                 ),
-                                key: id === '1' ? '' : id === '2' ? '0' : id === '3' ? '-2' : '',
+                                key: id === '1' ? '' : id === '2' ? '0' : id === '3' ? '-2' : id === '4' ? '-3' : '',
                                 children: (
                                     <div style={{ padding: '8px' }}>
                                         <span style={{ fontWeight: 500 }}>{/* <TableOutlined /> Danh sách yêu cầu */}</span>
