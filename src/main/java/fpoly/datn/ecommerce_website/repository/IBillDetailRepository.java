@@ -237,7 +237,7 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
             " product.images, product.productCode, product.productName, productDetails.retailPrice, SUM(billDetail.amount)) " +
             " FROM BillDetails_ChiTiet billDetail " +
             " JOIN billDetail.productDetails productDetails " +
-            " JOIN productDetails.product product " +
+            " JOIN productDetails.product product  " +
             " WHERE billDetail.billDetailStatus >= 0 " + // Sử dụng <> thay vì !=
             " GROUP BY product.productCode, product.productName " +
             " ORDER BY SUM(billDetail.amount) DESC ")

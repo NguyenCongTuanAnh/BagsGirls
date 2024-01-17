@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class ThongKeServiceImpl implements IThongKeService {
 
     @Autowired
-     IBillRepository billRepository;
+    IBillRepository billRepository;
     @Autowired
     IBillDetailRepository billDetailRepository;
     @Autowired
@@ -60,6 +60,11 @@ public class ThongKeServiceImpl implements IThongKeService {
     }
 
     @Override
+    public BigDecimal calculateTotalPrice(Date startDate, Date endDate) {
+        return billRepository.calculateTotalPrice(startDate,endDate);
+    }
+
+    @Override
     public BigDecimal calculateTotalPriceThisMonth() {
         return billRepository.calculateTotalPriceThisMonth();
     }
@@ -67,6 +72,11 @@ public class ThongKeServiceImpl implements IThongKeService {
     @Override
     public BigDecimal calculateTotalPriceLastMonth() {
         return billRepository.calculateTotalPriceLastMonth();
+    }
+
+    @Override
+    public BigDecimal calculateTotalPriceLastMonthByAll() {
+        return billRepository.calculateTotalPriceLastMonthByAll();
     }
 
 
@@ -148,7 +158,17 @@ public class ThongKeServiceImpl implements IThongKeService {
     @Override
     public List<Object[]> findTopProductsSold(Date startDate, Date endDate) {
 
-        List<Object[]> objects = this.productDetailRepository.findTop5Products(startDate, endDate);
+        List<Object[]> objects = this.productDetailRepository.findTop5Products(startDate, endDate,PageRequest.of(0, 5));
+        return objects;
+    }
+    @Override
+    public List<Object[]> findAllProductsBanDuoc(Date startDate, Date endDate, int pageNum, int pageSize) {
+        List<Object[]> objects = this.productDetailRepository.findTop5Products(startDate, endDate,PageRequest.of(pageNum, pageSize));
+        return objects;
+    }
+    @Override
+    public List<Object[]> findAllProductsFail(Date startDate, Date endDate) {
+        List<Object[]> objects = this.productDetailRepository.findProductFail(startDate, endDate);
         return objects;
     }
     @Override

@@ -45,26 +45,26 @@ public interface IProductDetailRepository extends JpaRepository<ProductDetails, 
             "and (:minRetailPrice IS NULL OR b.retailPrice >= :minRetailPrice) " +
             "and (:maxRetailPrice IS NULL OR b.retailPrice <= :maxRetailPrice) " +
             " and (:productDetailStatus IS NULL OR b.productDetailStatus = :productDetailStatus) ")
-public Page<ProductDetails> getProductDetailsWithoutDelete(
-        @Param("productName") String productName,
-        @Param("productCode") String productCode,
-        @Param("colorName") String colorName,
-        @Param("typeName") String typeName,
-        @Param("materialName") String materialName,
-        @Param("sizeName") String sizeName,
-        @Param("brandName") String brandName,
-        @Param("compartmentName") String compartmentName,
-        @Param("producerName") String producerName,
-        @Param("buckleTypeName") String buckleTypeName,
-        @Param("productDetailDescribe") String productDetailDescribe,
-        @Param("minProductDetailAmount") Integer minProductDetailAmount,
-        @Param("maxProductDetailAmount") Integer maxProductDetailAmount,
-        @Param("minImportPrice") Integer minImportPrice,
-        @Param("maxImportPrice") Integer maxImportPrice,
-        @Param("minRetailPrice") Integer minRetailPrice,
-        @Param("maxRetailPrice") Integer maxRetailPrice,
-        @Param("productDetailStatus") Integer productDetailStatus,
-        Pageable pageable);
+    public Page<ProductDetails> getProductDetailsWithoutDelete(
+            @Param("productName") String productName,
+            @Param("productCode") String productCode,
+            @Param("colorName") String colorName,
+            @Param("typeName") String typeName,
+            @Param("materialName") String materialName,
+            @Param("sizeName") String sizeName,
+            @Param("brandName") String brandName,
+            @Param("compartmentName") String compartmentName,
+            @Param("producerName") String producerName,
+            @Param("buckleTypeName") String buckleTypeName,
+            @Param("productDetailDescribe") String productDetailDescribe,
+            @Param("minProductDetailAmount") Integer minProductDetailAmount,
+            @Param("maxProductDetailAmount") Integer maxProductDetailAmount,
+            @Param("minImportPrice") Integer minImportPrice,
+            @Param("maxImportPrice") Integer maxImportPrice,
+            @Param("minRetailPrice") Integer minRetailPrice,
+            @Param("maxRetailPrice") Integer maxRetailPrice,
+            @Param("productDetailStatus") Integer productDetailStatus,
+            Pageable pageable);
 
     //@Query("SELECT b from ProductDetails b " +
 //        " where b.product.productName  LIKE  '%'upper(:productName)'%'")
@@ -94,9 +94,18 @@ public Page<ProductDetails> getProductDetailsWithoutDelete(
 
     @Query("SELECT bd.productDetails.product, SUM(bd.amount) as totalSold " +
             "FROM BillDetails bd " +
-            "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
+            "WHERE ( bd.bills.billCreateDate BETWEEN :startDate AND :endDate ) " +
+            " AND bd.bills.billStatus <> -1 AND bd.billDetailStatus >= 0 " +
             "GROUP BY bd.productDetails.product " +
             "ORDER BY totalSold DESC")
-    List<Object[]> findTop5Products(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
+    List<Object[]> findTop5Products(@Param("startDate") Date startDate, @Param("endDate") Date endDate,Pageable pageable);
+
+    @Query("SELECT bd.productDetails.product, SUM(bd.amount) as totalSold " +
+            "FROM BillDetails bd " +
+            "WHERE ( bd.bills.billCreateDate BETWEEN :startDate AND :endDate ) " +
+            " AND  bd.billDetailStatus <= -2  " + // -1 là đã hủy, -2 là hàng lỗi
+            "GROUP BY bd.productDetails.product " +
+            "ORDER BY totalSold DESC")
+    List<Object[]> findProductFail(@Param("startDate") Date startDate, @Param("endDate") Date endDate);
 
 }
