@@ -56,7 +56,7 @@ function HeaderContent(props) {
       <div>
         <div className="row">
           <div className="col-md-4">
-            <Title style={{ color: 'white' }} level={1}>
+            <Title style={{ color: 'black' }} level={1}>
               {props.titlePage}
             </Title>
           </div>

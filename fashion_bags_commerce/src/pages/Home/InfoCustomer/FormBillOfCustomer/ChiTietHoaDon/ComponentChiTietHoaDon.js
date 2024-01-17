@@ -459,7 +459,12 @@ function ComponentChiTietHoaDon(props) {
                         backgroundColor = '#ff3333';
                         break;
                     case -2:
-                        statusText = 'Hàng lỗi';
+                        statusText = 'Hàng lỗi chưa hoàn';
+                        statusClass = 'other-status';
+                        backgroundColor = '#ff3333';
+                        break;
+                    case -3:
+                        statusText = 'Hàng lỗi đã hoàn';
                         statusClass = 'other-status';
                         backgroundColor = '#ff3333';
                         break;
@@ -529,11 +534,9 @@ function ComponentChiTietHoaDon(props) {
                                             rules={[
                                                 {
                                                     required: true,
-                                                    message: 'Vui lòng nhập ghi chú của sản phẩm lỗi!',
+                                                    message: 'Vui lòng nhập số lượng sản phẩm lỗi!',
                                                 },
-                                                {
-                                                    validator: validateWhitespace,
-                                                },
+
                                             ]}
                                         >
                                             <InputNumber
@@ -553,7 +556,10 @@ function ComponentChiTietHoaDon(props) {
                                             rules={[
                                                 {
                                                     required: true,
-                                                    message: 'Vui lòng điền ghi chú!',
+                                                    message: 'Vui lòng nhập ghi chú của sản phẩm lỗi!',
+                                                },
+                                                {
+                                                    validator: validateWhitespace,
                                                 },
                                             ]}
                                         >

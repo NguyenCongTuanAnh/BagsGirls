@@ -163,7 +163,7 @@ function LoginForm(props) {
             }}
           >
             <Button size="large" shape="round" type="primary" htmlType="submit">
-              Submit
+              Đăng nhập
             </Button>
           </Form.Item>
         </Form>

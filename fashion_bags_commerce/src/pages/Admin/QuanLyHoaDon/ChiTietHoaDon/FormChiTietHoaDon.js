@@ -456,7 +456,12 @@ function FormChiTietHoaDon(props) {
                         backgroundColor = '#ff3333';
                         break;
                     case -2:
-                        statusText = 'Hàng lỗi';
+                        statusText = 'Hàng lỗi chưa hoàn';
+                        statusClass = 'other-status';
+                        backgroundColor = '#ff3333';
+                        break;
+                    case -3:
+                        statusText = 'Hàng lỗi đã hoàn';
                         statusClass = 'other-status';
                         backgroundColor = '#ff3333';
                         break;

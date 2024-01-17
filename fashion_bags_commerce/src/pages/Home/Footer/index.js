@@ -10,7 +10,7 @@ const Footer = () => {
           <h4>Thông tin</h4>
           <ul>
             <li>Về chúng tôi</li>
-            <li>Liên hệ</li>
+            <li>Liên hệ: 0355632094</li>
             <li>FAQs</li>
           </ul>
         </div>

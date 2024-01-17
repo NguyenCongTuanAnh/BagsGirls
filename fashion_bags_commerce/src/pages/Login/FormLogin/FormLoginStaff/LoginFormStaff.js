@@ -165,7 +165,7 @@ function LoginFormStaff(props) {
             }}
           >
             <Button type="primary" size="large" shape="round" htmlType="submit">
-              Submit
+              Đăng nhập
             </Button>
           </Form.Item>
         </Form>
