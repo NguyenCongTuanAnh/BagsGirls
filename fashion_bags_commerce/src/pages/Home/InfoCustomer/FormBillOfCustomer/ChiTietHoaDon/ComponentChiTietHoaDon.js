@@ -534,11 +534,9 @@ function ComponentChiTietHoaDon(props) {
                                             rules={[
                                                 {
                                                     required: true,
-                                                    message: 'Vui lòng nhập ghi chú của sản phẩm lỗi!',
+                                                    message: 'Vui lòng nhập số lượng sản phẩm lỗi!',
                                                 },
-                                                {
-                                                    validator: validateWhitespace,
-                                                },
+
                                             ]}
                                         >
                                             <InputNumber
@@ -558,7 +556,10 @@ function ComponentChiTietHoaDon(props) {
                                             rules={[
                                                 {
                                                     required: true,
-                                                    message: 'Vui lòng điền ghi chú!',
+                                                    message: 'Vui lòng nhập ghi chú của sản phẩm lỗi!',
+                                                },
+                                                {
+                                                    validator: validateWhitespace,
                                                 },
                                             ]}
                                         >
