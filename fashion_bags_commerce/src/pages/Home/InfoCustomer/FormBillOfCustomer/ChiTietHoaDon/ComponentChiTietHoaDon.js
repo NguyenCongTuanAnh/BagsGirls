@@ -59,6 +59,12 @@ function ComponentChiTietHoaDon(props) {
             setTimeHangLoi(false);
         }
     };
+    const validateWhitespace = (_, value) => {
+        if (value && value.trim() === '') {
+            return Promise.reject('Ghi chú sản phẩm lỗi không được để trống!');
+        }
+        return Promise.resolve();
+    };
 
     useEffect(() => {
         setReload(false);
@@ -523,7 +529,10 @@ function ComponentChiTietHoaDon(props) {
                                             rules={[
                                                 {
                                                     required: true,
-                                                    message: 'Vui lòng điền số lượng sản phẩm lỗi!',
+                                                    message: 'Vui lòng nhập ghi chú của sản phẩm lỗi!',
+                                                },
+                                                {
+                                                    validator: validateWhitespace,
                                                 },
                                             ]}
                                         >

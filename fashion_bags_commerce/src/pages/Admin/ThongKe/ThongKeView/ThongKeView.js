@@ -2,7 +2,7 @@ import { Button, Card, Col, DatePicker, InputNumber, Pagination, Popconfirm, Pop
 import dayjs from 'dayjs';
 // import { Chart } from 'react-google-charts';
 import { ArrowDownOutlined, ArrowUpOutlined, DeleteOutlined, FilterFilled, ReloadOutlined, ShoppingCartOutlined, ShoppingOutlined, SyncOutlined, UserOutlined } from '@ant-design/icons';
-import { useEffect, useState, useContext, Fragment } from 'react';
+import React, { useEffect, useState, useContext, Fragment, PureComponent } from 'react';
 import colorAPI from '~/api/propertitesBalo/colorAPI';
 import styles from './thongKe.module.scss';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
@@ -11,7 +11,10 @@ import SearchForm from '~/Utilities/FormSearch/SearchForm';
 import Icon from '@ant-design/icons/lib/components/Icon';
 import ThongKeAPI from '~/api/ThongKeAPI';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
-// import { Bar, Chart, Doughnut } from 'react-chartjs-2';
+
+import Chart from "react-apexcharts";
+import { PieChart, Pie, Sector, Cell, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
 const { RangePicker } = DatePicker;
 
 
@@ -32,8 +35,8 @@ function ThongKeContent() {
     const [doanhThuCaThangTruoc, setDoanhThuCaThangTruoc] = useState(0);
     const [doanhThuThangTruoc, setDoanhThuThangTruoc] = useState(0);
     const [doanhThuThangNay, setDoanhThuThangNay] = useState(0);
-    const [month, setMonth] = useState('');
-    const [year, setYear] = useState('');
+    const [month, setMonth] = useState(1);
+    const [year, setYear] = useState(2024);
     const [listDoanhThuTrongThang, setListDoanhThuTrongThang] = useState([]);
     const revenueData = []; // Dữ liệu doanh thu
     const [thongKeStatus, setThongKeStatus] = useState([]);
@@ -42,7 +45,6 @@ function ThongKeContent() {
     const [allProductFail, setAllProductFail] = useState(0); // Dữ liệu sản phẩm lỗi
     const [listProductFail, setListProductFail] = useState([]); // Dữ liệu sản phẩm lỗi
     const [doanhThuTrongKhoangNgay, setDoanhThuTrongKhoangNgay] = useState(0);
-    // const [thangTruoc, setThangTruoc] = useState(dayjs().month);
 
 
     const onRangeChange = (dates, dateStrings) => {
@@ -241,7 +243,6 @@ function ThongKeContent() {
             setTotalProductAmount(data.totalProductAmount);
             setTotalStaffsCount(data.totalStaffsCount);
             setDoanhThuTrongKhoangNgay(data.doanhThuTrongKhoangNgay);
-            // drawChart();
         } catch (error) { }
     };
 
@@ -249,7 +250,11 @@ function ThongKeContent() {
         try {
             const response = await ThongKeAPI.getTotalPricesByDay(month, year);
             const data = response.data;
-            setListDoanhThuTrongThang(data);
+            let list = [];
+            data.map((item, index) => (
+                list = [...list, { name: item[0], 'Doanh thu': item[1] }]
+            ))
+            setListDoanhThuTrongThang(list);
         } catch (error) { }
     };
     const getTopFiveCustomer = async () => {
@@ -280,89 +285,19 @@ function ThongKeContent() {
         try {
             const response = await ThongKeAPI.getThongKeStatus(startDate, endDate);
             const data = response.data;
-            setThongKeStatus(data);
+            let list = [
+                { name: 'Chờ xác nhận', value: data.ChoXacNhan },
+                { name: 'Đang đóng gói', value: data.DangDongGoi },
+                { name: 'Đang giao', value: data.DangGiao },
+                { name: 'Thành công', value: data.ThanhCong },
+                { name: 'Đã hủy', value: data.DaHuy },
+            ];
+            setThongKeStatus(list);
+            console.log(list);
         } catch (error) { }
     };
 
-    const bieuDoTron = () => {
-        return (
-            // <Bar
-            //     data={{
-            //         labels: [
-            //             "Africa",
-            //             "Asia",
-            //             "Europe",
-            //             "Latin America",
-            //             "North America"
-            //         ],
-            //         datasets: [
-            //             {
-            //                 label: "Population (millions)",
-            //                 backgroundColor: [
-            //                     "#3e95cd",
-            //                     "#8e5ea2",
-            //                     "#3cba9f",
-            //                     "#e8c3b9",
-            //                     "#c45850"
-            //                 ],
-            //                 data: [2478, 5267, 734, 784, 433]
-            //             }
-            //         ]
-            //     }}
-            //     options={{
-            //         scales: {
-            //             x: {
-            //                 type: 'category',
-            //                 title: {
-            //                     display: true,
-            //                     text: 'Continent'
-            //                 }
-            //             },
-            //             y: {
-            //                 title: {
-            //                     display: true,
-            //                     text: 'Population (millions)'
-            //                 }
-            //             }
-            //         },
-            //         legend: { display: false },
-            //         title: {
-            //             display: true,
-            //             text: "Predicted world population (millions) in 2050"
-            //         }
-            //     }}
-            // />
-            null
-        );
-    }
 
-    // const taiAPIBieuDo = () => {
-    //     const script = document.createElement('script');
-    //     script.type = 'text/javascript';
-    //     script.src = 'https://www.gstatic.com/charts/loader.js';
-    //     script.async = true;
-
-    //     // Set up a callback for when the script is loaded
-    //     script.onload = () => {
-    //         // Load the visualization library
-    //         window.google.charts.load('current', { packages: ['corechart'] });
-
-    //         // Set a callback to run when the Google Visualization API is loaded
-    //         window.google.charts.setOnLoadCallback(drawChart);
-    //         window.google.charts.load('current', { packages: ['corechart'] });
-
-    //         // Set a callback to run when the Google Visualization API is loaded
-    //         window.google.charts.setOnLoadCallback(drawChart);
-    //     };
-
-    //     // Append the script element to the document head
-    //     document.head.appendChild(script);
-
-    //     // Clean up the script element when the component is unmounted
-    //     return () => {
-    //         document.head.removeChild(script);
-    //     };
-    // }
 
     useEffect(() => {
         getTotalPricesByDay();
@@ -370,38 +305,10 @@ function ThongKeContent() {
         getTopFiveProduct();
         getProductsFail();
         getThongKeStatus();
-        // Tải API biểu đồ Google
-        // const script = document.createElement('script');
-        // script.type = 'text/javascript';
-        // script.src = 'https://www.gstatic.com/charts/loader.js';
-        // script.async = true;
-
-        // // Set up a callback for when the script is loaded
-        // script.onload = () => {
-        //     // Load the visualization library
-        //     window.google.charts.load('current', { packages: ['corechart'] });
-
-        //     // Set a callback to run when the Google Visualization API is loaded
-        //     window.google.charts.setOnLoadCallback(drawChart);
-        //     window.google.charts.load('current', { packages: ['corechart'] });
-
-        //     // Set a callback to run when the Google Visualization API is loaded
-        //     window.google.charts.setOnLoadCallback(drawChart);
-        // };
-
-        // // Append the script element to the document head
-        // document.head.appendChild(script);
-
-        // // Clean up the script element when the component is unmounted
-        // return () => {
-        //     document.head.removeChild(script);
-        // };
-
 
     }, [month, year, startDate, endDate]);
     useEffect(() => {
         getBillStatisticsByDateRange();
-        // taiAPIBieuDo();
     }, [startDate, endDate]);
 
     const stringStatus = (status) => {
@@ -423,42 +330,45 @@ function ThongKeContent() {
 
     const duLieuStatus = () => {
         let status = [
-            ['Task', 'Hours per Day'],
-            [stringStatus(1), thongKeStatus.ThanhCong],
-            [stringStatus(-1), thongKeStatus.DaHuy],
-            [stringStatus(4), thongKeStatus.ChoXacNhan],
-            [stringStatus(3), thongKeStatus.DangDongGoi],
-            [stringStatus(2), thongKeStatus.DangGiao],
+            thongKeStatus.ThanhCong,
+            thongKeStatus.DaHuy,
+            thongKeStatus.ChoXacNhan,
+            thongKeStatus.DangDongGoi,
+            thongKeStatus.DangGiao,
+        ];
+        return status;
+    };
+    const tenStatus = () => {
+        let status = [
+            "Thành công",
+            "Đã hủy",
+            "Chờ xác nhận",
+            "Đang đóng gói",
+            "Đang giao",
         ];
         return status;
     };
 
-
-    // const drawChart = () => {
-    //     // biểu đồ trạng thái
-    //     const data = window.google.visualization.arrayToDataTable(duLieuStatus());
-
-    //     const options = {
-    //         title: 'Thống kê trạng thái đơn hàng',
-    //     };
-    //     const chart = new window.google.visualization.PieChart(document.getElementById('chart_div'));
-    //     chart.draw(data, options);
-
-    //     // biểu đồ cột
-
-    //     const dataChartColumn = new window.google.visualization.DataTable();
-    //     dataChartColumn.addColumn('string', 'Ngày: ');
-    //     dataChartColumn.addColumn('number', 'Doanh thu');
-    //     listDoanhThuTrongThang.forEach(item => {
-    //         dataChartColumn.addRow([item[0], item[1]]);
-    //     });
-    //     const optionsChartColumn = {
-    //         title: 'Thống kê doanh thu trong tháng',
-    //         pieHole: 0.4,
-    //     };
-    //     const chartColumn = new window.google.visualization.ColumnChart(document.getElementById('chart_column'));
-    //     chartColumn.draw(dataChartColumn, optionsChartColumn);
-    // };
+    const bieuDoTron = () => {
+        return (
+            <React.Fragment>
+                <Chart
+                    type="pie"
+                    width={500}
+                    height={300}
+                    series={duLieuStatus()}
+                    options={{
+                        title: {
+                            text: "Thống kê trạng thái đơn hàng"
+                        },
+                        noData: { text: "Empty Data" },
+                        labels: tenStatus(),
+                    }}
+                >
+                </Chart>
+            </React.Fragment>
+        );
+    }
 
 
     const columnProduct = [
@@ -543,6 +453,8 @@ function ThongKeContent() {
             },
         },
     ];
+
+
     return (
         <div style={{}}>
             {/* <Card style={{ marginTop: '15px', marginLeft: '1%', height: '95%', width: '98%', border: '30px' }}>
@@ -576,7 +488,7 @@ function ThongKeContent() {
                                     <Typography.Text>
                                         <Statistic
                                             style={{ marginLeft: '10px' }}
-                                            title={<span style={{ fontSize: '23px' }}>Tổng đơn hàng</span>}
+                                            title={<span style={{ fontSize: '23px' }}>Đơn hàng đã bán</span>}
                                             value={totalBillsCount}
                                             valueStyle={{ fontSize: '30px' }}
                                         />
@@ -636,7 +548,7 @@ function ThongKeContent() {
                         <Col span={16} style={{ backgroundColor: '#ffffff' }}>
                             <Statistic
                                 style={{ marginLeft: '10px' }}
-                                title={<span style={{ fontSize: '23px' }}>Tổng đơn hàng đã hủy</span>}
+                                title={<span style={{ fontSize: '23px' }}>Đơn hàng đã hủy</span>}
                                 value={totalBillsFailCount}
                                 valueStyle={{ fontSize: '30px' }}
                             />
@@ -669,72 +581,52 @@ function ThongKeContent() {
                 </Col>
             </Row>
             <Row>
-                <Col span={16}>
+                <Col span={24}>
                     <div style={{ margin: '15px 15px 15px 15px' }}>
                         <Card style={{ borderRadius: '20px' }}>
                             <Row>
-                                <Col span={3}>
-                                    <FilterFilled style={{ fontSize: '25px' }} />
-                                    <InputNumber
-                                        min={1}
-                                        max={12}
-                                        value={month}
-                                        placeholder='Tháng'
-                                        onChange={(newValue) => {
-                                            setMonth(newValue);
-                                        }}
-                                    />
-                                </Col>
-                                <Col span={3}>
-                                    <InputNumber
-                                        placeholder='Năm'
-                                        min={2000}
-                                        max={2023}
-                                        value={year}
-                                        onChange={(newValue) => {
-                                            setYear(newValue);
-                                        }}
-                                    />
-                                </Col>
+                                <h4>Biểu đồ doanh thu của cửa hàng trong tháng {<InputNumber
+                                    min={1}
+                                    max={12}
+                                    value={month}
+                                    placeholder='Tháng'
+                                    style={{ fontWeight: 'bold', fontSize: '20px' }}
+                                    onChange={(newValue) => {
+                                        setMonth(newValue);
+                                    }}
+                                />} năm {<InputNumber
+                                    placeholder='Năm'
+                                    min={2000}
+                                    max={2024}
+                                    value={year}
+                                    style={{ fontWeight: 'bold', fontSize: '20px' }}
+                                    onChange={(newValue) => {
+                                        setYear(newValue);
+                                    }}
+                                />}
+                                </h4>
                             </Row>
-                            <span>
-                                {bieuDoTron()}
-                            </span>
+                            <Row style={{ marginTop: '15px' }}>
+                                <BarChart
+                                    width={1500}
+                                    height={500}
+                                    data={listDoanhThuTrongThang}
+                                    margin={{
+                                        top: 5,
+                                        right: 30,
+                                        left: 20,
+                                        bottom: 5,
+                                    }}
+                                >
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Bar dataKey="Doanh thu" fill="#8884d8" activeBar={<Rectangle fill="pink" stroke="blue" />} />
+                                </BarChart>
+                            </Row>
                         </Card>
-                    </div>
-                </Col>
-                <Col span={8}>
-                    <div style={{ margin: '15px 15px 15px 15px' }}>
-                        {/* <DoughnutController
-                            data={{
-                                labels: [
-                                    "Africa",
-                                    "Asia",
-                                    "Europe",
-                                    "Latin America",
-                                    "North America"
-                                ],
-                                datasets: [
-                                    {
-                                        label: "Population (millions)",
-                                        backgroundColor: [
-                                            "#3e95cd",
-                                            "#8e5ea2",
-                                            "#3cba9f",
-                                            "#e8c3b9",
-                                            "#c45850"
-                                        ],
-                                        data: [2478, 5267, 734, 784, 433]
-                                    }
-                                ]
-                            }}
-                            option={{
-                                title: {
-                                    display: true,
-                                    text: "Predicted world population (millions) in 2050"
-                                }
-                            }}
-                        /> */}
                     </div>
                 </Col>
             </Row>
