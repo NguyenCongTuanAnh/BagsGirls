@@ -65,6 +65,16 @@ public class ThongKeServiceImpl implements IThongKeService {
     }
 
     @Override
+    public BigDecimal calculateTotalPriceOffline(Date startDate, Date endDate) {
+        return billRepository.calculateTotalPriceOffline(startDate,endDate);
+    }
+
+    @Override
+    public BigDecimal calculateTotalPriceOnline(Date startDate, Date endDate) {
+        return billRepository.calculateTotalPriceOnline(startDate,endDate);
+    }
+
+    @Override
     public BigDecimal calculateTotalPriceThisMonth() {
         return billRepository.calculateTotalPriceThisMonth();
     }

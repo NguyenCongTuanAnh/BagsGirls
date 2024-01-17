@@ -44,6 +44,8 @@ public class ThongKeRestController {
             List<Bills> bills = thongKeService.getBillsByDateRange(startDate, endDate);
             int totalStaffs = thongKeService.countStaffs();
             BigDecimal totalPrice = thongKeService.calculateTotalPrice(startDate,endDate);
+            BigDecimal totalPriceOffline = thongKeService.calculateTotalPriceOffline(startDate,endDate);
+            BigDecimal totalPriceOnline = thongKeService.calculateTotalPriceOnline(startDate,endDate);
             BigDecimal priceThisMonth = thongKeService.calculateTotalPriceThisMonth();
             BigDecimal priceLastMonth = thongKeService.calculateTotalPriceLastMonth();
             BigDecimal priceLastMonthByAll = thongKeService.calculateTotalPriceLastMonthByAll();
@@ -100,6 +102,9 @@ public class ThongKeRestController {
             response.put("doanhThuThangNay", priceThisMonth);
             response.put("doanhThuCaThangTruoc", priceLastMonthByAll);
             response.put("doanhThuTrongKhoangNgay", totalPrice);
+            response.put("doanhThuOfflineTrongKhoangNgay", totalPriceOffline);
+            response.put("doanhThuOnlineTrongKhoangNgay", totalPriceOnline);
+
             return response;
         } catch (ParseException e) {
             e.printStackTrace();
