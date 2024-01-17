@@ -34,27 +34,35 @@ function FormCapNhatTrangThai(props) {
     }
 
     const updateStatusBill = async (id, status) => {
+        // if (status - props.status.billStatus >= 2 || status - props.status.billStatus <= -2) {
+        //     notification.warning({
+        //         message: 'Trạng thái không hợp lệ',
+        //         description: 'Không thể chuyển đổi trạng thái đơn hàng vượt quá 2 bước',
+        //     });
+        // } else {
         const xoa = await billsAPI.updateStatus(id, status);
         notification.success({
             message: 'Cập nhật thành công',
-            description: 'Trạng thái đơn hàng ' + props.status.billCode + ' được cập nhật thành: ' + currentString(current),
+            description: 'Trạng thái đơn hàng ' + props.status.billCode + ' được cập nhật thành: ' + currentString(status),
         });
         setVisible(false);
         props.reload();
+        // }
+
     };
 
     const currentString = (value) => {
         switch (value) {
             case 4:
-                return 'Thành công';
+                return 'Chờ xác nhận';
             case 3:
-                return 'Thành công';
+                return 'Đang đóng gói';
             case 2:
                 return 'Đang giao';
             case 1:
-                return 'Đang đóng gói';
-            case 0:
-                return 'Chờ xác nhận';
+                return 'Thành công';
+            // case 0:
+            //     return 'Chờ xác nhận';
             default:
                 return 'Đã hủy';
         }
@@ -91,10 +99,24 @@ function FormCapNhatTrangThai(props) {
                     <Button key="cancel" onClick={() => setVisible(false)}>
                         Hủy
                     </Button>,
+
+                    props.status.billStatus === 4 ? (
+                        <Button type="primary" disabled>Trở về</Button>
+                    ) : (
+                        <Popconfirm
+                            key="popconfirm-return"
+                            title="Xác nhận trở về trạng thái trước?"
+                            onConfirm={() => updateStatusBill(billId, props.status.billStatus + 1)}
+                            okText="Đồng ý"
+                            cancelText="Hủy"
+                        >
+                            <Button type="primary">Trở về</Button>
+                        </Popconfirm>
+                    ),
                     <Popconfirm
                         key="popconfirm"
-                        title="Xác nhận cập nhật trạng thái?"
-                        onConfirm={() => updateStatusBill(billId, statusTraVe(current))}
+                        title="Xác nhận cập nhật trạng thái tiếp theo?"
+                        onConfirm={() => updateStatusBill(billId, props.status.billStatus - 1)}
                         okText="Đồng ý"
                         cancelText="Hủy"
                     >
@@ -106,7 +128,7 @@ function FormCapNhatTrangThai(props) {
                     type="navigation"
                     size="small"
                     current={current}
-                    onChange={onChange}
+                    // onChange={onChange}
                     className="site-navigation-steps"
                 >
                     {[
@@ -134,7 +156,6 @@ function FormCapNhatTrangThai(props) {
                         <Step
                             key={index}
                             title={item.title}
-                            // subTitle={generateSubTitle(item)}
                             description={item.description}
                         />
                     ))}

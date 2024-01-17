@@ -104,13 +104,15 @@ public class ThongKeServiceImpl implements IThongKeService {
         LocalDate currentDate = LocalDate.now();
         String currentMonth = String.valueOf(currentDate.getMonthValue());
         String currentYear = String.valueOf(currentDate.getYear());
-        if(month.equalsIgnoreCase("") || year.equalsIgnoreCase("")){
+
+        if (month.equalsIgnoreCase("") || year.equalsIgnoreCase("")) {
             currentMonth = String.valueOf(currentDate.getMonthValue());
             currentYear = String.valueOf(currentDate.getYear());
-        }else{
+        } else {
             currentMonth = month;
             currentYear = year;
         }
+
         List<Object[]> totalPricesByDay = billRepository.findTotalPricesByDay(currentMonth, currentYear);
         Map<LocalDate, BigDecimal> pricesByDayMap = new HashMap<>();
 
@@ -136,9 +138,12 @@ public class ThongKeServiceImpl implements IThongKeService {
 
         // Fill the result list with day and corresponding price (or 0 if not found)
         List<Object[]> result = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
         for (LocalDate day : allDaysOfMonth) {
             BigDecimal price = pricesByDayMap.getOrDefault(day, BigDecimal.ZERO);
-            result.add(new Object[]{Date.from(day.atStartOfDay(ZoneId.systemDefault()).toInstant()), price});
+            String formattedDate = day.format(formatter);
+            result.add(new Object[]{formattedDate, price});
         }
 
         return result;
@@ -149,10 +154,10 @@ public class ThongKeServiceImpl implements IThongKeService {
         return billRepository.findTopCustomersByTotalPrice(PageRequest.of(0, 5), startDate, endDate);
     }
 
-    @Override
-    public List<TopProductsDTO> findTopProductsByTotalAmount(){
-        return billDetailRepository.findTopProductsByTotalAmount(PageRequest.of(0, 5));
-    }
+//    @Override
+//    public List<TopProductsDTO> findTopProductsByTotalAmount(){
+//        return billDetailRepository.findTopProductsByTotalAmount(PageRequest.of(0, 5));
+//    }
 
 
     @Override

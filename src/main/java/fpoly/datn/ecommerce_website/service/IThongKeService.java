@@ -32,7 +32,7 @@ public interface IThongKeService {
 
     List<TopCustomersDTO> getTopCustomersByTotalPrice(Date startDate, Date endDate);
 
-    List<TopProductsDTO> findTopProductsByTotalAmount();
+//    List<TopProductsDTO> findTopProductsByTotalAmount();
 
     List<Object[]> findTopProductsSold(Date startDate, Date endDate);
 
