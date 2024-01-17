@@ -42,24 +42,69 @@ public class ThongKeRestController {
             Date startDate = dateFormat.parse(startDateStr);
             Date endDate = dateFormat.parse(endDateStr);
             List<Bills> bills = thongKeService.getBillsByDateRange(startDate, endDate);
-            int totalProductAmount = thongKeService.sumProductAmountByDateRange(startDate, endDate);
-            int totalBillCount = bills.size();
             int totalStaffs = thongKeService.countStaffs();
+            BigDecimal totalPrice = thongKeService.calculateTotalPrice(startDate,endDate);
+            BigDecimal totalPriceOffline = thongKeService.calculateTotalPriceOffline(startDate,endDate);
+            BigDecimal totalPriceOnline = thongKeService.calculateTotalPriceOnline(startDate,endDate);
             BigDecimal priceThisMonth = thongKeService.calculateTotalPriceThisMonth();
             BigDecimal priceLastMonth = thongKeService.calculateTotalPriceLastMonth();
-
+            BigDecimal priceLastMonthByAll = thongKeService.calculateTotalPriceLastMonthByAll();
+            int totalBillCount = 0;
+            int totalBillCountChoXacNhan = 0;
+            int totalBillCountDangDongGoi = 0;
+            int totalBillCountDangGiao = 0;
+            int totalBillCountThanhCong = 0;
+            int totalBillFailCount = 0;
+            int totalProductAmount = 0;
+            for (Bills x: bills) {
+                if(x.getBillStatus() == -1){
+                    totalBillFailCount = totalBillFailCount +1;
+                }
+                if(x.getBillStatus() != -1){
+                    totalBillCount = totalBillCount +1;
+                    totalProductAmount = totalProductAmount + x.getProductAmount();
+                    if(x.getBillStatus() == 4){
+                        totalBillCountChoXacNhan = totalBillCountChoXacNhan + 1;
+                    }else if(x.getBillStatus() == 3){
+                        totalBillCountDangDongGoi = totalBillCountDangDongGoi + 1;
+                    }else if(x.getBillStatus() == 2){
+                        totalBillCountDangGiao = totalBillCountDangGiao + 1;
+                    }else if(x.getBillStatus() == 1){
+                        totalBillCountThanhCong = totalBillCountThanhCong + 1;
+                    }
+                }
+            }
             BigDecimal tiLeDoanhThu = BigDecimal.ZERO;
             if (priceLastMonth.compareTo(BigDecimal.ZERO) != 0) {
                 tiLeDoanhThu = priceThisMonth.divide(priceLastMonth, 5, RoundingMode.HALF_UP)
                         .subtract(BigDecimal.ONE)
                         .multiply(new BigDecimal(100));
             }
+            BigDecimal tiLeDoanhThuCaThang = BigDecimal.ZERO;
+            if (priceLastMonth.compareTo(BigDecimal.ZERO) != 0) {
+                tiLeDoanhThuCaThang = priceThisMonth.divide(priceLastMonthByAll, 5, RoundingMode.HALF_UP)
+                        .subtract(BigDecimal.ONE)
+                        .multiply(new BigDecimal(100));
+            }
 
             Map<String, BigDecimal> response = new HashMap<>();
             response.put("totalBillsCount", BigDecimal.valueOf(totalBillCount));
+            response.put("totalBillsCountChoXacNhan", BigDecimal.valueOf(totalBillCountChoXacNhan));
+            response.put("totalBillsCountDangDongGoi", BigDecimal.valueOf(totalBillCountDangDongGoi));
+            response.put("totalBillsCountDangGiao", BigDecimal.valueOf(totalBillCountDangGiao));
+            response.put("totalBillsCountThanhCong", BigDecimal.valueOf(totalBillCountThanhCong));
+            response.put("totalBillsFailCount", BigDecimal.valueOf(totalBillFailCount));
             response.put("totalStaffsCount", BigDecimal.valueOf(totalStaffs));
             response.put("totalProductAmount", BigDecimal.valueOf(totalProductAmount));
             response.put("doanhThuSoVoiThangTruoc", tiLeDoanhThu);
+            response.put("doanhThuCaThangSoVoiThangTruoc", tiLeDoanhThuCaThang);
+            response.put("doanhThuThangTruoc", priceLastMonth);
+            response.put("doanhThuThangNay", priceThisMonth);
+            response.put("doanhThuCaThangTruoc", priceLastMonthByAll);
+            response.put("doanhThuTrongKhoangNgay", totalPrice);
+            response.put("doanhThuOfflineTrongKhoangNgay", totalPriceOffline);
+            response.put("doanhThuOnlineTrongKhoangNgay", totalPriceOnline);
+
             return response;
         } catch (ParseException e) {
             e.printStackTrace();
@@ -99,22 +144,29 @@ public class ThongKeRestController {
 
     @GetMapping("/thong-ke/top-products")
     public ResponseEntity<List<Object []>> getTopProducts(@RequestParam("startDate") String startDateStr,
-                                                        @RequestParam("endDate") String endDateStr
-                                           ) throws ParseException {
+                                                          @RequestParam("endDate") String endDateStr
+    ) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = dateFormat.parse(startDateStr);
         Date endDate = dateFormat.parse(endDateStr);
         List<Object []> topProducts = this.thongKeService.findTopProductsSold(startDate, endDate);
-        List<Object []> topProduct = new ArrayList<>();
-        for(int i=0; i<5; i++){
-            topProduct.add(topProducts.get(i));
-        }
-        return ResponseEntity.ok(topProduct);
+        return new ResponseEntity<>(topProducts, HttpStatus.OK);
     }
+
+    @GetMapping("/thong-ke/top-products-fail")
+    public ResponseEntity<List<Object []>> getProductsFail(@RequestParam("startDate") String startDateStr,
+                                                           @RequestParam("endDate") String endDateStr
+    ) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date startDate = dateFormat.parse(startDateStr);
+        Date endDate = dateFormat.parse(endDateStr);
+        List<Object []> topProducts = this.thongKeService.findAllProductsFail(startDate, endDate);
+        return new ResponseEntity<>(topProducts, HttpStatus.OK);
+    }
+
     @GetMapping("/thong-ke/statisticPercentByBillStatus")
     public Map<String, Double> findByBillCreateDateBetween(@RequestParam("startDate") String startDateStr,
-
-                                                            @RequestParam("endDate") String endDateStr) throws ParseException {
+                                                           @RequestParam("endDate") String endDateStr) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         Date startDate = dateFormat.parse(startDateStr);
         Date endDate = dateFormat.parse(endDateStr);

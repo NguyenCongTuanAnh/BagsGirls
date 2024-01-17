@@ -223,6 +223,13 @@ function FormChiTietHoaDon(props) {
 
     // component Sản phẩm lỗi
 
+    const validateWhitespace = (_, value) => {
+        if (value && value.trim() === '') {
+            return Promise.reject('Ghi chú sản phẩm lỗi không được để trống!');
+        }
+        return Promise.resolve();
+    };
+
     const showComponentSPLoi = (values, index) => {
         setIndexBilldetails(index);
         setMaxAmountProductError(values.amount);
@@ -542,7 +549,10 @@ function FormChiTietHoaDon(props) {
                                                 rules={[
                                                     {
                                                         required: true,
-                                                        message: 'Vui lòng điền ghi chú!',
+                                                        message: 'Vui lòng nhập ghi chú của sản phẩm lỗi!',
+                                                    },
+                                                    {
+                                                        validator: validateWhitespace,
                                                     },
                                                 ]}
                                             >

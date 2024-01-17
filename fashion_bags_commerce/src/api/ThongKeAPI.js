@@ -38,6 +38,15 @@ const ThongKeAPI = {
             },
         });
     },
+    getProductsFail(startDate, endDate) {
+        const url = 'api/thong-ke/top-products-fail';
+        return axiosClient.get(url, {
+            params: {
+                startDate: startDate,
+                endDate: endDate,
+            },
+        });
+    },
     getThongKeStatus(startDate, endDate) {
         const url = 'api/thong-ke/statisticPercentByBillStatus';
         return axiosClient.get(url, {

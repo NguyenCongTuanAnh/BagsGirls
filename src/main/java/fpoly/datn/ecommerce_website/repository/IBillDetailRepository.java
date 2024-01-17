@@ -26,7 +26,8 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
             "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
             "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
             "OR (:status = -2 AND bd.billDetailStatus = -2) " +
-            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            "OR (:status = -3 AND bd.billDetailStatus = -3) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2, -3) ) )" +
             " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
             " OR bd.bills.orderPhone LIKE %:search% ) " +
             " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) "
@@ -43,7 +44,8 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
             "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
             "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
             "OR (:status = -2 AND bd.billDetailStatus = -2) " +
-            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            "OR (:status = -3 AND bd.billDetailStatus = -3) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2, -3) ) )" +
             " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
             " OR bd.bills.orderPhone LIKE %:search% ) " +
             " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) " +
@@ -62,7 +64,8 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
             "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
             "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
             "OR (:status = -2 AND bd.billDetailStatus = -2) " +
-            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            "OR (:status = -3 AND bd.billDetailStatus = -3) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2, -3) ) )" +
             " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
             " OR bd.bills.orderPhone LIKE %:search% ) " +
             " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) " +
@@ -82,7 +85,8 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
             "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
             "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
             "OR (:status = -2 AND bd.billDetailStatus = -2) " +
-            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            "OR (:status = -3 AND bd.billDetailStatus = -3) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2, -3) ) )" +
             " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
             " OR bd.bills.orderPhone LIKE %:search% ) " +
             " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate)" +
@@ -99,7 +103,8 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
             "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
             "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
             "OR (:status = -2 AND bd.billDetailStatus = -2) " +
-            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            "OR (:status = -3 AND bd.billDetailStatus = -3) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2, -3) ) )" +
             " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
             " OR bd.bills.orderPhone LIKE %:search% ) " +
             " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate)" +
@@ -116,8 +121,9 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
     @Query("SELECT bd FROM BillDetails_ChiTiet bd " +
             " WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
             " AND ((:status = 0 AND bd.billDetailStatus = 0) " +
-            " OR (:status = -2 AND bd.billDetailStatus = -2) " +
-            " OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) ) " +
+            "OR (:status = -2 AND bd.billDetailStatus = -2) " +
+            "OR (:status = -3 AND bd.billDetailStatus = -3) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2, -3) ) )" +
             " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
             " OR bd.bills.orderPhone LIKE %:search% ) " +
             " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) " +
@@ -140,7 +146,8 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
             "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
             "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
             "OR (:status = -2 AND bd.billDetailStatus = -2) " +
-            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            "OR (:status = -3 AND bd.billDetailStatus = -3) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2, -3) ) )" +
             " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
             " OR bd.bills.orderPhone LIKE %:search% ) " +
             " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) " +
@@ -157,7 +164,8 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
             "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
             "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
             "OR (:status = -2 AND bd.billDetailStatus = -2) " +
-            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            "OR (:status = -3 AND bd.billDetailStatus = -3) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2, -3) ) )" +
             " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
             " OR bd.bills.orderPhone LIKE %:search% ) " +
             " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) " +
@@ -176,7 +184,8 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
             "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
             "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
             "OR (:status = -2 AND bd.billDetailStatus = -2) " +
-            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            "OR (:status = -3 AND bd.billDetailStatus = -3) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2, -3) ) )" +
             " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
             " OR bd.bills.orderPhone LIKE %:search% ) " +
             " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) " +
@@ -195,7 +204,8 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
             "WHERE bd.bills.billCreateDate BETWEEN :startDate AND :endDate " +
             "AND ((:status = 0 AND bd.billDetailStatus = 0) " +
             "OR (:status = -2 AND bd.billDetailStatus = -2) " +
-            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2) ) )" +
+            "OR (:status = -3 AND bd.billDetailStatus = -3) " +
+            "OR (  :status IS NULL AND bd.billDetailStatus IN (0, -2, -3) ) )" +
             " AND (:search IS NULL OR bd.bills.billCode LIKE %:search%  " +
             " OR bd.bills.orderPhone LIKE %:search% ) " +
             " AND (bd.bills.billCreateDate BETWEEN :startDate AND :endDate) " +
@@ -233,13 +243,13 @@ public interface IBillDetailRepository extends JpaRepository<BillDetails, String
 //            " join Products p on pd.product.productId = p.productId where bd.bills.billId = :billID")
 //    List<BillDetails> findAllBillDetailsById(@Param("billID") String billID);
 
-    @Query("SELECT NEW fpoly.datn.ecommerce_website.dto.TopProductsDTO( " +
-            " product.images, product.productCode, product.productName, productDetails.retailPrice, SUM(billDetail.amount)) " +
-            " FROM BillDetails_ChiTiet billDetail " +
-            " JOIN billDetail.productDetails productDetails " +
-            " JOIN productDetails.product product " +
-            " WHERE billDetail.billDetailStatus <> -1 " + // Sử dụng <> thay vì !=
-            " GROUP BY product.productCode, product.productName " +
-            " ORDER BY SUM(billDetail.amount) DESC ")
-    List<TopProductsDTO> findTopProductsByTotalAmount(Pageable pageable);
+//    @Query("SELECT NEW fpoly.datn.ecommerce_website.dto.TopProductsDTO( " +
+//            " product.images, product.productCode, product.productName, productDetails.retailPrice, SUM(billDetail.amount)) " +
+//            " FROM BillDetails_ChiTiet billDetail " +
+//            " JOIN billDetail.productDetails productDetails " +
+//            " JOIN productDetails.product product  " +
+//            " WHERE billDetail.billDetailStatus >= 0 " + // Sử dụng <> thay vì !=
+//            " GROUP BY product.productCode, product.productName " +
+//            " ORDER BY SUM(billDetail.amount) DESC ")
+//    List<TopProductsDTO> findTopProductsByTotalAmount(Pageable pageable);
 }

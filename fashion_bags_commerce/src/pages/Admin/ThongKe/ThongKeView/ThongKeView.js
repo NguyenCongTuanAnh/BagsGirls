@@ -1,8 +1,8 @@
-import { Button, Card, Col, DatePicker, InputNumber, Pagination, Popconfirm, Row, Select, Space, Spin, Statistic, Table, notification } from 'antd';
+import { Button, Card, Col, DatePicker, InputNumber, Pagination, Popconfirm, Popover, Row, Select, Space, Spin, Statistic, Table, Typography, notification } from 'antd';
 import dayjs from 'dayjs';
-import { Chart } from 'react-google-charts';
+// import { Chart } from 'react-google-charts';
 import { ArrowDownOutlined, ArrowUpOutlined, DeleteOutlined, FilterFilled, ReloadOutlined, ShoppingCartOutlined, ShoppingOutlined, SyncOutlined, UserOutlined } from '@ant-design/icons';
-import { useEffect, useState, useContext, Fragment } from 'react';
+import React, { useEffect, useState, useContext, Fragment, PureComponent } from 'react';
 import colorAPI from '~/api/propertitesBalo/colorAPI';
 import styles from './thongKe.module.scss';
 import VNDFormaterFunc from '~/Utilities/VNDFormaterFunc';
@@ -11,6 +11,10 @@ import SearchForm from '~/Utilities/FormSearch/SearchForm';
 import Icon from '@ant-design/icons/lib/components/Icon';
 import ThongKeAPI from '~/api/ThongKeAPI';
 import { generateCustomCode } from '~/Utilities/GenerateCustomCode';
+
+import Chart from "react-apexcharts";
+import { PieChart, Pie, Sector, Cell, BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+
 const { RangePicker } = DatePicker;
 
 
@@ -20,15 +24,30 @@ function ThongKeContent() {
     const [endDate, setEndDate] = useState('9999-02-02');
     const [totalProductAmount, setTotalProductAmount] = useState(0);
     const [totalBillsCount, setTotalBillsCount] = useState(0);
+    const [totalBillsCountChoXacNhan, setTotalBillsCountChoXacNhan] = useState(0);
+    const [totalBillsCountDangDongGoi, setTotalBillsCountDangDongGoi] = useState(0);
+    const [totalBillsCountDangGiao, setTotalBillsCountDangGiao] = useState(0);
+    const [totalBillsCountThanhCong, setTotalBillsCountThanhCong] = useState(0);
+    const [totalBillsFailCount, setTotalBillsFailCount] = useState(0);
     const [totalStaffsCount, setTotalStaffsCount] = useState(0);
     const [tiLeDoanhThu, setTiLeDoanhThu] = useState(1);
-    const [month, setMonth] = useState('');
-    const [year, setYear] = useState('');
+    const [tiLeDoanhThuCaThang, setTiLeDoanhThuCaThang] = useState(1);
+    const [doanhThuCaThangTruoc, setDoanhThuCaThangTruoc] = useState(0);
+    const [doanhThuThangTruoc, setDoanhThuThangTruoc] = useState(0);
+    const [doanhThuThangNay, setDoanhThuThangNay] = useState(0);
+    const [month, setMonth] = useState(1);
+    const [year, setYear] = useState(2024);
     const [listDoanhThuTrongThang, setListDoanhThuTrongThang] = useState([]);
     const revenueData = []; // Dữ liệu doanh thu
     const [thongKeStatus, setThongKeStatus] = useState([]);
     const [topProductsData, setTopProductsData] = useState([]); // Dữ liệu top sản phẩm
     const [topCustomersData, setTopCustomersData] = useState([]); // Dữ liệu top khách hàng
+    const [allProductFail, setAllProductFail] = useState(0); // Dữ liệu sản phẩm lỗi
+    const [listProductFail, setListProductFail] = useState([]); // Dữ liệu sản phẩm lỗi
+    const [doanhThuTrongKhoangNgay, setDoanhThuTrongKhoangNgay] = useState(0);
+    const [doanhThuOfflineTrongKhoangNgay, setDoanhThuOfflineTrongKhoangNgay] = useState(0);
+    const [doanhThuOnlineTrongKhoangNgay, setDoanhThuOnlineTrongKhoangNgay] = useState(0);
+
 
 
     const onRangeChange = (dates, dateStrings) => {
@@ -40,33 +59,164 @@ function ThongKeContent() {
             setEndDate('9999-02-02');
         }
     };
-    const setTangGiamDoanhThu = () => {
+
+    const viewTiLeDoanhThu = () => {
+        return (
+            <div >
+                <h5 style={{ margin: '10px', fontWeight: 'bold' }}>Doanh thu từ ngày 1 đến ngày {dayjs().date()}: </h5>
+                <ul >
+                    <li >
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Của tháng {dayjs().subtract(1, 'month').format('MM-YYYY')}: </span>
+                        <span style={{ color: 'red', fontSize: '16px' }}>{VNDFormaterFunc(doanhThuThangTruoc)} </span>
+                    </li>
+                    <li >
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Của tháng {dayjs().format('MM-YYYY')}: </span>
+                        <span style={{ color: 'red', fontSize: '16px' }}>{VNDFormaterFunc(doanhThuThangNay)} </span>
+                    </li>
+                </ul>
+            </div>
+        );
+    }
+    const viewTiLeDoanhThuCaThang = () => {
+        return (
+            <div >
+                <h5 style={{ margin: '10px', fontWeight: 'bold' }}>Doanh thu cả tháng: </h5>
+                <ul >
+                    <li >
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Tháng {dayjs().subtract(1, 'month').format('MM-YYYY')}: </span>
+                        <span style={{ color: 'red', fontSize: '16px' }}>{VNDFormaterFunc(doanhThuCaThangTruoc)} </span>
+                    </li>
+                    <li >
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Tháng {dayjs().format('MM-YYYY')}: </span>
+                        <span style={{ color: 'red', fontSize: '16px' }}>{VNDFormaterFunc(doanhThuThangNay)} </span>
+                    </li>
+                </ul>
+            </div>
+        );
+    }
+    const viewDoanhThuTheoKhoangNgay = () => {
+        return (
+            <div >
+                <h5 style={{ margin: '10px', fontWeight: 'bold' }}>Doanh thu chi tiết trong khoảng ngày: </h5>
+                <ul >
+                    <li >
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Doanh thu tại quầy:  </span>
+                        <span style={{ color: 'red', fontSize: '22px' }}> {VNDFormaterFunc(doanhThuOfflineTrongKhoangNgay)} </span>
+                    </li>
+                    <li >
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Doanh thu online:  </span>
+                        <span style={{ color: 'red', fontSize: '22px' }}> {VNDFormaterFunc(doanhThuOnlineTrongKhoangNgay)} </span>
+                    </li>
+
+                </ul>
+            </div>
+        );
+    }
+    const viewSoLuongHoaDon = () => {
+        return (
+            <div >
+                <h5 style={{ margin: '10px', fontWeight: 'bold' }}>Chi tiết tổng đơn hàng: </h5>
+                <ul >
+                    <li >
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Đơn hàng chờ xác nhận:  </span>
+                        <span style={{ color: 'red', fontSize: '22px' }}> {totalBillsCountChoXacNhan} </span>
+                    </li>
+                    <li >
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Đơn hàng đang đóng gói:  </span>
+                        <span style={{ color: 'red', fontSize: '22px' }}> {totalBillsCountDangDongGoi} </span>
+                    </li>
+                    <li >
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Đơn hàng đang giao:  </span>
+                        <span style={{ color: 'red', fontSize: '22px' }}> {totalBillsCountDangGiao} </span>
+                    </li>
+                    <li >
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Đơn hàng thành công:  </span>
+                        <span style={{ color: 'red', fontSize: '22px' }}> {totalBillsCountThanhCong} </span>
+                    </li>
+                </ul>
+            </div>
+        );
+    }
+
+    const setTangGiamDoanhThuDenNgayHienTai = () => {
         if (tiLeDoanhThu == null) {
             return <Space></Space>;
         } else if (tiLeDoanhThu != null && tiLeDoanhThu >= 0) {
             return (
                 <Space>
-                    <Statistic
-                        title={<span style={{ fontSize: '23px' }}>Doanh thu so với tháng trước</span>}
-                        value={tiLeDoanhThu}
-                        precision={2}
-                        valueStyle={{ color: '#3f8600' }}
-                        prefix={<ArrowUpOutlined />}
-                        suffix="% doanh thu"
-                    />
+                    <Popover placement="top" content={viewTiLeDoanhThu()}>
+                        <Typography.Text>
+                            <Statistic
+                                title={<span style={{ fontSize: '23px' }}>Doanh thu đến ngày hiện tại</span>}
+                                value={tiLeDoanhThu}
+                                precision={2}
+                                valueStyle={{ color: '#3f8600' }}
+                                prefix={<ArrowUpOutlined />}
+                                suffix="% doanh thu"
+                            />
+                        </Typography.Text>
+                    </Popover>
+
                 </Space>
             )
         } else {
             return (
                 <Space>
-                    <Statistic
-                        title={<span style={{ fontSize: '23px' }}>Doanh thu so với tháng trước</span>}
-                        value={tiLeDoanhThu}
-                        precision={2}
-                        valueStyle={{ color: '#cf1322' }}
-                        prefix={<ArrowDownOutlined />}
-                        suffix="%"
-                    />
+                    <Popover placement="top" content={viewTiLeDoanhThu()}>
+                        <Typography.Text>
+                            <Statistic
+                                title={<span style={{ fontSize: '23px' }}>Doanh thu đến ngày hiện tại</span>}
+                                value={tiLeDoanhThu}
+                                precision={2}
+                                valueStyle={{ color: '#cf1322' }}
+                                prefix={<ArrowDownOutlined />}
+                                suffix="% doanh thu"
+                            />
+                        </Typography.Text>
+                    </Popover>
+
+                </Space>
+            )
+        }
+    }
+
+    const setTangGiamDoanhThuCaThang = () => {
+        if (tiLeDoanhThuCaThang == null) {
+            return <Space></Space>;
+        } else if (tiLeDoanhThuCaThang != null && tiLeDoanhThuCaThang >= 0) {
+            return (
+                <Space>
+                    <Popover placement="top" content={viewTiLeDoanhThuCaThang()}>
+                        <Typography.Text>
+                            <Statistic
+                                title={<span style={{ fontSize: '23px' }}>Doanh thu cả tháng</span>}
+                                value={tiLeDoanhThuCaThang}
+                                precision={2}
+                                valueStyle={{ color: '#3f8600' }}
+                                prefix={<ArrowUpOutlined />}
+                                suffix="% doanh thu"
+                            />
+                        </Typography.Text>
+                    </Popover>
+
+                </Space>
+            )
+        } else {
+            return (
+                <Space>
+                    <Popover placement="top" content={viewTiLeDoanhThuCaThang()}>
+                        <Typography.Text>
+                            <Statistic
+                                title={<span style={{ fontSize: '23px' }}>Doanh thu cả tháng</span>}
+                                value={tiLeDoanhThuCaThang}
+                                precision={2}
+                                valueStyle={{ color: '#cf1322' }}
+                                prefix={<ArrowDownOutlined />}
+                                suffix="% doanh thu"
+                            />
+                        </Typography.Text>
+                    </Popover>
+
                 </Space>
             )
         }
@@ -101,10 +251,22 @@ function ThongKeContent() {
             const response = await ThongKeAPI.getBillStatisticsByDateRange(startDate, endDate);
             const data = response.data;
             setTiLeDoanhThu(data.doanhThuSoVoiThangTruoc);
+            setTiLeDoanhThuCaThang(data.doanhThuCaThangSoVoiThangTruoc);
+            setDoanhThuCaThangTruoc(data.doanhThuCaThangTruoc);
+            setDoanhThuThangTruoc(data.doanhThuThangTruoc);
+            setDoanhThuThangNay(data.doanhThuThangNay);
             setTotalBillsCount(data.totalBillsCount);
+            setTotalBillsCountChoXacNhan(data.totalBillsCountChoXacNhan);
+            setTotalBillsCountDangDongGoi(data.totalBillsCountDangDongGoi);
+            setTotalBillsCountDangGiao(data.totalBillsCountDangGiao);
+            setTotalBillsCountThanhCong(data.totalBillsCountThanhCong);
+            setTotalBillsFailCount(data.totalBillsFailCount);
             setTotalProductAmount(data.totalProductAmount);
             setTotalStaffsCount(data.totalStaffsCount);
-            drawChart();
+            setDoanhThuTrongKhoangNgay(data.doanhThuTrongKhoangNgay);
+            setDoanhThuOfflineTrongKhoangNgay(data.doanhThuOfflineTrongKhoangNgay);
+            setDoanhThuOnlineTrongKhoangNgay(data.doanhThuOnlineTrongKhoangNgay);
+
         } catch (error) { }
     };
 
@@ -112,7 +274,11 @@ function ThongKeContent() {
         try {
             const response = await ThongKeAPI.getTotalPricesByDay(month, year);
             const data = response.data;
-            setListDoanhThuTrongThang(data);
+            let list = [];
+            data.map((item, index) => (
+                list = [...list, { name: item[0], 'Doanh thu': item[1] }]
+            ))
+            setListDoanhThuTrongThang(list);
         } catch (error) { }
     };
     const getTopFiveCustomer = async () => {
@@ -124,97 +290,49 @@ function ThongKeContent() {
     };
     const getTopFiveProduct = async () => {
         try {
+            // const response = await ThongKeAPI.getTopFiveProduct('0001-01-01', '9999-01-01');
             const response = await ThongKeAPI.getTopFiveProduct(startDate, endDate);
             const data = response.data;
             setTopProductsData(data);
+        } catch (error) { }
+    };
+    const getProductsFail = async () => {
+        try {
+            const response = await ThongKeAPI.getProductsFail(startDate, endDate);
+            const data = response.data;
+            const soLuong = data.reduce((total, item) => total + item[1], 0);
+            setAllProductFail(soLuong);
+            setListProductFail(data);
         } catch (error) { }
     };
     const getThongKeStatus = async () => {
         try {
             const response = await ThongKeAPI.getThongKeStatus(startDate, endDate);
             const data = response.data;
-            setThongKeStatus(data);
+            let list = [
+                { name: 'Chờ xác nhận', value: data.ChoXacNhan },
+                { name: 'Đang đóng gói', value: data.DangDongGoi },
+                { name: 'Đang giao', value: data.DangGiao },
+                { name: 'Thành công', value: data.ThanhCong },
+                { name: 'Đã hủy', value: data.DaHuy },
+            ];
+            setThongKeStatus(list);
+            console.log(list);
         } catch (error) { }
     };
 
-    const taiAPIBieuDo = () => {
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = 'https://www.gstatic.com/charts/loader.js';
-        script.async = true;
 
-        // Set up a callback for when the script is loaded
-        script.onload = () => {
-            // Load the visualization library
-            window.google.charts.load('current', { packages: ['corechart'] });
-
-            // Set a callback to run when the Google Visualization API is loaded
-            window.google.charts.setOnLoadCallback(drawChart);
-            window.google.charts.load('current', { packages: ['corechart'] });
-
-            // Set a callback to run when the Google Visualization API is loaded
-            window.google.charts.setOnLoadCallback(drawChart);
-        };
-
-        // Append the script element to the document head
-        document.head.appendChild(script);
-
-        // Clean up the script element when the component is unmounted
-        return () => {
-            document.head.removeChild(script);
-        };
-    }
 
     useEffect(() => {
         getTotalPricesByDay();
         getTopFiveCustomer();
         getTopFiveProduct();
+        getProductsFail();
         getThongKeStatus();
-        // Tải API biểu đồ Google
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-        script.src = 'https://www.gstatic.com/charts/loader.js';
-        script.async = true;
-
-        // Set up a callback for when the script is loaded
-        script.onload = () => {
-            // Load the visualization library
-            window.google.charts.load('current', { packages: ['corechart'] });
-
-            // Set a callback to run when the Google Visualization API is loaded
-            window.google.charts.setOnLoadCallback(drawChart);
-            window.google.charts.load('current', { packages: ['corechart'] });
-
-            // Set a callback to run when the Google Visualization API is loaded
-            window.google.charts.setOnLoadCallback(drawChart);
-        };
-
-        // Append the script element to the document head
-        document.head.appendChild(script);
-
-        // Clean up the script element when the component is unmounted
-        return () => {
-            document.head.removeChild(script);
-        };
-
 
     }, [month, year, startDate, endDate]);
     useEffect(() => {
         getBillStatisticsByDateRange();
-        taiAPIBieuDo();
-
-        // // Tải API biểu đồ Google
-        // const script = document.createElement('script');
-        // script.type = 'text/javascript';
-        // script.src = 'https://www.gstatic.com/charts/loader.js';
-        // script.async = true;
-        // script.onload = () => {
-        //     // Load the visualization library
-        //     window.google.charts.load('current', { packages: ['corechart'] });
-        //     // Set a callback to run when the Google Visualization API is loaded
-        //     window.google.charts.setOnLoadCallback(drawChart);
-        // };
-        // document.head.appendChild(script);
     }, [startDate, endDate]);
 
     const stringStatus = (status) => {
@@ -236,46 +354,50 @@ function ThongKeContent() {
 
     const duLieuStatus = () => {
         let status = [
-            ['Task', 'Hours per Day'],
-            [stringStatus(1), thongKeStatus.ThanhCong],
-            [stringStatus(-1), thongKeStatus.DaHuy],
-            [stringStatus(4), thongKeStatus.ChoXacNhan],
-            [stringStatus(3), thongKeStatus.DangDongGoi],
-            [stringStatus(2), thongKeStatus.DangGiao],
+            thongKeStatus.ThanhCong,
+            thongKeStatus.DaHuy,
+            thongKeStatus.ChoXacNhan,
+            thongKeStatus.DangDongGoi,
+            thongKeStatus.DangGiao,
+        ];
+        return status;
+    };
+    const tenStatus = () => {
+        let status = [
+            "Thành công",
+            "Đã hủy",
+            "Chờ xác nhận",
+            "Đang đóng gói",
+            "Đang giao",
         ];
         return status;
     };
 
+    const bieuDoTron = () => {
+        return (
+            <React.Fragment>
+                <Chart
+                    type="pie"
+                    width={500}
+                    height={300}
+                    series={duLieuStatus()}
+                    options={{
+                        title: {
+                            text: "Thống kê trạng thái đơn hàng"
+                        },
+                        noData: { text: "Empty Data" },
+                        labels: tenStatus(),
+                    }}
+                >
+                </Chart>
+            </React.Fragment>
+        );
+    }
 
-    const drawChart = () => {
-        // biểu đồ trạng thái
-        const data = window.google.visualization.arrayToDataTable(duLieuStatus());
-
-        const options = {
-            title: 'Thống kê trạng thái đơn hàng',
-        };
-        const chart = new window.google.visualization.PieChart(document.getElementById('chart_div'));
-        chart.draw(data, options);
-
-        // biểu đồ cột
-
-        const dataChartColumn = new window.google.visualization.DataTable();
-        dataChartColumn.addColumn('string', 'Ngày: ');
-        dataChartColumn.addColumn('number', 'Doanh thu');
-        listDoanhThuTrongThang.forEach(item => {
-            dataChartColumn.addRow([item[0], item[1]]);
-        });
-        const optionsChartColumn = {
-            title: 'Thống kê doanh thu trong tháng',
-            pieHole: 0.4,
-        };
-        const chartColumn = new window.google.visualization.ColumnChart(document.getElementById('chart_column'));
-        chartColumn.draw(dataChartColumn, optionsChartColumn);
-    };
 
     const columnProduct = [
         {
-            key: 'stt',
+            key: 'index',
             dataIndex: 'index',
             title: 'Top',
             width: 70,
@@ -306,8 +428,8 @@ function ThongKeContent() {
 
         {
             title: 'Thương hiệu',
-            dataIndex: 'productName',
-            key: 'productName',
+            dataIndex: 'brandName',
+            key: 'brandName',
             render: (text, record, index) => {
                 return <span>
                     {record[0].brand.brandName}
@@ -328,7 +450,7 @@ function ThongKeContent() {
     ];
     const columnCustomer = [
         {
-            key: 'stt',
+            key: 'index',
             dataIndex: 'index',
             title: 'Top',
             width: 70,
@@ -355,6 +477,8 @@ function ThongKeContent() {
             },
         },
     ];
+
+
     return (
         <div style={{}}>
             {/* <Card style={{ marginTop: '15px', marginLeft: '1%', height: '95%', width: '98%', border: '30px' }}>
@@ -373,7 +497,7 @@ function ThongKeContent() {
                 <Col span={6} >
                     <Row style={{ backgroundColor: '#ffffff', height: '100%' }}>
                         <Col span={24} style={{ margin: '0 10px 10px 10px' }}>
-                            {setTangGiamDoanhThu()}
+                            {setTangGiamDoanhThuDenNgayHienTai()}
                         </Col>
                     </Row>
                 </Col>
@@ -383,16 +507,23 @@ function ThongKeContent() {
                             <ShoppingCartOutlined style={{ fontSize: '60px', color: '#ffffff' }} />
                         </Col>
                         <Col span={16} style={{ backgroundColor: '#ffffff' }}>
-                            <Statistic
-                                style={{ marginLeft: '10px' }}
-                                title={<span style={{ fontSize: '23px' }}>Tổng số đơn hàng</span>}
-                                value={totalBillsCount}
-                                valueStyle={{ fontSize: '30px' }}
-                            />
+                            <Space>
+                                <Popover placement="top" content={viewSoLuongHoaDon()}>
+                                    <Typography.Text>
+                                        <Statistic
+                                            style={{ marginLeft: '10px' }}
+                                            title={<span style={{ fontSize: '23px' }}>Đơn hàng đã bán</span>}
+                                            value={totalBillsCount}
+                                            valueStyle={{ fontSize: '30px' }}
+                                        />
+                                    </Typography.Text>
+                                </Popover>
+
+                            </Space>
+
                         </Col>
                     </Row>
                 </Col>
-
                 <Col span={6}>
                     <Row style={{ backgroundColor: 'rgb(6, 117, 34)', height: '100%', marginRight: '15px' }}>
                         <Col span={8} style={{ textAlign: 'center', margin: 'auto' }}>
@@ -409,7 +540,7 @@ function ThongKeContent() {
                     </Row>
                 </Col>
                 <Col span={6}>
-                    <Row style={{ backgroundColor: 'red', height: '100%' }}>
+                    <Row style={{ backgroundColor: 'orange', height: '100%' }}>
                         <Col span={8} style={{ textAlign: 'center', margin: 'auto' }}>
                             <UserOutlined style={{ fontSize: '50px', color: '#ffffff' }} />
                         </Col>
@@ -424,46 +555,105 @@ function ThongKeContent() {
                     </Row>
                 </Col>
             </Row>
+
+            <Row gutter={24} style={{ marginTop: '15px', marginLeft: '5px' }}>
+                <Col span={6} >
+                    <Row style={{ backgroundColor: '#ffffff', height: '100%' }}>
+                        <Col span={24} style={{ margin: '0 10px 10px 10px' }}>
+                            {setTangGiamDoanhThuCaThang()}
+                        </Col>
+                    </Row>
+                </Col>
+                <Col span={6}>
+                    <Row style={{ backgroundColor: 'red', height: '100%' }}>
+                        <Col span={8} style={{ textAlign: 'center', margin: 'auto' }}>
+                            <ShoppingCartOutlined style={{ fontSize: '60px', color: '#ffffff' }} />
+                        </Col>
+                        <Col span={16} style={{ backgroundColor: '#ffffff' }}>
+                            <Statistic
+                                style={{ marginLeft: '10px' }}
+                                title={<span style={{ fontSize: '23px' }}>Đơn hàng đã hủy</span>}
+                                value={totalBillsFailCount}
+                                valueStyle={{ fontSize: '30px' }}
+                            />
+                        </Col>
+                    </Row>
+                </Col>
+                <Col span={6}>
+                    <Row style={{ backgroundColor: 'red', height: '100%' }}>
+                        <Col span={8} style={{ textAlign: 'center', margin: 'auto' }}>
+                            <ShoppingOutlined style={{ fontSize: '50px', color: '#ffffff' }} />
+                        </Col>
+                        <Col span={16} style={{ backgroundColor: '#ffffff' }}>
+                            <Statistic
+                                style={{ marginLeft: '10px' }}
+                                title={<span style={{ fontSize: '23px' }}>Tổng sản phẩm lỗi</span>}
+                                value={allProductFail}
+                                valueStyle={{ fontSize: '30px' }}
+                            />
+                        </Col>
+                    </Row>
+                </Col>
+                <Col span={6}>
+
+                    <Popover placement="top" content={viewDoanhThuTheoKhoangNgay()}>
+                        <Typography.Text>
+                            <Statistic
+                                style={{ marginLeft: '10px' }}
+                                title={<span style={{ fontSize: '23px' }}>Doanh thu</span>}
+                                value={VNDFormaterFunc(doanhThuTrongKhoangNgay)}
+                                valueStyle={{ fontSize: '30px', color: '#3f8600' }}
+                            />
+                        </Typography.Text>
+                    </Popover>
+                </Col>
+            </Row>
             <Row>
-                <Col span={16}>
+                <Col span={24}>
                     <div style={{ margin: '15px 15px 15px 15px' }}>
                         <Card style={{ borderRadius: '20px' }}>
                             <Row>
-                                <Col span={3} >
-                                    <FilterFilled style={{ fontSize: '25px' }} />
-                                    <InputNumber
-                                        min={1}
-                                        max={12}
-                                        value={month}
-                                        placeholder='Tháng'
-                                        onChange={(newValue) => {
-                                            setMonth(newValue);
-                                        }}
-                                    >
-                                    </InputNumber>
-                                </Col>
-                            </Row>
-                            <Col span={3} >
-                                <InputNumber
+                                <h4>Biểu đồ doanh thu của cửa hàng trong tháng {<InputNumber
+                                    min={1}
+                                    max={12}
+                                    value={month}
+                                    placeholder='Tháng'
+                                    style={{ fontWeight: 'bold', fontSize: '20px' }}
+                                    onChange={(newValue) => {
+                                        setMonth(newValue);
+                                    }}
+                                />} năm {<InputNumber
                                     placeholder='Năm'
                                     min={2000}
-                                    max={2023}
+                                    max={2024}
                                     value={year}
+                                    style={{ fontWeight: 'bold', fontSize: '20px' }}
                                     onChange={(newValue) => {
                                         setYear(newValue);
                                     }}
+                                />}
+                                </h4>
+                            </Row>
+                            <Row style={{ marginTop: '15px' }}>
+                                <BarChart
+                                    width={1500}
+                                    height={500}
+                                    data={listDoanhThuTrongThang}
+                                    margin={{
+                                        top: 5,
+                                        right: 30,
+                                        left: 20,
+                                        bottom: 5,
+                                    }}
                                 >
-                                </InputNumber>
-                            </Col>
-
-                            <div id="chart_column" style={{ width: '100%', height: '350px' }}></div>
-                        </Card>
-                    </div>
-                </Col>
-                <Col span={8}>
-                    <div style={{ margin: '15px 15px 15px 15px' }}>
-                        <Card style={{ borderRadius: '20px' }}>
-                            <div id="chart_div" style={{ width: '130%', height: '400px' }}></div>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Bar dataKey="Doanh thu" fill="#8884d8" activeBar={<Rectangle fill="pink" stroke="blue" />} />
+                                </BarChart>
+                            </Row>
                         </Card>
                     </div>
                 </Col>
@@ -471,21 +661,21 @@ function ThongKeContent() {
             <Row>
                 <Col span={16}>
                     <Card style={{ margin: '0 15px 0 ' }}   >
-                        <Statistic value={' '} title={<span style={{ fontSize: '23px' }}>Top 5 sản phẩm có số lượng bán chạy nhất</span>} />
+                        <Statistic value={' '} title={<span style={{ fontSize: '23px' }}>Top 5 sản phẩm có số lượng bán nhiều nhất </span>} />
                         <Table
                             dataSource={topProductsData}
                             columns={columnProduct}
-                            rowKey={(record) => record[1]}
+                            rowKey={(record) => record[0].productId}
                             pagination={false}
                         />
                     </Card>
                 </Col>
                 <Col span={8}>
                     <Card style={{ margin: '0 15px 0 15px' }}>
-                        <Statistic value={' '} title={<span style={{ fontSize: '23px' }}>Top 5 khách hàng mua nhiều nhất</span>} />
+                        <Statistic value={' '} title={<span style={{ fontSize: '23px' }}>Top 5 khách hàng mua nhiều nhất </span>} />
                         <Table
                             dataSource={topCustomersData}
-                            rowKey={topCustomersData.customerId}
+                            rowKey={(record) => record.customerId}
                             columns={columnCustomer}
                             pagination={false}
                         />
