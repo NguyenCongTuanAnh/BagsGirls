@@ -45,6 +45,9 @@ function ThongKeContent() {
     const [allProductFail, setAllProductFail] = useState(0); // Dữ liệu sản phẩm lỗi
     const [listProductFail, setListProductFail] = useState([]); // Dữ liệu sản phẩm lỗi
     const [doanhThuTrongKhoangNgay, setDoanhThuTrongKhoangNgay] = useState(0);
+    const [doanhThuOfflineTrongKhoangNgay, setDoanhThuOfflineTrongKhoangNgay] = useState(0);
+    const [doanhThuOnlineTrongKhoangNgay, setDoanhThuOnlineTrongKhoangNgay] = useState(0);
+
 
 
     const onRangeChange = (dates, dateStrings) => {
@@ -87,6 +90,24 @@ function ThongKeContent() {
                         <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Tháng {dayjs().format('MM-YYYY')}: </span>
                         <span style={{ color: 'red', fontSize: '16px' }}>{VNDFormaterFunc(doanhThuThangNay)} </span>
                     </li>
+                </ul>
+            </div>
+        );
+    }
+    const viewDoanhThuTheoKhoangNgay = () => {
+        return (
+            <div >
+                <h5 style={{ margin: '10px', fontWeight: 'bold' }}>Doanh thu chi tiết trong khoảng ngày: </h5>
+                <ul >
+                    <li >
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Doanh thu tại quầy:  </span>
+                        <span style={{ color: 'red', fontSize: '22px' }}> {VNDFormaterFunc(doanhThuOfflineTrongKhoangNgay)} </span>
+                    </li>
+                    <li >
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>Doanh thu online:  </span>
+                        <span style={{ color: 'red', fontSize: '22px' }}> {VNDFormaterFunc(doanhThuOnlineTrongKhoangNgay)} </span>
+                    </li>
+
                 </ul>
             </div>
         );
@@ -243,6 +264,9 @@ function ThongKeContent() {
             setTotalProductAmount(data.totalProductAmount);
             setTotalStaffsCount(data.totalStaffsCount);
             setDoanhThuTrongKhoangNgay(data.doanhThuTrongKhoangNgay);
+            setDoanhThuOfflineTrongKhoangNgay(data.doanhThuOfflineTrongKhoangNgay);
+            setDoanhThuOnlineTrongKhoangNgay(data.doanhThuOnlineTrongKhoangNgay);
+
         } catch (error) { }
     };
 
@@ -571,13 +595,17 @@ function ThongKeContent() {
                     </Row>
                 </Col>
                 <Col span={6}>
-                    <Statistic
-                        style={{ marginLeft: '10px' }}
-                        title={<span style={{ fontSize: '23px' }}>Doanh thu</span>}
-                        value={VNDFormaterFunc(doanhThuTrongKhoangNgay)}
-                        valueStyle={{ fontSize: '30px', color: '#3f8600' }}
 
-                    />
+                    <Popover placement="top" content={viewDoanhThuTheoKhoangNgay()}>
+                        <Typography.Text>
+                            <Statistic
+                                style={{ marginLeft: '10px' }}
+                                title={<span style={{ fontSize: '23px' }}>Doanh thu</span>}
+                                value={VNDFormaterFunc(doanhThuTrongKhoangNgay)}
+                                valueStyle={{ fontSize: '30px', color: '#3f8600' }}
+                            />
+                        </Typography.Text>
+                    </Popover>
                 </Col>
             </Row>
             <Row>

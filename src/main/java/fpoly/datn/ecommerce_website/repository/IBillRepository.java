@@ -581,6 +581,18 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
     )
     BigDecimal calculateTotalPrice(@Param("startDate") Date startDate,
                                    @Param("endDate") Date endDate);
+    @Query("SELECT SUM(b.billPriceAfterVoucher) FROM Bills b WHERE " +
+            " b.billStatus <> -1 AND b.staff IS NOT NULL " +
+            " AND ( b.billCreateDate BETWEEN :startDate AND :endDate ) "
+    )
+    BigDecimal calculateTotalPriceOffline(@Param("startDate") Date startDate,
+                                   @Param("endDate") Date endDate);
+    @Query("SELECT SUM(b.billPriceAfterVoucher) FROM Bills b WHERE " +
+            " b.billStatus <> -1 AND b.staff IS NULL " +
+            " AND ( b.billCreateDate BETWEEN :startDate AND :endDate ) "
+    )
+    BigDecimal calculateTotalPriceOnline(@Param("startDate") Date startDate,
+                                          @Param("endDate") Date endDate);
 
     @Query("SELECT SUM(b.billPriceAfterVoucher) FROM Bills b WHERE " +
             " b.billStatus <> -1 " +

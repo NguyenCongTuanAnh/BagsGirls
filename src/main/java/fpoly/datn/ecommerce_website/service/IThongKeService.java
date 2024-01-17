@@ -20,6 +20,9 @@ public interface IThongKeService {
     int countStaffs() ;
 
     BigDecimal calculateTotalPrice(Date startDate, Date endDate);
+    BigDecimal calculateTotalPriceOffline(Date startDate, Date endDate);
+    BigDecimal calculateTotalPriceOnline(Date startDate, Date endDate);
+
 
     BigDecimal calculateTotalPriceThisMonth();
 
