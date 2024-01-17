@@ -248,7 +248,7 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
             " AND ( :status IS NULL OR b.billStatus = :status ) " +
             " AND (b.billCreateDate BETWEEN :startDate AND :endDate) " +
             " AND b.staff IS NULL "
-             )
+    )
     Page<Bills> findAllBillsOnline(
             @Param("startDate") Date startDate,
             @Param("endDate") Date endDate,
@@ -575,20 +575,37 @@ public interface IBillRepository extends JpaRepository<Bills, String> {
 
     List<Bills> findByBillCreateDateBetween(Date startDate, Date endDate);
 
+    @Query("SELECT SUM(b.billPriceAfterVoucher) FROM Bills b WHERE " +
+            " b.billStatus <> -1 " +
+            " AND ( b.billCreateDate BETWEEN :startDate AND :endDate ) "
+    )
+    BigDecimal calculateTotalPrice(@Param("startDate") Date startDate,
+                                   @Param("endDate") Date endDate);
 
     @Query("SELECT SUM(b.billPriceAfterVoucher) FROM Bills b WHERE " +
-            "MONTH(b.billCreateDate) = MONTH(CURRENT_DATE) AND YEAR(b.billCreateDate) = YEAR(CURRENT_DATE) AND " +
-            "b.billCreateDate <= CURRENT_DATE")
+            " b.billStatus <> -1 " +
+            " AND DAY(b.billCreateDate) <= DAY(CURRENT_DATE) " +
+            " AND MONTH(b.billCreateDate) = MONTH(CURRENT_DATE) " +
+            " AND YEAR(b.billCreateDate) = YEAR(CURRENT_DATE) ")
     BigDecimal calculateTotalPriceThisMonth();
 
     @Query("SELECT SUM(b.billPriceAfterVoucher) FROM Bills b WHERE " +
-            "MONTH(b.billCreateDate) = MONTH(CURRENT_DATE) - 1 AND YEAR(b.billCreateDate) = YEAR(CURRENT_DATE) AND " +
-            "b.billCreateDate <= CURRENT_DATE")
+            " ( b.billStatus <> -1 AND DAY(b.billCreateDate) <= DAY(CURRENT_DATE) AND MONTH(CURRENT_DATE) = 1 AND (MONTH(b.billCreateDate) = 12 AND YEAR(b.billCreateDate) = YEAR(CURRENT_DATE) -1 AND b.billCreateDate <= CURRENT_DATE)) " +
+            " OR ( b.billStatus <> -1 AND DAY(b.billCreateDate) <= DAY(CURRENT_DATE) AND MONTH(CURRENT_DATE) > 1 AND (MONTH(b.billCreateDate) = MONTH(CURRENT_DATE) - 1 AND YEAR(b.billCreateDate) = YEAR(CURRENT_DATE) AND b.billCreateDate <= CURRENT_DATE)) "
+    )
     BigDecimal calculateTotalPriceLastMonth();
+
+    @Query("SELECT SUM(b.billPriceAfterVoucher) FROM Bills b WHERE " +
+            " ( b.billStatus <> -1 AND MONTH(CURRENT_DATE) = 1 AND (MONTH(b.billCreateDate) = 12 AND YEAR(b.billCreateDate) = YEAR(CURRENT_DATE) -1 AND b.billCreateDate <= CURRENT_DATE)) " +
+            " OR ( b.billStatus <> -1 AND MONTH(CURRENT_DATE) > 1 AND (MONTH(b.billCreateDate) = MONTH(CURRENT_DATE) - 1 AND YEAR(b.billCreateDate) = YEAR(CURRENT_DATE) AND b.billCreateDate <= CURRENT_DATE)) "
+    )
+    BigDecimal calculateTotalPriceLastMonthByAll();
 
     @Query(" SELECT FORMAT(b.billCreateDate, 'yyyy-MM-dd') AS formatted_date, " +
             " SUM(b.billPriceAfterVoucher) " +
-            " FROM Bills b WHERE MONTH(b.billCreateDate) = :month " +
+            " FROM Bills b " +
+            " WHERE b.billStatus <> -1 " +
+            " AND MONTH(b.billCreateDate) = :month " +
             " AND YEAR(b.billCreateDate) = :year " +
             " GROUP BY FORMAT(b.billCreateDate, 'yyyy-MM-dd') " )
     List<Object[]> findTotalPricesByDay(@Param("month") String month, @Param("year") String year);
