@@ -11,6 +11,8 @@ import styles from './shopDetail.module.scss';
 
 function ShopDetailView() {
   const [quantity, setQuantity] = useState(1);
+  const [totalQuantity, setTotalQuantity] = useState(0);
+
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
@@ -38,6 +40,7 @@ function ShopDetailView() {
         setCustomerId(customerId);
         setCartId(data.cartId);
         setCartItems(data);
+
         setCartDetailId(data?.cartDetailsList?.productDetails?.productDetailId);
       } catch (error) {
         console.error('Error fetching product details:', error);
@@ -46,6 +49,42 @@ function ShopDetailView() {
 
     fetchCart();
   }, [customerId]);
+  const calculateTotalPrice = () => {
+    let totalPrice = 0;
+
+    if (cartItems?.cartDetailsList) {
+      cartItems.cartDetailsList.forEach((item) => {
+        totalPrice += item.amount * item.productDetails.retailPrice;
+      });
+    }
+
+    return totalPrice;
+  };
+
+  const calculateTotalAmount = () => {
+    let toltalAmount = 0;
+
+    if (cartItems?.cartDetailsList) {
+      cartItems.cartDetailsList.forEach((item) => {
+        toltalAmount += item.amount;
+      });
+    }
+
+    return toltalAmount;
+  };
+
+  // const calculateTotal = () => {
+  //   return cartItems.reduce((total, item) => {
+  //     return total + item.quantity * item.retailPrice;
+  //   }, 0);
+  // };
+
+  // useEffect(() => {
+  //   const total = cartItems.reduce((totalQty, item) => {
+  //     return totalQty + item.quantity;
+  //   }, 0);
+  //   setTotalQuantity(total);
+  // }, [cartItems]);
 
   const fetchProductDetail = async () => {
     try {
@@ -71,7 +110,7 @@ function ShopDetailView() {
     }, 5000);
   }, []);
 
-  const addToCart = async () => {
+  const addToCart = async (updateQuantityCallback) => {
     const amountInDatabase = dataDetail.amount;
 
     const productToAdd = {
@@ -102,12 +141,16 @@ function ShopDetailView() {
       const response = await cartDetailAPI.save(productToAdd);
       setQuantity(1);
       setIsProductInCart(true);
+      if (updateQuantityCallback) {
+        updateQuantityCallback(quantity);
+      }
+
       notification.success({
         message: 'Thành công',
         description: 'Sản phẩm đã được thêm vào giỏ hàng',
         duration: 3,
       });
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       console.error('Error adding product to cart:', error);
       notification.error({
@@ -136,7 +179,6 @@ function ShopDetailView() {
             color: 'gray',
             fontSize: '25px',
             background: 'lightgray',
-            borderRadius: '32px',
             padding: '5px 10px',
             textAlign: 'center',
           }}
@@ -153,7 +195,6 @@ function ShopDetailView() {
             color: 'gray',
             fontSize: '25px',
             background: 'lightgray',
-            borderRadius: '32px',
             padding: '5px 10px',
             textAlign: 'center',
           }}
@@ -166,7 +207,7 @@ function ShopDetailView() {
     } else {
       return (
         <div>
-          <Link to="">
+          <Link to={`/cart/${cartId1}`}>
             <div
               className={styles.button_buy_now}
               onClick={() => {
@@ -178,7 +219,7 @@ function ShopDetailView() {
             </div>
           </Link>
 
-          <Link to={`/cart/${cartId1}`}>
+          {/* <Link to={`/cart/checkout/${customeId}`}>
             <div
               className={styles.button_buy_now1}
               onClick={() => {
@@ -188,7 +229,24 @@ function ShopDetailView() {
             >
               Mua ngay
             </div>
-          </Link>
+          </Link> */}
+
+          {/* <div
+            className={styles.button_buy_now1}
+            onClick={() => {
+              addToCart();
+              navigate(`/cart/checkout/${customerId}`, {
+                state: {
+                  totalPrice1: calculateTotalPrice(),
+                  cartItems: cartItems.cartDetailsList,
+                  totalAmount: calculateTotalAmount(),
+                  infoCustomer: cartItems,
+                },
+              });
+            }}
+          >
+            Mua ngay
+          </div> */}
         </div>
       );
     }
@@ -213,7 +271,6 @@ function ShopDetailView() {
             color: 'gray',
             fontSize: '25px',
             background: 'lightgray',
-            borderRadius: '32px',
             padding: '5px 10px',
             textAlign: 'center',
           }}
@@ -230,7 +287,6 @@ function ShopDetailView() {
               color: 'gray',
               fontSize: '25px',
               background: 'lightgray',
-              borderRadius: '32px',
               padding: '5px 10px',
               textAlign: 'center',
             }}
@@ -242,18 +298,28 @@ function ShopDetailView() {
       } else {
         return (
           <div>
-            <Link to="">
+            <Link to="/cart">
               <div className={styles.button_buy_now} onClick={() => addToTemporaryCart(product)}>
                 <ShoppingCartOutlined />
                 Thêm vào giỏ hàng
               </div>
             </Link>
 
-            <Link to="/cart">
-              <div className={styles.button_buy_now1} onClick={() => addToTemporaryCart(product)}>
-                Mua ngay
-              </div>
-            </Link>
+            {/* <div
+                   className={styles.button_buy_now}
+                  onClick={() => {
+                    navigate('/cart/checkout', {
+                      state: {
+                        // totalPrice: calculateTotal(),
+                        // voucherPrice: voucherPrice,
+                        // disCountPercent: voucher.discountPercent,
+                        totalQuantity: totalQuantity,
+                      },
+                    });
+                  }}
+                >
+                  Mua ngay
+                </div> */}
           </div>
         );
       }
@@ -595,11 +661,7 @@ function ShopDetailView() {
 
               <br></br>
 
-              {customerId == null ? (
-                <Link to="">{renderAddToCartButton()}</Link>
-              ) : (
-                <Link to="">{renderAddToCartButtonDB()}</Link>
-              )}
+              {customerId == null ? <div>{renderAddToCartButton()}</div> : <div>{renderAddToCartButtonDB()}</div>}
             </div>
           </div>
         </div>

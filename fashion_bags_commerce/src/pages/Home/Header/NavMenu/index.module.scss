@@ -99,9 +99,18 @@
   }
 }
 .cartIcon {
-  font-size: 30px;
+  font-size: 20px;
+  margin: 0 5px;
+  padding: 5px;
+  border: 1px solid black;
+  border-radius: 50%;
+  background-color: beige;
+  color: black;
   &:hover {
-    color: white;
+    background-color: white;
+    border-radius: 50%;
+    padding: 5px;
+    color: black;
   }
 }
 .cart {
@@ -124,14 +133,23 @@
 .iconUser {
   font-size: 30px;
   background-color: #87d068;
+  margin: 10px 0;
 }
 
 .iconCartUser {
-  font-size: 30px;
-  margin: 0 10px;
+  font-size: 20px;
+  margin: 0 5px;
+  padding: 5px;
+  border: 1px solid black;
+  border-radius: 50%;
+  background-color: beige;
   color: black;
   &:hover {
-    color: white;
+    background-color: white;
+    border-radius: 50%;
+    padding: 5px;
+    color: black;
   }
 }
+
 //////////////
